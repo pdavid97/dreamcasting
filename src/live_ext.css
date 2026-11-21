@@ -1,0 +1,76 @@
+/* 확장: 큰 배우 사진, 배우/유저 페이지, 작품 정보, 감상 링크, 알림, 포스터 업로드 */
+.av{width:64px;height:64px;font-size:26px}
+.cand1 .nm{gap:12px}
+.face{width:120px;height:120px;font-size:46px}
+@media (max-width:640px){.av{width:52px;height:52px}.face{width:88px;height:88px}}
+.alink{color:inherit;text-decoration:none;border-bottom:1px dashed currentColor}
+.alink:hover{color:var(--red)}
+#page{margin:18px 0}
+.pg h1{font-size:40px;line-height:1.1;margin:4px 0}
+.pg section{margin-top:22px}
+.ahero,.uhero{display:grid;grid-template-columns:auto 1fr;gap:22px;align-items:start;margin-top:12px}
+.uhero{grid-template-columns:1fr auto}
+.aph{width:220px;height:300px;object-fit:cover;border:3px solid var(--ink);display:grid;place-items:center;font:400 80px 'Black Han Sans',sans-serif;background:var(--mute);color:#fff}
+@media (max-width:640px){.ahero,.uhero{grid-template-columns:1fr}.aph{width:100%;height:auto;aspect-ratio:3/4}}
+.astats{display:flex;flex-wrap:wrap;gap:10px;margin:12px 0}
+.astats span{display:flex;flex-direction:column;border:2px solid var(--ink);padding:8px 12px;min-width:92px}
+.astats b{font-size:26px}.astats small{font-size:12px;color:var(--mute2,#666)}
+.races{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
+.race{border:2px solid var(--ink);padding:12px;display:flex;flex-direction:column;gap:6px;color:inherit;text-decoration:none;background:var(--bg)}
+.race.lead{border-color:var(--red);box-shadow:4px 4px 0 var(--red)}
+.race .rk2 b{font-size:30px}
+.acols{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+@media (max-width:820px){.acols{grid-template-columns:1fr}}
+.films{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:12px}
+.film{display:flex;flex-direction:column;gap:3px;font-size:13px}
+.film img,.film .np{width:100%;aspect-ratio:2/3;object-fit:cover;background:var(--mute);display:block}
+.film .ps{font-size:13px}.film .ps b{color:var(--red);font-size:18px}
+.film .rv{font-style:italic}
+.film details input[type=range]{width:100%}
+.aw{list-style:none;padding:0;margin:0;font-size:14px;line-height:1.7}
+.bio{white-space:pre-line;font-size:14px;line-height:1.6}
+.badges{display:flex;flex-wrap:wrap;gap:8px}
+.badge{border:2px dashed var(--mute);padding:6px 10px;font-weight:700;color:var(--mute)}
+.badge.on{border-style:solid;border-color:var(--ink);color:var(--ink);background:#ffe100}
+.hist{list-style:none;padding:0;margin:0;font-size:14px;line-height:1.9}
+.hist li.hit{background:linear-gradient(90deg,#ffe10055,transparent)}
+.usheets{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.us{border:2px solid var(--ink);padding:8px;display:flex;flex-direction:column;gap:4px;color:inherit;text-decoration:none}
+.us img{width:100%;aspect-ratio:2/3;object-fit:cover}
+.taste .qty{flex-wrap:wrap;margin:4px 0 10px}
+.chk{display:inline-flex;gap:4px;align-items:center;border:1px solid var(--mute);padding:4px 8px;margin:0 6px 6px 0;font-size:14px}
+.taste label.sub{display:block;margin:8px 0}
+.taste input[type=text]{width:100%}
+.work{border:2px solid var(--ink);padding:10px 12px;margin:14px 0 0}
+.work summary{cursor:pointer}
+.wk{display:grid;grid-template-columns:120px 1fr;gap:14px;margin-top:10px}
+.wk img{width:120px;aspect-ratio:2/3;object-fit:cover}
+.wk p{margin:0 0 6px;font-size:14px;line-height:1.6}
+@media (max-width:560px){.wk{grid-template-columns:1fr}.wk img{width:110px}}
+.watch{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.wp{display:inline-flex;gap:4px;align-items:center;border:1px solid var(--mute);padding:2px 6px;font-size:13px}
+.wp img,.wlinks img{width:20px;height:20px;border-radius:4px}
+.wlinks{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.wlinks a{display:inline-flex;gap:6px;align-items:center;text-decoration:none}
+.wlinks .spon{border-color:#ef6c00}.wlinks em{font-style:normal;font-size:11px;background:#ef6c00;color:#fff;padding:0 4px}
+.watchbox{margin-top:14px;border:2px solid var(--ink);padding:10px 12px}
+.vids{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px;margin:8px 0}
+.vid iframe{width:100%;aspect-ratio:16/9;border:0;display:block}
+.vid small{font-size:12px}
+.stats2{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
+.stats2 span{display:flex;flex-direction:column;border-left:4px solid var(--red);padding:2px 10px}
+.stats2 b{font-size:22px}.stats2 small{font-size:12px}
+#tStats .nf input,#tStats .nf select{margin:4px 4px 4px 0}
+.bell{position:relative;display:inline-block}
+.bell summary{list-style:none;cursor:pointer;border:2px solid #fff;color:#fff;padding:6px 10px;font-weight:700}
+.bell summary i{font-style:normal;background:var(--red);color:#fff;padding:0 6px;margin-left:4px}
+.bellp{position:absolute;right:0;top:110%;z-index:30;width:min(340px,86vw);background:var(--bg);color:var(--ink);border:2px solid var(--ink);padding:10px;box-shadow:6px 6px 0 var(--ink)}
+.bellp ul{list-style:none;padding:0;margin:6px 0;max-height:320px;overflow:auto;font-size:14px}
+.bellp li{padding:6px 0;border-bottom:1px solid var(--mute);display:flex;flex-direction:column}
+.bellp li.new{font-weight:700}
+.bellp a{color:inherit}
+.proles{display:flex;flex-direction:column;gap:6px;margin-top:8px}
+.prow{display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:6px}
+@media (max-width:640px){.prow{grid-template-columns:1fr 1fr}}
+.pup{margin-top:14px;border-top:2px solid var(--ink);padding-top:10px}
+.pair select[id^=sy]{margin-top:4px}
