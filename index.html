@@ -271,13 +271,6 @@ details.rules li{margin:6px 0}
     <button class="b buy" data-act="propose" style="margin-top:10px">주제 올리기</button>
   </details>
 
-  <details class="rules" id="imgBox">
-    <summary>배우와 작품 이미지 연동 (TMDB)</summary>
-    <p class="sub">TMDB에서 무료로 발급받은 비상업용 API 키(v3 API 키 또는 v4 읽기 토큰)를 넣으면 배우 프로필 사진과 작품 포스터를 불러옵니다. 키는 이 브라우저에만 저장됩니다. 이 미리보기 페이지는 보안 정책상 외부 이미지를 막아 두어서, 직접 호스팅하거나 내려받은 파일로 열었을 때 동작합니다.</p>
-    <div class="row2" style="max-width:640px"><input type="text" id="tmdbKey" placeholder="TMDB API 키" autocomplete="off" aria-label="TMDB API 키"><button class="b sm" data-act="tmdb">저장하고 불러오기</button></div>
-    <p class="sub" id="tmdbStat" style="margin-top:8px"></p>
-  </details>
-
   <details class="rules" id="opsBox">
     <summary>운영자 도구 (데모)</summary>
     <p class="sub">실서비스에서는 공식 발표를 확인한 운영자가 웹소설 실사화 작품의 단계를 넘깁니다. 캐스팅이 확정되면 그 배우에게 투표했던 유저가 적중 배지를 받습니다.</p>
@@ -299,7 +292,7 @@ details.rules li{margin:6px 0}
       <li>함께 활동하는 참가자 9명은 봇이며, 득표 수, 게시글, 시트, 지수 추이는 예시 데이터입니다.</li>
     </ul>
   </details>
-  <p class="foot">원작과 실사화 정보는 2026년 11월 21일 기준 공개 보도를 따랐고, 리메이크 관은 널리 알려진 방영 연도와 원작 출연진만 적었습니다. 후보 배우 목록은 토론을 시작하기 위한 예시이며 실제 리메이크 계획이나 섭외와 관계가 없습니다. 작품명과 인물명은 각 권리자의 것입니다. 배우 사진과 작품 포스터는 TMDB 연동 시 TMDB에서 불러오며, This product uses the TMDB API but is not endorsed or certified by TMDB.</p>
+  <p class="foot">원작과 실사화 정보는 2026년 11월 21일 기준 공개 보도를 따랐고, 리메이크 관은 널리 알려진 방영 연도와 원작 출연진만 적었습니다. 후보 배우 목록은 토론을 시작하기 위한 예시이며 실제 리메이크 계획이나 섭외와 관계가 없습니다. 작품명과 인물명은 각 권리자의 것입니다. 배우 사진과 작품 포스터는 TMDB에서 불러옵니다. This product uses the TMDB API but is not endorsed or certified by TMDB.</p>
 </main>
 <div class="toast" id="toast" role="status"></div>
 
@@ -357,17 +350,14 @@ const GRADES=[[0,'관객'],[300,'캐스팅 덕후'],[1000,'캐스팅 평론가']
 const PERKS=[['관객','투표, VS 한판, 토론, 후보 제안, 캐스팅 시트'],['캐스팅 덕후','새 작품 주제를 열 수 있어요'],['캐스팅 평론가','내 한 표가 두 표로 집계돼요'],['캐스팅 디렉터','배역마다 디렉터스 픽을 지정하고, 포스터에 캐스팅 디렉터로 이름이 올라가요'],['전설의 안목','적중한 배역에 명예 캐스팅 디렉터 크레딧이 영구히 남아요']];
 const grade=p=>{let g=0;GRADES.forEach((x,i)=>{if(p>=x[0])g=i});return g};
 function award(n,why,silent){const before=grade(S.me.pts);S.me.pts+=n;if(why&&!silent)pushFeed(`나: ${why} +${fmt(n)}P`,'me');const after=grade(S.me.pts);if(after>before){pushFeed(`나: 회원 등급이 ${GRADES[after][1]}(으)로 올랐어요!`,'hot');setTimeout(()=>toast(`등급 상승! ${GRADES[after][1]}`),900)}}
-let TK='',IMG={},imgBusy=false;try{TK=localStorage.getItem('tmdbKey')||'';IMG=JSON.parse(localStorage.getItem('tmdbImg')||'{}')}catch(e){}
-async function tmdb(path,params){const u=new URL('https://api.themoviedb.org/3'+path);for(const[k,v]of Object.entries(params))u.searchParams.set(k,v);const h={accept:'application/json'};if(TK.length>60)h.Authorization='Bearer '+TK;else u.searchParams.set('api_key',TK);const r=await fetch(u,{headers:h});if(!r.ok)throw new Error('HTTP '+r.status);return r.json()}
-async function loadImages(t){if(!TK||imgBusy)return;imgBusy=true;const st=$('#tmdbStat'),jobs=[];
- const real=t.cat!=='wn'||t.roles.some(isSync);
- if(real&&!(('w:'+t.id)in IMG))jobs.push(tmdb('/search/multi',{query:t.title,language:'ko-KR'}).then(j=>{const x=(j.results||[]).find(r=>r.poster_path&&(r.media_type==='tv'||r.media_type==='movie'));IMG['w:'+t.id]=x?'https://image.tmdb.org/t/p/w342'+x.poster_path:''}));
+const FN='https://dnzcvbidppzaogtmwamc.supabase.co/functions/v1/tmdb',ANON='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRuemN2YmlkcHB6YW9ndG13YW1jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTUyODgwNzgsImV4cCI6MjExMDg2NDA3OH0.yiKbCh3iuH8_GFpx-ezzbauZNOkffOe5cuIGKUQGBIE';
+let IMG={},imgBusy=false,imgOff=false;try{IMG=JSON.parse(localStorage.getItem('tmdbImg2')||'{}')}catch(e){}
+async function loadImages(t){if(imgBusy||imgOff)return;const real=t.cat!=='wn'||t.roles.some(isSync);
  const names=new Set();t.roles.forEach(r=>{if(isSync(r))names.add(r.actor);(r.names||[]).forEach(n=>{if(n!=='YES'&&n!=='NO')names.add(n)});if(r.orig)names.add(r.orig)});
- for(const n of names)if(!(('p:'+n)in IMG))jobs.push(tmdb('/search/person',{query:n,language:'ko-KR'}).then(j=>{const x=(j.results||[]).find(r=>r.profile_path);IMG['p:'+n]=x?'https://image.tmdb.org/t/p/w185'+x.profile_path:''}));
- const res=await Promise.allSettled(jobs);imgBusy=false;const bad=res.filter(r=>r.status==='rejected');
- if(st)st.textContent=bad.length?(String(bad[0].reason).includes('HTTP 401')?'API 키가 올바르지 않아요.':'이미지를 불러오지 못했어요. 이 미리보기 페이지에서는 외부 연결이 막혀 있을 수 있어요. 직접 호스팅한 페이지에서 다시 시도해 주세요.'):'TMDB에서 이미지를 불러왔어요.';
- try{localStorage.setItem('tmdbImg',JSON.stringify(IMG))}catch(e){}
- delete $('#roles').dataset.k;render()}
+ const need=[...names].filter(n=>!(('p:'+n)in IMG)).slice(0,38),titles=real&&!(('w:'+t.id)in IMG)?[t.title]:[];if(!need.length&&!titles.length)return;
+ imgBusy=true;try{const r=await fetch(FN,{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+ANON,apikey:ANON},body:JSON.stringify({names:need,titles})});
+  if(!r.ok){if(r.status===503)imgOff=true;throw new Error(r.status)}const d=await r.json();for(const n in d.p)IMG['p:'+n]=d.p[n];if(titles.length)IMG['w:'+t.id]=d.w[t.title]||'';
+  try{localStorage.setItem('tmdbImg2',JSON.stringify(IMG))}catch(e){}delete $('#roles').dataset.k}catch(e){}imgBusy=false;render()}
 let S,CAT='wn',SEL='rhh',SROLE=0,timer=0,lastFeed=-1,DUEL=null,shareText='';
 const topic=id=>S.topics.find(t=>t.id===id);
 const isSync=r=>r.stage==='cast'||r.stage==='airing';
@@ -460,7 +450,7 @@ const tStage=t=>{const o=['dream','rumor','cast','airing'];return o[Math.max(...
 function leadTxt(t){const r=t.roles[0];if(isSync(r))return `${r.ch} ${r.actor}, 싱크로 ${r.idx.toFixed(1)}`;if(!r.names.length)return '첫 후보를 기다려요';const sh=shares(r),i=sh.indexOf(Math.max(...sh));return `${r.ch}: ${r.names[i]} ${Math.round(sh[i]*100)}%`}
 function renderShelf(){const box=$('#shelf'),list=S.topics.filter(t=>t.cat===CAT),k=CAT+list.map(t=>t.id+tStage(t)).join('');if(box.dataset.k!==k){box.dataset.k=k;box.innerHTML=list.map(t=>`<button class="topic" data-act="topic" data-id="${t.id}"><small>${esc(t.info)}</small><b>${esc(t.title)}</b>${CAT==='wn'?`<small><span class="st ${tStage(t)}">${SNAME[tStage(t)]}</span></small>`:''}${t.user?'<small><span class="ustag">유저 제안</span></small>':''}<small data-f="l"></small></button>`).join('')+`<button class="topic" data-act="openprop"><small>보고 싶은 작품이 없나요?</small><b>+ 새 주제 제안</b></button>`}
  for(const el of box.querySelectorAll('[data-act=topic]')){const t=topic(el.dataset.id);el.setAttribute('aria-current',t.id===SEL);el.querySelector('[data-f=l]').textContent=leadTxt(t)}}
-function renderHead(){const t=topic(SEL),st=tStage(t);$('#tTitle').textContent=t.title;$('#tInfo').textContent=`${t.info}, ${CATS.find(c=>c.id===t.cat).name}`;$('#tFact').textContent=t.fact;const pu=IMG['w:'+t.id];const pi=$('#tPoster');if(pu){if(pi.src!==pu)pi.src=pu;pi.alt=t.title+' 포스터';pi.hidden=false}else pi.hidden=true;if(TK&&!imgBusy&&renderHead.last!==SEL){renderHead.last=SEL;loadImages(t)}
+function renderHead(){const t=topic(SEL),st=tStage(t);$('#tTitle').textContent=t.title;$('#tInfo').textContent=`${t.info}, ${CATS.find(c=>c.id===t.cat).name}`;$('#tFact').textContent=t.fact;const pu=IMG['w:'+t.id];const pi=$('#tPoster');if(pu){if(pi.src!==pu)pi.src=pu;pi.alt=t.title+' 포스터';pi.hidden=false}else pi.hidden=true;if(!imgBusy&&renderHead.last!==SEL){renderHead.last=SEL;loadImages(t)}
  $('#tVotes').textContent=fmt(t.roles.reduce((a,r)=>a+(isSync(r)?r.nv:total(r)),0))+'표';
  $('#tFlow').innerHTML=t.cat==='wn'?STAGES.map(([k,n],i)=>`${i?'<i>›</i>':''}<span class="${k===st?'on':''}">${n}</span>`).join(''):''}
 function renderDuel(force){const box=$('#duel');if(!DUEL||DUEL.tid!==SEL)newDuel();if(!DUEL){if(box.dataset.k!=='none'){box.dataset.k='none';box.innerHTML=topic(SEL).roles.every(isSync)?'':`<div class="duel"><div class="dq"><b>VS 한판</b><span>후보가 두 명 이상이면 열려요</span></div><p class="empty2" style="padding:14px">아래 배역 보드에서 첫 후보를 올려 주세요.</p></div>`}return}
@@ -566,7 +556,7 @@ document.addEventListener('click',e=>{
  else if(a==='pstyle'){PSTYLE=b.dataset.v}
  else if(a==='pclose'){POSTER=null}
  else if(a==='propose')propose();
- else if(a==='tmdb'){TK=$('#tmdbKey').value.trim();try{localStorage.setItem('tmdbKey',TK)}catch(e){}renderHead.last=null;$('#tmdbStat').textContent=TK?'불러오는 중...':'키를 지웠어요.';if(TK)loadImages(topic(SEL));return}
+
  else if(a==='dpick'){const t=topic(SEL),k=key(t,ri);(S.me.dpick=S.me.dpick||{});if(S.me.dpick[k]===i)delete S.me.dpick[k];else{S.me.dpick[k]=i;toast(`${t.roles[ri].ch} 역 디렉터스 픽: ${t.roles[ri].names[i]}`);pushFeed(`캐스팅 디렉터 나: ${t.title} ${t.roles[ri].ch} 역에 ${t.roles[ri].names[i]}를 디렉터스 픽으로 지정했어요`,'hot')}}
  else if(a==='grant')award(1000,'등급 체험용 포인트 (데모)');
  else if(a==='announce')announce(SEL);
@@ -576,7 +566,7 @@ document.addEventListener('click',e=>{
 });
 document.addEventListener('input',e=>{const t=e.target;if(t.id&&t.id.startsWith('vt'))$('#vo'+t.id.slice(2)).textContent=t.value});
 const ro=new ResizeObserver(()=>{if(S){drawChart();renderRoles(true)}});ro.observe($('.fig'));
-function start(data){try{$('#tmdbKey').value=TK}catch(e){}let d=data&&data.v===5?data:null;if(!d){try{d=JSON.parse(localStorage.getItem('dream5'))}catch(e){d=null}}
+function start(data){let d=data&&data.v===5?data:null;if(!d){try{d=JSON.parse(localStorage.getItem('dream5'))}catch(e){d=null}}
  if(d&&d.v===5&&d.me&&d.me.pts!=null&&Array.isArray(d.topics)&&d.topics.length>=TOPICS.length)S=d;else newGame();
  render();clearInterval(timer);timer=setInterval(()=>{step();render()},TICK)}
 window.claude?.hot?.snapshot?.(()=>S);
