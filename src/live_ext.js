@@ -58,6 +58,7 @@ async function openActor(name){name=name.trim();if(!name)return;PAGE={kind:'a',n
 async function renderActor(){const pid=PAGE.pid;
  const [pg,,posts,mine]=await Promise.all([rpc('person_page',{pid}),loadPerf(pid).then(()=>null),sb.from('v_fan_posts').select('*').eq('person_id',pid).order('created_at',{ascending:false}).limit(40),
   USER?sb.from('fan_follows').select('person_id').eq('person_id',pid):Promise.resolve({data:[]})]);
+ try{PAGE.fan=await rpc('actor_fan',{pid})}catch(e){PAGE.fan=null}
  let prof=pg.person.profile;if(!prof){try{prof=(await meta({person:pid})).profile}catch(e){prof=null}}
  if(!PAGE||PAGE.pid!==pid)return;
  const p=pg.person,fan=(mine.data||[]).length>0,name=p.name;
@@ -81,11 +82,15 @@ async function renderActor(){const pid=PAGE.pid;
   <div class="row2"><button class="b ${fan?'':'buy'}" data-act="follow" data-pid="${p.id}">${fan?'팬 채널 나가기':'팬 채널 들어가기'}</button><button class="b" data-act="rally" data-pid="${p.id}">화력 요청 문구 복사</button></div>
   <p class="dl">팬이 되면 ${esc(name)} 님이 새 작품 후보에 오르거나 캐스팅이 확정될 때 알려 드려요. 투표는 배역마다 한 사람 한 표예요. 화력은 더 많은 팬이 투표하러 오게 만드는 데서 나와요.</p></div></div>
 
+ ${fanZone(p.id,name)}
+
  <section><div class="sh"><h2>지금 물망에 오른 작품</h2><span class="sub">1위까지 남은 표</span></div>
   <div class="races">${open.map(raceCard).join('')||`<p class="empty3">아직 투표가 열린 배역 후보가 아니에요. 작품 배역 보드에서 ${esc(name)} 님을 후보로 올려 보세요.</p>`}</div>
   ${done.length?`<details class="talk"><summary>지난 레이스 ${done.length}개</summary><div class="races">${done.map(raceCard).join('')}</div></details>`:''}
   ${(pg.cast||[]).length?`<p class="sub" style="margin-top:8px">광장에서 확정된 캐스팅: ${pg.cast.map(c=>`<a href="#${esc(c.topic_id)}">${esc(c.title)} ${esc(c.ch)}</a>`).join(', ')}</p>`:''}
  </section>
+
+ ${dreamRoles(p.id,name)}
 
  <div class="acols">
  <section><div class="sh"><h2>팬 게시판</h2><span class="sub">${fmt(pg.posts)}개</span></div>
@@ -97,7 +102,8 @@ async function renderActor(){const pid=PAGE.pid;
   ${prof&&prof.bio?`<details class="talk"><summary>소개</summary><p class="bio">${esc(prof.bio)}</p></details>`:''}
  </section></div>
 
- <section><div class="sh"><h2>필모그래피</h2><span class="sub">넘겨 보고, 눌러서 자세히, 하트로 내 AV룸에 담기</span></div>
+ ${bestWorks(name)}
+ <section><div class="sh"><h2>필모그래피</h2><span class="sub">넘겨 보고, 눌러서 자세히, 하트로 내 AV룸에, 왕관으로 내 인생작에</span></div>
   ${filmCarousel(works.slice(0,40),pid)}
   ${prof&&prof.tmdb?`<p class="dl"><a href="${esc(prof.tmdb)}" target="_blank" rel="noopener">TMDB에서 전체 필모 보기</a></p>`:''}
  </section></div>`)}
@@ -217,12 +223,14 @@ async function loadYearIndex(){const y=+($('#yIdx')?.value||NOW_Y);try{const d=a
 /* 새 주제 제안: 배역 줄 */
 function propRows(list){const box=$('#pRoles');if(!box)return;const row=r=>`<div class="prow"><select class="pk" aria-label="종류"><option value="actor" ${r.kind!=='option'?'selected':''}>인물(배우, 성우)</option><option value="option" ${r.kind==='option'?'selected':''}>선택지(장르, 개발사 등)</option></select><input class="pc" type="text" maxlength="20" placeholder="배역 또는 항목 이름" value="${esc(r.ch||'')}"><input class="po" type="text" maxlength="20" placeholder="원작 배우 (선택)" value="${esc(r.orig||'')}"><input class="pa" type="text" maxlength="20" placeholder="배역 나이 (선택)" value="${esc(r.age||'')}"><button class="lk" data-act="pdel" aria-label="지우기">지우기</button></div>`;
  if(list===null){box.insertAdjacentHTML('beforeend',row({}));return}box.innerHTML=(list.length?list:[{},{}]).map(row).join('')}
+let PCAT_LAST=null;
 const PRESET={game:[{ch:'장르',kind:'option'},{ch:'개발사',kind:'option'},{ch:'플랫폼',kind:'option'},{ch:'주인공 목소리',kind:'actor'}],
  '애니메이션':[{ch:'제작 스튜디오',kind:'option'},{ch:'그림체',kind:'option'},{ch:'주인공 성우',kind:'actor'}],'웹툰':[{ch:'연재 플랫폼',kind:'option'},{ch:'작가',kind:'option'},{ch:'장르',kind:'option'}]};
-function propMode(){const c=$('#pCat').value;$('#pSrcL').hidden=c!=='ip2live';$('#pDstL').hidden=c!=='live2x';
- $('#pHint').textContent=c==='live2x'?'드라마나 영화 제목을 넣고, 게임이면 장르, 개발사, 플랫폼처럼 고를 항목을 배역 대신 적어요':c==='ip2live'?'웹툰, 소설, 만화, 게임 원작의 주요 인물을 배역으로 적어요':'리메이크 분류는 작품명을 넣으면 원작 배역과 배우를 자동으로 채워요';
- if(c==='live2x'&&![...document.querySelectorAll('#pRoles .pc')].some(x=>x.value.trim())){const d=$('#pDst').value;propRows(PRESET[d==='게임'?'game':d]||[])}}
-document.addEventListener('change',e=>{if(e.target.id==='pCat'||e.target.id==='pDst'){if(e.target.id==='pDst')propRows([]);propMode()}});
+const MED_DEF={wn:['웹소설','드라마'],k2:['드라마','드라마'],us2k:['드라마','드라마'],k2us:['드라마','드라마'],k2cn:['드라마','드라마'],k2tw:['드라마','드라마'],k2hk:['드라마','드라마'],ip2live:['웹툰','드라마'],live2x:['드라마','게임']};
+function propMode(){const c=$('#pCat').value;if(PCAT_LAST!==c){PCAT_LAST=c;const d=MED_DEF[c]||['드라마','드라마'];$('#pSrc').value=d[0];$('#pDst').value=d[1]}
+ $('#pHint').textContent=c==='live2x'?'드라마나 영화 제목을 넣고, 게임이면 장르, 개발사, 플랫폼처럼 고를 항목을 배역 대신 적어요. 연극, 뮤지컬로 옮기는 것도 원작 매체와 만들 매체에서 고를 수 있어요':c==='ip2live'?'웹툰, 소설, 만화, 게임 원작의 주요 인물을 배역으로 적어요':'리메이크 분류는 작품명을 넣으면 원작 배역과 배우를 자동으로 채워요';
+ if(['게임','애니메이션','웹툰'].includes($('#pDst').value)&&![...document.querySelectorAll('#pRoles .pc')].some(x=>x.value.trim())){const d=$('#pDst').value;propRows(PRESET[d==='게임'?'game':d]||[])}}
+document.addEventListener('change',e=>{if(e.target.id==='pCat'||e.target.id==='pDst'){if(e.target.id==='pDst'&&[...document.querySelectorAll('#pRoles .prow')].every(r=>!r.querySelector('.pc').value.trim()||Object.values(PRESET).flat().some(x=>x.ch===r.querySelector('.pc').value.trim())))propRows([]);propMode()}});
 let WANTS=new Set();
 async function loadWants(){WANTS=new Set();if(!USER)return;const {data}=await sb.from('topic_wants').select('topic_id');(data||[]).forEach(x=>WANTS.add(x.topic_id))}
 async function loadMatrix(){try{const d=await rpc('media_matrix',{});const b=$('#mmx');if(b)b.innerHTML=(d||[]).filter(r=>r.src!==r.dst||r.src==='기타').slice(0,8).map((r,i)=>`<div class="rk"><b>${i+1}</b><span><b>${esc(r.src)} > ${esc(r.dst)}</b><small>주제 ${r.topics}, 시트 ${r.sheets}</small></span><b class="num">보고 싶어요 ${fmt(r.wants)}</b></div>`).join('')||'<p class="empty3">IP 실사화와 크로스 미디어 주제가 올라오면 매체별 수요가 쌓여요.</p>'}catch(e){}}

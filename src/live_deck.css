@@ -151,7 +151,7 @@
 .ig-vs .vs .x{position:absolute;right:0;top:-6px;font-size:10px;background:var(--hot);color:#141414;padding:1px 6px;border-radius:8px}
 .ig-vs .vs .t{position:absolute;left:36px;bottom:0;font-size:10px;color:var(--mute)}
 .ig-heat{display:grid;grid-template-columns:80px repeat(var(--n),1fr);gap:3px;font-size:11px;overflow-x:auto}
-.ig-heat .ch{writing-mode:vertical-rl;transform:rotate(180deg);text-align:left;max-height:80px;overflow:hidden;color:var(--mute);justify-self:center}
+.ig-heat .ch{font-size:11px;line-height:1.25;text-align:center;color:var(--mute);justify-self:stretch;align-self:end;word-break:keep-all;overflow-wrap:anywhere;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;padding:0 2px}
 .ig-heat .rh{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;align-self:center}
 .ig-heat .cell{aspect-ratio:1;border-radius:4px;display:grid;place-items:center;font-weight:800;background:color-mix(in srgb,var(--acc) calc(var(--a)*100%),var(--line) 0%);border:1px solid var(--line);color:var(--ink)}
 .ig-cap{font-size:11px;color:var(--mute);margin:8px 0 0}
@@ -190,7 +190,7 @@
 .fc-poster{display:block;position:relative;border:0;padding:0;border-radius:12px;overflow:hidden;cursor:pointer;background:#222;aspect-ratio:2/3;width:100%;box-shadow:0 10px 24px rgba(0,0,0,.25)}
 .fc-poster img{width:100%;height:100%;object-fit:cover;display:block;pointer-events:none}
 .fc-poster .np{display:grid;place-items:center;height:100%;color:#fff;font-weight:700;padding:8px;text-align:center}
-.fc-yb{position:absolute;left:8px;top:8px;background:rgba(0,0,0,.65);color:#fff;font-size:11px;padding:2px 7px;border-radius:999px}
+.fc-yb{position:absolute;left:8px;bottom:8px;background:rgba(0,0,0,.65);color:#fff;font-size:11px;padding:2px 7px;border-radius:999px}
 .fc-t{font-size:14px;line-height:1.3}.fc-s{font-size:12px;opacity:.7}
 .fc-dots{display:flex;flex-wrap:wrap;gap:6px}
 .fc-y{border:1px solid var(--line,#ddd);background:transparent;border-radius:999px;padding:3px 10px;font-size:12px;cursor:pointer}

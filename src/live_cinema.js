@@ -12,7 +12,7 @@ function filmCarousel(works,pid){
   <div class="fc-bar"><span class="fc-cnt"><b class="num" id="fcIdx">1</b> / ${works.length}</span><span class="fc-yr" id="fcYr">${esc(works[0].year||'미정')}</span><span class="fc-nav"><button class="fc-b" data-act="fc-prev" aria-label="이전 작품">‹</button><button class="fc-b" data-act="fc-next" aria-label="다음 작품">›</button></span></div>
   <div class="fc-track" id="fcTrack" tabindex="0" aria-label="필모그래피, 좌우로 넘겨 보기">${works.map((w,i)=>{const m=w.type==='영화'?'movie':'tv';return `<article class="fc-c" data-i="${i}" data-year="${esc(w.year||'미정')}">
    <button class="fc-poster" data-act="wk-open" data-m="${m}" data-id="${w.id}" data-i="${i}" aria-label="${esc(w.title)} 자세히">${w.poster?`<img src="${esc(w.poster)}" alt="" loading="lazy" draggable="false">`:`<span class="np">${esc(w.title.slice(0,8))}</span>`}<span class="fc-yb">${esc(w.year||'미정')}</span></button>
-   ${heartBtn(m,w.id,w.title,w.year,w.poster,'person:'+pid)}
+   ${heartBtn(m,w.id,w.title,w.year,w.poster,'person:'+pid)}${PAGE&&PAGE.kind==='a'?`<button class="fc-best${PAGE.fan&&+PAGE.fan.my_best===+w.id?' on':''}" data-act="best" data-i="${i}" aria-label="${esc(w.title)}을 내 인생작으로" title="내 인생작으로">${IC.crown}</button>`:''}
    <b class="fc-t">${esc(w.title)}</b><small class="fc-s">${esc(w.type)}${w.ch?', '+esc(w.ch):''}${w.rating&&w.votes>=20?`, 평점 ${w.rating}`:''}</small></article>`}).join('')}</div>
   <div class="fc-dots" aria-hidden="true">${years.slice(0,12).map(y=>`<button class="fc-y" data-act="fc-year" data-y="${esc(y)}" tabindex="-1">${esc(y)}</button>`).join('')}</div>
  </div>`}

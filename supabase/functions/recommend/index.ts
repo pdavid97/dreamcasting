@@ -96,12 +96,14 @@ async function chooseForRole(o: { role: Record<string, any>; topic: Record<strin
   const region = ({ k2us: "intl", k2cn: "cn", k2tw: "tw", k2hk: "hk" } as Record<string, string>)[topic.cat] || "kr";
   const slot: string = role.slot || "";
   const orig = role.orig ? await findPerson(role.orig) : null;
-  let gender = slot.startsWith("male") ? 2 : slot.startsWith("female") ? 1 : (orig?.gender || 0);
+  let gender = (role.gender as number) || (slot.startsWith("male") ? 2 : slot.startsWith("female") ? 1 : (orig?.gender || 0));
   if (!gender) { // 성별 정보가 없는 배역(주연, 조연)은 기존 후보들의 성별 다수결로 추정
     const g = [...o.seedNames].map((n) => POOL.find((p) => p.name === n)?.gender || 0).filter((x) => x);
     const m = g.filter((x) => x === 2).length, f = g.filter((x) => x === 1).length;
     gender = m > f ? 2 : f > m ? 1 : 0;
   }
+  // 한번 정한 배역 성별은 저장해 다음 실행에서 후보군 쏠림으로 뒤집히지 않게 함
+  if (gender && !role.gender && role.id) await rest(`roles?id=eq.${role.id}`, { method: "PATCH", body: JSON.stringify({ gender }), headers: { "Content-Type": "application/json", Prefer: "return=minimal" } });
   const wy = work.year ? +String(work.year).slice(0, 4) : null;
   const origAge = orig?.birth && wy ? wy - +orig.birth.slice(0, 4) : null;
   const target = Math.max(slot.includes("lead") ? 22 : 20, origAge ?? (slot.includes("sub") || slot === "support" ? 32 : 29));
@@ -204,7 +206,7 @@ Deno.serve(async (req) => {
     for (const t of topics) {
       const usedTopic = new Set<string>();
       const origs = new Set<string>();
-      const roles = await (await rest(`roles?select=id,ch,orig,descr,slot&topic_id=eq.${encodeURIComponent(t.id)}&slot=not.is.null&stage=in.(dream,rumor)&order=pos`)).json();
+      const roles = await (await rest(`roles?select=id,ch,orig,descr,slot,gender&topic_id=eq.${encodeURIComponent(t.id)}&slot=not.is.null&stage=in.(dream,rumor)&order=pos`)).json();
       const order = ["male_lead", "female_lead", "lead", "male_sub", "female_sub", "support"];
       roles.sort((a: { slot: string }, z: { slot: string }) => order.indexOf(a.slot) - order.indexOf(z.slot));
       for (const r of roles) if (r.orig) origs.add(r.orig);

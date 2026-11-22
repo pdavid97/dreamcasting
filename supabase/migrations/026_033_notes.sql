@@ -1,0 +1,9 @@
+-- 026~033은 MCP로 원격 적용. 요지 기록(정본은 원격 DB의 함수 정의)
+-- 026 add_candidate(rid, nm, pitch): 유저 새 후보, in_set, 자동 한 표, 이벤트 cand_add
+-- 027 collection, toggle_collect, av_room, my_collect_ids: 나의 AV룸
+-- 028 set_consent: 국가 코드(ISO2), 선택 동의 하나로 통합
+-- 029 duel_next(skip, prefer): 데이터가 적은 배역 우선, 작품 넘나드는 VS 토너먼트
+-- 030 fan_cheer, best_work, actor_fan(pid), cheer(pid), pick_best(...): 배우 페이지 팬 참여
+-- 031 role_gender(rid): 원작 배우 성별, 없으면 roles.gender
+-- 032 roles.gender 컬럼: 원작 배우 또는 후보군 다수(70% 이상)로 채움. recommend가 이후 자동 저장
+-- 033 topics src/dst_medium에 연극, 뮤지컬 추가(드라마, 영화는 기존)

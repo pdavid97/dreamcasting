@@ -20,7 +20,7 @@ async function loadHome(force){if(HOME.busy||(!force&&Date.now()-HOME.at<30000))
   const names=[...HOME.calls.flatMap(c=>c.cs.map(x=>x.name)),...HOME.posts.flatMap(p=>p.cast.filter(c=>c.kind!=='option').map(c=>c.name)),...FANB.map(f=>f.name)];
   if(HOMEV)renderHome();await loadNames(names);
  }catch(e){}HOME.busy=false;if(HOMEV)renderHome()}
-const IC={heart:'<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 21s-7-4.4-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 6c-2.5 4.6-9.5 9-9.5 9z"/></svg>',
+const IC={vs:'<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg>',trophy:'<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"/></svg>',heart:'<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 21s-7-4.4-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 6c-2.5 4.6-9.5 9-9.5 9z"/></svg>',
  chat:'<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>',
  send:'<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4z"/></svg>',
  home:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 11 12 4l9 7v9h-6v-6H9v6H3z"/></svg>',
@@ -43,16 +43,7 @@ function renderHome(){const box=$('#home');if(!box)return;
  <section class="hsec"><div class="sh"><h2>이번 주 캐스팅 콜</h2><span class="sub">배역마다 한 사람 한 표</span></div><div class="calls">${calls||'<p class="empty3">불러오는 중이에요</p>'}</div></section>
  <section class="hsec"><div class="sh"><h2>캐스팅 시트 피드</h2><span class="sub">공감 순</span></div>${posts||`<div class="post" style="padding:18px"><b>아직 올라온 캐스팅 시트가 없어요</b><p class="sub" style="margin:6px 0 12px">작품을 골라 첫 시트를 올리면 이 피드의 첫 게시물이 돼요.</p>${HOME.calls[0]?`<a class="b buy" href="#${esc(HOME.calls[0].t.id)}" style="display:inline-block;padding:10px 16px;text-decoration:none">${esc(HOME.calls[0].t.title)} 시트 만들기</a>`:''}</div>`}</section>`}
 function showHome(on){HOMEV=on;const h=$('#home'),s=$('#topicView');if(h)h.hidden=!on;if(s)s.hidden=on;if(on){renderHome();loadHome()}renderTabbar()}
-function renderTabbar(){const b=$('#tabbar');if(!b)return;const h=location.hash.slice(1),me=PROF?'#u/'+encodeURIComponent(PROF.nickname):'#me';
- const it=[['#','홈',IC.home,!h],['#explore','탐색',IC.grid,h==='explore'],['#make','만들기',IC.plus,false],['#actors','배우',IC.star,h.startsWith('a/')||h==='actors'],[me,'나',IC.user,h.startsWith('u/')]];
- b.innerHTML=it.map(x=>`<a href="${x[0]}" class="${x[3]?'on':''}" ${x[3]?'aria-current="page"':''}>${x[2]}<span>${x[1]}</span></a>`).join('')}
 /* 특수 주소: 홈, 탐색, 만들기, 배우, 나 */
-function navSpecial(h){if(!h||h==='home'){showHome(false);showDeck(true);renderTabbar();return}showDeck(false);
- if(h==='explore'){showHome(true);track('explore_view');return}
- if(h==='make'){if(!HOMEV&&D){const b=document.querySelector('.sheet [data-act=sheet]');if(b){b.closest('.sheet').scrollIntoView({behavior:'smooth'});return}}$('#propBox').open=true;$('#propBox').scrollIntoView({behavior:'smooth'});return}
- if(h==='actors'){$('#fanb').scrollIntoView({behavior:'smooth'});setTimeout(()=>{const i=$('#aSearch');if(i)i.focus()},400);return}
- if(h==='me'){if(needLogin())return;if(PROF)location.hash='u/'+encodeURIComponent(PROF.nickname);return}
- showHome(true)}
 document.addEventListener('submit',e=>{if(e.target.id!=='gs')return;e.preventDefault();const q=$('#gq').value.trim();if(!q)return;
  const t=TOPICS.find(x=>x.title.replace(/\s/g,'')===q.replace(/\s/g,''))||TOPICS.find(x=>x.title.includes(q));
  location.hash=t?t.id:'a/'+encodeURIComponent(q);$('#gq').value=''});
