@@ -95,13 +95,13 @@ function dialHTML(t,r,cands,picked,tot){const ou=r.orig?IMG['p:'+r.orig]:null;
  return `<div class="dial" id="dial" data-n="${cands.length}" data-start="${start}" tabindex="0" role="listbox" aria-label="${esc(r.ch)} 후보 다이얼, 좌우 화살표로 돌리고 Enter로 한 표">
   <div class="dl-ring" aria-hidden="true">${cands.map((_,i)=>`<i style="--a:${i*360/cands.length}deg"></i>`).join('')}</div>
   ${cands.map((c,i)=>{const u=IMG['p:'+c.name],pct=t.seen&&tot?Math.round((c.votes||0)/tot*100):null;
-   return `<button class="dl-c${picked===c.id?' sel':''}" data-i="${i}" data-rid="${r.id}" data-cid="${c.id}" data-name="${esc(c.name)}" data-age="${esc(ageTxt(c.name)||'')}" data-pct="${pct==null?'':pct}" data-recent="${esc(c.blurb&&c.blurb.recent?`최근작 《${c.blurb.recent.t}》${c.blurb.recent.y?` (${c.blurb.recent.y})`:''}`:'')}" data-why="${esc(JSON.stringify(((c.blurb&&c.blurb.reasons)||(c.blurb&&c.blurb.why?[{text:c.blurb.why}]:[])).slice(0,2)))}" data-tid="${esc(t.id)}" role="option" aria-label="${esc(c.name)}"><span class="ph"${u?` style="background-image:url('${esc(u)}')"`:''}>${u?'':esc(c.name[0])}</span>${pct!=null?`<em>${pct}%</em>`:''}<i class="dl-tap">탭해서 한 표</i></button>`}).join('')}
+   return `<button class="dl-c${picked===c.id?' sel':''}" data-i="${i}" data-rid="${r.id}" data-cid="${c.id}" data-name="${esc(c.name)}" data-age="${esc(ageTxt(c.name)||'')}" data-pct="${pct==null?'':pct}" data-recent="${esc(c.blurb&&c.blurb.recent?`최근작 《${c.blurb.recent.t}》${c.blurb.recent.y?` (${c.blurb.recent.y})`:''}`:'')}" data-why="${esc(JSON.stringify(((c.blurb&&c.blurb.reasons)||(c.blurb&&c.blurb.why?[{text:c.blurb.why}]:[])).slice(0,2)))}" data-tid="${esc(t.id)}" data-pick="${esc(c.pick||'')}" data-kind="${esc(c.kind||'')}" data-acted="${c.acted===false?0:1}" role="option" aria-label="${esc(c.name)}"><span class="ph"${u?` style="background-image:url('${esc(u)}')"`:''}>${u?'':esc(c.name[0])}</span>${pct!=null?`<em>${pct}%</em>`:''}<i class="dl-tap">탭해서 한 표</i></button>`}).join('')}
   <div class="dl-mid">
    <span class="dl-orig"${ou?` style="background-image:url('${esc(ou)}')"`:''}>${ou?'':(r.orig?esc(r.orig[0]):'?')}</span>
    <small class="dl-ol">${r.orig?`원작 ${esc(r.orig)}`:'원작 배우 없음'}</small>
   </div>
  </div>
- <div class="dl-pick" aria-live="polite"><div class="dl-pn"><b id="dlName"></b><small id="dlMeta"></small></div><p class="dl-rc" id="dlRecent"></p><div class="dl-why" id="dlWhy"></div></div>`}
+ <div class="dl-pick" aria-live="polite"><div class="dl-pn"><span class="dl-badge" id="dlPick" hidden></span><b id="dlName"></b><small id="dlMeta"></small></div><p class="dl-rc" id="dlRecent"></p><div class="dl-why" id="dlWhy"></div></div>`}
 function bindDial(){const el=$('#dial');DIAL=null;if(!el)return;const n=+el.dataset.n,step=360/n;
  const D=DIAL={el,n,step,rot:-(+el.dataset.start)*step,vel:0,raf:0,focus:-1};
  const btns=[...el.querySelectorAll('.dl-c')];
@@ -110,6 +110,8 @@ function bindDial(){const el=$('#dial');DIAL=null;if(!el)return;const n=+el.data
    b.style.transform=`translate(${cx+R*Math.cos(a)}px,${cy+R*Math.sin(a)}px) translate(-50%,-50%) scale(${0.8+0.55*k})`;b.style.zIndex=10+Math.round(k*10);b.style.opacity=(0.55+0.45*Math.max(k,1-Math.abs(d)/180)).toFixed(2)});
   const rg=el.querySelector('.dl-ring');rg.style.setProperty('--R',rg.clientWidth/2+'px');rg.style.transform=`rotate(${D.rot}deg)`;
   const f=((Math.round(-D.rot/step)%n)+n)%n;if(f!==D.focus){D.focus=f;btns.forEach((b,i)=>b.classList.toggle('on',i===f));const b=btns[f];
+   const PK={classic:'정석',buzz:'화제',chem:'케미',wild:'와일드카드',user:'유저 추천',seed:'기본 후보'},KK={comedian:'개그맨',singer:'가수',idol:'아이돌',musical:'뮤지컬 배우',stage:'연극 배우',youtuber:'유튜버',influencer:'방송인'};
+   const pb=$('#dlPick');if(pb){const k=b.dataset.pick;pb.className='dl-badge '+(k||'');pb.textContent=k?(PK[k]||'')+(k==='wild'&&KK[b.dataset.kind]?`, ${KK[b.dataset.kind]}`:''):'';pb.hidden=!k}
    $('#dlName').textContent=b.dataset.name;$('#dlMeta').textContent=[b.dataset.age,b.dataset.pct!==''?`득표 ${b.dataset.pct}%`:''].filter(Boolean).join(', ');
    $('#dlRecent').textContent=b.dataset.recent||'';
    let rs=[];try{rs=JSON.parse(b.dataset.why||'[]')}catch(e){}

@@ -1,4 +1,5 @@
-// 후보 소개 Edge Function v2: "왜 하필 이 배우인가"를 근거 있는 이유로 찾아 위트 있게 쓴다.
+// 후보 소개 Edge Function v3: 선발 이유(pick_why)를 첫 줄로, 근거를 둘째 줄로.
+// (v2 설명) "왜 하필 이 배우인가"를 근거 있는 이유로 찾아 위트 있게 쓴다.
 // 이유 후보(우선순위 순). 실제 데이터에서 확인된 것만 쓰고, 없으면 쓰지 않는다.
 //  talk   : 원작 배우와 후보가 함께 제목에 나오고 추천, 극찬, 후계자 같은 말이 들어간 기사(출처 링크 포함)
 //  same   : 원작 작품에 이미 출연(같은 배역이면 "다른 시절을 나눠 연기")
@@ -48,7 +49,7 @@ const ro = (w: string) => { const c = lastc(w); if (!isH(c)) return "로"; const
 const T = (t: string) => `《${t}》`;
 const pick = <X,>(arr: X[], seed: number) => arr[Math.abs(seed) % arr.length];
 const today = new Date().toISOString().slice(0, 10);
-const NOT_ACTING = new Set([10767, 10763, 10764]);
+const NOT_ACTING = new Set([10767, 10763, 10764, 99, 10402]);
 const SELF = /self|himself|herself|본인|자기 자신|host|narrator|voice/i;
 
 type Credit = { id: number; media_type?: string; title?: string; name?: string; release_date?: string; first_air_date?: string; character?: string; genre_ids?: number[]; vote_count?: number };
@@ -59,7 +60,7 @@ const PCACHE: Record<string, P | null> = {};
 async function person(name: string): Promise<P | null> {
   if (name in PCACHE) return PCACHE[name];
   let id: number | null = null;
-  const ppl = await (await rest(`people?select=tmdb_id&name=eq.${encodeURIComponent(name)}&tmdb_id=not.is.null&limit=1`)).json();
+  const ppl = await (await rest(`cast_pool?select=tmdb_id&name=eq.${encodeURIComponent(name)}&tmdb_id=not.is.null&limit=1`)).json();
   if (Array.isArray(ppl) && ppl[0]?.tmdb_id) id = ppl[0].tmdb_id;
   if (!id) {
     const s = await tm("/search/person", { query: name, language: "ko-KR" });
@@ -93,7 +94,7 @@ const ARCH: [string, RegExp, string][] = [
 const PART = /^(은|는|이|가|을|를|의|에|와|과|도|로|으로|에서|처럼|까지|만|보다)?($|[^\uac00-\ud7a3])/;
 function hasWord(h: string, w: string) { let i = h.indexOf(w); while (i >= 0) { const b = i > 0 ? h[i - 1] : ""; if (!/[\uac00-\ud7a3]/.test(b) && PART.test(h.slice(i + w.length))) return true; i = h.indexOf(w, i + 1); } return false; }
 // 회차마다 출연진이 다른 단막극, 옴니버스, 시상식, 쇼는 같은 작품 출연으로 치지 않음
-const ANTH = /스페셜|단막|베스트극장|드라마시티|로 앤 오더|Law & Order|SNL|시상식|어워즈|Awards|투어|콘서트|Saturday Night/i;
+const ANTH = /스페셜|단막|베스트극장|드라마시티|로 앤 오더|Law & Order|SNL|시상식|어워즈|Awards|투어|콘서트|Saturday Night|Tour|Concert|Package|Live in/i;
 const archOf = (text: string) => ARCH.filter(([, re]) => re.test(text));
 
 type Reason = { k: string; text: string; src?: { t: string; u: string }; w: number };
@@ -116,22 +117,8 @@ async function reasonsFor(o: { others: { name: string; ch: string; slot: string 
     const c = past.find((x) => x.id === o.workId);
     if (c) {
       const same = !!(c.character && ch0 && c.character.includes(ch0));
-      R.push({ k: "same", w: 95, text: same ? `원작 ${T(title)}에서 ${ch0}의 다른 시절을 이미 연기했어요. 이번엔 통째로 맡겨볼 차례.` : `원작 ${T(title)}에 ${c.character ? `${c.character} 역으로 ` : ""}이미 출연했어요. 세트장 가는 길은 안 헤매겠네요.` });
+      R.push({ k: "same", w: 95, text: same ? `원작 ${T(title)}에서 ${ch0}의 다른 시절을 이미 연기했어요. 이번엔 통째로 맡겨볼 차례.` : `원작 ${T(title)}에 ${c.character && /[\uac00-\ud7a3]/.test(c.character) ? `${c.character} 역으로 ` : ""}이미 출연했어요. 세트장 가는 길은 안 헤매겠네요.` });
     }
-  }
-  // 가상캐스팅, 실사화, 캐스팅 기사
-  if (title) {
-    const items = await news(`"${name}" "${title}" when:1y`);
-    const hits = items.filter((x) => hasWord(x.t, name) && (hasWord(x.t, title) || (ch0.length > 1 && hasWord(x.t, ch0))));
-    const vc = hits.filter((x) => /가상\s?캐스팅|실사화|드라마화|캐스팅|물망|리메이크|출연|주연|싱크로/.test(x.t));
-    const use = vc.length ? vc : hits;
-    if (use.length) R.push({ k: "buzz", w: 80 + Math.min(use.length, 10), src: { t: use[0].t, u: use[0].u }, text: use.length >= 3 ? pick([`최근 1년 ${T(title)} 얘기에 이름이 ${use.length}번 같이 나왔어요. 여론은 이미 반쯤 캐스팅 완료.`, `${T(title)}${ro(title)} 검색하면 같이 딸려 나오는 이름, 기사만 ${use.length}건이에요.`], cid) : pick([`${T(title)} 관련 기사에 이름이 오르내린 적 있어요. 소문이 현실이 될지는 여러분 손에.`, `${T(title)} 기사 제목에 같이 걸린 이력이 있어요. 아니 땐 굴뚝은 아니겠죠?`], cid) });
-    await sleep(250);
-  }
-  // 비슷한 배역
-  for (const [kw, re, label] of archOf(`${ch} ${o.descr}`)) {
-    const c = past.filter((x) => x.character && re.test(x.character) && x.id !== o.workId).sort((a, b) => (b.vote_count || 0) - (a.vote_count || 0))[0];
-    if (c) { R.push({ k: "alike", w: 75, text: pick([`${T(ctitle(c))}에서 ${c.character} 역으로 ${label} 경력 이미 보유. 이력서에 "${kw}" 한 줄 추가 완료.`, `${label} 역은 처음이 아니에요. ${T(ctitle(c))}의 ${c.character}, 기억나시죠?`], cid) }); break; }
   }
   // 같은 작품의 다른 배역 후보와 이미 호흡을 맞춘 작품(커플, 라이벌 조합 미리보기)
   {
@@ -180,7 +167,7 @@ async function reasonsFor(o: { others: { name: string; ch: string; slot: string 
   if (famous) R.push({ k: "famous", w: 20, text: pick([`${T(ctitle(famous))}${ro(ctitle(famous))} 얼굴 도장은 이미 꾹. 이번엔 ${ch0} 차례?`, `${T(ctitle(famous))}의 그 얼굴이 ${iga(ch0)} 된다면?`], cid) });
   R.sort((a, b) => b.w - a.w);
   const seen = new Set<string>();
-  return R.filter((r) => (seen.has(r.k) ? false : (seen.add(r.k), true))).slice(0, 2).map(({ k, text, src }) => (src ? { k, text, src } : { k, text }));
+  return R.filter((r) => (seen.has(r.k) ? false : (seen.add(r.k), true))).slice(0, 3).map(({ k, text, src }) => (src ? { k, text, src } : { k, text }));
 }
 
 Deno.serve(async (req) => {
@@ -189,18 +176,18 @@ Deno.serve(async (req) => {
     try { body = await req.json(); } catch { /* 빈 본문 */ }
     if (!TOKEN) return new Response(JSON.stringify({ error: "TMDB_TOKEN 없음" }), { status: 500 });
     const lim = Math.min(40, body.limit || 25);
-    let q = "candidates?select=id,name,pitch,role_id,roles!candidates_role_id_fkey!inner(ch,orig,descr,slot,topic_id,topics!inner(title,work,closed_at))&roles.topics.closed_at=is.null&order=id&limit=" + lim;
+    let q = "candidates?select=id,name,pitch,pick,pick_why,pick_src,role_id,roles!candidates_role_id_fkey!inner(ch,orig,descr,slot,topic_id,topics!inner(title,work,closed_at))&roles.topics.closed_at=is.null&in_set=is.true&order=id&limit=" + lim;
     if (body.ids?.length) q += `&id=in.(${body.ids.map(Number).join(",")})`;
     else if (!body.force) q += `&or=(blurb.is.null,blurb_at.is.null,blurb_at.lt.${new Date(Date.now() - 14 * 864e5).toISOString()})`;
     const rows = await (await rest(q)).json();
     if (!Array.isArray(rows)) return new Response(JSON.stringify({ error: rows }), { status: 500 });
     await loadGenres();
     const tids = [...new Set(rows.map((r) => r.roles?.topic_id))].filter(Boolean);
-    const oth = tids.length ? await (await rest(`candidates?select=id,name,role_id,roles!candidates_role_id_fkey!inner(ch,slot,topic_id)&roles.topic_id=in.(${tids.map((x) => `"${x}"`).join(",")})`)).json() : [];
+    const oth = tids.length ? await (await rest(`candidates?select=id,name,role_id,roles!candidates_role_id_fkey!inner(ch,slot,topic_id)&in_set=is.true&roles.topic_id=in.(${tids.map((x) => `"${x}"`).join(",")})`)).json() : [];
     const out: unknown[] = [];
     for (const r of rows) {
       const role = r.roles, tp = role?.topics || {}, work = tp.work || {};
-      const p = await person(r.name);
+      const p = r.pick === "wild" ? null : await person(r.name);
       const op = role?.orig ? await person(role.orig) : null;
       const wy = work.year ? +String(work.year).slice(0, 4) : null;
       const ch = String(role?.ch || "").replace(/\s*\(.*\)$/, "");
@@ -214,7 +201,14 @@ Deno.serve(async (req) => {
         if (past[0]) recent = { t: ctitle(past[0]), y: +cdate(past[0]).slice(0, 4) };
         if (fut[0]) up = { t: ctitle(fut[0]), y: +cdate(fut[0]).slice(0, 4) };
       }
+      if (r.pick_why) {
+        const pw = String(r.pick_why);
+        const titles = [...pw.matchAll(/《([^》]+)》/g)].map((m) => m[1]);
+        const rest2 = r.pick === "wild" ? [] : reasons.filter((x) => !titles.some((t) => x.text.includes(t)) && !(x.k === "genre" && pw.includes("장르")) && !(x.k === "age" && pw.includes("살")) && !(x.k === "pair" && r.pick === "chem"));
+        reasons = [{ k: r.pick || "pick", text: pw, ...(r.pick_src ? { src: r.pick_src } : {}) }, ...rest2].slice(0, 2);
+      }
       if (r.pitch) reasons = [{ k: "pitch", text: `제안자 한마디: "${String(r.pitch).slice(0, 80)}"` }, ...reasons].slice(0, 2);
+      reasons = reasons.slice(0, 2);
       if (!reasons.length) reasons = [{ k: "base", text: role?.orig ? `${iga(role.orig)} 남긴 큰 신발, ${r.name}에게도 맞을지 신겨볼까요?` : "원작 팬들이 머릿속으로 먼저 캐스팅한 이름이에요." }];
       const blurb = { recent, up, why: reasons[0].text, reasons, pid: p?.id || null };
       await rest(`candidates?id=eq.${r.id}`, { method: "PATCH", body: JSON.stringify({ blurb, blurb_at: new Date().toISOString() }) });
