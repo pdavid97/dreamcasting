@@ -1,0 +1,6 @@
+-- 주간 작업(실제 등록은 SQL로 직접 함, anon 키는 공개 키)
+-- dc-pool-weekly        일요일 16:03 UTC(월 01:03 KST) 한국 작품 출연진 갱신
+-- dc-pool-names-weekly  일요일 16:13 UTC 한국어 이름, 생일, 대표작 채우기
+-- dc-recommend-w0..w18  일요일 17:07~17:52 UTC 작품 2개씩 6명 세트 재선발
+-- dc-blurb-daily, dc-blurb-daily-1..6  매일 19:07~19:37 UTC 새 후보 소개 채우기
+-- 또 cast_pool, candidates.pick/pick_why/pick_src/in_set/pool_id, notify_events 수정(테이블별 분기)
