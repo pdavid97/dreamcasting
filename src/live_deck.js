@@ -37,13 +37,13 @@ function renderDeck(){const box=$('#deck');if(!box||!DECKV)return;const t=curTop
  <article class="dk-card" id="dkCard" style="${t.poster?`--bg:url('${esc(t.poster)}')`:''}">
   <header class="dk-head"><div><small>${esc(CATS.find(c=>c.id===t.cat)?.name||'')}, 마감 D-${Math.max(0,Math.ceil((new Date(t.closes_at)-new Date())/864e5))}</small><h2>${esc(t.title)}</h2></div>
    <div class="dk-steps" aria-label="배역 진행">${t.roles.map((x,i)=>`<i class="${i<DR?'ok':i===DR?'on':''}" title="${esc(SLOT[x.slot]||'')} ${esc(x.ch)}"></i>`).join('')}</div></header>
-  <div class="dk-q"><span class="slot">${esc(SLOT[r.slot]||'배역')}</span><h3>${esc(r.ch)} 역은 누구?</h3>${r.descr?`<p>${esc(r.descr)}</p>`:''}<p class="hint">${r.orig?`원작 ${esc(r.orig)}, `:''}${r.age?`배역 나이 ${esc(r.age)}, `:''}돌려서 고르고, 가운데 버튼으로 확정</p></div>
+  <div class="dk-q"><span class="slot">${esc(SLOT[r.slot]||'배역')}</span><h3>${esc(r.ch)} 역은 누구?</h3>${r.descr?`<p>${esc(r.descr)}</p>`:''}<p class="hint">${r.orig?`원작 ${esc(r.orig)}, `:''}${r.age?`배역 나이 ${esc(r.age)}, `:''}사진을 돌려 고르고 아래 버튼으로 확정</p></div>
   ${cands.length?dialHTML(t,r,cands,picked,tot):'<p class="hint" style="padding:0 18px 18px">아직 후보가 없어요</p>'}
   ${more>0?`<a class="dk-more" href="#${esc(t.id)}">후보 ${more}명 더 보기</a>`:''}
   ${news?`<a class="dk-news" href="${esc(news.u)}" target="_blank" rel="noopener">${esc(news.t)}${news.s?` <small>${esc(news.s)}</small>`:''}</a>`:''}
  </article>
  <div class="dk-acts"><button class="dk-btn skip" data-act="dk-skip" aria-label="이 배역 건너뛰기"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button><a class="dk-btn mid" href="#${esc(t.id)}" aria-label="작품 자세히">자세히</a><button class="dk-btn next" data-act="dk-nexttopic" aria-label="다음 작품">다음 작품</button></div>
- <p class="dk-tip">사진을 돌려 고르고 가운데 버튼으로 확정하면 다음 배역으로 넘어가요. 카드 위쪽을 옆으로 밀면 건너뛰어요. 투표 결과는 이 작품에 투표한 사람에게만 보여요.</p>
+ <p class="dk-tip">사진을 돌려 고르고 확정하면 다음 배역으로 넘어가요. 카드 위쪽을 옆으로 밀면 건너뛰어요. 투표 결과는 이 작품에 투표한 사람에게만 보여요.</p>
  </div>`;
  cardAt=performance.now();cardKey=t.id+'|'+r.id;bindSwipe();bindDial()}
 
@@ -107,7 +107,7 @@ function bindDial(){const el=$('#dial');DIAL=null;if(!el)return;const n=+el.data
  const btns=[...el.querySelectorAll('.dl-c')];
  const lay=()=>{const W=el.clientWidth,R=W*0.385,cx=W/2,cy=W/2;
   btns.forEach((b,i)=>{const a=(D.rot+i*step-90)*Math.PI/180;let d=((D.rot+i*step)%360+540)%360-180;const k=Math.max(0,1-Math.abs(d)/step);
-   b.style.transform=`translate(${cx+R*Math.cos(a)}px,${cy+R*Math.sin(a)}px) translate(-50%,-50%) scale(${0.86+0.42*k})`;b.style.zIndex=10+Math.round(k*10);b.style.opacity=(0.55+0.45*Math.max(k,1-Math.abs(d)/180)).toFixed(2)});
+   b.style.transform=`translate(${cx+R*Math.cos(a)}px,${cy+R*Math.sin(a)}px) translate(-50%,-50%) scale(${0.86+0.3*k})`;b.style.zIndex=10+Math.round(k*10);b.style.opacity=(0.55+0.45*Math.max(k,1-Math.abs(d)/180)).toFixed(2)});
   const rg=el.querySelector('.dl-ring');rg.style.setProperty('--R',rg.clientWidth/2+'px');rg.style.transform=`rotate(${D.rot}deg)`;
   const f=((Math.round(-D.rot/step)%n)+n)%n;if(f!==D.focus){D.focus=f;btns.forEach((b,i)=>b.classList.toggle('on',i===f));const b=btns[f];
    $('#dlName').textContent=b.dataset.name;$('#dlMeta').textContent=[b.dataset.age,b.dataset.pct!==''?`득표 ${b.dataset.pct}%`:''].filter(Boolean).join(', ');
