@@ -107,7 +107,7 @@ function bindDial(){const el=$('#dial');DIAL=null;if(!el)return;const n=+el.data
  const btns=[...el.querySelectorAll('.dl-c')];
  const lay=()=>{const W=el.clientWidth,R=W*0.385,cx=W/2,cy=W/2;
   btns.forEach((b,i)=>{const a=(D.rot+i*step-90)*Math.PI/180;let d=((D.rot+i*step)%360+540)%360-180;const k=Math.max(0,1-Math.abs(d)/step);
-   b.style.transform=`translate(${cx+R*Math.cos(a)}px,${cy+R*Math.sin(a)}px) translate(-50%,-50%) scale(${0.86+0.3*k})`;b.style.zIndex=10+Math.round(k*10);b.style.opacity=(0.55+0.45*Math.max(k,1-Math.abs(d)/180)).toFixed(2)});
+   b.style.transform=`translate(${cx+R*Math.cos(a)}px,${cy+R*Math.sin(a)}px) translate(-50%,-50%) scale(${0.8+0.55*k})`;b.style.zIndex=10+Math.round(k*10);b.style.opacity=(0.55+0.45*Math.max(k,1-Math.abs(d)/180)).toFixed(2)});
   const rg=el.querySelector('.dl-ring');rg.style.setProperty('--R',rg.clientWidth/2+'px');rg.style.transform=`rotate(${D.rot}deg)`;
   const f=((Math.round(-D.rot/step)%n)+n)%n;if(f!==D.focus){D.focus=f;btns.forEach((b,i)=>b.classList.toggle('on',i===f));const b=btns[f];
    $('#dlName').textContent=b.dataset.name;$('#dlMeta').textContent=[b.dataset.age,b.dataset.pct!==''?`득표 ${b.dataset.pct}%`:''].filter(Boolean).join(', ');
