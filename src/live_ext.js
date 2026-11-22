@@ -70,7 +70,7 @@ async function renderActor(){const pid=PAGE.pid;
   <div class="vb"><span><i style="width:${(pct*100).toFixed(1)}%"></i></span><b>${fmt(r.votes)}표${r.total?`, ${(pct*100).toFixed(0)}%`:''}</b></div>
   <p class="sub">${r.rank===1&&r.votes>0?(r.gap===0&&r.top===r.votes?'지금 1위예요. 자리를 지켜 주세요':'지금 1위예요'):`1위까지 ${fmt(r.gap+1)}표`}${r.open?`, 마감 D-${Math.max(0,Math.ceil((new Date(r.closes_at)-new Date())/864e5))}`:''}</p>
   ${r.open?`<div class="row2"><button class="b sm buy" data-act="avote" data-rid="${r.role_id}" data-cid="${r.cid}">이 배역에 ${esc(name)} 한 표</button><a class="b sm" href="#${esc(r.topic_id)}">토론 보러 가기</a></div>`:''}</div>`};
- const works=(prof&&prof.works)||[],awards=(prof&&prof.awards)||[];PAGE.works=works;
+ const works=((prof&&prof.works)||[]).filter(w=>!/self|narrator|himself|herself|\(voice\)|본인|내레이/i.test(w.ch||'')),awards=(prof&&prof.awards)||[];PAGE.works=works;
  const scored=(PERF[pid]||[]).filter(x=>x.n>0),avgAll=scored.length?Math.round(scored.reduce((a,x)=>a+ +x.avg*x.n,0)/scored.reduce((a,x)=>a+x.n,0)):null;
  showPage(`<div class="pg actor">
  <button class="b sm" data-act="back">광장으로</button>
