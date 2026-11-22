@@ -88,6 +88,23 @@ async function naverRatios(titles: string[]) {
   }
   return out;
 }
+// 기사 관련성 검사: 제목이 다른 단어의 일부로 들어간 기사(예: 게임 '도깨비의세계')와 맥락 없는 동음이의 기사를 걸러냄
+const HANGUL = /[\uac00-\ud7a3]/;
+const PARTICLE = /^(은|는|이|가|을|를|의|에|와|과|도|로|으로|에서|처럼|까지|만|보다|이다|이자|측|팀)?($|[^\uac00-\ud7a3])/;
+const CTXW = /드라마|영화|캐스팅|배우|출연|리메이크|웹툰|웹소설|원작|실사화|방영|시즌|OST|넷플릭스|티빙|웨이브|디즈니|쿠팡플레이|tvN|JTBC|KBS|MBC|SBS|ENA|개봉|촬영|주연|시청률|감독|작가/;
+function relevant(title: string, work: string, names: string[]) {
+  const h = title.replace(/\s+-\s+[^-]+$/, "");
+  let ok = false, i = h.indexOf(work);
+  while (i >= 0) {
+    const before = i > 0 ? h[i - 1] : "", after = h.slice(i + work.length);
+    if (!HANGUL.test(before) && PARTICLE.test(after)) { ok = true; break; }
+    i = h.indexOf(work, i + 1);
+  }
+  if (!ok) return false;
+  // 짧은 제목(도깨비, 노트북, 프렌즈처럼 일반 단어와 겹치기 쉬운 것)만 작품 맥락어나 배우, 배역 이름을 추가로 요구
+  if (work.replace(/\s/g, "").length > 4) return true;
+  return CTXW.test(h) || names.some((n) => n && n.length > 1 && h.includes(n));
+}
 const p95 = (xs: number[]) => { const v = xs.filter((x) => x > 0).sort((a, b) => a - b); return v.length ? v[Math.min(v.length - 1, Math.floor(v.length * 0.95))] : 0; };
 async function tm(path: string, token: string) {
   const u = new URL("https://api.themoviedb.org/3" + path);
@@ -119,13 +136,17 @@ async function run(req: Request) {
   const act: Record<string, number> = {};
   for (const e of (Array.isArray(ev) ? ev : [])) act[e.topic_id] = (act[e.topic_id] || 0) + 1;
 
+  const rl = await (await rest("roles?select=topic_id,ch,orig")).json();
+  const NM: Record<string, string[]> = {};
+  for (const r of (Array.isArray(rl) ? rl : [])) (NM[r.topic_id] ||= []).push(...[r.orig, (r.ch || "").split(/[ (]/)[0]].filter(Boolean));
   const tr7 = await trendsKR();
   const list = Array.isArray(topics) ? topics : [];
   const nv = await naverRatios(list.map((t) => t.title));
   type Row = { t: { id: string; title: string; work?: { tmdb_id?: number } }; items: { t: string }[] | null; n: number; tr: boolean; a: number; wiki: string | null; wv: { last: number; prev: number } | null; nav: number | null; tb: boolean };
   const rows: Row[] = [];
   for (const t of list) {
-    const items = await news(`"${t.title}" ${CTX}`);
+    const raw = await news(`"${t.title}" ${CTX}`);
+    const items = raw ? raw.filter((x) => relevant(x.t, t.title, NM[t.id] || [])) : null;
     let wiki: string | null | undefined = t.buzz_meta?.wiki;
     if (!wiki) wiki = await wikiTitle(t.title);
     const wv = wiki ? await wikiViews(wiki) : null;
@@ -159,5 +180,5 @@ async function run(req: Request) {
     for (const it of (await news(q)) || []) if (it.u) ideas.push({ title: it.t, url: it.u.slice(0, 1000), source: it.s || null, published: it.d ? new Date(it.d).toISOString() : null });
   }
   if (ideas.length) await rest("buzz_ideas?on_conflict=url", { method: "POST", headers: { Prefer: "resolution=ignore-duplicates" }, body: JSON.stringify(ideas.slice(0, 200)) });
-  return new Response(JSON.stringify({ topics: done, trending: trend.size, gtrends: tr7.length, naver: nv !== null, ideas: ideas.length, top: rows.map((r) => [r.t.title, r.n, r.wiki, r.wv?.last ?? null]) }), { headers: { "Content-Type": "application/json" } });
+  return new Response(JSON.stringify({ topics: done, trending: trend.size, gtrends: tr7.length, naver: nv !== null, ideas: ideas.length, top: rows.map((r) => [r.t.title, r.n, (r.items || [])[0]?.t || null]) }), { headers: { "Content-Type": "application/json" } });
 }

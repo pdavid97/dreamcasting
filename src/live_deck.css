@@ -111,13 +111,20 @@
 .dl-mid{position:absolute;left:50%;top:50%;width:34%;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:6px;pointer-events:none}
 .dl-orig{display:grid;place-items:center;width:100%;aspect-ratio:1;border-radius:50%;background:#333 center 20%/cover;font:400 40px 'Black Han Sans',sans-serif;color:rgba(255,255,255,.6);box-shadow:0 0 0 4px rgba(255,255,255,.9),0 14px 30px rgba(0,0,0,.6);filter:grayscale(.15)}
 .dl-ol{font-size:12px;font-weight:700;background:rgba(0,0,0,.65);padding:3px 9px;border-radius:10px;white-space:nowrap}
-.dl-pick{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:8px 16px 16px;padding:12px 12px 12px 16px;border-radius:16px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14)}
-.dl-pick b{display:block;font-size:18px}.dl-pick small{display:block;font-size:12px;opacity:.7;margin-top:2px}
-.dl-go{flex:none;border:0;border-radius:12px;background:var(--hot);color:#141414;font:800 15px inherit;font-family:inherit;padding:12px 16px;cursor:pointer;min-height:44px}
-.dl-go:active{transform:scale(.97)}
 .dk-q{padding-bottom:4px}
 @media (prefers-reduced-motion:reduce){.dial.tick::after,.dl-c.pop .ph{animation:none}}
 
 .dl-c{filter:grayscale(.35) brightness(.8);transition:opacity .15s,filter .2s}
 .dl-c.on{filter:none}
 .dl-c.on .ph{box-shadow:0 0 0 4px var(--hot),0 0 26px rgba(255,214,0,.45),0 12px 28px rgba(0,0,0,.6)}
+
+.dl-pick{margin:10px 16px 16px;padding:12px 16px 14px;border-radius:16px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);min-height:92px}
+.dl-pick.swap{animation:dlswap .22s ease}
+@keyframes dlswap{from{opacity:.3;transform:translateY(4px)}to{opacity:1;transform:none}}
+.dl-pn{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}.dl-pn b{font-size:19px}.dl-pn small{font-size:12px;opacity:.7}
+.dl-rc{margin:4px 0 0;font-size:13px;color:var(--hot);font-weight:700}
+.dl-rc:empty{display:none}
+.dl-why{margin:6px 0 0;font-size:14px;line-height:1.5;opacity:.92}
+.dl-tap{position:absolute;left:50%;bottom:-10px;transform:translateX(-50%);font-style:normal;font-size:10px;font-weight:800;white-space:nowrap;background:var(--hot);color:#141414;padding:2px 7px;border-radius:8px;opacity:0;transition:opacity .2s;pointer-events:none}
+.dl-c.on .dl-tap{opacity:1}
+.dl-c.on em{display:none}
