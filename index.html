@@ -747,7 +747,7 @@ document.addEventListener('click',async e=>{
  const b=e.target.closest('[data-act]');if(!b)return;const a=b.dataset.act,rid=+b.dataset.rid,cid=+b.dataset.cid;
  if(a==='role'){if(e.target.closest('button,input,select,summary,details,a'))return;SROLE=+b.dataset.i;renderRoles();drawChart();return}
  if(a==='google'){const {error}=await sb.auth.signInWithOAuth({provider:'google',options:{redirectTo:location.origin+location.pathname}});if(error)toast(errMsg(error));return}
- if(a==='logout'){await sb.auth.signOut();return}
+ if(a==='logout'){USER=null;PROF=null;NOTICES=[];WANTS=new Set();render();try{await sb.auth.signOut({scope:'local'})}catch(err){}if(PAGE&&PAGE.kind==='u')location.hash='';toast('로그아웃했어요');refresh();return}
  if(a==='nickOpen'){$('#nickIn').value=PROF?PROF.nickname:'';$('#nickModal').classList.add('on');$('#nickIn').focus();return}
  if(a==='nickClose'){$('#nickModal').classList.remove('on');return}
  if(a==='nick'){const n=$('#nickIn').value.trim();try{await rpc('set_nickname',{nick:n});$('#nickModal').classList.remove('on');toast(`${n} 님, 광장에 오신 걸 환영해요`);await refresh()}catch(err){toast(errMsg(err))}return}
@@ -803,7 +803,8 @@ $('#nickIn').addEventListener('keydown',e=>{if(e.key==='Enter')document.querySel
 addEventListener('hashchange',()=>{const h=decodeURIComponent(location.hash.slice(1));if(h.startsWith('a/')||h.startsWith('u/')){openRoute();renderTabbar();return}if(h&&TOPICS.find(t=>t.id===h)){if(h!==SEL||PAGE||HOMEV)selectTopic(h)}else{closePage();navSpecial(h)}renderTabbar()});
 const ro=new ResizeObserver(()=>drawChart());ro.observe($('.fig'));
 
-sb.auth.onAuthStateChange(async(ev,session)=>{const u=session?session.user:null;const changed=(u&&u.id)!==(USER&&USER.id);USER=u;if(changed&&TOPICS.length){await refresh();if(USER&&!PROF){$('#nickIn').value='';$('#nickModal').classList.add('on')}}});
+/* 인증 콜백 안에서 다른 supabase 호출을 await 하면 내부 잠금이 풀리지 않아 로그아웃이 멈춤: 다음 틱으로 미룸 */
+sb.auth.onAuthStateChange((ev,session)=>{const u=session?session.user:null;const changed=(u&&u.id)!==(USER&&USER.id);USER=u;if(changed&&TOPICS.length)setTimeout(async()=>{await refresh();if(USER&&!PROF){$('#nickIn').value='';$('#nickModal').classList.add('on')}},0)});
 (async()=>{const {data}=await sb.auth.getSession();USER=data.session?data.session.user:null;await refresh(true);openRoute();{const h0=decodeURIComponent(location.hash.slice(1));if(!h0||!(TOPICS.find(t=>t.id===h0)||h0.startsWith('a/')||h0.startsWith('u/')))navSpecial(h0)}renderTabbar();$('#yIdx').innerHTML=Array.from({length:6},(_,k)=>NOW_Y-k).map(y=>`<option value="${y}">${y}년</option>`).join('');loadYearIndex();loadMatrix();propRows([]);propMode();if(USER&&!PROF)$('#nickModal').classList.add('on');
  setInterval(()=>{if(document.visibilityState==='visible'&&!busy){const f=document.activeElement;if(f&&(f.tagName==='INPUT'||f.tagName==='SELECT'||f.tagName==='TEXTAREA'))return;refresh()}},30000)})();
 
