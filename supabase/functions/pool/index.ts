@@ -68,7 +68,7 @@ async function intl(from: number, to: number) {
 }
 // 상세: 한국어 이름(also_known_as의 한글), 생일, 대표작(투표 수 많은 출연작 3개)
 async function names(limit: number) {
-  const rows = await (await rest(`cast_pool?select=id,tmdb_id,name&tmdb_id=not.is.null&known=is.null&order=pop.desc&limit=${limit}`)).json();
+  const rows = await (await rest(`cast_pool?select=id,tmdb_id,name&tmdb_id=not.is.null&known=is.null&order=region.asc,pop.desc&limit=${limit}`)).json();
   let n = 0;
   for (const r of Array.isArray(rows) ? rows : []) {
     const d = await tm(`/person/${r.tmdb_id}`, { language: "ko-KR", append_to_response: "combined_credits" });
@@ -77,7 +77,7 @@ async function names(limit: number) {
     const cast = ((d.combined_credits?.cast || []) as { title?: string; name?: string; release_date?: string; first_air_date?: string; character?: string; vote_count?: number; genre_ids?: number[] }[])
       .filter((c) => (c.title || c.name) && !(c.genre_ids || []).some((g) => [10767, 10763, 10764].includes(g)));
     const known = [...cast].sort((a, b) => (b.vote_count || 0) - (a.vote_count || 0)).slice(0, 4).map((c) => ({ t: c.title || c.name, y: (c.release_date || c.first_air_date || "").slice(0, 4) || null, ch: (c.character || "").slice(0, 30) || null }));
-    const body: Row = { known, birth: d.birthday || null, aka: (d.also_known_as || []).slice(0, 8), updated_at: new Date().toISOString() };
+    const body: Row = { known, birth: d.birthday || null, pob: d.place_of_birth || null, aka: (d.also_known_as || []).slice(0, 8), updated_at: new Date().toISOString() };
     if (ko) body.name = ko;
     if (d.gender != null) body.gender = d.gender;
     await rest(`cast_pool?id=eq.${r.id}`, { method: "PATCH", body: JSON.stringify(body) });
@@ -86,9 +86,9 @@ async function names(limit: number) {
   return n;
 }
 // 위키데이터: 한국 국적 인물 중 비배우 직군(배우 겸업이면 acted=true)
-async function wd(minLinks: number) {
+async function wd(minLinks: number, country = "Q884", region = "kr") {
   const q = `SELECT ?p ?ko ?en ?g ?b ?sl (GROUP_CONCAT(DISTINCT ?occEn; separator="|") AS ?occs) WHERE {
-    ?p wdt:P27 wd:Q884; wdt:P31 wd:Q5; wdt:P106 ?occ; wikibase:sitelinks ?sl.
+    ?p wdt:P27 wd:${country}; wdt:P31 wd:Q5; wdt:P106 ?occ; wikibase:sitelinks ?sl.
     FILTER(?sl >= ${minLinks})
     ?occ rdfs:label ?occEn. FILTER(lang(?occEn) = "en")
     ?p rdfs:label ?ko. FILTER(lang(?ko) = "ko")
@@ -113,9 +113,33 @@ async function wd(minLinks: number) {
       : /influencer|model|television presenter|broadcaster/.test(occ) ? "influencer" : null;
     if (!kind) continue; // 순수 배우는 TMDB에서 모음
     const g = String(b.g?.value || "");
-    rows.push({ qid: b.p.value.split("/").pop(), name: b.ko.value, name_en: b.en?.value || null, kind, region: "kr", acted, gender: g.endsWith("Q6581072") ? 1 : g.endsWith("Q6581097") ? 2 : 0, birth: b.b?.value ? b.b.value.slice(0, 10) : null, pop: Number(b.sl.value), src: "wikidata", updated_at: new Date().toISOString() });
+    rows.push({ qid: b.p.value.split("/").pop(), name: b.ko.value, name_en: b.en?.value || null, kind, region, acted, gender: g.endsWith("Q6581072") ? 1 : g.endsWith("Q6581097") ? 2 : 0, birth: /^\d{4}-/.test(b.b?.value || "") ? b.b.value.slice(0, 10) : null, pop: Number(b.sl.value), src: "wikidata", updated_at: new Date().toISOString() });
   }
   // 같은 사람이 TMDB 행으로 이미 있으면(이름과 생일이 같으면) 직군 정보만 보강
+  await upsert(rows, "qid");
+  return rows.length;
+}
+
+// 미국 셀럽(할리우드판 와일드카드): 라벨 조인 없이 직업 QID로 바로 조회해 가볍게
+async function wdUS(minLinks: number, only?: string) {
+  const K0: Record<string, string> = { Q177220: "singer", Q2252262: "singer", Q245068: "comedian", Q18545066: "comedian", Q17125263: "youtuber", Q947873: "influencer", Q4610556: "influencer" };
+  const K: Record<string, string> = only ? { [only]: K0[only] } : K0;
+  const q = `SELECT ?p ?ko ?g ?b ?sl ?occ ?acted WHERE {
+    VALUES ?occ { ${Object.keys(K).map((k) => "wd:" + k).join(" ")} }
+    ?p wdt:P106 ?occ; wdt:P27 wd:Q30; wikibase:sitelinks ?sl. FILTER(?sl >= ${minLinks})
+    ?p rdfs:label ?ko. FILTER(lang(?ko) = "ko")
+    OPTIONAL { ?p wdt:P21 ?g } OPTIONAL { ?p wdt:P569 ?b }
+    BIND(EXISTS { ?p wdt:P106 ?a. VALUES ?a { wd:Q33999 wd:Q10800557 wd:Q10798782 } } AS ?acted)
+    FILTER NOT EXISTS { ?p wdt:P570 ?dead }
+  } LIMIT 4000`;
+  const r = await fetch("https://query.wikidata.org/sparql?format=json&query=" + encodeURIComponent(q), { headers: { "User-Agent": "DreamcastingPool/1.0 (https://pdavid97.github.io/dreamcasting/)", Accept: "application/sparql-results+json" } });
+  if (!r.ok) throw new Error("wikidata " + r.status + " " + (await r.text()).slice(0, 200));
+  const j = await r.json();
+  const rows: Row[] = [];
+  for (const b of j.results.bindings) {
+    const g = String(b.g?.value || "");
+    rows.push({ qid: b.p.value.split("/").pop(), name: b.ko.value, kind: K0[b.occ.value.split("/").pop()] || "other", region: "intl", acted: b.acted?.value === "true", gender: g.endsWith("Q6581072") ? 1 : g.endsWith("Q6581097") ? 2 : 0, birth: /^\d{4}-/.test(b.b?.value || "") ? b.b.value.slice(0, 10) : null, pop: Number(b.sl.value), src: "wikidata_us", updated_at: new Date().toISOString() });
+  }
   await upsert(rows, "qid");
   return rows.length;
 }
@@ -129,6 +153,7 @@ Deno.serve(async (req) => {
     else if (a === "intl") n = await intl(b.from || 1, b.to || 10);
     else if (a === "names") n = await names(Math.min(400, b.limit || 150));
     else if (a === "wd") n = await wd(b.min || 4);
+    else if (a === "wd_us") n = await wdUS(b.min || 60, b.occ);
     const c = await rest("cast_pool?select=id", { headers: { Prefer: "count=exact", Range: "0-0" } });
     return new Response(JSON.stringify({ action: a, n, total: c.headers.get("content-range") }), { headers: { "Content-Type": "application/json" } });
   } catch (e) { return new Response(JSON.stringify({ error: String((e as Error)?.stack || e) }), { status: 500 }); }

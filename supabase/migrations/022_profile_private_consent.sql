@@ -1,0 +1,3 @@
+-- 022 동의와 선택 입력은 공개 읽기 profiles가 아닌 본인만 읽는 profile_private에 보관
+-- set_consent(terms, stats, share, ver, age_band, gender_self, region_self): 로그인 사용자 본인 행만 갱신, consent_log에 이력
+-- 본문은 Supabase에 적용된 022_profile_private_consent와 동일

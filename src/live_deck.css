@@ -158,3 +158,10 @@
 .dl-badge{font-size:11px;font-weight:800;padding:2px 8px;border-radius:8px;background:rgba(255,255,255,.14);color:#fff;align-self:center}
 .dl-badge.classic{background:#2f6fde}.dl-badge.buzz{background:#e0453a}.dl-badge.chem{background:#d1408f}.dl-badge.wild{background:var(--hot);color:#141414}
 .dl-c[data-pick=wild] .ph{box-shadow:0 0 0 2px var(--hot),0 6px 14px rgba(0,0,0,.45)}
+.cns{display:grid;gap:8px;margin:4px 0 12px;font-size:13px;line-height:1.5}
+.cns label{display:flex;gap:8px;align-items:flex-start;cursor:pointer}
+.cns input[type=checkbox]{margin-top:3px;flex:none}
+.cns a{color:inherit;text-decoration:underline}
+.cnsel{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.cnsel select{font-size:12px;padding:6px 4px;min-width:0}
+.cns small{opacity:.7}

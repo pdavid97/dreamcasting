@@ -6,7 +6,6 @@
 //  buzz   : 후보 이름과 작품명이 함께 나온 가상캐스팅, 실사화, 캐스팅 기사(최근 1년, 건수와 대표 기사 링크)
 //  alike  : 다른 작품에서 비슷한 배역(기사, 황제, 형사, 저승사자 같은 직업과 신분 키워드가 배역명에 들어간 출연작)
 //  costar : 원작 배우와 같은 작품에 출연한 적 있음
-//  genre  : 원작 장르 출연작 편수
 //  age    : 원작 배우가 그 역을 맡았을 때 나이와 비교
 //  famous : 대표작
 // 결과: candidates.blurb = {recent:{t,y}, up:{t,y}, why, reasons:[{k,text,src?:{t,u}}], pid}
@@ -145,13 +144,6 @@ async function reasonsFor(o: { others: { name: string; ch: string; slot: string 
     const ids = new Set(op.credits.map((c) => `${c.media_type}:${c.id}`));
     const co = past.filter((c) => ids.has(`${c.media_type}:${c.id}`) && c.id !== o.workId && !ANTH.test(ctitle(c))).sort((a, b) => (b.vote_count || 0) - (a.vote_count || 0))[0];
     if (co) R.push({ k: "costar", w: 60, text: pick([`${T(ctitle(co))}에서 ${gwawa(orig)} 한솥밥을 먹은 사이. 선배 배역 물려받기 딱 좋은 인연이에요.`, `${eunneun(orig)} ${T(ctitle(co))}에서 이미 만나본 상대. 인수인계가 빠를 듯해요.`], cid) });
-  }
-  // 장르 궁합
-  if (o.workGenres.length) {
-    const cnt: Record<string, number> = {};
-    for (const c of past) for (const g of c.genre_ids || []) { const n = GENRES[g]; if (n && n !== "드라마" && o.workGenres.includes(n)) cnt[n] = (cnt[n] || 0) + 1; }
-    const top = Object.entries(cnt).sort((a, b) => b[1] - a[1])[0];
-    if (top && top[1] >= 3) R.push({ k: "genre", w: 40 + top[1], text: pick([`${top[0]} 출연작만 ${top[1]}편. 이 장르는 사실상 홈그라운드예요.`, `${top[0]} 필모 ${top[1]}편, 장르 적응 기간은 생략해도 돼요.`], cid) });
   }
   // 나이
   const age = ageAt(p.birthday, new Date().getFullYear());

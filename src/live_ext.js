@@ -9,7 +9,7 @@ async function loadAges(names){const need=[...new Set(names)].filter(n=>n&&!(n i
  try{const d=await meta({ages:need});Object.assign(AGE,d.ages||{});try{localStorage.setItem('dcAge1',JSON.stringify(AGE))}catch(e){}render()}catch(e){}ageBusy=false}
 const ageAt=(name,y)=>{const b=AGE[name];if(!b)return null;const by=+b.slice(0,4),bm=+b.slice(5,7)||1;if(!by)return null;if(y&&y<NOW_Y)return y-by;const n=new Date();return n.getFullYear()-by-((n.getMonth()+1)<bm?1:0)};
 const ageTxt=(name,y)=>{const a=ageAt(name,y);return a==null?'':(y&&y<NOW_Y?`${y}년 당시 ${a}세`:`만 ${a}세`)};
-const pickLabel=(r,p)=>{const n=pickName(r,p);return n&&p&&p.y?`${n} (${p.y}년)`:n};
+const pickLabel=(r,p)=>{const n=pickName(r,p);return n&&p&&p.w?`${n} (《${p.w}》 속 모습)`:n&&p&&p.y?`${n} (${p.y}년)`:n};
 const actorLink=(name,inner)=>`<a class="alink" href="#a/${encodeURIComponent(name)}" title="${esc(name)} 배우 페이지">${inner||esc(name)}</a>`;
 
 /* ---------- 작품 정보 ---------- */
