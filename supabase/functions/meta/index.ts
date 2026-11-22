@@ -130,6 +130,26 @@ async function work(title: string, token: string) {
   return out;
 }
 
+// Wikidata에 등록된 스트리밍 작품 id로 플랫폼 작품 페이지 직링크를 만듦(없으면 화면에서 플랫폼 검색으로 연결)
+async function directLinks(qid: string) {
+  if (!/^Q\d+$/.test(qid)) return {};
+  const q = `SELECT ?p ?v WHERE { VALUES ?p { wdt:P1874 wdt:P7595 wdt:P7596 wdt:P8055 wdt:P9586 } wd:${qid} ?p ?v }`;
+  try {
+    const r = await fetch("https://query.wikidata.org/sparql?format=json&query=" + encodeURIComponent(q), { headers: { accept: "application/sparql-results+json", "User-Agent": "dreamcasting/1.0 (https://pdavid97.github.io/dreamcasting/)" } });
+    if (!r.ok) return {};
+    const d = await r.json(), out: Record<string, string> = {};
+    for (const b of d.results?.bindings || []) {
+      const p = String(b.p.value).split("/").pop(), v = encodeURIComponent(String(b.v.value));
+      if (p === "P1874") out.netflix = `https://www.netflix.com/title/${v}`;
+      if (p === "P7595") out.disney = `https://www.disneyplus.com/movies/${v}`;
+      if (p === "P7596") out.disney = `https://www.disneyplus.com/series/${v}`;
+      if (p === "P8055") out.prime = `https://www.primevideo.com/detail/${v}`;
+      if (p === "P9586") out.appletv = `https://tv.apple.com/show/${v}`;
+    }
+    return out;
+  } catch { return {}; }
+}
+
 async function topicWork(tid: string, token: string) {
   const r = await fetch(`${SB}/rest/v1/topics?select=id,title,cat,work,work_at,tags&id=eq.${encodeURIComponent(tid)}`, { headers: H });
   const t = r.ok ? (await r.json())[0] : null;
@@ -158,7 +178,7 @@ async function topicWork(tid: string, token: string) {
         homepage: /^https?:\/\//.test(d.homepage || "") ? d.homepage : "", tmdb: `https://www.themoviedb.org/${kind}/${d.id}`,
         imdb: d.external_ids?.imdb_id ? `https://www.imdb.com/title/${d.external_ids.imdb_id}/` : "",
         poster: d.poster_path ? "https://image.tmdb.org/t/p/w342" + d.poster_path : "", backdrop: d.backdrop_path ? "https://image.tmdb.org/t/p/w780" + d.backdrop_path : "",
-        watch: prov.slice(0, 6), watch_link: kr?.link || "",
+        watch: prov.slice(0, 6), watch_link: kr?.link || "", direct: await directLinks(d.external_ids?.wikidata_id || ""),
         videos: (d.videos?.results || []).filter((v: { site: string }) => v.site === "YouTube")
           .sort((a: { type: string; iso_639_1: string }, b: { type: string; iso_639_1: string }) => (+(b.type === "Trailer") - +(a.type === "Trailer")) || (+(b.iso_639_1 === "ko") - +(a.iso_639_1 === "ko")))
           .slice(0, 4).map((v: { key: string; name: string; type: string }) => ({ key: v.key, name: String(v.name || "").slice(0, 60), type: v.type })),

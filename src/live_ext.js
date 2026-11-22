@@ -165,7 +165,10 @@ async function aiPoster(sid){busy=true;toast('AI 배경을 만드는 중이에�
 
 /* ---------- 감상하러 가기(유튜브, 스트리밍, 공식) + 노출/클릭 측정 ---------- */
 let SID='';try{SID=localStorage.getItem('dcSid')||'';if(!SID){SID=Math.random().toString(36).slice(2)+Date.now().toString(36);localStorage.setItem('dcSid',SID)}}catch(e){}
-const PROV={'Netflix':'netflix','TVING':'tving','Tving':'tving','wavve':'wavve','Wavve':'wavve','Coupang Play':'coupangplay','Disney Plus':'disney','Disney+':'disney','Watcha':'watcha','Apple TV':'appletv','Apple TV+':'appletv','Amazon Prime Video':'prime'};
+/* 플랫폼 이름과 검색 주소. 작품 직링크(Wikidata)가 없을 때 그 플랫폼 검색 결과로 보냄. 쿠팡플레이는 검색 주소 형식을 확인하지 못해 첫 화면으로 */
+const PNAME={netflix:'넷플릭스',tving:'티빙',wavve:'웨이브',coupangplay:'쿠팡플레이',disney:'디즈니+',watcha:'왓챠',appletv:'Apple TV',prime:'프라임 비디오'};
+const STREAM_SEARCH={netflix:q=>`https://www.netflix.com/search?q=${q}`,tving:q=>`https://www.tving.com/search?keyword=${q}`,wavve:q=>`https://www.wavve.com/search?searchWord=${q}`,coupangplay:()=>'https://www.coupangplay.com/',disney:q=>`https://www.disneyplus.com/search?q=${q}`,watcha:q=>`https://watcha.com/search?query=${q}`,appletv:q=>`https://tv.apple.com/search?term=${q}`,prime:q=>`https://www.primevideo.com/search/ref=atv_nb_sr?phrase=${q}`};
+const PROV={'Netflix':'netflix','Netflix basic with Ads':'netflix','Netflix Standard with Ads':'netflix','TVING':'tving','Coupang Play':'coupangplay','wavve':'wavve','Watcha':'watcha','Disney Plus':'disney','Apple TV':'appletv','Apple TV Plus':'appletv','Amazon Prime Video':'prime','Netflix ':'netflix','TVING':'tving','Tving':'tving','wavve':'wavve','Wavve':'wavve','Coupang Play':'coupangplay','Disney Plus':'disney','Disney+':'disney','Watcha':'watcha','Apple TV':'appletv','Apple TV+':'appletv','Amazon Prime Video':'prime'};
 const goURL=(tid,p,k,u,pl)=>`${SB_URL}/functions/v1/go?t=${encodeURIComponent(tid)}&p=${encodeURIComponent(p)}&k=${encodeURIComponent(k)}&u=${encodeURIComponent(u)}${pl?`&pl=${pl}`:''}&s=${encodeURIComponent(SID)}&pg=topic`;
 let PLACE={},STATS={},impSent=new Set();
 async function loadPlace(tid){if(tid in PLACE)return;PLACE[tid]=[];try{PLACE[tid]=await rpc('active_placements',{tid})||[]}catch(e){}if(SEL===tid)renderWatch()}
@@ -174,8 +177,10 @@ function renderWatch(){const box=$('#tWatch');if(!box)return;const t=topic();if(
  const items=[];// [partner, label, url, kind, sponsored, placementId, logo]
  pl.forEach(p=>items.push([p.partner_id,p.label,p.url,'placement',p.sponsored,p.id,'']));
  if(w&&w.homepage)items.push(['official','공식 사이트',w.homepage,'official',false,0,'']);
- if(w)(w.watch||[]).forEach(p=>{if(w.watch_link)items.push([PROV[p.name]||'justwatch',p.name+'에서 보기',w.watch_link,'stream',false,0,p.logo])});
+ if(w)(w.watch||[]).forEach(p=>{const pid=PROV[p.name],d=pid&&w.direct&&w.direct[pid],q=encodeURIComponent(w.title||t.title),srch=pid&&STREAM_SEARCH[pid]?STREAM_SEARCH[pid](q):'';
+  if(d)items.push([pid,PNAME[pid]+'에서 보기',d,'stream',false,0,p.logo]);else if(srch)items.push([pid,PNAME[pid]+'에서 찾기',srch,'stream',false,0,p.logo]);else if(w.watch_link)items.push([pid||'justwatch',p.name+' 시청 정보',w.watch_link,'stream',false,0,p.logo])});
  items.push(['youtube','유튜브에서 찾기','https://www.youtube.com/results?search_query='+encodeURIComponent(t.title+(w&&w.year?' '+w.year:'')+' 예고편'),'youtube',false,0,'']);
+ {const seen=new Set();for(let k=items.length-1;k>=0;k--){}const u=[];items.forEach(i=>{const key=i[0]+'|'+i[3];if(!seen.has(key)){seen.add(key);u.push(i)}});items.length=0;items.push(...u)}
  const vids=(w&&w.videos)||[];
  box.innerHTML=`<div class="watchbox"><div class="sh"><h3>감상하러 가기</h3><span class="sub">${w&&(w.watch||[]).length?'국내 시청처 정보 JustWatch 제공':'시청처 정보가 생기면 여기에 떠요'}</span></div>
  ${vids.length?`<div class="vids">${vids.slice(0,2).map(v=>`<div class="vid"><iframe src="https://www.youtube-nocookie.com/embed/${encodeURIComponent(v.key)}" title="${esc(v.name)}" loading="lazy" allow="accelerometer; encrypted-media; picture-in-picture" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe><small>${esc(v.name)}</small></div>`).join('')}</div>`:''}
