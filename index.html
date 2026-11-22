@@ -741,6 +741,9 @@ body[data-view=rank] .side>section{background:var(--card);border:1px solid var(-
  .tabbar{display:none!important}
  .wrap{padding-bottom:40px!important}
  .gnav{display:flex;gap:2px;flex-wrap:nowrap}
+ .mast{flex-wrap:nowrap}
+ .mast .gsearch{flex:1 1 160px;min-width:120px}
+ .mast .logo{white-space:nowrap}
  .gnav a{display:flex;align-items:center;gap:6px;padding:8px 12px;border-radius:10px;color:var(--mute);text-decoration:none;font-weight:700;font-size:14px;white-space:nowrap}
  .gnav a:hover{color:var(--ink);background:var(--panel)}
  .gnav a.on{color:var(--ink);background:var(--panel)}
@@ -804,6 +807,64 @@ body[data-view=rank] .side>section{background:var(--card);border:1px solid var(-
 }
 body[data-view=page] #tabs,body[data-view=page] #shelf,body[data-view=deck] #tabs,body[data-view=deck] #shelf{display:none!important}
 @media (max-width:640px){.actor .ahero .aph{grid-row:span 3;align-self:start}.actor .ahero>div>.sub:first-child{align-self:end}}
+
+/* 덕질 업적 */
+.badges2{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.bdg{position:relative;display:flex;flex-direction:column;gap:3px;border:1px solid var(--line);border-radius:14px;padding:12px;background:var(--card);filter:grayscale(1);opacity:.75}
+.bdg.on{filter:none;opacity:1;background:linear-gradient(160deg,color-mix(in srgb,var(--hot) 30%,var(--card)),var(--card));border-color:color-mix(in srgb,var(--hot) 60%,var(--line))}
+.bdg .bi{font-size:26px;line-height:1}
+.bdg b{font-size:14px}.bdg small{font-size:11px;color:var(--mute);line-height:1.35}
+.bdg em{font-style:normal;font-size:11px;font-weight:800;color:var(--mute)}.bdg.on em{color:var(--ink)}
+.bp{height:5px;border-radius:9px;background:var(--line);overflow:hidden;margin-top:4px}.bp i{display:block;height:100%;background:var(--acc)}
+
+/* 나의 AV룸: 시네마 서재 */
+.den{--wall:#1f3a2e;--wall2:#18302a;--frame:#b08a4a;--frame2:#6e5428;--mat:#f3ead8;--wood:#4a2f1c;--wood2:#2e1d11;--txt:#f3ead8;
+ position:relative;border-radius:18px;overflow:hidden;color:var(--txt);
+ background:repeating-linear-gradient(90deg,var(--wall) 0 22px,var(--wall2) 22px 24px);box-shadow:inset 0 30px 60px rgba(0,0,0,.35);transition:filter .4s}
+.den.th-noir{--wall:#141414;--wall2:#101010;--frame:#0a0a0a;--frame2:#000;--mat:#1d1d1d;--wood:#1a1a1a;--wood2:#0b0b0b}
+.den.th-gallery{--wall:#f4f2ee;--wall2:#efece6;--frame:#1b1b1b;--frame2:#000;--mat:#fff;--wood:#d9d2c6;--wood2:#c2b9aa;--txt:#1b1b1b}
+.den-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;padding:14px 14px 0}
+.den-plate{display:inline-flex;flex-direction:column;background:linear-gradient(180deg,#d9b56a,#9c7a3a);color:#2a1d08;font:400 15px 'Black Han Sans',sans-serif;padding:6px 12px;border-radius:4px;box-shadow:0 2px 0 #5c4720,0 6px 14px rgba(0,0,0,.35)}
+.den-plate small{font:600 10px 'Noto Sans KR',sans-serif;opacity:.8}
+.den-ctl{display:flex;gap:6px;align-items:center}
+.den-ctl select,.den-sw{font:inherit;font-size:12px;border-radius:99px;border:1px solid color-mix(in srgb,var(--txt) 35%,transparent);background:rgba(0,0,0,.25);color:var(--txt);padding:6px 10px;cursor:pointer}
+.th-gallery .den-ctl select,.th-gallery .den-sw{background:#fff}
+.den-wall{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-auto-flow:row dense;gap:22px 14px;padding:26px 16px 22px;align-items:start}
+.fr{position:relative;border:0;padding:7px;background:linear-gradient(135deg,var(--frame),var(--frame2));border-radius:2px;cursor:pointer;transform:rotate(var(--tilt,0deg));transition:transform .25s,box-shadow .25s;box-shadow:0 10px 18px rgba(0,0,0,.45),inset 0 0 0 1px rgba(255,255,255,.12);color:inherit;text-decoration:none;display:block}
+.fr:hover,.fr:focus-visible{transform:rotate(0) translateY(-4px) scale(1.03);z-index:2;box-shadow:0 18px 30px rgba(0,0,0,.5)}
+.fr-in{display:block;background:var(--mat);padding:5px;aspect-ratio:2/3;overflow:hidden}
+.fr-in img{width:100%;height:100%;object-fit:cover;display:block}
+.fr-in em{display:grid;place-items:center;height:100%;font-style:normal;font-size:11px;color:#777;text-align:center;padding:4px}
+.fr-s{margin:10px 8px 0}
+.fr-hero{grid-column:span 2;grid-row:span 2;padding:10px}
+.fr-hero .fr-in{padding:8px}
+.fr-l{position:absolute;left:50%;top:-14px;width:46%;height:8px;transform:translateX(-50%);border-radius:4px 4px 2px 2px;background:linear-gradient(180deg,#e2c27a,#8d6c2f);box-shadow:0 0 0 1px rgba(0,0,0,.3)}
+.fr-l::after{content:'';position:absolute;left:-30%;right:-30%;top:8px;height:90px;background:radial-gradient(ellipse at 50% 0,rgba(255,226,160,.35),transparent 70%);pointer-events:none}
+.th-gallery .fr-l{display:none}
+.fr-tag{position:absolute;left:50%;bottom:-16px;transform:translateX(-50%);max-width:110%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:10px;background:#d9b56a;color:#2a1d08;padding:1px 6px;border-radius:2px;opacity:0;transition:opacity .2s}
+.fr:hover .fr-tag,.fr:focus-visible .fr-tag,.fr-hero .fr-tag{opacity:1}
+.fr-hero .fr-tag{bottom:-18px;font-size:12px;display:flex;flex-direction:column;align-items:center;line-height:1.2;padding:3px 10px}
+.fr-hero .fr-tag small{font-size:9px;opacity:.8}
+.fr-empty{background:none;box-shadow:none;border:2px dashed color-mix(in srgb,var(--txt) 35%,transparent);padding:4px}
+.fr-empty .fr-in{background:transparent}.fr-empty em{color:color-mix(in srgb,var(--txt) 60%,transparent)}
+.den-none{grid-column:1/-1;text-align:center;opacity:.7}
+.den-shelf{display:flex;align-items:flex-end;gap:2px;overflow-x:auto;min-height:88px;padding:10px 16px 0;background:linear-gradient(180deg,var(--wood) 0,var(--wood2) 100%);border-top:6px solid var(--wood2);border-bottom:10px solid var(--wood2);scrollbar-width:none}
+.sp{flex:0 0 auto;width:22px;height:calc(62px + var(--h,0px));border:0;border-radius:2px 2px 0 0;background:linear-gradient(90deg,rgba(255,255,255,.15),transparent 30%,rgba(0,0,0,.25)),var(--c);color:#f3ead8;cursor:pointer;writing-mode:vertical-rl;text-orientation:mixed;font-size:10px;padding:6px 0;overflow:hidden;transition:transform .15s}
+.sp:nth-child(3n){--h:8px}.sp:nth-child(4n){--h:-6px}
+.sp:hover{transform:translateY(-8px)}
+.sp span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-height:100%}
+.sp-hint{color:#e8d9c0;font-size:12px;padding:0 0 14px;opacity:.85}
+.den-floor{height:26px;background:var(--wood2);position:relative}
+.den-floor .lamp{position:absolute;right:18px;bottom:22px;width:24px;height:30px;background:linear-gradient(180deg,#f3d48d,#b8913f);clip-path:polygon(20% 0,80% 0,100% 100%,0 100%);box-shadow:0 0 30px rgba(255,210,120,.6)}
+.den::after{content:'';position:absolute;inset:0;background:rgba(5,4,3,.72);opacity:0;pointer-events:none;transition:opacity .4s;z-index:2}
+.den.dark::after{opacity:1}
+.den.dark .fr{z-index:3;box-shadow:0 0 0 1px rgba(255,226,160,.25),0 0 40px rgba(255,210,140,.28),0 14px 24px rgba(0,0,0,.6)}
+.den.dark .den-sw{position:relative;z-index:3}
+.den.dark .fr-l::after{background:radial-gradient(ellipse at 50% 0,rgba(255,226,160,.6),transparent 70%)}
+@media (min-width:900px){.den-wall{grid-template-columns:repeat(5,minmax(0,1fr));gap:30px 20px;padding:34px 28px 28px}}
+
+@media (min-width:900px) and (max-width:1399px){.auth .lg.k{display:none}.gnav a span{font-size:13px}}
+@media (min-width:900px) and (max-width:1099px){.gnav a span{display:none}.gnav a{padding:8px}}
 
 </style>
 </head>
@@ -1293,7 +1354,21 @@ async function renderActor(){const pid=PAGE.pid;
  </section></div>`)}
 
 /* 유저 페이지 */
-const BADGES=[['첫 표',s=>s.votes>=1],['투표 마니아',s=>s.votes>=30],['첫 적중',s=>s.hits>=1],['적중 5회',s=>s.hits>=5],['후보 발굴',s=>s.proposals>=1],['원석 발굴',s=>s.proposal_hits>=1],['시트 장인',s=>s.sheets>=3],['공감 부자',s=>s.sheet_likes+s.comment_likes+s.fan_likes>=50],['토론가',s=>s.comments>=20],['VS 고수',s=>s.duels>=50],['싱크로 심사위원',s=>s.syncs>=5],['주제 개척자',s=>s.topics>=1]];
+/* 업적: 팬 언어로, 어떻게 얻는지와 진행도를 함께 */
+const BADGES=[
+ ['🗳️','첫 한 표','처음으로 드림캐스팅에 한 표',s=>s.votes,1],
+ ['☕','광장 단골','캐스팅 한 표 30번',s=>s.votes,30],
+ ['✨','촉이 왔다','내 픽이 실제 캐스팅으로',s=>s.hits,1],
+ ['🔮','캐스팅 예언가','내 픽이 실제 캐스팅으로 5번',s=>s.hits,5],
+ ['🔍','원석 감별사','내가 직접 후보를 추천',s=>s.proposals,1],
+ ['🌱','떡잎부터 알아봤다','내가 추천한 배우가 실제로 캐스팅',s=>s.proposal_hits,1],
+ ['🎬','드림캐스팅 감독','내 캐스팅 시트 3장 완성',s=>s.sheets,3],
+ ['💖','광장의 인기인','시트, 댓글, 응원글로 공감 50개',s=>s.sheet_likes+s.comment_likes+s.fan_likes,50],
+ ['💬','과몰입 토론러','토론방에 의견 20개',s=>s.comments,20],
+ ['⚡','VS 한판 고인물','VS 한판 50번',s=>s.duels,50],
+ ['🎭','싱크로 심사위원','원작 싱크로율 평가 5번',s=>s.syncs,5],
+ ['🚩','판 깔아주는 사람','보고 싶은 작품을 새 주제로 제안',s=>s.topics,1]];
+const badgeOn=b=>(b[3](STATS_CUR)||0)>=b[4];let STATS_CUR={};
 const GENRES=['로맨스','코미디','드라마','사극','판타지','스릴러','범죄','미스터리','액션','가족','의학','법정'];
 async function openUser(nick){PAGE={kind:'u',nick};showPage(`<div class="pg"><p class="dl">${esc(nick)} 님 페이지를 여는 중이에요</p></div>`);
  try{const d=await rpc('user_page',{nick});if(!PAGE||PAGE.nick!==nick)return;if(d&&d.me){try{d.taste=await rpc('my_taste',{})}catch(e){}}if(!d){showPage(`<div class="pg"><button class="b sm" data-act="back">광장으로</button><p class="dl">없는 닉네임이에요.</p></div>`);return}renderUser(d)}catch(e){showPage(`<div class="pg"><button class="b sm" data-act="back">광장으로</button><p class="dl">${esc(errMsg(e))}</p></div>`)}}
@@ -1307,7 +1382,7 @@ function renderUser(d){const p=d.profile,s=d.stats,g=grade(p.points),nx=GRADES[g
   <div class="gbar" aria-hidden="true"><i style="width:${nx?clamp((p.points-GRADES[g][0])/(nx[0]-GRADES[g][0]),0,1)*100:100}%"></i></div>
   ${p.bio?`<p class="bio">${esc(p.bio)}</p>`:''}
   <p class="sub">${[...(ts.cats||[]).map(cname),...(ts.genres||[]),...(ts.makers||[])].map(x=>`<span class="chip2">${esc(x)}</span>`).join(' ')}</p></div>
-  <div class="astats">${tile(rate==null?'-':rate+'%','적중률')}${tile(fmt(s.hits)+'/'+fmt(s.decided),'결과 나온 표 중 적중')}${tile(fmt(s.proposal_hits)+'/'+fmt(s.proposals),'발굴 적중')}${tile(fmt(s.sheet_likes+s.comment_likes+s.fan_likes),'받은 공감')}${tile(fmt(s.votes),'투표')}${tile(fmt(s.sheets),'캐스팅 시트')}</div></div>
+  <div class="astats">${tile(rate==null?'-':rate+'%','내 촉 적중률')}${tile(fmt(s.hits)+'/'+fmt(s.decided),'실제 캐스팅과 일치')}${tile(fmt(s.proposal_hits)+'/'+fmt(s.proposals),'내 추천이 캐스팅됨')}${tile(fmt(s.sheet_likes+s.comment_likes+s.fan_likes),'받은 공감')}${tile(fmt(s.votes),'던진 표')}${tile(fmt(s.sheets),'내 드림캐스팅')}</div></div>
 
  <section id="avroom"></section>
  ${d.me?'<section id="insight"></section>':''}
@@ -1316,8 +1391,8 @@ function renderUser(d){const p=d.profile,s=d.stats,g=grade(p.points),nx=GRADES[g
   ${Object.keys(d.taste.tags||{}).length?`<p class="sub" style="margin-top:8px">${Object.keys(d.taste.tags).slice(0,10).map(x=>`<span class="chip2">${esc(x)}</span>`).join(' ')}</p>`:''}
   ${(d.taste.actors||[]).length?`<p style="margin-top:8px">자주 고른 배우 ${d.taste.actors.slice(0,8).map(a=>actorLink(a.name)).join(', ')}</p>`:''}
   <p class="dl">이 취향으로 첫 화면 카드 순서를 정해요. 구글 계정에서는 이름, 이메일, 프로필 사진만 받아요.</p></div></section>`:''}
- <section><div class="sh"><h2>업적</h2><span class="sub">${BADGES.filter(b=>b[1](s)).length}/${BADGES.length}</span></div>
-  <div class="badges">${BADGES.map(b=>`<span class="badge${b[1](s)?' on':''}">${b[0]}</span>`).join('')}</div></section>
+ <section><div class="sh"><h2>덕질 업적</h2><span class="sub">${(STATS_CUR=s,BADGES.filter(badgeOn).length)}/${BADGES.length} 달성</span></div>
+  <div class="badges2">${BADGES.map(b=>{const v=Math.min(b[3](s)||0,b[4]),on=v>=b[4];return `<div class="bdg${on?' on':''}" title="${esc(b[2])}"><span class="bi" aria-hidden="true">${b[0]}</span><b>${esc(b[1])}</b><small>${esc(b[2])}</small>${on?'<em>달성</em>':`<span class="bp"><i style="width:${Math.round(v/b[4]*100)}%"></i></span><em>${fmt(v)}/${fmt(b[4])}</em>`}</div>`}).join('')}</div></section>
 
  ${d.me&&(d.next||[]).length?`<section><div class="sh"><h2>다음에 던질 한 표</h2><span class="sub">아직 투표하지 않은 배역</span></div><div class="races">${d.next.map(n=>`<a class="race" href="#${esc(n.tid)}"><b>${esc(n.title)}</b><span class="sub">${esc(n.ch)} 역${n.why==='fan'?', 내가 팬인 배우가 후보':n.why==='taste'?', 내 취향 분류':', 지금 뜨거운 배역'}</span></a>`).join('')}</div></section>`:''}
 
@@ -1757,20 +1832,37 @@ function renderWork(){const d=WK;if(!d)return;const box=$('#wkBox');
  <p class="dl" style="padding:0 18px 16px">작품 정보와 사진: TMDB</p>`}
 
 /* 나의 AV룸 */
+/* 나의 AV룸: 서재 벽에 액자로 걸린 포스터, 그림 조명, DVD 책장, 조명 스위치 */
+const AV_THEMES=[['wood','클래식 우드'],['noir','누아르'],['gallery','화이트 갤러리']];
+function avTheme(){try{return localStorage.getItem('avTheme')||'wood'}catch(e){return 'wood'}}
 async function loadAvRoom(nick,me){const box=$('#avroom');if(!box)return;let items=[];try{items=await rpc('av_room',{nick})||[]}catch(e){}
  const g={};items.forEach(w=>(w.genres||[]).forEach(x=>g[x]=(g[x]||0)+1));const tg=Object.entries(g).sort((a,b)=>b[1]-a[1]).slice(0,3).map(x=>x[0]);
- const hero=items[0];
+ const hero=items[0],rest=items.slice(1,12),th=avTheme();
+ const sz=i=>['m','s','m','s','s','m','s','m','s','s','m'][i%11];
+ const tilt=t=>{const h=[...String(t)].reduce((a,c)=>a+c.charCodeAt(0),0);return ((h%5)-2)*0.6};
+ const frame=(w,i)=>`<button class="fr fr-${sz(i)}" style="--tilt:${tilt(w.title)}deg" data-act="wk-open" data-m="${w.media}" data-id="${w.tmdb_id}" aria-label="${esc(w.title)} 자세히"><span class="fr-l" aria-hidden="true"></span><span class="fr-in">${w.poster?`<img src="${esc(w.poster)}" alt="" loading="lazy">`:`<em>${esc(w.title)}</em>`}</span><span class="fr-tag">${esc(w.title)}${w.year?` <small>${esc(w.year)}</small>`:''}</span></button>`;
+ const empties=me?Math.max(0,Math.min(6,9-items.length)):0;
+ const spineCol=t=>{const h=[...String(t)].reduce((a,c)=>(a*31+c.charCodeAt(0))|0,7);return `hsl(${Math.abs(h)%360} 35% ${28+Math.abs(h>>3)%18}%)`};
  box.innerHTML=`<div class="sh"><h2>${me?'나의 AV룸':esc(nick)+' 님의 AV룸'}</h2><span class="sub">${items.length}편 소장${tg.length?`, 취향 ${esc(tg.join(', '))}`:''}</span></div>
- <div class="av">
-  <div class="av-screen">${hero?`<div class="av-glow"${hero.poster?` style="background-image:url('${esc(hero.poster)}')"`:''}></div><button class="av-now" data-act="wk-open" data-m="${hero.media}" data-id="${hero.tmdb_id}"><small>지금 상영 중</small><b>${esc(hero.title)}</b><span>${esc(hero.year||'')}</span></button>`:`<div class="av-empty"><b>아직 상영할 작품이 없어요</b><small>${me?'배우 필모그래피나 작품 상세에서 하트를 눌러 담아 보세요':'아직 담은 작품이 없어요'}</small></div>`}</div>
-  <div class="av-shelf" tabindex="0" aria-label="소장 작품 선반">${items.map(w=>`<button class="av-dvd" data-act="wk-open" data-m="${w.media}" data-id="${w.tmdb_id}" title="${esc(w.title)}">${w.poster?`<img src="${esc(w.poster)}" alt="${esc(w.title)}" loading="lazy">`:`<span>${esc(w.title)}</span>`}</button>`).join('')}</div>
-  <div class="av-floor" aria-hidden="true"><i></i><i></i><i></i></div>
- </div>`}
+ <div class="den th-${th}" id="den">
+  <div class="den-top"><span class="den-plate">${esc(nick)}의 시네마 서재<small>${items.length?`${items.length}편이 걸려 있어요`:'아직 빈 벽이에요'}</small></span>
+   <span class="den-ctl">${me?`<select id="avTh" aria-label="서재 분위기">${AV_THEMES.map(t=>`<option value="${t[0]}"${t[0]===th?' selected':''}>${t[1]}</option>`).join('')}</select>`:''}<button class="den-sw" data-act="den-light" aria-pressed="false" title="조명 끄고 상영 모드">조명</button></span></div>
+  <div class="den-wall">
+   ${hero?`<button class="fr fr-hero" data-act="wk-open" data-m="${hero.media}" data-id="${hero.tmdb_id}" aria-label="${esc(hero.title)} 자세히"><span class="fr-l" aria-hidden="true"></span><span class="fr-in">${hero.poster?`<img src="${esc(hero.poster)}" alt="">`:`<em>${esc(hero.title)}</em>`}</span><span class="fr-tag"><small>최근에 건 작품</small>${esc(hero.title)}</span></button>`:''}
+   ${rest.map(frame).join('')}
+   ${Array.from({length:empties},()=>`<a class="fr fr-s fr-empty" href="#explore"><span class="fr-in"><em>빈 액자</em></span></a>`).join('')}
+   ${!items.length&&!me?'<p class="den-none">아직 걸린 포스터가 없어요</p>':''}
+  </div>
+  <div class="den-shelf" aria-label="DVD 책장">${items.length?items.map(w=>`<button class="sp" style="--c:${spineCol(w.title)}" data-act="wk-open" data-m="${w.media}" data-id="${w.tmdb_id}" title="${esc(w.title)}"><span>${esc(w.title)}</span></button>`).join(''):`<span class="sp-hint">${me?'배우 필모그래피나 작품 상세에서 하트를 누르면 이 책장과 벽에 걸려요':''}</span>`}</div>
+  <div class="den-floor" aria-hidden="true"><i class="lamp"></i><i class="chair"></i></div>
+ </div>`;
+ const sel=$('#avTh');if(sel)sel.onchange=()=>{try{localStorage.setItem('avTheme',sel.value)}catch(e){}const d=$('#den');d.className=d.className.replace(/th-\w+/,'th-'+sel.value)}}
 
 document.addEventListener('click',async e=>{const b=e.target.closest('[data-act]');if(!b)return;const a=b.dataset.act;
  if(a==='fc-prev'){fcGo(-1);return}if(a==='fc-next'){fcGo(1);return}
  if(a==='fc-year'){const tr=$('#fcTrack');const c=tr&&[...tr.querySelectorAll('.fc-c')].find(x=>x.dataset.year===b.dataset.y);if(c)tr.scrollTo({left:c.offsetLeft-(tr.clientWidth-c.offsetWidth)/2,behavior:'smooth'});return}
  if(a==='wk-open'){const tr=$('#fcTrack');if(tr&&tr._drag&&Date.now()-tr._drag<300)return;e.preventDefault();openWork(b.dataset.m,+b.dataset.id,b.dataset.i!=null?+b.dataset.i:null);return}
+ if(a==='den-light'){const d=$('#den');const on=d.classList.toggle('dark');b.setAttribute('aria-pressed',on);b.textContent=on?'조명 켜기':'조명';return}
  if(a==='wk-close'){closeWork();return}
  if(a==='wk-go'){closeWork();return}
  if(a==='collect'){e.preventDefault();e.stopPropagation();if(needLogin())return;try{const on=await rpc('toggle_collect',{media:b.dataset.m,tmdb_id:+b.dataset.id,title:b.dataset.t,yr:+b.dataset.y||null,poster:b.dataset.p||null,via:b.dataset.via||null});const k=colKey(b.dataset.m,b.dataset.id);if(on)MYCOL.add(k);else MYCOL.delete(k);document.querySelectorAll(`.hrt[data-m="${b.dataset.m}"][data-id="${b.dataset.id}"]`).forEach(h=>{h.classList.toggle('on',on);h.setAttribute('aria-pressed',on);if(on){h.classList.remove('pop');void h.offsetWidth;h.classList.add('pop')}});toast(on?`${b.dataset.t}, 내 AV룸에 담았어요`:'AV룸에서 뺐어요');if($('#avroom')&&PROF&&PAGE&&PAGE.nick===PROF.nickname)loadAvRoom(PROF.nickname,true)}catch(err){toast(errMsg(err))}return}

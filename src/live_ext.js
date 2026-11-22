@@ -109,7 +109,21 @@ async function renderActor(){const pid=PAGE.pid;
  </section></div>`)}
 
 /* 유저 페이지 */
-const BADGES=[['첫 표',s=>s.votes>=1],['투표 마니아',s=>s.votes>=30],['첫 적중',s=>s.hits>=1],['적중 5회',s=>s.hits>=5],['후보 발굴',s=>s.proposals>=1],['원석 발굴',s=>s.proposal_hits>=1],['시트 장인',s=>s.sheets>=3],['공감 부자',s=>s.sheet_likes+s.comment_likes+s.fan_likes>=50],['토론가',s=>s.comments>=20],['VS 고수',s=>s.duels>=50],['싱크로 심사위원',s=>s.syncs>=5],['주제 개척자',s=>s.topics>=1]];
+/* 업적: 팬 언어로, 어떻게 얻는지와 진행도를 함께 */
+const BADGES=[
+ ['🗳️','첫 한 표','처음으로 드림캐스팅에 한 표',s=>s.votes,1],
+ ['☕','광장 단골','캐스팅 한 표 30번',s=>s.votes,30],
+ ['✨','촉이 왔다','내 픽이 실제 캐스팅으로',s=>s.hits,1],
+ ['🔮','캐스팅 예언가','내 픽이 실제 캐스팅으로 5번',s=>s.hits,5],
+ ['🔍','원석 감별사','내가 직접 후보를 추천',s=>s.proposals,1],
+ ['🌱','떡잎부터 알아봤다','내가 추천한 배우가 실제로 캐스팅',s=>s.proposal_hits,1],
+ ['🎬','드림캐스팅 감독','내 캐스팅 시트 3장 완성',s=>s.sheets,3],
+ ['💖','광장의 인기인','시트, 댓글, 응원글로 공감 50개',s=>s.sheet_likes+s.comment_likes+s.fan_likes,50],
+ ['💬','과몰입 토론러','토론방에 의견 20개',s=>s.comments,20],
+ ['⚡','VS 한판 고인물','VS 한판 50번',s=>s.duels,50],
+ ['🎭','싱크로 심사위원','원작 싱크로율 평가 5번',s=>s.syncs,5],
+ ['🚩','판 깔아주는 사람','보고 싶은 작품을 새 주제로 제안',s=>s.topics,1]];
+const badgeOn=b=>(b[3](STATS_CUR)||0)>=b[4];let STATS_CUR={};
 const GENRES=['로맨스','코미디','드라마','사극','판타지','스릴러','범죄','미스터리','액션','가족','의학','법정'];
 async function openUser(nick){PAGE={kind:'u',nick};showPage(`<div class="pg"><p class="dl">${esc(nick)} 님 페이지를 여는 중이에요</p></div>`);
  try{const d=await rpc('user_page',{nick});if(!PAGE||PAGE.nick!==nick)return;if(d&&d.me){try{d.taste=await rpc('my_taste',{})}catch(e){}}if(!d){showPage(`<div class="pg"><button class="b sm" data-act="back">광장으로</button><p class="dl">없는 닉네임이에요.</p></div>`);return}renderUser(d)}catch(e){showPage(`<div class="pg"><button class="b sm" data-act="back">광장으로</button><p class="dl">${esc(errMsg(e))}</p></div>`)}}
@@ -123,7 +137,7 @@ function renderUser(d){const p=d.profile,s=d.stats,g=grade(p.points),nx=GRADES[g
   <div class="gbar" aria-hidden="true"><i style="width:${nx?clamp((p.points-GRADES[g][0])/(nx[0]-GRADES[g][0]),0,1)*100:100}%"></i></div>
   ${p.bio?`<p class="bio">${esc(p.bio)}</p>`:''}
   <p class="sub">${[...(ts.cats||[]).map(cname),...(ts.genres||[]),...(ts.makers||[])].map(x=>`<span class="chip2">${esc(x)}</span>`).join(' ')}</p></div>
-  <div class="astats">${tile(rate==null?'-':rate+'%','적중률')}${tile(fmt(s.hits)+'/'+fmt(s.decided),'결과 나온 표 중 적중')}${tile(fmt(s.proposal_hits)+'/'+fmt(s.proposals),'발굴 적중')}${tile(fmt(s.sheet_likes+s.comment_likes+s.fan_likes),'받은 공감')}${tile(fmt(s.votes),'투표')}${tile(fmt(s.sheets),'캐스팅 시트')}</div></div>
+  <div class="astats">${tile(rate==null?'-':rate+'%','내 촉 적중률')}${tile(fmt(s.hits)+'/'+fmt(s.decided),'실제 캐스팅과 일치')}${tile(fmt(s.proposal_hits)+'/'+fmt(s.proposals),'내 추천이 캐스팅됨')}${tile(fmt(s.sheet_likes+s.comment_likes+s.fan_likes),'받은 공감')}${tile(fmt(s.votes),'던진 표')}${tile(fmt(s.sheets),'내 드림캐스팅')}</div></div>
 
  <section id="avroom"></section>
  ${d.me?'<section id="insight"></section>':''}
@@ -132,8 +146,8 @@ function renderUser(d){const p=d.profile,s=d.stats,g=grade(p.points),nx=GRADES[g
   ${Object.keys(d.taste.tags||{}).length?`<p class="sub" style="margin-top:8px">${Object.keys(d.taste.tags).slice(0,10).map(x=>`<span class="chip2">${esc(x)}</span>`).join(' ')}</p>`:''}
   ${(d.taste.actors||[]).length?`<p style="margin-top:8px">자주 고른 배우 ${d.taste.actors.slice(0,8).map(a=>actorLink(a.name)).join(', ')}</p>`:''}
   <p class="dl">이 취향으로 첫 화면 카드 순서를 정해요. 구글 계정에서는 이름, 이메일, 프로필 사진만 받아요.</p></div></section>`:''}
- <section><div class="sh"><h2>업적</h2><span class="sub">${BADGES.filter(b=>b[1](s)).length}/${BADGES.length}</span></div>
-  <div class="badges">${BADGES.map(b=>`<span class="badge${b[1](s)?' on':''}">${b[0]}</span>`).join('')}</div></section>
+ <section><div class="sh"><h2>덕질 업적</h2><span class="sub">${(STATS_CUR=s,BADGES.filter(badgeOn).length)}/${BADGES.length} 달성</span></div>
+  <div class="badges2">${BADGES.map(b=>{const v=Math.min(b[3](s)||0,b[4]),on=v>=b[4];return `<div class="bdg${on?' on':''}" title="${esc(b[2])}"><span class="bi" aria-hidden="true">${b[0]}</span><b>${esc(b[1])}</b><small>${esc(b[2])}</small>${on?'<em>달성</em>':`<span class="bp"><i style="width:${Math.round(v/b[4]*100)}%"></i></span><em>${fmt(v)}/${fmt(b[4])}</em>`}</div>`}).join('')}</div></section>
 
  ${d.me&&(d.next||[]).length?`<section><div class="sh"><h2>다음에 던질 한 표</h2><span class="sub">아직 투표하지 않은 배역</span></div><div class="races">${d.next.map(n=>`<a class="race" href="#${esc(n.tid)}"><b>${esc(n.title)}</b><span class="sub">${esc(n.ch)} 역${n.why==='fan'?', 내가 팬인 배우가 후보':n.why==='taste'?', 내 취향 분류':', 지금 뜨거운 배역'}</span></a>`).join('')}</div></section>`:''}
 
