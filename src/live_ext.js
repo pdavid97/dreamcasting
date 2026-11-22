@@ -119,6 +119,7 @@ function renderUser(d){const p=d.profile,s=d.stats,g=grade(p.points),nx=GRADES[g
   <p class="sub">${[...(ts.cats||[]).map(cname),...(ts.genres||[]),...(ts.makers||[])].map(x=>`<span class="chip2">${esc(x)}</span>`).join(' ')}</p></div>
   <div class="astats">${tile(rate==null?'-':rate+'%','적중률')}${tile(fmt(s.hits)+'/'+fmt(s.decided),'결과 나온 표 중 적중')}${tile(fmt(s.proposal_hits)+'/'+fmt(s.proposals),'발굴 적중')}${tile(fmt(s.sheet_likes+s.comment_likes+s.fan_likes),'받은 공감')}${tile(fmt(s.votes),'투표')}${tile(fmt(s.sheets),'캐스팅 시트')}</div></div>
 
+ ${d.me?'<section id="insight"></section>':''}
  ${d.taste?`<section><div class="sh"><h2>내 캐스팅 취향</h2><span class="sub">투표, 팬 배우, 보고 싶어요, 카드 머문 시간으로 계산해요</span></div>
   <div class="tastebox">${Object.entries(d.taste.cats||{}).sort((a,b)=>b[1]-a[1]).map(([k,v])=>{const mx=Math.max(...Object.values(d.taste.cats));return `<div class="tb"><span>${esc((CATS.find(c=>c.id===k)||{}).name||k)}</span><i style="width:${Math.round(v/mx*100)}%"></i></div>`}).join('')||'<p class="sub">투표를 하면 취향이 그려져요.</p>'}
   ${Object.keys(d.taste.tags||{}).length?`<p class="sub" style="margin-top:8px">${Object.keys(d.taste.tags).slice(0,10).map(x=>`<span class="chip2">${esc(x)}</span>`).join(' ')}</p>`:''}
@@ -146,7 +147,7 @@ function renderUser(d){const p=d.profile,s=d.stats,g=grade(p.points),nx=GRADES[g
   <label class="sub">좋아하는 배우는 배우 페이지에서 팬 채널에 들어가면 함께 등록돼요</label>
   <label class="sub">한 줄 소개<input type="text" id="tBio" maxlength="100" value="${esc(p.bio||'')}" placeholder="예: 원작 싱크로율에 진심인 사람"></label>
   <button class="b buy" data-act="tastes">취향 저장</button></div></section>`:''}
- </div>`)}
+ </div>`);if(d.me)loadInsights()}
 
 /* ---------- 배우 화력 랭킹 ---------- */
 let FANB=[];

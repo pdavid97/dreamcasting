@@ -34,3 +34,7 @@ begin
   from ranked t;
   return res;
 end $function$;
+
+-- cand_pitch
+alter table candidates add column if not exists pitch text check (pitch is null or char_length(pitch) <= 80);
+alter table candidates add column if not exists kind text not null default 'actor' check (kind in ('actor','comedian','singer','stage','musical','influencer','youtuber','idol','other'));

@@ -128,3 +128,30 @@
 .dl-tap{position:absolute;left:50%;bottom:-10px;transform:translateX(-50%);font-style:normal;font-size:10px;font-weight:800;white-space:nowrap;background:var(--hot);color:#141414;padding:2px 7px;border-radius:8px;opacity:0;transition:opacity .2s;pointer-events:none}
 .dl-c.on .dl-tap{opacity:1}
 .dl-c.on em{display:none}
+.dl-why .dl-r{display:block;margin-top:6px;padding-left:12px;position:relative}
+.dl-why .dl-r::before{content:"";position:absolute;left:0;top:.6em;width:5px;height:5px;border-radius:50%;background:var(--hot)}
+.dl-src{font-size:11px;font-weight:700;color:var(--hot);text-decoration:underline;white-space:nowrap}
+/* 내 캐스팅 리포트 */
+.ig-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}
+.ig{border:1px solid var(--line);border-radius:16px;padding:14px 14px 12px;background:var(--card)}
+.ig h3{margin:0 0 4px;font-size:15px}
+.ig-line{margin:0 0 10px;font-size:13px;line-height:1.5;color:var(--mute)}.ig-line b{color:var(--ink)}
+.ig-empty{font-size:13px;color:var(--mute);padding:18px 4px;text-align:center;border:1px dashed var(--line);border-radius:12px}
+.ig-svg{width:100%;height:auto;display:block}
+.ig-bars{display:flex;flex-direction:column;gap:7px}
+.ig-bar{display:grid;grid-template-columns:30px 84px 1fr 22px;align-items:center;gap:8px;font-size:13px}
+.ig-bar .av,.ig-vs .av{width:30px;height:30px;border-radius:50%;background:#ddd center 20%/cover;display:grid;place-items:center;font-size:12px}
+.ig-bar .nm{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ig-bar i{display:block;height:10px;border-radius:5px;background:linear-gradient(90deg,var(--acc),var(--hot));width:var(--w)}
+.ig-bar b{text-align:right}
+.ig-vs{display:flex;flex-direction:column;gap:8px}
+.ig-vs .vs{display:grid;grid-template-columns:30px 1fr auto 1fr 30px;align-items:center;gap:6px;font-size:13px;position:relative;padding-bottom:12px;border-bottom:1px solid var(--line)}
+.ig-vs .vs .n{display:flex;flex-direction:column}.ig-vs .vs .n.r{text-align:right}.ig-vs .vs small{font-size:10px;color:var(--mute)}
+.ig-vs .vs em{font-style:normal;font-weight:900;color:var(--hot);font-size:12px}
+.ig-vs .vs .x{position:absolute;right:0;top:-6px;font-size:10px;background:var(--hot);color:#141414;padding:1px 6px;border-radius:8px}
+.ig-vs .vs .t{position:absolute;left:36px;bottom:0;font-size:10px;color:var(--mute)}
+.ig-heat{display:grid;grid-template-columns:80px repeat(var(--n),1fr);gap:3px;font-size:11px;overflow-x:auto}
+.ig-heat .ch{writing-mode:vertical-rl;transform:rotate(180deg);text-align:left;max-height:80px;overflow:hidden;color:var(--mute);justify-self:center}
+.ig-heat .rh{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;align-self:center}
+.ig-heat .cell{aspect-ratio:1;border-radius:4px;display:grid;place-items:center;font-weight:800;background:color-mix(in srgb,var(--acc) calc(var(--a)*100%),var(--line) 0%);border:1px solid var(--line);color:var(--ink)}
+.ig-cap{font-size:11px;color:var(--mute);margin:8px 0 0}

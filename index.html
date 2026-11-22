@@ -597,6 +597,33 @@ details.rules{padding:12px 16px;margin-top:14px}
 .dl-tap{position:absolute;left:50%;bottom:-10px;transform:translateX(-50%);font-style:normal;font-size:10px;font-weight:800;white-space:nowrap;background:var(--hot);color:#141414;padding:2px 7px;border-radius:8px;opacity:0;transition:opacity .2s;pointer-events:none}
 .dl-c.on .dl-tap{opacity:1}
 .dl-c.on em{display:none}
+.dl-why .dl-r{display:block;margin-top:6px;padding-left:12px;position:relative}
+.dl-why .dl-r::before{content:"";position:absolute;left:0;top:.6em;width:5px;height:5px;border-radius:50%;background:var(--hot)}
+.dl-src{font-size:11px;font-weight:700;color:var(--hot);text-decoration:underline;white-space:nowrap}
+/* 내 캐스팅 리포트 */
+.ig-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}
+.ig{border:1px solid var(--line);border-radius:16px;padding:14px 14px 12px;background:var(--card)}
+.ig h3{margin:0 0 4px;font-size:15px}
+.ig-line{margin:0 0 10px;font-size:13px;line-height:1.5;color:var(--mute)}.ig-line b{color:var(--ink)}
+.ig-empty{font-size:13px;color:var(--mute);padding:18px 4px;text-align:center;border:1px dashed var(--line);border-radius:12px}
+.ig-svg{width:100%;height:auto;display:block}
+.ig-bars{display:flex;flex-direction:column;gap:7px}
+.ig-bar{display:grid;grid-template-columns:30px 84px 1fr 22px;align-items:center;gap:8px;font-size:13px}
+.ig-bar .av,.ig-vs .av{width:30px;height:30px;border-radius:50%;background:#ddd center 20%/cover;display:grid;place-items:center;font-size:12px}
+.ig-bar .nm{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ig-bar i{display:block;height:10px;border-radius:5px;background:linear-gradient(90deg,var(--acc),var(--hot));width:var(--w)}
+.ig-bar b{text-align:right}
+.ig-vs{display:flex;flex-direction:column;gap:8px}
+.ig-vs .vs{display:grid;grid-template-columns:30px 1fr auto 1fr 30px;align-items:center;gap:6px;font-size:13px;position:relative;padding-bottom:12px;border-bottom:1px solid var(--line)}
+.ig-vs .vs .n{display:flex;flex-direction:column}.ig-vs .vs .n.r{text-align:right}.ig-vs .vs small{font-size:10px;color:var(--mute)}
+.ig-vs .vs em{font-style:normal;font-weight:900;color:var(--hot);font-size:12px}
+.ig-vs .vs .x{position:absolute;right:0;top:-6px;font-size:10px;background:var(--hot);color:#141414;padding:1px 6px;border-radius:8px}
+.ig-vs .vs .t{position:absolute;left:36px;bottom:0;font-size:10px;color:var(--mute)}
+.ig-heat{display:grid;grid-template-columns:80px repeat(var(--n),1fr);gap:3px;font-size:11px;overflow-x:auto}
+.ig-heat .ch{writing-mode:vertical-rl;transform:rotate(180deg);text-align:left;max-height:80px;overflow:hidden;color:var(--mute);justify-self:center}
+.ig-heat .rh{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;align-self:center}
+.ig-heat .cell{aspect-ratio:1;border-radius:4px;display:grid;place-items:center;font-weight:800;background:color-mix(in srgb,var(--acc) calc(var(--a)*100%),var(--line) 0%);border:1px solid var(--line);color:var(--ink)}
+.ig-cap{font-size:11px;color:var(--mute);margin:8px 0 0}
 
 </style>
 </head>
@@ -1062,6 +1089,7 @@ function renderUser(d){const p=d.profile,s=d.stats,g=grade(p.points),nx=GRADES[g
   <p class="sub">${[...(ts.cats||[]).map(cname),...(ts.genres||[]),...(ts.makers||[])].map(x=>`<span class="chip2">${esc(x)}</span>`).join(' ')}</p></div>
   <div class="astats">${tile(rate==null?'-':rate+'%','적중률')}${tile(fmt(s.hits)+'/'+fmt(s.decided),'결과 나온 표 중 적중')}${tile(fmt(s.proposal_hits)+'/'+fmt(s.proposals),'발굴 적중')}${tile(fmt(s.sheet_likes+s.comment_likes+s.fan_likes),'받은 공감')}${tile(fmt(s.votes),'투표')}${tile(fmt(s.sheets),'캐스팅 시트')}</div></div>
 
+ ${d.me?'<section id="insight"></section>':''}
  ${d.taste?`<section><div class="sh"><h2>내 캐스팅 취향</h2><span class="sub">투표, 팬 배우, 보고 싶어요, 카드 머문 시간으로 계산해요</span></div>
   <div class="tastebox">${Object.entries(d.taste.cats||{}).sort((a,b)=>b[1]-a[1]).map(([k,v])=>{const mx=Math.max(...Object.values(d.taste.cats));return `<div class="tb"><span>${esc((CATS.find(c=>c.id===k)||{}).name||k)}</span><i style="width:${Math.round(v/mx*100)}%"></i></div>`}).join('')||'<p class="sub">투표를 하면 취향이 그려져요.</p>'}
   ${Object.keys(d.taste.tags||{}).length?`<p class="sub" style="margin-top:8px">${Object.keys(d.taste.tags).slice(0,10).map(x=>`<span class="chip2">${esc(x)}</span>`).join(' ')}</p>`:''}
@@ -1089,7 +1117,7 @@ function renderUser(d){const p=d.profile,s=d.stats,g=grade(p.points),nx=GRADES[g
   <label class="sub">좋아하는 배우는 배우 페이지에서 팬 채널에 들어가면 함께 등록돼요</label>
   <label class="sub">한 줄 소개<input type="text" id="tBio" maxlength="100" value="${esc(p.bio||'')}" placeholder="예: 원작 싱크로율에 진심인 사람"></label>
   <button class="b buy" data-act="tastes">취향 저장</button></div></section>`:''}
- </div>`)}
+ </div>`);if(d.me)loadInsights()}
 
 /* ---------- 배우 화력 랭킹 ---------- */
 let FANB=[];
@@ -1271,7 +1299,7 @@ function renderDeck(){const box=$('#deck');if(!box||!DECKV)return;const t=curTop
   <div class="dk-q"><span class="slot">${esc(SLOT[r.slot]||'배역')}</span><h3>${esc(r.ch)} 역은 누구?</h3>${r.descr?`<p>${esc(r.descr)}</p>`:''}<p class="hint">${r.orig?`원작 ${esc(r.orig)}, `:''}${r.age?`배역 나이 ${esc(r.age)}, `:''}돌려서 고르고, 맨 위 사진을 한 번 더 탭하면 확정</p></div>
   ${cands.length?dialHTML(t,r,cands,picked,tot):'<p class="hint" style="padding:0 18px 18px">아직 후보가 없어요</p>'}
   ${more>0?`<a class="dk-more" href="#${esc(t.id)}">후보 ${more}명 더 보기</a>`:''}
-  ${news?`<a class="dk-news" href="${esc(news.u)}" target="_blank" rel="noopener">${esc(news.t)}${news.s?` <small>${esc(news.s)}</small>`:''}</a>`:''}
+  ${news?`<a class="dk-news" href="${esc(goURL(t.id,'news','news',news.u))}" target="_blank" rel="noopener">${esc(news.t)}${news.s?` <small>${esc(news.s)}</small>`:''}</a>`:''}
  </article>
  <div class="dk-acts"><button class="dk-btn skip" data-act="dk-skip" aria-label="이 배역 건너뛰기"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button><a class="dk-btn mid" href="#${esc(t.id)}" aria-label="작품 자세히">자세히</a><button class="dk-btn next" data-act="dk-nexttopic" aria-label="다음 작품">다음 작품</button></div>
  <p class="dk-tip">사진을 돌려 고르고 맨 위 사진을 탭하면 다음 배역으로 넘어가요. 카드 위쪽을 옆으로 밀면 건너뛰어요. 투표 결과는 이 작품에 투표한 사람에게만 보여요.</p>
@@ -1326,13 +1354,13 @@ function dialHTML(t,r,cands,picked,tot){const ou=r.orig?IMG['p:'+r.orig]:null;
  return `<div class="dial" id="dial" data-n="${cands.length}" data-start="${start}" tabindex="0" role="listbox" aria-label="${esc(r.ch)} 후보 다이얼, 좌우 화살표로 돌리고 Enter로 한 표">
   <div class="dl-ring" aria-hidden="true">${cands.map((_,i)=>`<i style="--a:${i*360/cands.length}deg"></i>`).join('')}</div>
   ${cands.map((c,i)=>{const u=IMG['p:'+c.name],pct=t.seen&&tot?Math.round((c.votes||0)/tot*100):null;
-   return `<button class="dl-c${picked===c.id?' sel':''}" data-i="${i}" data-rid="${r.id}" data-cid="${c.id}" data-name="${esc(c.name)}" data-age="${esc(ageTxt(c.name)||'')}" data-pct="${pct==null?'':pct}" data-recent="${esc(c.blurb&&c.blurb.recent?`최근작 《${c.blurb.recent.t}》${c.blurb.recent.y?` (${c.blurb.recent.y})`:''}`:'')}" data-why="${esc((c.blurb&&c.blurb.why)||'')}" role="option" aria-label="${esc(c.name)}"><span class="ph"${u?` style="background-image:url('${esc(u)}')"`:''}>${u?'':esc(c.name[0])}</span>${pct!=null?`<em>${pct}%</em>`:''}<i class="dl-tap">탭해서 한 표</i></button>`}).join('')}
+   return `<button class="dl-c${picked===c.id?' sel':''}" data-i="${i}" data-rid="${r.id}" data-cid="${c.id}" data-name="${esc(c.name)}" data-age="${esc(ageTxt(c.name)||'')}" data-pct="${pct==null?'':pct}" data-recent="${esc(c.blurb&&c.blurb.recent?`최근작 《${c.blurb.recent.t}》${c.blurb.recent.y?` (${c.blurb.recent.y})`:''}`:'')}" data-why="${esc(JSON.stringify(((c.blurb&&c.blurb.reasons)||(c.blurb&&c.blurb.why?[{text:c.blurb.why}]:[])).slice(0,2)))}" data-tid="${esc(t.id)}" role="option" aria-label="${esc(c.name)}"><span class="ph"${u?` style="background-image:url('${esc(u)}')"`:''}>${u?'':esc(c.name[0])}</span>${pct!=null?`<em>${pct}%</em>`:''}<i class="dl-tap">탭해서 한 표</i></button>`}).join('')}
   <div class="dl-mid">
    <span class="dl-orig"${ou?` style="background-image:url('${esc(ou)}')"`:''}>${ou?'':(r.orig?esc(r.orig[0]):'?')}</span>
    <small class="dl-ol">${r.orig?`원작 ${esc(r.orig)}`:'원작 배우 없음'}</small>
   </div>
  </div>
- <div class="dl-pick" aria-live="polite"><div class="dl-pn"><b id="dlName"></b><small id="dlMeta"></small></div><p class="dl-rc" id="dlRecent"></p><p class="dl-why" id="dlWhy"></p></div>`}
+ <div class="dl-pick" aria-live="polite"><div class="dl-pn"><b id="dlName"></b><small id="dlMeta"></small></div><p class="dl-rc" id="dlRecent"></p><div class="dl-why" id="dlWhy"></div></div>`}
 function bindDial(){const el=$('#dial');DIAL=null;if(!el)return;const n=+el.dataset.n,step=360/n;
  const D=DIAL={el,n,step,rot:-(+el.dataset.start)*step,vel:0,raf:0,focus:-1};
  const btns=[...el.querySelectorAll('.dl-c')];
@@ -1342,7 +1370,9 @@ function bindDial(){const el=$('#dial');DIAL=null;if(!el)return;const n=+el.data
   const rg=el.querySelector('.dl-ring');rg.style.setProperty('--R',rg.clientWidth/2+'px');rg.style.transform=`rotate(${D.rot}deg)`;
   const f=((Math.round(-D.rot/step)%n)+n)%n;if(f!==D.focus){D.focus=f;btns.forEach((b,i)=>b.classList.toggle('on',i===f));const b=btns[f];
    $('#dlName').textContent=b.dataset.name;$('#dlMeta').textContent=[b.dataset.age,b.dataset.pct!==''?`득표 ${b.dataset.pct}%`:''].filter(Boolean).join(', ');
-   $('#dlRecent').textContent=b.dataset.recent||'';$('#dlWhy').textContent=b.dataset.why||'';const pk=el.parentNode.querySelector('.dl-pick');if(pk){pk.classList.remove('swap');void pk.offsetWidth;pk.classList.add('swap')}
+   $('#dlRecent').textContent=b.dataset.recent||'';
+   let rs=[];try{rs=JSON.parse(b.dataset.why||'[]')}catch(e){}
+   $('#dlWhy').innerHTML=rs.map(x=>`<span class="dl-r">${esc(x.text||'')}${x.src&&x.src.u?` <a class="dl-src" href="${esc(goURL(b.dataset.tid,'news','news',x.src.u))}" target="_blank" rel="noopener" title="${esc(x.src.t||'')}">출처</a>`:''}</span>`).join('');const pk=el.parentNode.querySelector('.dl-pick');if(pk){pk.classList.remove('swap');void pk.offsetWidth;pk.classList.add('swap')}
    if(D.ticked)try{navigator.vibrate&&navigator.vibrate(6)}catch(e){}D.ticked=true;el.classList.remove('tick');void el.offsetWidth;el.classList.add('tick')}};
  const snap=(target)=>{cancelAnimationFrame(D.raf);const go=()=>{const d=target-D.rot;if(Math.abs(d)<0.3){D.rot=target;lay();return}D.rot+=d*0.22;lay();D.raf=requestAnimationFrame(go)};go()};
  const nearest=()=>Math.round(D.rot/step)*step;
@@ -1398,6 +1428,62 @@ document.addEventListener('click',async e=>{const b=e.target.closest('[data-act]
   try{await rpc('post_thread',{tid:TALK.tid,ck:TALK.open,parent,txt});track('thread_post',{t:TALK.tid,m:{reply:!!parent}});inp.value='';const k=TALK.open;TALK.open=null;await openThread(k);const c=TALK.combos.find(x=>x.ckey===k);if(c)c.comments++;renderTalk()}catch(err){toast(errMsg(err))}return}
  if(a==='tdel'){try{await rpc('delete_thread',{cid:+b.dataset.id});TALK.thread=TALK.thread.filter(x=>x.id!==+b.dataset.id);renderTalk()}catch(err){toast(errMsg(err))}return}
 });
+
+/* ================= 내 캐스팅 리포트: 내 투표를 인포그래픽으로 (본인 페이지에서만) ================= */
+const LEADS=['male_lead','female_lead','lead'],SUBS=['male_sub','female_sub','support'];
+async function loadInsights(){const box=$('#insight');if(!box)return;box.innerHTML='<p class="sub">내 투표를 그림으로 그리는 중이에요</p>';
+ let rows=[];try{rows=await rpc('my_cast_graph',{})||[]}catch(e){box.innerHTML='';return}
+ if(rows.length<2){box.innerHTML=`<div class="sh"><h2>내 캐스팅 리포트</h2></div><p class="dl">투표가 쌓이면 내가 자꾸 고르는 배우, 커플, 라이벌 구도를 그림으로 보여드려요. 지금 ${rows.length}표.</p>`;return}
+ const names=[...new Set(rows.flatMap(r=>[r.pick,r.orig].filter(Boolean)))];
+ try{await loadNames(names)}catch(e){}
+ const byT={};rows.forEach(r=>{(byT[r.tid]||(byT[r.tid]={title:r.title,s:{}})).s[r.slot]=r});
+ const works=Object.values(byT);
+ // 1 최애 배우
+ const fav=igCnt(rows.map(r=>r.pick)).slice(0,8);
+ // 2 커플(같은 작품의 남주와 여주)
+ const couples=[];works.forEach(w=>{const m=w.s.male_lead,f=w.s.female_lead;if(m&&f)couples.push({a:m.pick,b:f.pick,t:w.title})});
+ // 3 원작 배우와 내 픽
+ const match=rows.filter(r=>r.orig).map(r=>({o:r.orig,p:r.pick,t:r.title,ch:r.ch}));
+ // 4 라이벌 구도(같은 성별의 주연과 서브)
+ const rivals=[];works.forEach(w=>{[['male_lead','male_sub'],['female_lead','female_sub']].forEach(([a,b])=>{if(w.s[a]&&w.s[b])rivals.push({a:w.s[a].pick,b:w.s[b].pick,ca:w.s[a].ch,cb:w.s[b].ch,t:w.title})})});
+ // 5 주연과 조연 쌍
+ const ls=[];works.forEach(w=>{LEADS.forEach(a=>SUBS.forEach(b=>{if(w.s[a]&&w.s[b])ls.push({a:w.s[a].pick,b:w.s[b].pick,t:w.title})}))});
+ box.innerHTML=`<div class="sh"><h2>내 캐스팅 리포트</h2><span class="sub">작품 ${works.length}편, ${rows.length}표로 그렸어요. 나만 볼 수 있어요.</span></div>
+ <div class="ig-grid">
+  ${igCard('나도 모르게 계속 고르는 배우',favLine(fav),favBars(fav))}
+  ${igCard('나도 모르게 계속 이어주는 커플',pairLine(couples,'커플'),couples.length?pairGraph(couples,'c'):igEmpty('같은 작품에서 남주와 여주를 둘 다 고르면 커플 관계도가 생겨요.'))}
+  ${igCard('원작 배우와 내가 매치업한 배우',matchLine(match),match.length?matchFlow(match):igEmpty('원작 배우가 있는 배역에 투표하면 이어져요.'))}
+  ${igCard('나도 모르게 계속 붙이는 라이벌 구도',pairLine(rivals,'라이벌'),rivals.length?rivalCards(rivals):igEmpty('같은 작품에서 주연과 같은 성별의 서브를 함께 고르면 라이벌 구도가 보여요.'))}
+  ${igCard('주연과 조연, 내 단골 조합',pairLine(ls,'조합'),ls.length?heat(ls):igEmpty('같은 작품에서 주연과 조연을 함께 고르면 히트맵이 채워져요.'))}
+ </div>`}
+function igCnt(arr){const m={};arr.forEach(k=>{if(k)m[k]=(m[k]||0)+1});return Object.entries(m).sort((a,b)=>b[1]-a[1])}
+const jj=(w,a,b)=>{const c=(w||'').trim().slice(-1).charCodeAt(0);return w+(c>=0xac00&&c<=0xd7a3&&(c-0xac00)%28?a:b)};
+const igEmpty=t=>`<p class="ig-empty">${esc(t)}</p>`;
+function igCard(h,line,body){return `<article class="ig"><h3>${esc(h)}</h3>${line?`<p class="ig-line">${line}</p>`:''}${body}</article>`}
+function favLine(f){if(!f.length)return '';const [n,c]=f[0];return c>1?`<b>${esc(n)}</b>, 서로 다른 배역에서 <b>${c}번</b> 골랐어요. 이쯤 되면 최애 인정.`:`아직 한 배우에 몰표는 없어요. 고르게 보는 타입.`}
+function favBars(f){const mx=Math.max(...f.map(x=>x[1]));return `<div class="ig-bars">${f.map(([n,c])=>{const u=IMG['p:'+n];return `<div class="ig-bar"><span class="av"${u?` style="background-image:url('${esc(u)}')"`:''}>${u?'':esc(n[0])}</span><span class="nm">${actorLink(n)}</span><i style="--w:${Math.round(c/mx*100)}%"></i><b>${c}</b></div>`}).join('')}</div>`}
+function igKey(a,b){return [a,b].sort().join('|')}
+function pairLine(arr,word){if(!arr.length)return '';const m=igCnt2(arr);const top=m[0];return top[1]>1?`<b>${esc(jj(top[2].a,'과','와'))}</b> <b>${esc(top[2].b)}</b>, ${top[1]}개 작품에서 ${word}로 묶었어요. 무의식이 밀고 있는 조합.`:`${arr.length}개 ${word} 중 아직 반복된 짝은 없어요. 다음 작품에서 겹치면 알려드릴게요.`}
+function igCnt2(arr){const m={};arr.forEach(p=>{const k=igKey(p.a,p.b);(m[k]||(m[k]=[k,0,p,[]]))[1]++;m[k][3].push(p.t)});return Object.values(m).sort((a,b)=>b[1]-a[1])}
+/* 관계도: 사람을 원 위에 놓고 짝을 선으로 잇기(선 굵기 = 반복 횟수) */
+function pairGraph(arr){const ps=igCnt2(arr).slice(0,12);const ns=[...new Set(ps.flatMap(p=>[p[2].a,p[2].b]))].slice(0,14);const W=320,R=118,cx=160,cy=150;
+ const pos={};ns.forEach((n,i)=>{const a=-Math.PI/2+i*2*Math.PI/ns.length;pos[n]=[cx+R*Math.cos(a),cy+R*Math.sin(a)]});
+ const edges=ps.filter(p=>pos[p[2].a]&&pos[p[2].b]).map(p=>{const [x1,y1]=pos[p[2].a],[x2,y2]=pos[p[2].b];return `<path d="M${x1},${y1} Q${cx},${cy} ${x2},${y2}" fill="none" stroke="var(--hot)" stroke-opacity="${p[1]>1?.95:.55}" stroke-width="${1.5+p[1]*2}"><title>${esc(p[2].a)} ♥ ${esc(p[2].b)}: ${esc(p[3].join(', '))}</title></path>`}).join('');
+ const nodes=ns.map((n,i)=>{const [x,y]=pos[n],u=IMG['p:'+n],id='igc'+i+Math.random().toString(36).slice(2,6);return `<g><clipPath id="${id}"><circle cx="${x}" cy="${y}" r="17"/></clipPath><circle cx="${x}" cy="${y}" r="19" fill="var(--card)" stroke="var(--line)"/>${u?`<image href="${esc(u)}" x="${x-17}" y="${y-17}" width="34" height="34" clip-path="url(#${id})" preserveAspectRatio="xMidYMin slice"/>`:`<text x="${x}" y="${y+5}" text-anchor="middle" font-size="14">${esc(n[0])}</text>`}<text x="${x}" y="${y+(y>cy?34:-24)}" text-anchor="middle" font-size="11" fill="var(--ink)">${esc(n)}</text></g>`}).join('');
+ return `<svg class="ig-svg" viewBox="0 0 ${W} 300" role="img" aria-label="커플 관계도">${edges}${nodes}</svg>`}
+/* 매치업: 왼쪽 원작 배우, 오른쪽 내 픽, 곡선으로 연결 */
+function matchFlow(arr){const os=igCnt(arr.map(x=>x.o)).map(x=>x[0]).slice(0,8),ps=igCnt(arr.map(x=>x.p)).map(x=>x[0]).slice(0,8);const H=Math.max(os.length,ps.length)*40+20,W=320;
+ const yo=n=>20+os.indexOf(n)*40+12,yp=n=>20+ps.indexOf(n)*40+12;
+ const m={};arr.forEach(x=>{if(os.includes(x.o)&&ps.includes(x.p)){const k=x.o+'|'+x.p;(m[k]||(m[k]={o:x.o,p:x.p,n:0,t:[]})).n++;m[k].t.push(`${x.t||''}${x.ch?` ${x.ch}`:''}`)}});
+ const lines=Object.values(m).map(e=>`<path d="M104,${yo(e.o)} C160,${yo(e.o)} 160,${yp(e.p)} 216,${yp(e.p)}" fill="none" stroke="var(--acc)" stroke-opacity=".7" stroke-width="${1.5+e.n*2}"><title>${esc(e.o)} → ${esc(e.p)}</title></path>`).join('');
+ const lab=(n,x,y,anc)=>`<text x="${x}" y="${y+4}" text-anchor="${anc}" font-size="12" fill="var(--ink)">${esc(n)}</text>`;
+ return `<svg class="ig-svg" viewBox="0 0 ${W} ${H}" role="img" aria-label="원작 배우와 내 픽 연결"><text x="8" y="12" font-size="10" fill="var(--mute)">원작</text><text x="${W-8}" y="12" font-size="10" text-anchor="end" fill="var(--mute)">내 픽</text>${lines}${os.map(n=>`<circle cx="104" cy="${yo(n)}" r="4" fill="var(--ink)"/>`+lab(n,96,yo(n),'end')).join('')}${ps.map(n=>`<circle cx="216" cy="${yp(n)}" r="4" fill="var(--acc)"/>`+lab(n,224,yp(n),'start')).join('')}</svg>`}
+function matchLine(arr){if(!arr.length)return '';const m=igCnt(arr.map(x=>x.o+'|'+x.p));const [k,c]=m[0];const [o,p]=k.split('|');const byO=igCnt(arr.map(x=>x.o))[0];
+ return c>1?`<b>${esc(o)}</b> 자리에 <b>${esc(jj(p,'을','를'))}</b> ${c}번 앉혔어요. 공식 후계자 지정?`:`원작 배우 ${new Set(arr.map(x=>x.o)).size}명의 자리를 ${new Set(arr.map(x=>x.p)).size}명으로 채웠어요.${byO[1]>1?` ${esc(byO[0])} 자리에 제일 공을 들였네요.`:''}`}
+function rivalCards(arr){return `<div class="ig-vs">${igCnt2(arr).slice(0,6).map(p=>{const a=p[2].a,b=p[2].b,ua=IMG['p:'+a],ub=IMG['p:'+b];return `<div class="vs"><span class="av"${ua?` style="background-image:url('${esc(ua)}')"`:''}></span><span class="n">${esc(a)}<small>${esc(p[2].ca||'')}</small></span><em>VS</em><span class="n r">${esc(b)}<small>${esc(p[2].cb||'')}</small></span><span class="av"${ub?` style="background-image:url('${esc(ub)}')"`:''}></span>${p[1]>1?`<b class="x">${p[1]}번</b>`:''}<small class="t">${esc(p[3].join(', '))}</small></div>`}).join('')}</div>`}
+/* 히트맵: 줄 = 내가 고른 주연, 칸 = 내가 고른 조연, 색 = 같은 작품에서 함께 고른 횟수 */
+function heat(arr){const rs=igCnt(arr.map(x=>x.a)).map(x=>x[0]).slice(0,7),cs=igCnt(arr.map(x=>x.b)).map(x=>x[0]).slice(0,7);const m={};let mx=1;arr.forEach(x=>{const k=x.a+'|'+x.b;m[k]=(m[k]||0)+1;mx=Math.max(mx,m[k])});
+ return `<div class="ig-heat" style="--n:${cs.length}"><span></span>${cs.map(c=>`<span class="ch">${esc(c)}</span>`).join('')}${rs.map(r=>`<span class="rh">${esc(r)}</span>${cs.map(c=>{const v=m[r+'|'+c]||0;return `<span class="cell" style="--a:${v?(.25+.75*v/mx).toFixed(2):0}" title="${esc(r)} + ${esc(c)}: ${v}번">${v||''}</span>`}).join('')}`).join('')}</div><p class="ig-cap">줄은 내가 고른 주연, 칸은 내가 고른 조연이에요. 진할수록 같이 고른 횟수가 많아요.</p>`}
 
 }
 </script>
