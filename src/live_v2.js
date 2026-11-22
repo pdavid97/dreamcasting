@@ -47,8 +47,8 @@ function renderTabbar(){const b=$('#tabbar');if(!b)return;const h=location.hash.
  const it=[['#','홈',IC.home,!h],['#explore','탐색',IC.grid,h==='explore'],['#make','만들기',IC.plus,false],['#actors','배우',IC.star,h.startsWith('a/')||h==='actors'],[me,'나',IC.user,h.startsWith('u/')]];
  b.innerHTML=it.map(x=>`<a href="${x[0]}" class="${x[3]?'on':''}" ${x[3]?'aria-current="page"':''}>${x[2]}<span>${x[1]}</span></a>`).join('')}
 /* 특수 주소: 홈, 탐색, 만들기, 배우, 나 */
-function navSpecial(h){if(!h||h==='home'){showHome(true);return}
- if(h==='explore'){showHome(true);$('#tabs').scrollIntoView({behavior:'smooth'});return}
+function navSpecial(h){if(!h||h==='home'){showHome(false);showDeck(true);renderTabbar();return}showDeck(false);
+ if(h==='explore'){showHome(true);track('explore_view');return}
  if(h==='make'){if(!HOMEV&&D){const b=document.querySelector('.sheet [data-act=sheet]');if(b){b.closest('.sheet').scrollIntoView({behavior:'smooth'});return}}$('#propBox').open=true;$('#propBox').scrollIntoView({behavior:'smooth'});return}
  if(h==='actors'){$('#fanb').scrollIntoView({behavior:'smooth'});setTimeout(()=>{const i=$('#aSearch');if(i)i.focus()},400);return}
  if(h==='me'){if(needLogin())return;if(PROF)location.hash='u/'+encodeURIComponent(PROF.nickname);return}

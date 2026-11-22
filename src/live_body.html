@@ -6,6 +6,7 @@
 <div class="chy"><span class="lab">광장</span><div class="track"><div id="chy"></div></div></div>
 
 <main class="wrap">
+  <section id="deck" hidden aria-label="오늘의 캐스팅 카드"></section>
   <nav class="tabs" id="tabs" aria-label="분류"></nav>
   <div class="shelf" id="shelf" aria-label="작품 목록"></div>
   <section id="page" hidden aria-live="polite"></section>
@@ -21,6 +22,7 @@
       <div class="fig"><svg id="chart" role="img" aria-label="선택한 배역 차트"></svg></div>
       <div class="sh" style="margin-top:14px"><h2>배역 보드</h2><span class="sub">배역마다 한 번만 투표할 수 있어요</span></div>
       <div class="roles" id="roles"></div>
+      <section id="talkBox" class="talkbox" aria-label="결과와 토론방"></section>
     </section>
     <aside class="side">
       <section id="sideTop"></section>
@@ -75,6 +77,7 @@
   <p class="foot">원작과 실사화 정보는 공개 보도를 따랐고, 리메이크 관은 널리 알려진 방영 연도와 원작 출연진만 적었어요. 처음 제공된 후보 목록은 토론을 시작하기 위한 예시이며 실제 리메이크 계획이나 섭외와 관계가 없어요. 작품명과 인물명은 각 권리자의 것이에요. 배우 사진과 작품 포스터는 TMDB에서 불러옵니다. This product uses the TMDB API but is not endorsed or certified by TMDB.</p>
 </main>
 
+<div class="sheetm" id="loginSheet" role="dialog" aria-modal="true" aria-labelledby="lsH"><div><h2 id="lsH">로그인하면 이 표가 바로 반영돼요</h2><p>고른 후보는 저장해 뒀어요. 구글 계정으로 3초면 끝나요.</p><button class="lg g big" data-act="google">구글로 계속하기</button><button class="lk" data-act="sheet-close">나중에</button></div></div>
 <div class="modal" id="nickModal" role="dialog" aria-modal="true" aria-labelledby="nickH"><div>
   <h3 id="nickH">광장에서 쓸 닉네임</h3>
   <p class="sub" style="margin-bottom:10px">2~16자. 투표, 글, 캐스팅 시트에 이 이름이 표시돼요. 나중에 바꿀 수 있어요.</p>
@@ -118,16 +121,16 @@ async function loadTopic(){
  const t=topic(),tid=t.id;
  const {data:roles}=await sb.from('roles').select('*').eq('topic_id',tid).order('pos');
  const rids=(roles||[]).map(r=>r.id);
- const q=[rpc('topic_tally',{tid}),rpc('topic_sync',{tid}),rpc('topic_sheet_names',{tid}),
+ const q=[rpc('topic_tally',{tid}),rpc('can_see',{tid}).then(v=>{SEEN_T[tid]=!!v}).catch(()=>{}),rpc('topic_sync',{tid}),rpc('topic_sheet_names',{tid}),
   sb.from('v_comments').select('*').in('role_id',rids.length?rids:[-1]).order('created_at',{ascending:false}).limit(300),
   sb.from('v_sheets').select('*').eq('topic_id',tid).order('likes',{ascending:false}).limit(40),
   sb.from('v_dpicks').select('*').in('role_id',rids.length?rids:[-1]),
   sb.from('tally_daily').select('*').in('role_id',rids.length?rids:[-1]).order('day'),
   sb.from('sync_daily').select('*').in('role_id',rids.length?rids:[-1]).order('day')];
  if(USER){q.push(sb.from('votes').select('role_id,candidate_id,weight').in('role_id',rids.length?rids:[-1]),sb.from('sync_votes').select('role_id,score').in('role_id',rids.length?rids:[-1]),sb.from('comment_likes').select('comment_id').eq('user_id',USER.id),sb.from('sheet_likes').select('sheet_id').eq('user_id',USER.id))}
- const r=await Promise.all(q);
+ const r0=await Promise.all(q);const r=[r0[0],...r0.slice(2)];
  const tally=r[0]||[],sync=r[1]||[],names=r[2]||[];
- const nd={tid,roles:roles||[],cands:{},sync:{},comments:r[3].data||[],sheets:r[4].data||[],dpicks:r[5].data||[],tdaily:r[6].data||[],sdaily:r[7].data||[],names,myVote:{},mySync:{},cliked:new Set(),sliked:new Set()};
+ const nd={tid,seen:!!SEEN_T[tid],roles:roles||[],cands:{},sync:{},comments:r[3].data||[],sheets:r[4].data||[],dpicks:r[5].data||[],tdaily:r[6].data||[],sdaily:r[7].data||[],names,myVote:{},mySync:{},cliked:new Set(),sliked:new Set()};
  for(const c of tally)(nd.cands[c.role_id]=nd.cands[c.role_id]||[]).push(c);
  for(const s of sync)nd.sync[s.role_id]=s;
  if(USER){for(const v of r[8].data||[])nd.myVote[v.role_id]=v;for(const v of r[9].data||[])nd.mySync[v.role_id]=v.score;for(const v of r[10].data||[])nd.cliked.add(v.comment_id);for(const v of r[11].data||[])nd.sliked.add(v.sheet_id)}
@@ -135,11 +138,11 @@ async function loadTopic(){
 }
 async function loadSide(){const [f,l]=await Promise.all([sb.from('feed').select('*').order('id',{ascending:false}).limit(30),sb.from('v_leaders').select('*')]);FEED=f.data||[];LEAD=l.data||[]}
 async function loadProfile(){if(!USER){PROF=null;NOTICES=[];return}const {data}=await sb.from('profiles').select('*').eq('id',USER.id).maybeSingle();PROF=data||null;await Promise.all([loadNotices(),loadWants()])}
-async function refresh(all){try{if(all)await loadTopics();await Promise.all([loadTopic(),loadSide(),loadProfile(),loadFanBoard()]);render();loadImages();if(HOMEV)loadHome();if(PAGE&&PAGE.kind==='a'&&PAGE.pid&&!busy)renderActor().catch(()=>{})}catch(e){console.error(e);toast('불러오지 못했어요: '+errMsg(e))}}
+async function refresh(all){try{if(all)await loadTopics();await Promise.all([loadTopic(),loadSide(),loadProfile(),loadFanBoard()]);render();loadImages();if(HOMEV)loadHome();if(USER&&PROF&&pend().length)flushPending();if(PAGE&&PAGE.kind==='a'&&PAGE.pid&&!busy)renderActor().catch(()=>{})}catch(e){console.error(e);toast('불러오지 못했어요: '+errMsg(e))}}
 async function act(fn,args,okMsg){if(busy)return;busy=true;try{const d=await rpc(fn,args);if(okMsg)toast(okMsg);await refresh(fn.startsWith('propose_topic')||fn.startsWith('admin'));return d}catch(e){toast(errMsg(e))}finally{busy=false}}
 
 /* ---------- images ---------- */
-let imgBusy=false;
+let imgBusy=false;const SEEN_T={};
 async function loadImages(){if(imgBusy||!D)return;const t=topic(),real=t.cat!=='wn'||D.roles.some(isSync),names=new Set();
  D.roles.forEach(r=>{if(isOpt(r))return;if(r.actor)names.add(r.actor);if(r.orig)names.add(r.orig);(D.cands[r.id]||[]).forEach(c=>names.add(c.name))});
  const need=[...names].filter(n=>!(('p:'+n)in IMG)).slice(0,38),titles=real&&!(('w:'+t.id)in IMG)?[t.title]:[];if(!need.length&&!titles.length)return;
@@ -267,10 +270,10 @@ function renderPoster(){const box=$('#poster');const s=POSTER&&POSTER.tid===SEL&
  box.innerHTML=`<div class="pwrap"><div class="pfig">${posterSVG(s)}</div><div><h3 style="font-size:22px">가상 캐스팅 포스터</h3><p class="sub" style="margin:6px 0 10px">${esc(s.nickname)}의 시트로 만든 팬메이드 포스터예요. 실존 배우의 얼굴은 쓰지 않고 실루엣과 크레딧으로 구성해요.</p><div class="qty" role="group" aria-label="포스터 분위기">${Object.entries(PST).map(([k,v])=>`<button class="chip" data-act="pstyle" data-v="${k}" aria-pressed="${k===PSTYLE}">${v.n}</button>`).join('')}</div><div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap"><button class="b sm buy" data-act="share" data-sid="${s.id}">공유 문구 복사</button><button class="b sm" data-act="pclose">닫기</button></div>
  ${USER&&s.user_id===USER.id?`<div class="pup"><b>배경 이미지</b><p class="dl">직접 만든 이미지를 올리거나 AI로 얼굴 없는 실루엣 배경을 만들 수 있어요. 실존 인물 얼굴을 합성한 이미지, 남의 사진, 공식 포스터는 올리지 말아 주세요. 신고 3건이면 숨겨져요.</p><div class="row2"><label class="b sm">이미지 올리기<input type="file" accept="image/*" data-act-file="poster" data-sid="${s.id}" hidden></label><button class="b sm" data-act="paigen" data-sid="${s.id}">AI 배경 만들기</button>${s.poster_url?`<button class="b sm" data-act="pclear" data-sid="${s.id}">배경 지우기</button>`:''}</div></div>`:(s.poster_url&&USER?`<button class="lk" data-act="preport" data-sid="${s.id}">이 포스터 신고</button>`:'')}
  </div></div>`}
-function render(){renderWho();renderTabs();renderShelf();renderPerks();renderRank();renderFeed();renderFanBoard();renderTabbar();if(HOMEV)renderHome();if(!D||D.tid!==SEL)return;{const ns=[];D.roles.forEach(r=>{if(r.orig)ns.push(r.orig);if(r.actor)ns.push(r.actor);(D.cands[r.id]||[]).forEach(c=>ns.push(c.name))});D.sheets.forEach(x=>Object.values(x.picks||{}).forEach(p=>{if(p.n)ns.push(p.n)}));loadAges(ns)}renderHead();renderWork();renderStats();renderWatch();renderDuel();renderPoster();drawChart();renderRoles();renderSide();renderOps()}
+function render(){renderWho();renderTabs();renderShelf();renderPerks();renderRank();renderFeed();renderFanBoard();renderTabbar();if(HOMEV)renderHome();if(!D||D.tid!==SEL)return;{const ns=[];D.roles.forEach(r=>{if(r.orig)ns.push(r.orig);if(r.actor)ns.push(r.actor);(D.cands[r.id]||[]).forEach(c=>ns.push(c.name))});D.sheets.forEach(x=>Object.values(x.picks||{}).forEach(p=>{if(p.n)ns.push(p.n)}));loadAges(ns)}renderHead();renderWork();renderStats();renderWatch();renderDuel();renderPoster();drawChart();renderRoles();renderSide();renderOps();$('#roles').classList.toggle('unseen',!D.seen);document.querySelector('.fig')&&document.querySelector('.fig').classList.toggle('unseen',!D.seen);if(TALK.tid!==D.tid){TALK={tid:D.tid,combos:[],open:null,thread:[],myv:{}};if(D.seen)loadTalk(D.tid);else renderTalk()}}
 
 /* ---------- events ---------- */
-async function selectTopic(id){closePage();showHome(false);SEL=id;CAT=topic().cat;SROLE=0;DUEL=null;POSTER=null;shareText='';D=null;try{history.replaceState(null,'','#'+id)}catch(e){}render();$('#tTitle').textContent=topic().title;await loadTopic();render();loadImages()}
+async function selectTopic(id){closePage();showHome(false);showDeck(false);SEL=id;CAT=topic().cat;SROLE=0;DUEL=null;POSTER=null;shareText='';D=null;try{history.replaceState(null,'','#'+id)}catch(e){}render();$('#tTitle').textContent=topic().title;await loadTopic();render();loadImages()}
 document.addEventListener('click',async e=>{
  const b=e.target.closest('[data-act]');if(!b)return;const a=b.dataset.act,rid=+b.dataset.rid,cid=+b.dataset.cid;
  if(a==='role'){if(e.target.closest('button,input,select,summary,details,a'))return;SROLE=+b.dataset.i;renderRoles();drawChart();return}
@@ -328,7 +331,7 @@ document.addEventListener('click',async e=>{
 document.addEventListener('change',e=>{const t=e.target;if(t.dataset&&t.dataset.actFile==='poster'&&t.files&&t.files[0]){if(needLogin())return;uploadPoster(+t.dataset.sid,t.files[0]);t.value='';return}if(t.id==='yIdx'){loadYearIndex();return}if(t.id&&(t.id.startsWith('sy')||t.id.startsWith('sp')||t.id.startsWith('sn'))){const rid=t.id.slice(2),r=D&&D.roles.find(x=>String(x.id)===rid),sp=$('#sp'+rid);if(r&&sp){const nm=sp.value==='__n'?($('#sn'+rid).value||'').trim():((D.cands[r.id]||[]).find(c=>String(c.candidate_id)===sp.value)||{}).name;const y=+($('#sy'+rid).value||0),a=nm?ageTxt(nm,y):'';const el=$('#sa'+rid);if(el)el.textContent=[r.age_hint?`배역 나이 ${r.age_hint}`:'',a?`${nm} ${a}`:''].filter(Boolean).join(', ')}}if(t.id&&t.id.startsWith('sp')){const n=document.getElementById('sn'+t.id.slice(2));if(n){n.hidden=t.value!=='__n';if(!n.hidden)n.focus()}renderChemBuild()}if(t.id&&t.id.startsWith('sn'))renderChemBuild()});
 document.addEventListener('input',e=>{const t=e.target;if(t.id&&t.id.startsWith('vt'))$('#vo'+t.id.slice(2)).textContent=t.value});
 $('#nickIn').addEventListener('keydown',e=>{if(e.key==='Enter')document.querySelector('[data-act=nick]').click()});
-addEventListener('hashchange',()=>{const h=decodeURIComponent(location.hash.slice(1));if(h.startsWith('a/')||h.startsWith('u/')){openRoute();renderTabbar();return}if(h&&TOPICS.find(t=>t.id===h)){if(h!==SEL||PAGE||HOMEV)selectTopic(h)}else{closePage();navSpecial(h)}renderTabbar()});
+addEventListener('hashchange',()=>{const h=decodeURIComponent(location.hash.slice(1));if(h.startsWith('a/')||h.startsWith('u/')){openRoute();renderTabbar();return}if(h.endsWith('/talk')&&TOPICS.find(t=>t.id===h.slice(0,-5))){const id=h.slice(0,-5);(id!==SEL||PAGE||HOMEV||DECKV?selectTopic(id):Promise.resolve()).then(()=>setTimeout(()=>{const x=$('#talkBox');if(x)x.scrollIntoView({behavior:'smooth'})},300))}else if(h&&TOPICS.find(t=>t.id===h)){if(h!==SEL||PAGE||HOMEV||DECKV)selectTopic(h)}else{closePage();navSpecial(h)}renderTabbar()});
 const ro=new ResizeObserver(()=>drawChart());ro.observe($('.fig'));
 
 /* 인증 콜백 안에서 다른 supabase 호출을 await 하면 내부 잠금이 풀리지 않아 로그아웃이 멈춤: 다음 틱으로 미룸 */

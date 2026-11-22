@@ -1,0 +1,85 @@
+/* 카드 덱: 틴더식 한 장 한 질문. 모바일 우선, 데스크톱은 가운데 정렬 */
+#deck[hidden],.tabs[hidden],.shelf[hidden],.desk[hidden]{display:none!important}
+#deck{display:flex;justify-content:center;padding:6px 0 20px}
+.dk{width:100%;max-width:460px;display:flex;flex-direction:column;gap:12px}
+.dk-top{display:flex;justify-content:space-between;align-items:center;font-size:13px;color:var(--mute)}
+.dk-why{font-weight:800;padding:4px 10px;border-radius:999px;background:var(--panel);color:var(--ink)}
+.dk-why.fan{background:#ffe3ea;color:#b0123a}.dk-why.taste{background:#e2efff;color:#0a54b8}.dk-why.buzz{background:#fff4c2;color:#6b5300}
+.dk-card{position:relative;border-radius:22px;overflow:hidden;background:#141414;color:#fff;box-shadow:0 18px 40px rgba(0,0,0,.25);touch-action:pan-y;user-select:none;transition:transform .2s ease,opacity .2s ease}
+.dk-card::before{content:"";position:absolute;inset:0;background:var(--bg,none) center/cover no-repeat;opacity:.55;filter:saturate(1.1)}
+.dk-card::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.15) 0%,rgba(0,0,0,.55) 35%,#141414 70%)}
+.dk-card>*{position:relative;z-index:1}
+.dk-card.fly-l{transform:translateX(-120%) rotate(-12deg)!important;opacity:0}
+.dk-card.fly-r{transform:translateX(120%) rotate(12deg)!important;opacity:0}
+.dk-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding:18px 18px 0}
+.dk-head small{font-size:12px;opacity:.8}
+.dk-head h2{margin:2px 0 0;font:400 34px/1 'Black Han Sans',sans-serif;color:#fff}
+.dk-steps{display:flex;gap:4px;padding-top:6px}
+.dk-steps i{width:18px;height:5px;border-radius:3px;background:rgba(255,255,255,.3)}
+.dk-steps i.on{background:#fff}.dk-steps i.ok{background:var(--hot)}
+.dk-q{padding:70px 18px 12px}
+.dk-q .slot{display:inline-block;background:var(--hot);color:#141414;font-weight:800;font-size:12px;padding:3px 9px;border-radius:8px}
+.dk-q h3{margin:8px 0 4px;font:400 30px/1.1 'Black Han Sans',sans-serif;color:#fff}
+.dk-q p{margin:0;font-size:13px;line-height:1.5;opacity:.85}
+.dk-q .hint{opacity:.65;font-size:12px;margin-top:4px}
+.dk-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;padding:6px 14px 14px}
+.dk-grid.n3,.dk-grid.n5,.dk-grid.n6{grid-template-columns:repeat(3,minmax(0,1fr))}
+.dk-c{position:relative;display:flex;flex-direction:column;gap:4px;align-items:flex-start;text-align:left;border:0;padding:0;background:none;color:#fff;cursor:pointer;font:inherit;min-height:44px}
+.dk-c .ph{width:100%;aspect-ratio:3/4;border-radius:14px;background:#2a2a2a center/cover;display:grid;place-items:center;font:400 34px 'Black Han Sans',sans-serif;color:rgba(255,255,255,.7);outline:3px solid transparent;outline-offset:-3px;transition:transform .12s,outline-color .12s}
+.dk-c:hover .ph,.dk-c:focus-visible .ph{transform:scale(1.02);outline-color:rgba(255,255,255,.6)}
+.dk-c.sel .ph{outline-color:var(--hot)}
+.dk-c b{font-size:15px}.dk-c small{font-size:11px;opacity:.7}
+.dk-c em{position:absolute;top:8px;right:8px;font-style:normal;font-weight:800;font-size:12px;background:rgba(0,0,0,.6);padding:2px 7px;border-radius:8px}
+.dk-more,.dk-news{display:block;margin:0 14px 12px;color:#fff;opacity:.85;font-size:13px}
+.dk-news{padding:10px 12px;border-radius:12px;background:rgba(255,255,255,.08);text-decoration:none;line-height:1.4}
+.dk-news small{opacity:.6}
+.dk-acts{display:flex;justify-content:center;align-items:center;gap:14px}
+.dk-btn{min-width:56px;min-height:56px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:800 14px 'Noto Sans KR',sans-serif;display:grid;place-items:center;padding:0 18px;cursor:pointer;text-decoration:none;box-shadow:0 4px 14px rgba(0,0,0,.08)}
+.dk-btn svg{width:22px;height:22px;stroke:currentColor;stroke-width:2.5;fill:none}
+.dk-btn.skip{color:var(--red)}
+.dk-btn.next{background:var(--ink);color:var(--card);border-color:var(--ink)}
+.dk-tip{text-align:center;font-size:12px;color:var(--mute);margin:0}
+.dk-empty{max-width:460px;width:100%;text-align:center;padding:60px 20px;border:1px dashed var(--line);border-radius:22px;color:var(--mute)}
+.dk-res{padding:60px 18px 6px;display:flex;flex-direction:column;gap:8px}
+.dk-res .rr{display:grid;grid-template-columns:auto 1fr;gap:2px 10px;background:rgba(255,255,255,.08);border-radius:12px;padding:10px 12px}
+.dk-res .rr .slot{grid-row:span 2;align-self:center;background:var(--hot);color:#141414;font-weight:800;font-size:11px;padding:3px 7px;border-radius:7px}
+.dk-res .rr small{grid-column:2;opacity:.7}
+.dk-combo{margin:8px 18px 18px;padding:12px;border-radius:12px;background:var(--hot);color:#141414;font-size:14px}
+/* 로그인 바텀시트 */
+.sheetm{position:fixed;inset:0;z-index:80;background:rgba(0,0,0,.45);display:none;align-items:flex-end;justify-content:center}
+.sheetm.on{display:flex}
+.sheetm>div{width:100%;max-width:480px;background:var(--card);color:var(--ink);border-radius:22px 22px 0 0;padding:22px 20px calc(24px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:10px;text-align:center}
+.sheetm h2{margin:0;font:800 19px 'Noto Sans KR',sans-serif}
+.sheetm p{margin:0;color:var(--mute);font-size:14px}
+.sheetm .big{min-height:52px;font-size:16px;border-radius:12px}
+@media (min-width:721px){.sheetm{align-items:center}.sheetm>div{border-radius:22px}}
+/* 블라인드 결과 */
+#roles.unseen .vb,#roles.unseen .rkb,.fig.unseen{display:none!important}
+#roles.unseen::before{content:"투표하면 득표율이 공개돼요";display:block;margin:0 0 10px;padding:10px 14px;border-radius:12px;background:var(--panel);font-weight:700;font-size:14px}
+/* 결과와 토론방 */
+.talkbox{margin-top:22px;background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px}
+.talk0{text-align:center;padding:14px}
+.combos{list-style:none;margin:10px 0 0;padding:0;display:flex;flex-direction:column;gap:10px}
+.combos li{border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.combos li.mine{border-color:var(--ink);box-shadow:4px 4px 0 var(--hot)}
+.cbtn{width:100%;display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;padding:12px;border:0;background:none;color:inherit;font:inherit;text-align:left;cursor:pointer;min-height:56px}
+.cbtn .rk{font:400 26px 'Black Han Sans',sans-serif;min-width:30px;text-align:center}
+.cls{display:flex;flex-wrap:wrap;gap:6px}
+.cl{display:inline-flex;flex-direction:column;background:var(--panel);border-radius:10px;padding:4px 10px;font-weight:700;font-size:14px}
+.cl small{font-weight:500;font-size:11px;color:var(--mute)}
+.cn{text-align:right;font-weight:800;font-size:14px}.cn small{font-weight:500;color:var(--mute)}
+.thread{border-top:1px solid var(--line);padding:12px;display:flex;flex-direction:column;gap:10px;background:var(--bg)}
+.tform{display:flex;gap:8px;align-items:flex-end}.tform textarea{flex:1;min-height:48px;padding:10px;font:inherit}
+.tc{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.tc.re{margin-left:24px;border-left:3px solid var(--line)}
+.tc p{margin:4px 0;font-size:14px;line-height:1.55;white-space:pre-line}
+.tc small{color:var(--mute);font-size:12px}
+.tv{display:flex;gap:6px;flex-wrap:wrap}
+.tv button{border:1px solid var(--line);background:none;color:var(--ink);border-radius:8px;padding:4px 10px;min-height:32px;font:600 12px 'Noto Sans KR',sans-serif;cursor:pointer}
+.tv button.on{background:#e2efff;border-color:#0a54b8;color:#0a54b8}.tv button.on.dn{background:#ffe3ea;border-color:#b0123a;color:#b0123a}
+.tr-form{display:flex;gap:6px;margin-top:6px}.tr-form input{flex:1}
+.folded summary{cursor:pointer;color:var(--mute);font-size:13px}
+.sheetm .lg.g.big{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;background:var(--ink)!important;color:var(--card)!important;border:0!important;font-weight:800}
+.sheetm .lk{border:0;background:none;color:var(--mute);font:600 14px 'Noto Sans KR',sans-serif;min-height:44px;cursor:pointer}
+.dk-q{padding-top:44px}
+@media (max-width:420px){.dk-head h2{font-size:30px}.dk-q h3{font-size:26px}.dk-grid{gap:8px;padding:6px 10px 12px}}

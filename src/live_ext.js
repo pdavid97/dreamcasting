@@ -48,7 +48,7 @@ async function openRoute(){const h=decodeURIComponent(location.hash.slice(1));
  if(h.startsWith('a/'))return openActor(h.slice(2));
  if(h.startsWith('u/'))return openUser(h.slice(2));
  closePage()}
-function showPage(html){$('#page').innerHTML=html;$('#page').hidden=false;document.querySelector('.desk').hidden=true;scrollTo({top:$('#page').offsetTop-10,behavior:'smooth'})}
+function showPage(html){if(typeof showDeck==='function')showDeck(false);$('#page').innerHTML=html;$('#page').hidden=false;document.querySelector('.desk').hidden=true;scrollTo({top:$('#page').offsetTop-10,behavior:'smooth'})}
 
 /* 배우 페이지 */
 async function openActor(name){name=name.trim();if(!name)return;PAGE={kind:'a',name};showPage(`<div class="pg"><p class="dl">${esc(name)} 배우 페이지를 여는 중이에요</p></div>`);
