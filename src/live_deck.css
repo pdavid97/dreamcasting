@@ -170,3 +170,7 @@
 .dk-card::before,.dk-card::after{top:84px}
 .dk-card::after{background:linear-gradient(180deg,rgba(20,20,20,.35) 0%,rgba(0,0,0,0) 18%,rgba(20,20,20,.25) 62%,#141414 100%)}
 @media (max-width:420px){.dk-head{min-height:76px}.dk-card::before,.dk-card::after{top:76px}}
+.dl-c.dl-add .ph{display:grid;place-items:center;font:700 34px/1 sans-serif;color:#ffe100;background:#262626;border:2px dashed #ffe100}
+.dl-addf{display:grid;gap:8px;margin-top:6px}
+.dl-addf input{width:100%;box-sizing:border-box;padding:10px 12px;border-radius:10px;border:1px solid #444;background:#1d1d1d;color:#fff;font-size:15px}
+.dl-addf .b{justify-self:start}

@@ -92,8 +92,8 @@ type Pick = { pool: Pool; pick: string; why: string; src?: { t: string; u: strin
 async function chooseForRole(o: { role: Record<string, any>; topic: Record<string, any>; partnerTop: Pool | null; usedWild: Set<number>; seedNames: Set<string>; usedTopic: Set<string>; origs: Set<string>; usage: Map<string, number> }) {
   const { role, topic } = o;
   const work = topic.work || {};
-  const intl = topic.cat === "k2us";
-  const region = intl ? "intl" : "kr";
+  // 국적권: 할리우드판은 영미권(intl), 중국판 cn, 대만판 tw, 홍콩판 hk, 나머지는 한국(kr)
+  const region = ({ k2us: "intl", k2cn: "cn", k2tw: "tw", k2hk: "hk" } as Record<string, string>)[topic.cat] || "kr";
   const slot: string = role.slot || "";
   const orig = role.orig ? await findPerson(role.orig) : null;
   let gender = slot.startsWith("male") ? 2 : slot.startsWith("female") ? 1 : (orig?.gender || 0);

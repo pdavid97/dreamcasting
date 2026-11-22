@@ -38,7 +38,7 @@ function renderDeck(){const box=$('#deck');if(!box||!DECKV)return;const t=curTop
   <header class="dk-head"><div><small>${esc(CATS.find(c=>c.id===t.cat)?.name||'')}, 마감 D-${Math.max(0,Math.ceil((new Date(t.closes_at)-new Date())/864e5))}</small><h2>${esc(t.title)}</h2></div>
    <div class="dk-steps" aria-label="배역 진행">${t.roles.map((x,i)=>`<i class="${i<DR?'ok':i===DR?'on':''}" title="${esc(SLOT[x.slot]||'')} ${esc(x.ch)}"></i>`).join('')}</div></header>
   <div class="dk-q"><span class="slot">${esc(SLOT[r.slot]||'배역')}</span><h3>${esc(r.ch)} 역은 누구?</h3>${r.descr?`<p>${esc(r.descr)}</p>`:''}<p class="hint">${r.orig?`원작 ${esc(r.orig)}, `:''}${r.age?`배역 나이 ${esc(r.age)}, `:''}돌려서 고르고, 맨 위 사진을 한 번 더 탭하면 확정</p></div>
-  ${cands.length?dialHTML(t,r,cands,picked,tot):'<p class="hint" style="padding:0 18px 18px">아직 후보가 없어요</p>'}
+  ${dialHTML(t,r,cands,picked,tot)}
   ${more>0?`<a class="dk-more" href="#${esc(t.id)}">후보 ${more}명 더 보기</a>`:''}
   ${news?`<a class="dk-news" href="${esc(goURL(t.id,'news','news',news.u))}" target="_blank" rel="noopener">${esc(news.t)}${news.s?` <small>${esc(news.s)}</small>`:''}</a>`:''}
  </article>
@@ -90,12 +90,13 @@ addEventListener('keydown',e=>{if(!DECKV||e.target.closest('input,textarea,selec
 
 /* ---- 다이얼: 원작 배우를 가운데, 가상 후보를 둘레에. 돌려서 12시 방향에 온 후보가 선택 대기, 가운데 버튼이나 다시 탭하면 확정 ---- */
 let DIAL=null;
-function dialHTML(t,r,cands,picked,tot){const ou=r.orig?IMG['p:'+r.orig]:null;
+function dialHTML(t,r,cands,picked,tot){const ou=r.orig?IMG['p:'+r.orig]:null,N=cands.length+1;
  const start=Math.max(0,cands.findIndex(c=>c.id===picked));
- return `<div class="dial" id="dial" data-n="${cands.length}" data-start="${start}" tabindex="0" role="listbox" aria-label="${esc(r.ch)} 후보 다이얼, 좌우 화살표로 돌리고 Enter로 한 표">
-  <div class="dl-ring" aria-hidden="true">${cands.map((_,i)=>`<i style="--a:${i*360/cands.length}deg"></i>`).join('')}</div>
+ return `<div class="dial" id="dial" data-n="${N}" data-start="${start}" tabindex="0" role="listbox" aria-label="${esc(r.ch)} 후보 다이얼, 좌우 화살표로 돌리고 Enter로 한 표">
+  <div class="dl-ring" aria-hidden="true">${Array.from({length:N},(_,i)=>`<i style="--a:${i*360/N}deg"></i>`).join('')}</div>
   ${cands.map((c,i)=>{const u=IMG['p:'+c.name],pct=t.seen&&tot?Math.round((c.votes||0)/tot*100):null;
    return `<button class="dl-c${picked===c.id?' sel':''}" data-i="${i}" data-rid="${r.id}" data-cid="${c.id}" data-name="${esc(c.name)}" data-age="${esc(ageTxt(c.name)||'')}" data-pct="${pct==null?'':pct}" data-recent="${esc(c.blurb&&c.blurb.recent?`최근작 《${c.blurb.recent.t}》${c.blurb.recent.y?` (${c.blurb.recent.y})`:''}`:'')}" data-why="${esc(JSON.stringify(((c.blurb&&c.blurb.reasons)||(c.blurb&&c.blurb.why?[{text:c.blurb.why}]:[])).slice(0,2)))}" data-tid="${esc(t.id)}" data-pick="${esc(c.pick||'')}" data-kind="${esc(c.kind||'')}" data-acted="${c.acted===false?0:1}" role="option" aria-label="${esc(c.name)}"><span class="ph"${u?` style="background-image:url('${esc(u)}')"`:''}>${u?'':esc(c.name[0])}</span>${pct!=null?`<em>${pct}%</em>`:''}<i class="dl-tap">탭해서 한 표</i></button>`}).join('')}
+  <button class="dl-c dl-add" data-i="${cands.length}" data-rid="${r.id}" data-tid="${esc(t.id)}" data-add="1" data-name="내 후보 추가" role="option" aria-label="원하는 후보 직접 추가"><span class="ph">+</span><i class="dl-tap">탭해서 추가</i></button>
   <div class="dl-mid">
    <span class="dl-orig"${ou?` style="background-image:url('${esc(ou)}')"`:''}>${ou?'':(r.orig?esc(r.orig[0]):'?')}</span>
    <small class="dl-ol">${r.orig?`원작 ${esc(r.orig)}`:'원작 배우 없음'}</small>
@@ -112,6 +113,7 @@ function bindDial(){const el=$('#dial');DIAL=null;if(!el)return;const n=+el.data
   const f=((Math.round(-D.rot/step)%n)+n)%n;if(f!==D.focus){D.focus=f;btns.forEach((b,i)=>b.classList.toggle('on',i===f));const b=btns[f];
    const PK={classic:'정석',buzz:'화제',chem:'케미',wild:'와일드카드',user:'유저 추천',seed:'기본 후보'},KK={comedian:'개그맨',singer:'가수',idol:'아이돌',musical:'뮤지컬 배우',stage:'연극 배우',youtuber:'유튜버',influencer:'방송인'};
    const pb=$('#dlPick');if(pb){const k=b.dataset.pick;pb.className='dl-badge '+(k||'');pb.textContent=k?(PK[k]||'')+(k==='wild'&&KK[b.dataset.kind]?`, ${KK[b.dataset.kind]}`:''):'';pb.hidden=!k}
+   if(b.dataset.add){$('#dlName').textContent='원하는 후보가 없나요?';$('#dlMeta').textContent='';$('#dlRecent').textContent='배우, 가수, 개그맨, 유튜버 누구든 올리고 바로 한 표를 줄 수 있어요.';$('#dlWhy').innerHTML=`<div class="dl-addf"><input id="dlNew" maxlength="20" placeholder="후보 이름" aria-label="새 후보 이름"><input id="dlPitch" maxlength="80" placeholder="추천 이유 한마디 (선택)" aria-label="추천 이유"><button class="b buy sm" data-act="dk-add" data-rid="${b.dataset.rid}">후보로 올리고 한 표</button></div>`;const pk0=el.parentNode.querySelector('.dl-pick');if(pk0){pk0.classList.remove('swap');void pk0.offsetWidth;pk0.classList.add('swap')}if(D.ticked)try{navigator.vibrate&&navigator.vibrate(6)}catch(e){}D.ticked=true;return}
    $('#dlName').textContent=b.dataset.name;$('#dlMeta').textContent=[b.dataset.age,b.dataset.pct!==''?`득표 ${b.dataset.pct}%`:''].filter(Boolean).join(', ');
    $('#dlRecent').textContent=b.dataset.recent||'';
    let rs=[];try{rs=JSON.parse(b.dataset.why||'[]')}catch(e){}
@@ -132,7 +134,7 @@ function bindDial(){const el=$('#dial');DIAL=null;if(!el)return;const n=+el.data
  el.addEventListener('wheel',e=>{e.preventDefault();dialStep(e.deltaY>0||e.deltaX>0?1:-1)},{passive:false});
  lay();addEventListener('resize',lay,{once:true})}
 function dialStep(k){const D=DIAL;if(!D)return;cancelAnimationFrame(D.raf);D.snap(Math.round(D.rot/D.step)*D.step-k*D.step)}
-function dialConfirm(){const D=DIAL;if(!D||D.focus<0)return;const b=D.el.querySelectorAll('.dl-c')[D.focus];if(!b)return;b.classList.add('pop');deckPick(+b.dataset.rid,+b.dataset.cid)}
+function dialConfirm(){const D=DIAL;if(!D||D.focus<0)return;const b=D.el.querySelectorAll('.dl-c')[D.focus];if(!b)return;if(b.dataset.add){const i=$('#dlNew');if(i)i.focus();track('cand_add_open',{t:b.dataset.tid,r:+b.dataset.rid});return}b.classList.add('pop');deckPick(+b.dataset.rid,+b.dataset.cid)}
 
 /* ================= 결과와 토론방(작품 화면 하단) ================= */
 let TALK={tid:null,combos:[],open:null,thread:[],myv:{}};
@@ -160,6 +162,10 @@ async function openThread(k){TALK.open=TALK.open===k?null:k;if(TALK.open&&USER){
 
 document.addEventListener('click',async e=>{const b=e.target.closest('[data-act]');if(!b)return;const a=b.dataset.act;
  if(a==='dk-pick'){e.preventDefault();deckPick(+b.dataset.rid,+b.dataset.cid);return}
+ if(a==='dk-add'){const t=curTopic(),r=curRole(),rid=+b.dataset.rid,nm=($('#dlNew')||{value:''}).value.trim(),pitch=($('#dlPitch')||{value:''}).value.trim();if(!nm){toast('후보 이름을 적어 주세요');return}
+  if(!USER||!PROF){track('login_prompt',{t:t&&t.id,r:rid,m:{add:true}});openLoginSheet();return}
+  try{const cid=await rpc('add_candidate',{rid,nm,pitch:pitch||null});track('cand_add',{t:t&&t.id,r:rid,c:cid,m:{pitch:!!pitch}});toast(`${nm} 후보를 올리고 한 표 반영`);if(r&&r.id===rid&&!r.mine)r.mine=cid;
+   const fresh=await rpc('vote_deck',{lim:16}).catch(()=>null);const ft=fresh&&t&&fresh.find(x=>x.id===t.id);if(ft)Object.assign(t,{seen:ft.seen,roles:ft.roles});const c=$('#dkCard');if(c){c.classList.add('fly-r');await new Promise(o=>setTimeout(o,220))}nextRole()}catch(err){toast(errMsg(err))}return}
  if(a==='dk-skip'){const t=curTopic(),r=curRole();track('skip',{t:t&&t.id,r:r&&r.id});const c=$('#dkCard');if(c){c.classList.add('fly-l');setTimeout(nextRole,200)}else nextRole();return}
  if(a==='dk-nexttopic'){const t=curTopic();track('topic_skip',{t:t&&t.id});nextTopic();return}
  if(a==='dk-restart'){DI=0;DR=0;await loadDeck();const t=curTopic();if(t)DR=firstOpenRole(t);renderDeck();return}
