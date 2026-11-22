@@ -704,6 +704,10 @@ details.rules{padding:12px 16px;margin-top:14px}
 .av-floor{display:flex;justify-content:space-between;padding:10px 26px 14px}.av-floor i{width:26px;height:46px;border-radius:6px;background:linear-gradient(180deg,#2b2b2b,#111);box-shadow:inset 0 0 0 3px #1c1c1c}
 @media (max-width:520px){.fc-c{flex-basis:132px}.fc-track{padding-left:calc(50% - 66px);padding-right:calc(50% - 66px)}.av-screen{height:160px}}
 .wk-cast{scrollbar-width:thin;scrollbar-color:#444 transparent}
+.vsmid .dround{display:block;font-size:11px;font-weight:400;opacity:.75;margin-top:2px;letter-spacing:0}
+.vs.dchamp{grid-template-columns:1fr!important;justify-items:center}
+.vs.dchamp .side-a{max-width:260px;width:100%}
+.dq a{color:inherit;text-decoration:underline}
 
 </style>
 </head>
@@ -908,11 +912,30 @@ function renderHead(){const t=topic();$('#tTitle').textContent=t.title;$('#tInfo
  const open=isOpen(t);$('#tClockL').textContent=open?'투표 마감까지':'투표 상태';$('#tClock').textContent=open?`D-${dleft(t)}`:'마감';
  const tv=D.roles.reduce((a,r)=>a+(isSync(r)?(D.sync[r.id]?.n||0):total(r)),0);$('#tVotes').textContent=` 총 ${fmt(tv)}표`;
  $('#tFlow').innerHTML=t.cat==='wn'&&D.roles.length?STAGES.map(([k,n],i)=>`${i?'<i>›</i>':''}<span class="${k===tStage()?'on':''}">${n}</span>`).join(''):''}
-function newDuel(){const t=topic();if(!isOpen(t)){DUEL=null;return}const rs=D.roles.filter(r=>!isSync(r)&&(D.cands[r.id]||[]).length>1);if(!rs.length){DUEL=null;return}
- const r=pick(rs),cs=D.cands[r.id],ord=[...cs].sort((a,b)=>b.votes-a.votes),a=ord[Math.floor(Math.random()*Math.min(3,ord.length))];let b;do{b=pick(cs)}while(b.candidate_id===a.candidate_id);DUEL={tid:t.id,rid:r.id,a,b,res:null}}
-function renderDuel(){const box=$('#duel');if(!DUEL||DUEL.tid!==SEL)newDuel();if(!DUEL){box.innerHTML='';return}const r=D.roles.find(x=>x.id===DUEL.rid);if(!r){box.innerHTML='';return}const R=DUEL.res;
- const side=(s,c)=>`<button class="side-${s}" data-act="duel" data-v="${s}"><span class="face">${IMG['p:'+c.name]?`<img src="${esc(IMG['p:'+c.name])}" alt="" style="width:100%;height:100%;border-radius:50%;object-fit:cover">`:esc(c.name[0])}</span><b>${esc(c.name)}</b><span class="res num">${R?Math.round((s==='a'?R.pa:R.pb)*100)+'%':''}</span></button>`;
- box.innerHTML=`<div class="duel"><div class="dq"><b>VS 한판: ${esc(r.ch)} 역, 누가 더 어울려요?</b><span>${r.orig?`원작 ${esc(r.orig)}`:esc(r.descr||'')}</span></div><div class="vs">${side('a',DUEL.a)}<div class="vsmid">VS</div>${side('b',DUEL.b)}</div><div class="dft"><span>${R?(R.guest?(GUEST>=3?'구경 모드 결과예요. 로그인하면 내 선택이 광장 민심에 반영되고 포인트도 쌓여요':'구경 모드 결과예요. 로그인 없이도 계속 즐겨 보세요'):R.already?'이미 고른 대결이에요. 지금까지의 선택 비율이에요':'내 선택이 반영된 지금까지의 비율이에요'):'로그인 없이 바로 해 보세요. 고르면 결과가 나와요'}</span><span style="display:flex;gap:6px;align-items:center">${STREAK?`<span class="num">연속 ${STREAK}판</span>`:''}${R&&R.guest&&GUEST>=3&&!USER?'<button class="lg g" data-act="google" style="min-height:36px"><span class="gdot"></span>로그인</button>':''}<button class="chip" data-act="duelNext">다른 대결</button></span></div></div>`}
+/* VS 한판 토너먼트: 이긴 배우가 남고 새 도전자와 붙음. 한 배역이 끝나면 다른 작품의 배역으로 */
+let DUEL_SKIP=(()=>{try{return JSON.parse(localStorage.getItem('duelDone')||'[]')}catch(e){return[]}})();
+function duelSaveSkip(){DUEL_SKIP=DUEL_SKIP.slice(-60);try{localStorage.setItem('duelDone',JSON.stringify(DUEL_SKIP))}catch(e){}}
+async function duelImgs(names){const need=names.filter(n=>!(('p:'+n)in IMG)).slice(0,38);if(!need.length)return;try{const r=await fetch(SB_URL+'/functions/v1/tmdb',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+ANON,apikey:ANON},body:JSON.stringify({names:need,titles:[]})});if(r.ok){const d=await r.json();for(const n in d.p)IMG['p:'+n]=d.p[n];try{localStorage.setItem('tmdbImg2',JSON.stringify(IMG))}catch(e){}}}catch(e){}}
+function duelStart(role){const cs=[...role.cands];if(cs.length<2){DUEL=null;return}
+ const ord=[...cs].sort((a,b)=>(b.votes||0)-(a.votes||0));const champ=ord[0];const rest=cs.filter(c=>c.candidate_id!==champ.candidate_id).sort(()=>Math.random()-0.5);
+ DUEL={tid:role.tid,title:role.title,rid:role.rid,ch:role.ch,orig:role.orig,total:rest.length,a:champ,b:rest.shift(),queue:rest,wins:{},res:null,done:false,round:1};track&&track('duel_start',{t:role.tid,r:role.rid})}
+let duelLoading=false;
+async function newDuel(first){if(duelLoading)return;duelLoading=true;try{
+ let role=null;const t=topic();
+ if(first&&t&&isOpen(t)&&D){const rs=D.roles.filter(r=>!isSync(r)&&!isOpt(r)&&(D.cands[r.id]||[]).length>2&&!DUEL_SKIP.includes(r.id));const r=rs.length?pick(rs):null;if(r)role={rid:r.id,ch:r.ch,orig:r.orig,tid:t.id,title:t.title,cands:(D.cands[r.id]||[]).map(c=>({candidate_id:c.candidate_id,name:c.name,votes:c.votes}))}}
+ if(!role){role=await rpc('duel_next',{skip:DUEL_SKIP,prefer:null}).catch(()=>null);if(!role&&DUEL_SKIP.length){DUEL_SKIP=[];duelSaveSkip();role=await rpc('duel_next',{skip:[],prefer:null}).catch(()=>null)}}
+ if(!role){DUEL=null;return}await duelImgs(role.cands.map(c=>c.name));duelStart(role)}finally{duelLoading=false}}
+function renderDuel(){const box=$('#duel');if(!box)return;if(!DUEL){box.innerHTML='';if(!duelLoading)newDuel(true).then(()=>{if(DUEL)renderDuel()});return}const R=DUEL.res;
+ const face=c=>`<span class="face">${IMG['p:'+c.name]?`<img src="${esc(IMG['p:'+c.name])}" alt="" style="width:100%;height:100%;border-radius:50%;object-fit:cover">`:esc(c.name[0])}</span>`;
+ const other=DUEL.tid!==SEL;
+ const head=`<div class="dq"><b>VS 한판: ${esc(DUEL.ch)} 역, 누가 더 어울려요?</b><span>${other?`<a href="#${esc(DUEL.tid)}">${esc(DUEL.title)}</a>, `:''}${DUEL.orig?`원작 ${esc(DUEL.orig)}`:''}</span></div>`;
+ if(DUEL.done){const c=DUEL.a,w=DUEL.wins[c.candidate_id]||0;
+  box.innerHTML=`<div class="duel">${head}<div class="vs dchamp"><button class="side-a" disabled>${face(c)}<b>${esc(c.name)}</b><span class="res">내 최종 픽, ${w}연승</span></button></div><div class="dft"><span>${esc(DUEL.title)} ${esc(DUEL.ch)} 역 토너먼트 완료. 다른 작품으로 넘어가요.</span><span style="display:flex;gap:6px;align-items:center">${STREAK?`<span class="num">연속 ${STREAK}판</span>`:''}<a class="chip" href="#${esc(DUEL.tid)}">이 배역 투표하러 가기</a><button class="chip" data-act="duelNext">다음 토너먼트</button></span></div></div>`;return}
+ const side=(s,c)=>`<button class="side-${s}" data-act="duel" data-v="${s}">${face(c)}<b>${esc(c.name)}</b><span class="res num">${R?Math.round((s==='a'?R.pa:R.pb)*100)+'%':(s==='a'&&DUEL.round>1?`${DUEL.wins[c.candidate_id]||0}연승 중`:'')}</span></button>`;
+ box.innerHTML=`<div class="duel">${head}<div class="vs">${side('a',DUEL.a)}<div class="vsmid">VS<small class="dround">${DUEL.round}/${DUEL.total}</small></div>${side('b',DUEL.b)}</div><div class="dft"><span>${R?(R.guest?(GUEST>=3?'구경 모드 결과예요. 로그인하면 내 선택이 광장 민심에 반영되고 포인트도 쌓여요':'구경 모드 결과예요. 고른 배우가 남아 다음 도전자와 붙어요'):'고른 배우가 남아 다음 도전자와 붙어요. 이 비율은 지금까지 광장의 선택이에요'):'고른 배우는 남고, 새 도전자가 올라와요. 끝까지 남는 배우가 내 픽이에요'}</span><span style="display:flex;gap:6px;align-items:center">${STREAK?`<span class="num">연속 ${STREAK}판</span>`:''}${R&&R.guest&&GUEST>=3&&!USER?'<button class="lg g" data-act="google" style="min-height:36px"><span class="gdot"></span>로그인</button>':''}<button class="chip" data-act="duelNext">다른 배역</button></span></div></div>`}
+function duelAdvance(){if(!DUEL)return;const winner=DUEL.lastWin;DUEL.res=null;
+ if(!DUEL.queue.length){DUEL.a=winner;DUEL.done=true;DUEL_SKIP.push(DUEL.rid);duelSaveSkip();track&&track('duel_champion',{t:DUEL.tid,r:DUEL.rid,c:winner.candidate_id,m:{wins:DUEL.wins[winner.candidate_id]||0,of:DUEL.total}});renderDuel();return}
+ DUEL.a=winner;DUEL.b=DUEL.queue.shift();DUEL.round++;renderDuel()}
 function chartLines(svg,W,H,series,labels,fmtY,hiFix){const n=Math.max(...series.map(s=>s.length)),narrow=W<520,ml=40,mr=narrow?100:132,mt=12,mb=22,cw=W-ml-mr,ch=H-mt-mb;
  let hi=hiFix||Math.max(.1,...series.flat())*1.15;const x=k=>ml+(n>1?k*cw/(n-1):cw),y=v=>mt+ch*(1-v/hi);let o='';
  for(let k=0;k<=4;k++){const v=hi*k/4;o+=`<line class="gl" x1="${ml}" x2="${ml+cw}" y1="${y(v)}" y2="${y(v)}"/><text x="${ml-6}" y="${y(v)+4}" text-anchor="end">${fmtY(v)}</text>`}
@@ -998,7 +1021,7 @@ function renderPoster(){const box=$('#poster');const s=POSTER&&POSTER.tid===SEL&
 function render(){renderWho();renderTabs();renderShelf();renderPerks();renderRank();renderFeed();renderFanBoard();renderTabbar();if(HOMEV)renderHome();if(!D||D.tid!==SEL)return;{const ns=[];D.roles.forEach(r=>{if(r.orig)ns.push(r.orig);if(r.actor)ns.push(r.actor);(D.cands[r.id]||[]).forEach(c=>ns.push(c.name))});D.sheets.forEach(x=>Object.values(x.picks||{}).forEach(p=>{if(p.n)ns.push(p.n)}));loadAges(ns)}renderHead();renderWork();renderStats();renderWatch();renderDuel();renderPoster();drawChart();renderRoles();renderSide();renderOps();$('#roles').classList.toggle('unseen',!D.seen);document.querySelector('.fig')&&document.querySelector('.fig').classList.toggle('unseen',!D.seen);if(TALK.tid!==D.tid){TALK={tid:D.tid,combos:[],open:null,thread:[],myv:{}};if(D.seen)loadTalk(D.tid);else renderTalk()}}
 
 /* ---------- events ---------- */
-async function selectTopic(id){closePage();showHome(false);showDeck(false);SEL=id;CAT=topic().cat;SROLE=0;DUEL=null;POSTER=null;shareText='';D=null;try{history.replaceState(null,'','#'+id)}catch(e){}render();$('#tTitle').textContent=topic().title;await loadTopic();render();loadImages()}
+async function selectTopic(id){closePage();showHome(false);showDeck(false);SEL=id;CAT=topic().cat;SROLE=0;if(DUEL&&DUEL.done)DUEL=null;POSTER=null;shareText='';D=null;try{history.replaceState(null,'','#'+id)}catch(e){}render();$('#tTitle').textContent=topic().title;await loadTopic();render();loadImages()}
 document.addEventListener('click',async e=>{
  const b=e.target.closest('[data-act]');if(!b)return;const a=b.dataset.act,rid=+b.dataset.rid,cid=+b.dataset.cid;
  if(a==='role'){if(e.target.closest('button,input,select,summary,details,a'))return;SROLE=+b.dataset.i;renderRoles();drawChart();return}
@@ -1010,8 +1033,8 @@ document.addEventListener('click',async e=>{
  if(a==='cat'){CAT=b.dataset.id;const f=TOPICS.find(t=>t.cat===CAT);if(f)selectTopic(f.id);else render();return}
  if(a==='topic'){selectTopic(b.dataset.id);return}
  if(a==='openprop'){$('#propBox').open=true;$('#propBox').scrollIntoView({behavior:'smooth'});$('#pCat').value=CAT;return}
- if(a==='duelNext'){newDuel();renderDuel();return}
- if(a==='duel'){if(!DUEL||DUEL.res)return;const w=b.dataset.v==='a'?DUEL.a:DUEL.b;const guest=!USER||!PROF;try{let d;if(guest){d=(await rpc('duel_stats',{rid:DUEL.rid,x:DUEL.a.candidate_id,y:DUEL.b.candidate_id}))[0];if(d.a===w.candidate_id)d.a_votes++;else d.b_votes++;d.already=false;GUEST++;try{localStorage.setItem('guestDuels',GUEST)}catch(e){}}else{d=(await rpc('duel_vote',{rid:DUEL.rid,x:DUEL.a.candidate_id,y:DUEL.b.candidate_id,win:w.candidate_id}))[0]}const tot=(d.a_votes+d.b_votes)||1,va=d.a===DUEL.a.candidate_id?d.a_votes:d.b_votes,vb=tot-va;DUEL.res={pa:va/tot,pb:vb/tot,already:d.already,guest};STREAK++;renderDuel();setTimeout(()=>{newDuel();renderDuel()},1800);if(!guest)loadProfile().then(renderWho)}catch(err){toast(errMsg(err))}return}
+ if(a==='duelNext'){if(DUEL&&!DUEL.done){DUEL_SKIP.push(DUEL.rid);duelSaveSkip();track&&track('duel_skip',{t:DUEL.tid,r:DUEL.rid})}DUEL=null;await newDuel(false);renderDuel();return}
+ if(a==='duel'){if(!DUEL||DUEL.res||DUEL.done)return;const w=b.dataset.v==='a'?DUEL.a:DUEL.b;const guest=!USER||!PROF;try{let d;if(guest){d=(await rpc('duel_stats',{rid:DUEL.rid,x:DUEL.a.candidate_id,y:DUEL.b.candidate_id}))[0];if(d.a===w.candidate_id)d.a_votes++;else d.b_votes++;d.already=false;GUEST++;try{localStorage.setItem('guestDuels',GUEST)}catch(e){}}else{d=(await rpc('duel_vote',{rid:DUEL.rid,x:DUEL.a.candidate_id,y:DUEL.b.candidate_id,win:w.candidate_id}))[0]}const tot=(d.a_votes+d.b_votes)||1,va=d.a===DUEL.a.candidate_id?d.a_votes:d.b_votes,vb=tot-va;DUEL.res={pa:va/tot,pb:vb/tot,already:d.already,guest};DUEL.lastWin=w;DUEL.wins[w.candidate_id]=(DUEL.wins[w.candidate_id]||0)+1;STREAK++;renderDuel();setTimeout(duelAdvance,1300);if(!guest)loadProfile().then(renderWho)}catch(err){toast(errMsg(err))}return}
  if(a==='vote'){if(needLogin())return;const r=D.roles.find(x=>x.id===rid),c=(D.cands[rid]||[]).find(x=>x.candidate_id===cid);await act('cast_vote',{rid,cid},`${r.ch} 역에 ${c.name} 한 표! 투표는 한 번만 할 수 있어요`);return}
  if(a==='svote'){if(needLogin())return;await act('sync_vote',{rid,sc:+$('#vt'+rid).value},'싱크로율 투표 완료');return}
  if(a==='add'){if(needLogin())return;const n=$('#ad'+rid).value.trim();if(!n)return toast('배우 이름을 입력하세요');await act('add_candidate',{rid,nm:n},`${n} 후보 등록 완료`);return}
