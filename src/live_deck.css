@@ -158,13 +158,16 @@
 .dl-badge{font-size:11px;font-weight:800;padding:2px 8px;border-radius:8px;background:rgba(255,255,255,.14);color:#fff;align-self:center}
 .dl-badge.classic{background:#2f6fde}.dl-badge.buzz{background:#e0453a}.dl-badge.chem{background:#d1408f}.dl-badge.wild{background:var(--hot);color:#141414}
 .dl-c[data-pick=wild] .ph{box-shadow:0 0 0 2px var(--hot),0 6px 14px rgba(0,0,0,.45)}
-.cns{display:grid;gap:8px;margin:4px 0 12px;font-size:13px;line-height:1.5}
-.cns label{display:flex;gap:8px;align-items:flex-start;cursor:pointer}
-.cns input[type=checkbox]{margin-top:3px;flex:none}
+.cns{display:grid;gap:10px;margin:4px 0 14px;font-size:13px;line-height:1.55;min-width:0}
+.cns .cnr{display:grid;grid-template-columns:18px minmax(0,1fr);column-gap:8px;align-items:start;cursor:pointer}
+.cns .cnr input{margin:3px 0 0;width:16px;height:16px}
+.cns .cnr span{min-width:0;word-break:keep-all;overflow-wrap:anywhere}
 .cns a{color:inherit;text-decoration:underline}
-.cnsel{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
-.cnsel select{font-size:12px;padding:6px 4px;min-width:0}
-.cns small{opacity:.7}
+.cnsel{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:6px;padding-left:26px}
+.cnsel select{font-size:13px;padding:8px 6px;min-width:0;width:100%;box-sizing:border-box}
+.cns small{opacity:.7;word-break:keep-all}
+#nickModal>div{max-height:92vh;overflow:auto;box-sizing:border-box}
+@media (max-width:420px){.cnsel{padding-left:0}}
 /* 작품 제목은 포스터 위가 아니라 포스터 위쪽의 별도 띠에: 배우 얼굴을 가리지 않음 */
 .dk-head{background:#141414;min-height:84px;padding-bottom:12px;box-sizing:border-box;text-shadow:none}
 .dk-card::before,.dk-card::after{top:84px}

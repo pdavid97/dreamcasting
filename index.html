@@ -627,13 +627,16 @@ details.rules{padding:12px 16px;margin-top:14px}
 .dl-badge{font-size:11px;font-weight:800;padding:2px 8px;border-radius:8px;background:rgba(255,255,255,.14);color:#fff;align-self:center}
 .dl-badge.classic{background:#2f6fde}.dl-badge.buzz{background:#e0453a}.dl-badge.chem{background:#d1408f}.dl-badge.wild{background:var(--hot);color:#141414}
 .dl-c[data-pick=wild] .ph{box-shadow:0 0 0 2px var(--hot),0 6px 14px rgba(0,0,0,.45)}
-.cns{display:grid;gap:8px;margin:4px 0 12px;font-size:13px;line-height:1.5}
-.cns label{display:flex;gap:8px;align-items:flex-start;cursor:pointer}
-.cns input[type=checkbox]{margin-top:3px;flex:none}
+.cns{display:grid;gap:10px;margin:4px 0 14px;font-size:13px;line-height:1.55;min-width:0}
+.cns .cnr{display:grid;grid-template-columns:18px minmax(0,1fr);column-gap:8px;align-items:start;cursor:pointer}
+.cns .cnr input{margin:3px 0 0;width:16px;height:16px}
+.cns .cnr span{min-width:0;word-break:keep-all;overflow-wrap:anywhere}
 .cns a{color:inherit;text-decoration:underline}
-.cnsel{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
-.cnsel select{font-size:12px;padding:6px 4px;min-width:0}
-.cns small{opacity:.7}
+.cnsel{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:6px;padding-left:26px}
+.cnsel select{font-size:13px;padding:8px 6px;min-width:0;width:100%;box-sizing:border-box}
+.cns small{opacity:.7;word-break:keep-all}
+#nickModal>div{max-height:92vh;overflow:auto;box-sizing:border-box}
+@media (max-width:420px){.cnsel{padding-left:0}}
 /* 작품 제목은 포스터 위가 아니라 포스터 위쪽의 별도 띠에: 배우 얼굴을 가리지 않음 */
 .dk-head{background:#141414;min-height:84px;padding-bottom:12px;box-sizing:border-box;text-shadow:none}
 .dk-card::before,.dk-card::after{top:84px}
@@ -790,10 +793,9 @@ details.rules{padding:12px 16px;margin-top:14px}
   <p class="sub" style="margin-bottom:10px">2~16자. 투표, 글, 캐스팅 시트에 이 이름이 표시돼요. 나중에 바꿀 수 있어요.</p>
   <input type="text" id="nickIn" maxlength="16" placeholder="예: 캐스팅요정" style="margin-bottom:10px">
   <div class="cns" id="cnsBox" hidden>
-   <label><input type="checkbox" id="cTerms"> <b>(필수)</b> <a href="terms.html" target="_blank" rel="noopener">이용약관</a>과 <a href="privacy.html" target="_blank" rel="noopener">개인정보처리방침</a>에 동의하고, 만 14세 이상이에요</label>
-   <label><input type="checkbox" id="cStats"> (선택) 내 기록을 연령대, 성별, 지역별 통계에 반영해도 좋아요</label>
-   <label><input type="checkbox" id="cShare"> (선택) 개인을 알아볼 수 없는 집계 통계를 외부에 제공할 때 내 기록을 포함해도 좋아요</label>
-   <div class="cnsel"><select id="cAge" aria-label="연령대(선택)"><option value="">연령대(선택)</option><option value="14-19">14~19세</option><option value="20-24">20~24세</option><option value="25-29">25~29세</option><option value="30-34">30~34세</option><option value="35-39">35~39세</option><option value="40-49">40대</option><option value="50+">50대 이상</option></select><select id="cGen" aria-label="성별(선택)"><option value="">성별(선택)</option><option value="f">여성</option><option value="m">남성</option><option value="x">밝히지 않음</option></select><select id="cReg" aria-label="지역(선택)"><option value="">지역(선택)</option><option>서울</option><option>경기 인천</option><option>강원</option><option>충청 대전 세종</option><option>전라 광주</option><option>경상 대구 부산 울산</option><option>제주</option><option>해외</option></select></div>
+   <label class="cnr"><input type="checkbox" id="cTerms"><span><b>(필수)</b> <a href="terms.html" target="_blank" rel="noopener">이용약관</a>과 <a href="privacy.html" target="_blank" rel="noopener">개인정보처리방침</a>에 동의하고, 만 14세 이상이에요</span></label>
+   <label class="cnr"><input type="checkbox" id="cStats"><span>(선택) 연령대, 성별, 국가를 입력하고 맞춤 추천과 통계에 쓰는 데 동의해요</span></label>
+   <div class="cnsel" id="cnsSel"><select id="cAge" aria-label="연령대(선택)"><option value="">연령대</option><option value="14-19">14~19세</option><option value="20-24">20~24세</option><option value="25-29">25~29세</option><option value="30-34">30~34세</option><option value="35-39">35~39세</option><option value="40-49">40대</option><option value="50+">50대 이상</option></select><select id="cGen" aria-label="성별(선택)"><option value="">성별</option><option value="f">여성</option><option value="m">남성</option><option value="x">밝히지 않음</option></select><select id="cReg" aria-label="국가(선택)"><option value="">국가</option><option value="KR">대한민국</option><option value="US">미국</option><option value="JP">일본</option><option value="CN">중국</option><option value="TW">대만</option><option value="HK">홍콩</option><option value="CA">캐나다</option><option value="AU">호주</option><option value="GB">영국</option><option value="VN">베트남</option><option value="TH">태국</option><option value="ID">인도네시아</option><option value="PH">필리핀</option><option value="MY">말레이시아</option><option value="SG">싱가포르</option><option value="ZZ">그 밖의 국가</option></select></div>
    <small>선택 항목은 비워도 모든 기능을 쓸 수 있고, 언제든 여기서 바꾸거나 철회할 수 있어요.</small>
   </div>
   <div style="display:flex;gap:8px"><button class="b buy" data-act="nick">시작하기</button><button class="b" data-act="nickClose">나중에</button></div>
@@ -851,8 +853,8 @@ async function loadTopic(){
  if(SEL===tid)D=nd;
 }
 async function loadSide(){const [f,l]=await Promise.all([sb.from('feed').select('*').order('id',{ascending:false}).limit(30),sb.from('v_leaders').select('*')]);FEED=f.data||[];LEAD=l.data||[]}
-const TERMS_VER='2026-11-22',CONSENT_ON=true;let PRIV=null;
-function fillConsent(){if(CONSENT_ON){$('#cnsBox').hidden=false;$('#legalLinks').hidden=false}const p=PRIV||{};$('#cTerms').checked=p.terms_ver===TERMS_VER;$('#cStats').checked=!!p.stats_at;$('#cShare').checked=!!p.share_at;$('#cAge').value=p.age_band||'';$('#cGen').value=p.gender_self||'';$('#cReg').value=p.region_self||''}
+const TERMS_VER='2026-11-22b',CONSENT_ON=true;let PRIV=null;
+function fillConsent(){if(CONSENT_ON){$('#cnsBox').hidden=false;$('#legalLinks').hidden=false}const p=PRIV||{};$('#cTerms').checked=p.terms_ver===TERMS_VER;$('#cStats').checked=!!p.stats_at;$('#cAge').value=p.age_band||'';$('#cGen').value=p.gender_self||'';$('#cReg').value=p.region_self||''}
 async function loadProfile(){if(!USER){PROF=null;PRIV=null;NOTICES=[];return}const {data}=await sb.from('profiles').select('*').eq('id',USER.id).maybeSingle();PROF=data||null;const pv=await sb.from('profile_private').select('*').eq('user_id',USER.id).maybeSingle();PRIV=pv.data||null;if(typeof loadMyCol==='function')loadMyCol(true);if(CONSENT_ON&&PROF&&!(PRIV&&PRIV.terms_ver===TERMS_VER)&&!(()=>{try{return sessionStorage.getItem('cnsAsk')}catch(e){return 1}})()){try{sessionStorage.setItem('cnsAsk','1')}catch(e){}setTimeout(()=>{$('#nickIn').value=PROF.nickname;fillConsent();$('#nickH').textContent='약관 동의와 내 정보 설정';$('#nickModal').classList.add('on')},600)}await Promise.all([loadNotices(),loadWants()])}
 async function refresh(all){try{if(all)await loadTopics();await Promise.all([loadTopic(),loadSide(),loadProfile(),loadFanBoard()]);render();loadImages();if(HOMEV)loadHome();if(USER&&PROF&&pend().length)flushPending();if(PAGE&&PAGE.kind==='a'&&PAGE.pid&&!busy)renderActor().catch(()=>{})}catch(e){console.error(e);toast('불러오지 못했어요: '+errMsg(e))}}
 async function act(fn,args,okMsg){if(busy)return;busy=true;try{const d=await rpc(fn,args);if(okMsg)toast(okMsg);await refresh(fn.startsWith('propose_topic')||fn.startsWith('admin'));return d}catch(e){toast(errMsg(e))}finally{busy=false}}
@@ -1004,7 +1006,7 @@ document.addEventListener('click',async e=>{
  if(a==='logout'){USER=null;PROF=null;NOTICES=[];WANTS=new Set();render();try{await sb.auth.signOut({scope:'local'})}catch(err){}if(PAGE&&PAGE.kind==='u')location.hash='';toast('로그아웃했어요');refresh();return}
  if(a==='nickOpen'){$('#nickIn').value=PROF?PROF.nickname:'';fillConsent();$('#nickModal').classList.add('on');$('#nickIn').focus();return}
  if(a==='nickClose'){$('#nickModal').classList.remove('on');return}
- if(a==='nick'){const n=$('#nickIn').value.trim();if(CONSENT_ON&&!$('#cTerms').checked&&!(PRIV&&PRIV.terms_ver===TERMS_VER))return toast('필수 동의 항목에 체크해 주세요');try{if(CONSENT_ON)await rpc('set_consent',{terms:$('#cTerms').checked,stats:$('#cStats').checked,share:$('#cShare').checked,ver:TERMS_VER,age_band:$('#cAge').value||null,gender_self:$('#cGen').value||null,region_self:$('#cReg').value||null});await rpc('set_nickname',{nick:n});$('#nickModal').classList.remove('on');toast(`${n} 님, 광장에 오신 걸 환영해요`);await refresh()}catch(err){toast(errMsg(err))}return}
+ if(a==='nick'){const n=$('#nickIn').value.trim();if(CONSENT_ON&&!$('#cTerms').checked&&!(PRIV&&PRIV.terms_ver===TERMS_VER))return toast('필수 동의 항목에 체크해 주세요');try{if(CONSENT_ON){const st=$('#cStats').checked;await rpc('set_consent',{terms:$('#cTerms').checked,stats:st,share:false,ver:TERMS_VER,age_band:st?($('#cAge').value||null):null,gender_self:st?($('#cGen').value||null):null,region_self:st?($('#cReg').value||null):null})}await rpc('set_nickname',{nick:n});$('#nickModal').classList.remove('on');toast(`${n} 님, 광장에 오신 걸 환영해요`);await refresh()}catch(err){toast(errMsg(err))}return}
  if(a==='cat'){CAT=b.dataset.id;const f=TOPICS.find(t=>t.cat===CAT);if(f)selectTopic(f.id);else render();return}
  if(a==='topic'){selectTopic(b.dataset.id);return}
  if(a==='openprop'){$('#propBox').open=true;$('#propBox').scrollIntoView({behavior:'smooth'});$('#pCat').value=CAT;return}
@@ -1051,7 +1053,7 @@ document.addEventListener('click',async e=>{
  if(a==='aconf'){await act('admin_confirm',{rid,cid:+$('#cf'+rid).value},'캐스팅을 확정하고 포인트를 지급했어요');return}
  if(a==='aair'){await act('admin_air',{tid:SEL},'공개 중으로 전환했어요');return}
 });
-document.addEventListener('change',e=>{const t=e.target;if(t.dataset&&t.dataset.actFile==='poster'&&t.files&&t.files[0]){if(needLogin())return;uploadPoster(+t.dataset.sid,t.files[0]);t.value='';return}if(t.id==='yIdx'){loadYearIndex();return}if(t.id&&(t.id.startsWith('sy')||t.id.startsWith('sp')||t.id.startsWith('sn'))){const rid=t.id.slice(2),r=D&&D.roles.find(x=>String(x.id)===rid),sp=$('#sp'+rid);if(r&&sp){const nm=sp.value==='__n'?($('#sn'+rid).value||'').trim():((D.cands[r.id]||[]).find(c=>String(c.candidate_id)===sp.value)||{}).name;const y=+(($('#sy'+rid)||{value:''}).value||'').split('|')[0]||0,a=nm?ageTxt(nm,y):'';const el=$('#sa'+rid);if(el)el.textContent=[r.age_hint?`배역 나이 ${r.age_hint}`:'',a?`${nm} ${a}`:''].filter(Boolean).join(', ')}}if(t.id&&t.id.startsWith('sp')){const n=document.getElementById('sn'+t.id.slice(2));if(n){n.hidden=t.value!=='__n';if(!n.hidden)n.focus()}eraLoad(t.id.slice(2));renderChemBuild()}if(t.id&&t.id.startsWith('sn')){eraLoad(t.id.slice(2));renderChemBuild()}});
+document.addEventListener('change',e=>{const t=e.target;if(t.id==='cAge'||t.id==='cGen'||t.id==='cReg'){if(t.value)$('#cStats').checked=true}if(t.id==='cStats'&&!t.checked){['cAge','cGen','cReg'].forEach(k=>$('#'+k).value='')}if(t.dataset&&t.dataset.actFile==='poster'&&t.files&&t.files[0]){if(needLogin())return;uploadPoster(+t.dataset.sid,t.files[0]);t.value='';return}if(t.id==='yIdx'){loadYearIndex();return}if(t.id&&(t.id.startsWith('sy')||t.id.startsWith('sp')||t.id.startsWith('sn'))){const rid=t.id.slice(2),r=D&&D.roles.find(x=>String(x.id)===rid),sp=$('#sp'+rid);if(r&&sp){const nm=sp.value==='__n'?($('#sn'+rid).value||'').trim():((D.cands[r.id]||[]).find(c=>String(c.candidate_id)===sp.value)||{}).name;const y=+(($('#sy'+rid)||{value:''}).value||'').split('|')[0]||0,a=nm?ageTxt(nm,y):'';const el=$('#sa'+rid);if(el)el.textContent=[r.age_hint?`배역 나이 ${r.age_hint}`:'',a?`${nm} ${a}`:''].filter(Boolean).join(', ')}}if(t.id&&t.id.startsWith('sp')){const n=document.getElementById('sn'+t.id.slice(2));if(n){n.hidden=t.value!=='__n';if(!n.hidden)n.focus()}eraLoad(t.id.slice(2));renderChemBuild()}if(t.id&&t.id.startsWith('sn')){eraLoad(t.id.slice(2));renderChemBuild()}});
 document.addEventListener('input',e=>{const t=e.target;if(t.id&&t.id.startsWith('vt'))$('#vo'+t.id.slice(2)).textContent=t.value});
 $('#nickIn').addEventListener('keydown',e=>{if(e.key==='Enter')document.querySelector('[data-act=nick]').click()});
 addEventListener('hashchange',()=>{const h=decodeURIComponent(location.hash.slice(1));if(h.startsWith('a/')||h.startsWith('u/')){openRoute();renderTabbar();return}if(h.endsWith('/talk')&&TOPICS.find(t=>t.id===h.slice(0,-5))){const id=h.slice(0,-5);(id!==SEL||PAGE||HOMEV||DECKV?selectTopic(id):Promise.resolve()).then(()=>setTimeout(()=>{const x=$('#talkBox');if(x)x.scrollIntoView({behavior:'smooth'})},300))}else if(h&&TOPICS.find(t=>t.id===h)){if(h!==SEL||PAGE||HOMEV||DECKV)selectTopic(h)}else{closePage();navSpecial(h)}renderTabbar()});
