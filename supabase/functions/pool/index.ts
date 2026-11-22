@@ -2,6 +2,7 @@
 // action:
 //  kr     : TMDB 인기 한국 드라마, 영화(페이지 범위) 주요 출연진 12명씩 → cast_pool(region kr)
 //  intl   : TMDB 인기 인물(해외 배우) → cast_pool(region intl)
+//  sinic  : 중화권 드라마, 영화 출연진 {country:CN|TW|HK, region:cn|tw|hk}
 //  names  : 한국어 이름, 생일, 대표작이 비어 있는 행을 TMDB 상세로 채움(한 번에 limit명)
 //  wd     : 위키데이터에서 한국 국적 개그맨, 가수, 아이돌, 뮤지컬과 연극 배우, 유튜버, 인플루언서 → cast_pool(kind별)
 // 호출 예: {action:"kr", from:1, to:5}
@@ -63,6 +64,28 @@ async function intl(from: number, to: number) {
       rows.push({ tmdb_id: p.id, name: p.name, name_en: p.name, gender: p.gender ?? 0, pop: p.popularity || 0, region, kind: "actor", acted: true, src: "tmdb_popular", updated_at: new Date().toISOString() });
     }
   }
+  await upsert(rows, "tmdb_id");
+  return rows.length;
+}
+// 중화권(중국 cn, 대만 tw, 홍콩 hk) 드라마와 영화 주요 출연진. 이미 풀에 있는 배우(한국 배우 등)는 지역을 바꾸지 않도록 건너뜀
+async function sinic(country: string, region: string, from: number, to: number) {
+  const seen = new Map<number, Row>();
+  for (const kind of ["tv", "movie"]) {
+    for (let page = from; page <= to; page++) {
+      const d = await tm(`/discover/${kind}`, { with_origin_country: country, sort_by: "popularity.desc", "vote_count.gte": "20", page: String(page), language: "ko-KR" });
+      for (const w of d?.results || []) {
+        const c = await tm(`/${kind}/${w.id}/${kind === "tv" ? "aggregate_credits" : "credits"}`, { language: "ko-KR" });
+        for (const p of (c?.cast || []).slice(0, 10)) {
+          if (p.known_for_department && p.known_for_department !== "Acting") continue;
+          const prev = seen.get(p.id);
+          seen.set(p.id, { tmdb_id: p.id, name: p.name, name_en: p.original_name || p.name, gender: p.gender ?? 0, pop: Math.max(Number(prev?.pop || 0), p.popularity || 0), region, kind: "actor", acted: true, src: `tmdb_${region}_${kind}`, updated_at: new Date().toISOString() });
+        }
+      }
+    }
+  }
+  const ids = [...seen.keys()], have = new Set<number>();
+  for (let i = 0; i < ids.length; i += 200) { const r = await (await rest(`cast_pool?select=tmdb_id&tmdb_id=in.(${ids.slice(i, i + 200).join(",")})`)).json(); for (const x of Array.isArray(r) ? r : []) have.add(x.tmdb_id); }
+  const rows = [...seen.values()].filter((r) => !have.has(r.tmdb_id as number));
   await upsert(rows, "tmdb_id");
   return rows.length;
 }
@@ -154,6 +177,7 @@ Deno.serve(async (req) => {
     else if (a === "names") n = await names(Math.min(400, b.limit || 150));
     else if (a === "wd") n = await wd(b.min || 4);
     else if (a === "wd_us") n = await wdUS(b.min || 60, b.occ);
+    else if (a === "sinic") n = await sinic(b.country || "CN", b.region || "cn", b.from || 1, b.to || 3);
     const c = await rest("cast_pool?select=id", { headers: { Prefer: "count=exact", Range: "0-0" } });
     return new Response(JSON.stringify({ action: a, n, total: c.headers.get("content-range") }), { headers: { "Content-Type": "application/json" } });
   } catch (e) { return new Response(JSON.stringify({ error: String((e as Error)?.stack || e) }), { status: 500 }); }

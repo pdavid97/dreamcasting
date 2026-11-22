@@ -634,6 +634,11 @@ details.rules{padding:12px 16px;margin-top:14px}
 .cnsel{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
 .cnsel select{font-size:12px;padding:6px 4px;min-width:0}
 .cns small{opacity:.7}
+/* 작품 제목은 포스터 위가 아니라 포스터 위쪽의 별도 띠에: 배우 얼굴을 가리지 않음 */
+.dk-head{background:#141414;min-height:84px;padding-bottom:12px;box-sizing:border-box;text-shadow:none}
+.dk-card::before,.dk-card::after{top:84px}
+.dk-card::after{background:linear-gradient(180deg,rgba(20,20,20,.35) 0%,rgba(0,0,0,0) 18%,rgba(20,20,20,.25) 62%,#141414 100%)}
+@media (max-width:420px){.dk-head{min-height:76px}.dk-card::before,.dk-card::after{top:76px}}
 
 </style>
 </head>

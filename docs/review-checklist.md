@@ -70,3 +70,8 @@ select topic_id, source, metric, day, value from work_metrics order by day desc 
 select * from actor_year_index(2025, 20);
 select * from media_matrix();
 ```
+
+## 외부 공개 전 필수 확인 (2026-11-22 등록)
+- [ ] 이용약관(terms.html)과 개인정보처리방침(privacy.html)의 임시 운영 정보를 공식 내용으로 교체: 운영자 이름(현재 SHD), 개인정보 보호책임자(현재 박다윗), 문의 이메일(현재 pdavid97@gmail.com), 시행일(현재 2026년 11월 22일)
+- [ ] 약관 버전을 올리면 src/live_body.html의 TERMS_VER도 같이 올려 기존 회원에게 재동의를 받음
+- [ ] 첫 데이터 판매나 유료 광고 전 법률 검토, TMDB 상업 계약 검토
