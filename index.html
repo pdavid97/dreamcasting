@@ -226,7 +226,6 @@ details.rules li{margin:6px 0}
 .dircred{font-size:14px;margin:6px 0 2px;padding:6px 10px;border-left:4px solid var(--hi);background:var(--panel)}
 .tposter{width:96px;aspect-ratio:2/3;object-fit:cover;box-shadow:5px 5px 0 var(--hi);flex:none}
 .av{background:#444}
-
 .auth{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:flex-end;margin-top:8px}
 .lg{min-height:40px;padding:0 14px;border:0;font-weight:700;font-size:14px;cursor:pointer;display:inline-flex;align-items:center;gap:8px}
 .lg.g{background:#fff;color:#1f1f1f}
@@ -339,11 +338,141 @@ details.rules li{margin:6px 0}
 .pup{margin-top:14px;border-top:2px solid var(--ink);padding-top:10px}
 .pair select[id^=sy]{margin-top:4px}
 
+/* v2: 피드(시안 B) + 캐스팅 보드 카드(시안 C). 이미지 중심, 둥근 카드, 얇은 선, 모바일 하단 탭 */
+:root{--bg:light-dark(#fafafa,#0e0e0e);--card:light-dark(#ffffff,#181818);--ink:light-dark(#141414,#f2f2f0);--mute:light-dark(#6b6b6b,#a3a3a3);--line:light-dark(#e3e3e3,#2c2c2c);--panel:light-dark(#f2f2f2,#202020);--acc:#0a7cff;--hot:#ffd400;--red:#ff2d55;--r:14px}
+body{background:var(--bg);color:var(--ink);font-family:'Noto Sans KR',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+h1,h2,h3{letter-spacing:-.01em}
+/* 헤더 */
+.mast{position:sticky;top:0;z-index:40;background:color-mix(in srgb,var(--card) 92%,transparent);backdrop-filter:blur(12px);border-bottom:1px solid var(--line);padding:10px 4%;display:flex;align-items:center;gap:16px;flex-wrap:wrap;color:var(--ink)}
+.mast .logo{font:400 26px 'Black Han Sans',sans-serif;color:var(--ink);margin:0}
+.mast .logo b{background:var(--hot);color:#141414;padding:0 6px;border-radius:6px}
+.mast .tag{display:none}
+.mast .gsearch{flex:1 1 220px;max-width:380px}
+.mast .gsearch input{width:100%;box-sizing:border-box;border:0;background:var(--panel);color:var(--ink);border-radius:10px;padding:10px 14px;font:inherit;font-size:14px}
+.worth{margin-left:auto;color:var(--ink);background:none;border:0;padding:0;text-align:right}
+.worth small{color:var(--mute)}
+.worth .lg,.auth .lg{border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink)}
+.chy{display:none}
+.wrap{max-width:1240px;margin:0 auto;padding:16px 4% 96px}
+/* 분류 칩과 작품 포스터 줄 */
+.tabs{display:flex;gap:8px;overflow-x:auto;padding:4px 0 10px;scrollbar-width:none;flex-wrap:nowrap}
+.tab{flex:0 0 auto;border:1px solid var(--line)!important;background:var(--card)!important;color:var(--ink)!important;border-radius:999px!important;padding:8px 14px!important;min-height:40px;box-shadow:none!important}
+.tab small{display:none}
+.tab b{font:700 14px 'Noto Sans KR',sans-serif!important}
+.tab[aria-pressed=true]{background:var(--ink)!important;color:var(--card)!important;border-color:var(--ink)!important}
+.shelf{display:flex!important;gap:12px;overflow-x:auto;padding:4px 0 14px;scrollbar-width:thin}
+.topic{flex:0 0 132px;display:flex;flex-direction:column;gap:4px;text-align:left;border:0!important;background:none!important;padding:0!important;color:var(--ink)!important;box-shadow:none!important;min-height:0}
+.topic .tp{width:132px;aspect-ratio:2/3;border-radius:10px;background:var(--panel) center/cover no-repeat;display:flex;align-items:flex-end;padding:8px;box-sizing:border-box;font:400 18px/1.1 'Black Han Sans',sans-serif;color:#fff;position:relative;overflow:hidden}
+.topic .tp::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(0,0,0,.55),transparent 55%)}
+.topic .tp span{position:relative;z-index:1}
+.topic b{font:700 14px 'Noto Sans KR',sans-serif!important}
+.topic small{font-size:12px;color:var(--mute)!important}
+.topic[aria-current=true] .tp{outline:3px solid var(--hot);outline-offset:2px}
+.topic.add .tp{background:var(--card);border:1px dashed var(--line);color:var(--mute);font:700 14px 'Noto Sans KR',sans-serif;align-items:center;justify-content:center;text-align:center}
+.topic.add .tp::after{display:none}
+/* 공통 카드 */
+.desk{gap:28px}
+.side>section,.sheet,.role,.work,.watchbox,#duel>*,.pwrap,details.rules,.race,.us,.film{background:var(--card);border:1px solid var(--line)!important;border-radius:var(--r);box-shadow:none!important}
+.side>section{padding:14px 16px}
+.sh{border:0!important}
+.sh h2{font:800 17px 'Noto Sans KR',sans-serif!important}
+.b{border-radius:10px!important;border:1px solid var(--line)!important;background:var(--card)!important;color:var(--ink)!important;box-shadow:none!important;font-weight:700}
+.b.buy{background:var(--acc)!important;border-color:var(--acc)!important;color:#fff!important}
+input[type=text],input[type=url],input[type=number],input[type=date],select,textarea{border-radius:10px!important;border:1px solid var(--line)!important;background:var(--card)!important;color:var(--ink)!important}
+details.rules{padding:12px 16px;margin-top:14px}
+/* 작품 헤더: 큰 활자 */
+.th{display:grid;grid-template-columns:auto 1fr auto;gap:18px;align-items:end;border:0!important;padding:4px 0 8px}
+.th h1{font:400 clamp(40px,6vw,72px)/.95 'Black Han Sans',sans-serif!important}
+.tposter{width:120px!important;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.18)}
+@media (max-width:640px){.th{grid-template-columns:1fr}.tposter{width:96px!important}}
+/* 캐스팅 보드: 트레이딩 카드 */
+.role{padding:16px!important;margin-bottom:16px}
+.role.sel{outline:2px solid var(--ink);outline-offset:-1px}
+.role .top h3{font:400 28px 'Black Han Sans',sans-serif!important}
+.cgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:14px;margin:12px 0}
+.cgrid.opt{grid-template-columns:repeat(auto-fill,minmax(200px,1fr))}
+.cgrid .cand1{display:flex!important;flex-direction:column;gap:8px;border:1px solid var(--line);border-radius:12px;padding:0 0 12px;overflow:hidden;background:var(--card);position:relative}
+.cgrid .cand1.lead{border-color:var(--ink);box-shadow:5px 5px 0 var(--hot)}
+.cgrid .cand1 .nm{display:flex!important;flex-direction:column;gap:8px;align-items:stretch!important}
+.cgrid .cand1 .nm>span{padding:0 12px;display:flex;flex-direction:column;gap:2px}
+.cgrid .cand1 .nm b{font:400 22px/1.1 'Black Han Sans',sans-serif!important}
+.cgrid .cand1 .nm small{font-size:12px;color:var(--mute)}
+.cgrid .cand1 .av{width:100%!important;height:auto!important;aspect-ratio:3/4;border-radius:0!important;object-fit:cover;font-size:56px!important;display:grid;place-items:center;color:#fff;border:0!important}
+.cgrid .cand1 .vb,.cgrid .cand1 .acts{padding:0 12px}
+.cgrid .cand1 .vb span{height:8px;border-radius:4px;background:var(--panel)}
+.cgrid .cand1 .vb i{border-radius:4px;background:var(--ink)}
+.cgrid .cand1.lead .vb i{background:var(--red)}
+.cgrid .cand1 .acts .b{width:100%;min-height:44px}
+.cgrid .cand1 .acts .b:not(.mine){background:var(--ink)!important;color:var(--card)!important;border-color:var(--ink)!important}
+.cgrid .rkb{position:absolute;top:8px;left:8px;background:var(--hot);color:#141414;font:800 13px 'Noto Sans KR',sans-serif;padding:3px 8px;border-radius:8px;z-index:1}
+.cgrid.opt .cand1 .nm>span{padding-top:12px}
+/* 시트 카드: 피드 게시물처럼 */
+.sheet{padding:14px!important}
+/* 홈 피드 */
+#home{display:flex;flex-direction:column;gap:22px;min-width:0}
+.stories{display:flex;gap:14px;overflow-x:auto;padding:14px;background:var(--card);border:1px solid var(--line);border-radius:var(--r);scrollbar-width:none}
+.story{flex:0 0 72px;display:flex;flex-direction:column;align-items:center;gap:6px;text-decoration:none;color:var(--ink);font-size:12px}
+.story .ring{width:66px;height:66px;border-radius:50%;padding:3px;box-sizing:border-box;background:conic-gradient(var(--hot),var(--red),var(--acc),var(--hot))}
+.story .ring i{display:block;width:100%;height:100%;border-radius:50%;border:2px solid var(--card);box-sizing:border-box;background:var(--panel) center/cover;font:400 24px/56px 'Black Han Sans',sans-serif;text-align:center;font-style:normal;color:#fff}
+.story span{max-width:72px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.calls{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
+.call{background:var(--card);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;display:flex;flex-direction:column;text-decoration:none;color:var(--ink)}
+.call .cv{aspect-ratio:16/9;background:#222 center/cover;position:relative;display:flex;align-items:flex-end;padding:12px;box-sizing:border-box}
+.call .cv::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(0,0,0,.7),transparent 60%)}
+.call .cv b{position:relative;z-index:1;color:#fff;font:400 26px/1 'Black Han Sans',sans-serif}
+.call .cv small{position:absolute;top:10px;left:10px;z-index:1;background:var(--hot);color:#141414;font-weight:800;font-size:12px;padding:2px 8px;border-radius:8px}
+.call .who{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;padding:12px}
+.call .who div{display:flex;flex-direction:column;gap:4px;font-size:12px;min-width:0}
+.call .who .ph{aspect-ratio:3/4;border-radius:8px;background:var(--panel) center/cover;display:grid;place-items:center;font:400 22px 'Black Han Sans',sans-serif;color:#fff}
+.call .who b{font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.call .foot2{padding:0 12px 12px;font-size:13px;color:var(--mute);display:flex;justify-content:space-between}
+.post{background:var(--card);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;max-width:620px;width:100%}
+.post header{display:flex;align-items:center;gap:10px;padding:12px 14px}
+.post header .pa{width:36px;height:36px;border-radius:50%;background:var(--acc);color:#fff;display:grid;place-items:center;font-weight:800;flex:none}
+.post header a{color:inherit;text-decoration:none}
+.post .media{position:relative;aspect-ratio:4/5;background:#111 center/cover;display:flex;flex-direction:column;justify-content:flex-end;padding:18px;box-sizing:border-box;gap:12px}
+.post .media::before{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(0,0,0,.75),rgba(0,0,0,.05) 55%)}
+.post .media>*{position:relative}
+.post .media h3{margin:0;font:400 44px/1 'Black Han Sans',sans-serif;color:#fff}
+.post .cast{display:grid;gap:8px;background:rgba(255,255,255,.94);color:#141414;padding:10px;border-radius:12px}
+.post .cast div{display:flex;flex-direction:column;gap:3px;align-items:center;text-align:center;min-width:0}
+.post .cast .ph{width:100%;aspect-ratio:3/4;border-radius:8px;background:#ddd center/cover;display:grid;place-items:center;font:400 22px 'Black Han Sans',sans-serif;color:#fff}
+.post .cast small{font-size:11px;color:#555}
+.post .cast b{font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.post .bar{display:flex;gap:6px;padding:8px 8px 0;align-items:center}
+.post .bar button{border:0;background:none;color:var(--ink);min-width:44px;min-height:44px;display:grid;place-items:center;cursor:pointer;border-radius:10px}
+.post .bar a.mk{margin-left:auto;margin-right:8px;font-weight:800;font-size:14px;color:var(--acc);text-decoration:none}
+.post .cap{padding:4px 14px 14px;font-size:14px;line-height:1.55}
+.post .cap small{color:var(--mute)}
+.homegrid{display:grid;grid-template-columns:minmax(0,1fr);gap:22px}
+.hsec{display:flex;flex-direction:column;gap:12px}
+.hsec h2{margin:0;font:800 19px 'Noto Sans KR',sans-serif}
+/* 모바일 하단 탭 */
+.tabbar{display:none}
+@media (max-width:720px){
+ .tabbar{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:50;background:var(--card);border-top:1px solid var(--line);justify-content:space-around;padding:6px 0 calc(10px + env(safe-area-inset-bottom))}
+ .tabbar a{min-height:48px;min-width:56px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:11px;color:var(--mute);text-decoration:none}
+ .tabbar a.on{color:var(--ink);font-weight:800}
+ .tabbar svg{width:24px;height:24px}
+ .mast{padding:8px 4%}
+ .mast .gsearch{order:3;flex-basis:100%;max-width:none}
+ .worth{font-size:13px}
+ .worth>small,.worth .gbar,.worth #gnext{display:none}
+ .wrap{padding:10px 3% 110px}
+ .post{border-radius:0;border-left:0!important;border-right:0!important;margin:0 -3%;width:auto;max-width:none}
+ .cgrid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .calls{grid-template-columns:1fr}
+}
+#home[hidden],#topicView[hidden],#page[hidden]{display:none!important}
+.mast .worth>small:first-child{display:none}
+@media (max-width:720px){.auth .lg.k{display:none}.mast{gap:8px}.mast .logo{font-size:22px}.worth .lg{padding:8px 12px;font-size:13px}}
+
 </style>
 </head>
 <body>
 <header class="mast">
   <div><div class="logo">드림캐스팅 <b>광장</b></div><p class="tag">웹소설이 드라마가 된다면, 옛 드라마를 다시 만든다면, 할리우드판이 나온다면. 내 캐스팅을 제안하고, 토론하고, 투표로 민심을 확인하세요.</p></div>
+  <form class="gsearch" id="gs" role="search"><label><span style="position:absolute;left:-9999px">작품, 배우 검색</span><input type="search" id="gq" maxlength="20" placeholder="작품, 배우 검색" autocomplete="off"></label></form>
   <div class="worth" id="who"></div>
 </header>
 <div class="chy"><span class="lab">광장</span><div class="track"><div id="chy"></div></div></div>
@@ -354,7 +483,8 @@ details.rules li{margin:6px 0}
   <section id="page" hidden aria-live="polite"></section>
 
   <div class="desk">
-    <section aria-label="선택한 작품">
+    <div id="home" hidden aria-label="홈 피드"></div>
+    <section aria-label="선택한 작품" id="topicView">
       <div class="th"><img id="tPoster" class="tposter" alt="" hidden><div><span class="sub" id="tInfo"></span><h1 id="tTitle">불러오는 중</h1><p class="sub" id="tFact" style="margin-top:6px"></p><div class="flow" id="tFlow"></div></div><div class="clock"><span class="sub" id="tClockL"></span><b class="num" id="tClock"></b><span class="sub" id="tVotes"></span></div></div>
       <div id="tWork"></div><div id="tStats"></div><div id="tWatch"></div>
       <div id="duel"></div>
@@ -375,6 +505,7 @@ details.rules li{margin:6px 0}
     </aside>
   </div>
 
+  <nav id="tabbar" class="tabbar" aria-label="하단 메뉴"></nav>
   <details class="rules" id="propBox">
     <summary>새 주제 제안하기</summary>
     <p class="sub">보고 싶은 리메이크나 실사화가 있나요? 작품과 배역만 올리면 후보와 토론은 광장이 채웁니다. 캐스팅 덕후(300P)부터 열 수 있어요.</p>
@@ -476,7 +607,7 @@ async function loadTopic(){
 }
 async function loadSide(){const [f,l]=await Promise.all([sb.from('feed').select('*').order('id',{ascending:false}).limit(30),sb.from('v_leaders').select('*')]);FEED=f.data||[];LEAD=l.data||[]}
 async function loadProfile(){if(!USER){PROF=null;NOTICES=[];return}const {data}=await sb.from('profiles').select('*').eq('id',USER.id).maybeSingle();PROF=data||null;await Promise.all([loadNotices(),loadWants()])}
-async function refresh(all){try{if(all)await loadTopics();await Promise.all([loadTopic(),loadSide(),loadProfile(),loadFanBoard()]);render();loadImages();if(PAGE&&PAGE.kind==='a'&&PAGE.pid&&!busy)renderActor().catch(()=>{})}catch(e){console.error(e);toast('불러오지 못했어요: '+errMsg(e))}}
+async function refresh(all){try{if(all)await loadTopics();await Promise.all([loadTopic(),loadSide(),loadProfile(),loadFanBoard()]);render();loadImages();if(HOMEV)loadHome();if(PAGE&&PAGE.kind==='a'&&PAGE.pid&&!busy)renderActor().catch(()=>{})}catch(e){console.error(e);toast('불러오지 못했어요: '+errMsg(e))}}
 async function act(fn,args,okMsg){if(busy)return;busy=true;try{const d=await rpc(fn,args);if(okMsg)toast(okMsg);await refresh(fn.startsWith('propose_topic')||fn.startsWith('admin'));return d}catch(e){toast(errMsg(e))}finally{busy=false}}
 
 /* ---------- images ---------- */
@@ -520,7 +651,7 @@ function renderWho(){const w=$('#who');
 function renderTabs(){const b=$('#tabs');if(!b.dataset.k){b.innerHTML=CATS.map(c=>`<button class="tab" data-act="cat" data-id="${c.id}" style="background:${c.col}"><b>${c.name}</b><small>${c.sub}</small></button>`).join('');b.dataset.k=1;$('#pCat').innerHTML=CATS.map(c=>`<option value="${c.id}">${c.name}</option>`).join('')}for(const x of b.children)x.setAttribute('aria-pressed',x.dataset.id===CAT)}
 const dleft=t=>Math.ceil((new Date(t.closes_at)-new Date())/864e5);
 function renderShelf(){const list=TOPICS.filter(t=>t.cat===CAT);
- $('#shelf').innerHTML=list.map(t=>`<button class="topic" data-act="topic" data-id="${esc(t.id)}" aria-current="${t.id===SEL}"><small>${esc(t.info)}</small><b>${esc(t.title)}</b>${t.user_made?'<small><span class="ustag">유저 제안</span></small>':''}<small>${isOpen(t)?`투표 마감 D-${dleft(t)}`:'투표 마감, 결과 확정'}</small></button>`).join('')+`<button class="topic" data-act="openprop"><small>보고 싶은 작품이 없나요?</small><b>+ 새 주제 제안</b></button>`}
+ $('#shelf').innerHTML=list.map(t=>`<button class="topic" data-act="topic" data-id="${esc(t.id)}" aria-current="${!HOMEV&&t.id===SEL}"><span class="tp"${tPoster(t)?` style="background-image:url('${esc(tPoster(t))}')"`:''}><span>${tPoster(t)?'':esc(t.title)}</span></span><b>${esc(t.title)}</b><small>${esc(t.info)}</small><small>${t.user_made?'유저 제안, ':''}${isOpen(t)?`D-${dleft(t)}`:'결과 확정'}</small></button>`).join('')+`<button class="topic add" data-act="openprop"><span class="tp">+ 새 주제 제안</span><b>보고 싶은 작품</b><small>300P부터</small></button>`}
 const tStage=()=>{const o=['dream','rumor','cast','airing'];return o[Math.max(0,...D.roles.map(r=>o.indexOf(r.stage)))]};
 const total=r=>(D.cands[r.id]||[]).reduce((a,c)=>a+c.votes,0);
 function renderHead(){const t=topic();$('#tTitle').textContent=t.title;$('#tInfo').innerHTML=`${esc(t.info)}, ${esc(CATS.find(c=>c.id===t.cat).name)}${t.src_medium&&t.dst_medium&&t.src_medium!==t.dst_medium?` <span class="chip2">${esc(t.src_medium)} > ${esc(t.dst_medium)}</span>`:''} <button class="b sm" data-act="want">${WANTS.has(t.id)?'보고 싶어요 취소':'이렇게 나오면 보고 싶어요'} ${fmt(t.wants||0)}</button>`;$('#tFact').textContent=t.fact||'';
@@ -566,9 +697,9 @@ function roleHTML(r,i){const t=topic(),open=isOpen(t),g=PROF?grade(PROF.points):
   <ol class="tl">${(r.events||[]).map(e=>`<li>${esc(e.d)} ${esc(e.t)}</li>`).join('')}</ol></div><div></div></div>${talkHTML(r)}</article>`}
  const cs=D.cands[r.id]||[],tot=total(r)||1,mv=D.myVote[r.id],lead=cs.reduce((a,c)=>!a||c.votes>a.votes?c:a,null),dps=D.dpicks.filter(d=>d.role_id===r.id);
  const rows=cs.map(c=>{const pct=c.votes/tot,dp=dps.filter(d=>d.candidate_id===c.candidate_id).map(d=>d.nickname),mine=mv&&mv.candidate_id===c.candidate_id;
-  return `<div class="cand1${lead&&c.candidate_id===lead.candidate_id&&c.votes>0?' lead':''}"><div class="nm cn">${isOpt(r)?'':avatar(c.name)}<span><b>${isOpt(r)?esc(c.name):actorLink(c.name)}</b><small>${!isOpt(r)&&ageTxt(c.name)?ageTxt(c.name)+', ':''}${c.proposer?`제안 ${esc(c.proposer)}`:'첫 후보'}${dp.length?`, 디렉터스 픽 ${esc(dp.join(', '))}`:''}${mine?`, 내 표${mv.weight>1?' x2':''}`:''}</small></span></div><div class="vb"><span><i style="width:${(pct*100).toFixed(1)}%"></i></span><b>${(pct*100).toFixed(1)}% ${fmt(c.votes)}표</b></div><div class="acts">${open?(mv?(mine?'<button class="b sm mine" disabled>내 표</button>':''):`<button class="b sm" data-act="vote" data-rid="${r.id}" data-cid="${c.candidate_id}">한 표</button>`):''}${g>=3?`<button class="b sm" data-act="dpick" data-rid="${r.id}" data-cid="${c.candidate_id}">디렉터스 픽</button>`:''}</div></div>`}).join('');
+  const rank=1+cs.filter(x=>x.votes>c.votes).length;return `<div class="cand1${lead&&c.candidate_id===lead.candidate_id&&c.votes>0?' lead':''}">${c.votes>0?`<span class="rkb">${rank}위</span>`:''}<div class="nm cn">${isOpt(r)?'':avatar(c.name)}<span><b>${isOpt(r)?esc(c.name):actorLink(c.name)}</b><small>${!isOpt(r)&&ageTxt(c.name)?ageTxt(c.name)+', ':''}${c.proposer?`제안 ${esc(c.proposer)}`:'첫 후보'}${dp.length?`, 디렉터스 픽 ${esc(dp.join(', '))}`:''}${mine?`, 내 표${mv.weight>1?' x2':''}`:''}</small></span></div><div class="vb"><span><i style="width:${(pct*100).toFixed(1)}%"></i></span><b>${(pct*100).toFixed(1)}% ${fmt(c.votes)}표</b></div><div class="acts">${open?(mv?(mine?'<button class="b sm mine" disabled>내 표</button>':''):`<button class="b sm" data-act="vote" data-rid="${r.id}" data-cid="${c.candidate_id}">한 표</button>`):''}${g>=3?`<button class="b sm" data-act="dpick" data-rid="${r.id}" data-cid="${c.candidate_id}">디렉터스 픽</button>`:''}</div></div>`}).join('');
  return `<article class="role${i===SROLE?' sel':''}" data-act="role" data-i="${i}">${head}${!open?`<div class="closed">투표 마감. 최종 결과${lead&&lead.votes?`: ${esc(lead.name)} ${Math.round(lead.votes/tot*100)}%`:''}</div>`:mv?`<p class="dl" style="margin:6px 0">이 배역에는 투표를 마쳤어요. 마음에 드는 후보가 없었다면 캐스팅 시트에 원하는 배우를 직접 적어 보세요.</p>`:''}${r.stage==='rumor'?'<div class="banner">실사화가 발표됐어요. 공식 캐스팅이 나오면 맞힌 사람에게 포인트가 가요.</div>':''}
- ${rows||'<p class="empty3">아직 후보가 없어요. 첫 후보를 올려 주세요.</p>'}
+ ${rows?`<div class="cgrid${isOpt(r)?' opt':''}">${rows}</div>`:'<p class="empty3">아직 후보가 없어요. 첫 후보를 올려 주세요.</p>'}
  ${open?`<div class="row2"><input type="text" id="ad${r.id}" placeholder="후보에 없는 배우 올리기" maxlength="20" aria-label="새 후보 배우 이름"><button class="b sm" data-act="add" data-rid="${r.id}">후보 등록</button></div>`:''}${talkHTML(r)}</article>`}
 function renderRoles(){const box=$('#roles'),open=[...box.querySelectorAll('details.talk')].map(d=>d.open),keep={};box.querySelectorAll('input[type=text],select').forEach(e=>{if(e.id)keep[e.id]=e.value});
  box.innerHTML=D.roles.length?D.roles.map(roleHTML).join(''):'<p class="empty3">배역이 없어요.</p>';
@@ -608,10 +739,10 @@ function renderPoster(){const box=$('#poster');const s=POSTER&&POSTER.tid===SEL&
  box.innerHTML=`<div class="pwrap"><div class="pfig">${posterSVG(s)}</div><div><h3 style="font-size:22px">가상 캐스팅 포스터</h3><p class="sub" style="margin:6px 0 10px">${esc(s.nickname)}의 시트로 만든 팬메이드 포스터예요. 실존 배우의 얼굴은 쓰지 않고 실루엣과 크레딧으로 구성해요.</p><div class="qty" role="group" aria-label="포스터 분위기">${Object.entries(PST).map(([k,v])=>`<button class="chip" data-act="pstyle" data-v="${k}" aria-pressed="${k===PSTYLE}">${v.n}</button>`).join('')}</div><div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap"><button class="b sm buy" data-act="share" data-sid="${s.id}">공유 문구 복사</button><button class="b sm" data-act="pclose">닫기</button></div>
  ${USER&&s.user_id===USER.id?`<div class="pup"><b>배경 이미지</b><p class="dl">직접 만든 이미지를 올리거나 AI로 얼굴 없는 실루엣 배경을 만들 수 있어요. 실존 인물 얼굴을 합성한 이미지, 남의 사진, 공식 포스터는 올리지 말아 주세요. 신고 3건이면 숨겨져요.</p><div class="row2"><label class="b sm">이미지 올리기<input type="file" accept="image/*" data-act-file="poster" data-sid="${s.id}" hidden></label><button class="b sm" data-act="paigen" data-sid="${s.id}">AI 배경 만들기</button>${s.poster_url?`<button class="b sm" data-act="pclear" data-sid="${s.id}">배경 지우기</button>`:''}</div></div>`:(s.poster_url&&USER?`<button class="lk" data-act="preport" data-sid="${s.id}">이 포스터 신고</button>`:'')}
  </div></div>`}
-function render(){renderWho();renderTabs();renderShelf();renderPerks();renderRank();renderFeed();renderFanBoard();if(!D||D.tid!==SEL)return;{const ns=[];D.roles.forEach(r=>{if(r.orig)ns.push(r.orig);if(r.actor)ns.push(r.actor);(D.cands[r.id]||[]).forEach(c=>ns.push(c.name))});D.sheets.forEach(x=>Object.values(x.picks||{}).forEach(p=>{if(p.n)ns.push(p.n)}));loadAges(ns)}renderHead();renderWork();renderStats();renderWatch();renderDuel();renderPoster();drawChart();renderRoles();renderSide();renderOps()}
+function render(){renderWho();renderTabs();renderShelf();renderPerks();renderRank();renderFeed();renderFanBoard();renderTabbar();if(HOMEV)renderHome();if(!D||D.tid!==SEL)return;{const ns=[];D.roles.forEach(r=>{if(r.orig)ns.push(r.orig);if(r.actor)ns.push(r.actor);(D.cands[r.id]||[]).forEach(c=>ns.push(c.name))});D.sheets.forEach(x=>Object.values(x.picks||{}).forEach(p=>{if(p.n)ns.push(p.n)}));loadAges(ns)}renderHead();renderWork();renderStats();renderWatch();renderDuel();renderPoster();drawChart();renderRoles();renderSide();renderOps()}
 
 /* ---------- events ---------- */
-async function selectTopic(id){closePage();SEL=id;CAT=topic().cat;SROLE=0;DUEL=null;POSTER=null;shareText='';D=null;try{history.replaceState(null,'','#'+id)}catch(e){}render();$('#tTitle').textContent=topic().title;await loadTopic();render();loadImages()}
+async function selectTopic(id){closePage();showHome(false);SEL=id;CAT=topic().cat;SROLE=0;DUEL=null;POSTER=null;shareText='';D=null;try{history.replaceState(null,'','#'+id)}catch(e){}render();$('#tTitle').textContent=topic().title;await loadTopic();render();loadImages()}
 document.addEventListener('click',async e=>{
  const b=e.target.closest('[data-act]');if(!b)return;const a=b.dataset.act,rid=+b.dataset.rid,cid=+b.dataset.cid;
  if(a==='role'){if(e.target.closest('button,input,select,summary,details,a'))return;SROLE=+b.dataset.i;renderRoles();drawChart();return}
@@ -640,7 +771,9 @@ document.addEventListener('click',async e=>{
  if(a==='share'){const s=D.sheets.find(x=>x.id===+b.dataset.sid);if(!s)return;const t=topic();shareText=`[드림캐스팅 광장] ${s.nickname} 님의 '${t.title}' ${CATS.find(c=>c.id===t.cat).name} 캐스팅\n`+D.roles.filter(r=>s.picks[r.id]).map(r=>`${r.ch}: ${pickLabel(r,s.picks[r.id])}`).join('\n')+(s.reason?`\n캐스팅 이유: ${s.reason}`:'')+`\n너의 캐스팅은? ${location.origin}${location.pathname}#${t.id}`;try{await navigator.clipboard.writeText(shareText);toast('공유 문구를 복사했어요')}catch(err){toast('아래 문구를 길게 눌러 복사하세요')}renderSide();return}
  if(a==='propose'){if(needLogin())return;const rs=[...document.querySelectorAll('#pRoles .prow')].map(r=>({ch:r.querySelector('.pc').value.trim(),orig:r.querySelector('.po').value.trim(),age:r.querySelector('.pa').value.trim(),kind:r.querySelector('.pk').value})).filter(r=>r.ch);const ct=$('#pCat').value,MED={wn:['웹소설','드라마'],k2:['드라마','드라마'],us2k:['드라마','드라마'],k2us:['드라마','드라마'],ip2live:[$('#pSrc').value,'드라마'],live2x:['드라마',$('#pDst').value]}[ct];if(!rs.length)return toast('배역을 하나 이상 적어 주세요');const tid=await act('propose_topic3',{ttl:$('#pTitle').value.trim(),ct,inf:$('#pInfo').value.trim(),rs,src:MED[0],dst:MED[1]},'주제를 올렸어요. 첫 후보를 올려 보세요');if(tid){['pTitle','pInfo'].forEach(id=>$('#'+id).value='');propRows([]);$('#propBox').open=false;await refresh(true);selectTopic(tid)}return}
  if(a==='want'){if(needLogin())return;try{const on=await rpc('want_topic',{tid:SEL});on?WANTS.add(SEL):WANTS.delete(SEL);toast(on?'보고 싶어요를 눌렀어요. 이런 수요가 쌓이면 제작사에 좋은 신호가 돼요':'취소했어요');await refresh(true);loadMatrix()}catch(err){toast(errMsg(err))}return}
- if(a==='back'){location.hash=SEL||'';closePage();return}
+ if(a==='back'){location.hash='';closePage();return}
+ if(a==='hlike'){if(needLogin())return;try{await rpc('like_sheet',{sid:+b.dataset.sid});toast('공감했어요');loadHome(true)}catch(err){toast(errMsg(err))}return}
+ if(a==='hshare'){const p=HOME.posts.find(x=>x.s.id===+b.dataset.sid);if(!p)return;const txt=`[드림캐스팅 광장] ${p.s.nickname} 님의 '${p.t.title}' 캐스팅\n`+p.cast.map(c=>`${c.ch}: ${c.name}${c.y?` (${c.y}년)`:''}`).join('\n')+(p.s.reason?`\n캐스팅 이유: ${p.s.reason}`:'')+`\n너의 캐스팅은? ${location.origin}${location.pathname}#${p.t.id}`;try{await navigator.clipboard.writeText(txt);toast('공유 문구를 복사했어요')}catch(err){toast('복사하지 못했어요')}return}
  if(a==='readall'){try{await rpc('read_notices',{});await loadNotices();renderWho()}catch(err){}return}
  if(a==='asearch'){const n=($('#aSearch')||{value:''}).value.trim();if(n)location.hash='a/'+encodeURIComponent(n);return}
  if(a==='follow'){if(needLogin())return;try{const on=await rpc('follow_person',{pid:+b.dataset.pid});toast(on?'팬 채널에 들어왔어요. 새 소식을 알려 드릴게요':'팬 채널에서 나왔어요');await renderActor();loadFanBoard().then(renderFanBoard)}catch(err){toast(errMsg(err))}return}
@@ -667,11 +800,11 @@ document.addEventListener('click',async e=>{
 document.addEventListener('change',e=>{const t=e.target;if(t.dataset&&t.dataset.actFile==='poster'&&t.files&&t.files[0]){if(needLogin())return;uploadPoster(+t.dataset.sid,t.files[0]);t.value='';return}if(t.id==='yIdx'){loadYearIndex();return}if(t.id&&(t.id.startsWith('sy')||t.id.startsWith('sp')||t.id.startsWith('sn'))){const rid=t.id.slice(2),r=D&&D.roles.find(x=>String(x.id)===rid),sp=$('#sp'+rid);if(r&&sp){const nm=sp.value==='__n'?($('#sn'+rid).value||'').trim():((D.cands[r.id]||[]).find(c=>String(c.candidate_id)===sp.value)||{}).name;const y=+($('#sy'+rid).value||0),a=nm?ageTxt(nm,y):'';const el=$('#sa'+rid);if(el)el.textContent=[r.age_hint?`배역 나이 ${r.age_hint}`:'',a?`${nm} ${a}`:''].filter(Boolean).join(', ')}}if(t.id&&t.id.startsWith('sp')){const n=document.getElementById('sn'+t.id.slice(2));if(n){n.hidden=t.value!=='__n';if(!n.hidden)n.focus()}renderChemBuild()}if(t.id&&t.id.startsWith('sn'))renderChemBuild()});
 document.addEventListener('input',e=>{const t=e.target;if(t.id&&t.id.startsWith('vt'))$('#vo'+t.id.slice(2)).textContent=t.value});
 $('#nickIn').addEventListener('keydown',e=>{if(e.key==='Enter')document.querySelector('[data-act=nick]').click()});
-addEventListener('hashchange',()=>{const h=decodeURIComponent(location.hash.slice(1));if(h.startsWith('a/')||h.startsWith('u/')){openRoute();return}if(h&&TOPICS.find(t=>t.id===h)){if(h!==SEL||PAGE)selectTopic(h)}else if(!h)closePage()});
+addEventListener('hashchange',()=>{const h=decodeURIComponent(location.hash.slice(1));if(h.startsWith('a/')||h.startsWith('u/')){openRoute();renderTabbar();return}if(h&&TOPICS.find(t=>t.id===h)){if(h!==SEL||PAGE||HOMEV)selectTopic(h)}else{closePage();navSpecial(h)}renderTabbar()});
 const ro=new ResizeObserver(()=>drawChart());ro.observe($('.fig'));
 
 sb.auth.onAuthStateChange(async(ev,session)=>{const u=session?session.user:null;const changed=(u&&u.id)!==(USER&&USER.id);USER=u;if(changed&&TOPICS.length){await refresh();if(USER&&!PROF){$('#nickIn').value='';$('#nickModal').classList.add('on')}}});
-(async()=>{const {data}=await sb.auth.getSession();USER=data.session?data.session.user:null;await refresh(true);openRoute();$('#yIdx').innerHTML=Array.from({length:6},(_,k)=>NOW_Y-k).map(y=>`<option value="${y}">${y}년</option>`).join('');loadYearIndex();loadMatrix();propRows([]);propMode();if(USER&&!PROF)$('#nickModal').classList.add('on');
+(async()=>{const {data}=await sb.auth.getSession();USER=data.session?data.session.user:null;await refresh(true);openRoute();{const h0=decodeURIComponent(location.hash.slice(1));if(!h0||!(TOPICS.find(t=>t.id===h0)||h0.startsWith('a/')||h0.startsWith('u/')))navSpecial(h0)}renderTabbar();$('#yIdx').innerHTML=Array.from({length:6},(_,k)=>NOW_Y-k).map(y=>`<option value="${y}">${y}년</option>`).join('');loadYearIndex();loadMatrix();propRows([]);propMode();if(USER&&!PROF)$('#nickModal').classList.add('on');
  setInterval(()=>{if(document.visibilityState==='visible'&&!busy){const f=document.activeElement;if(f&&(f.tagName==='INPUT'||f.tagName==='SELECT'||f.tagName==='TEXTAREA'))return;refresh()}},30000)})();
 
 /* ================= 확장: 나이, 작품 정보, 배우 페이지, 유저 페이지, 알림, 포스터 업로드 ================= */
@@ -891,6 +1024,65 @@ async function loadWants(){WANTS=new Set();if(!USER)return;const {data}=await sb
 async function loadMatrix(){try{const d=await rpc('media_matrix',{});const b=$('#mmx');if(b)b.innerHTML=(d||[]).filter(r=>r.src!==r.dst||r.src==='기타').slice(0,8).map(r=>`<div class="rk"><span><b>${esc(r.src)} > ${esc(r.dst)}</b><small>주제 ${r.topics}, 시트 ${r.sheets}</small></span><b class="num">보고 싶어요 ${fmt(r.wants)}</b></div>`).join('')||'<p class="empty3">IP 실사화와 크로스 미디어 주제가 올라오면 매체별 수요가 쌓여요.</p>'}catch(e){}}
 document.addEventListener('input',e=>{const t=e.target;if(t.id&&t.id.startsWith('ps')&&t.type==='range'){const o=document.getElementById('po'+t.id.slice(2));if(o)o.textContent=t.value}});
 document.addEventListener('change',e=>{if(e.target.id==='pTitle'&&$('#pCat').value!=='wn'&&![...document.querySelectorAll('#pRoles .pc')].some(x=>x.value.trim()))document.querySelector('[data-act=pfetch]').click()});
+
+
+/* ================= v2: 홈 피드(시안 B) + 보드 카드(시안 C) + 모바일 하단 탭 ================= */
+const tPoster=t=>(t&&t.work&&t.work.poster)||IMG['w:'+(t&&t.id)]||'';
+const tBack=t=>(t&&t.work&&t.work.backdrop)||tPoster(t);
+const phStyle=u=>u?` style="background-image:url('${esc(u)}')"`:'';
+let HOMEV=false,HOME={calls:[],posts:[],busy:false,at:0};
+async function loadNames(names){const need=[...new Set(names)].filter(n=>n&&!(('p:'+n) in IMG)).slice(0,38);if(!need.length)return;
+ try{const r=await fetch(SB_URL+'/functions/v1/tmdb',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+ANON,apikey:ANON},body:JSON.stringify({names:need,titles:[]})});if(r.ok){const d=await r.json();for(const n in d.p)IMG['p:'+n]=d.p[n];need.forEach(n=>{if(!(('p:'+n) in IMG))IMG['p:'+n]=''});try{localStorage.setItem('tmdbImg2',JSON.stringify(IMG))}catch(e){}}}catch(e){}}
+async function loadHome(force){if(HOME.busy||(!force&&Date.now()-HOME.at<30000))return;HOME.busy=true;
+ try{const open=TOPICS.filter(isOpen).slice(0,8);
+  const [roles,sheets]=await Promise.all([sb.from('roles').select('id,topic_id,ch,pos,kind,stage,actor').in('topic_id',open.map(t=>t.id)).order('pos'),sb.from('v_sheets').select('*').order('likes',{ascending:false}).order('updated_at',{ascending:false}).limit(12)]);
+  const tallies=await Promise.all(open.map(t=>rpc('topic_tally',{tid:t.id}).catch(()=>[])));
+  HOME.calls=open.map((t,i)=>{const rs=(roles.data||[]).filter(r=>r.topic_id===t.id&&!isSync(r)&&r.stage!=='cast'&&r.stage!=='airing');const r=rs[0];if(!r)return null;
+   const cs=(tallies[i]||[]).filter(c=>c.role_id===r.id).sort((a,b)=>b.votes-a.votes).slice(0,3);const tot=(tallies[i]||[]).filter(c=>c.role_id===r.id).reduce((a,c)=>a+c.votes,0);return {t,r,cs,tot}}).filter(Boolean);
+  const sh=sheets.data||[],cids=[...new Set(sh.flatMap(s=>Object.values(s.picks||{}).map(p=>p.c).filter(Boolean)))],tids=[...new Set(sh.map(s=>s.topic_id))];
+  const [cands,sroles]=await Promise.all([cids.length?sb.from('candidates').select('id,name').in('id',cids):{data:[]},tids.length?sb.from('roles').select('id,topic_id,ch,pos,kind').in('topic_id',tids).order('pos'):{data:[]}]);
+  const cn={};(cands.data||[]).forEach(c=>cn[c.id]=c.name);
+  HOME.posts=sh.map(s=>({s,t:TOPICS.find(t=>t.id===s.topic_id),cast:(sroles.data||[]).filter(r=>r.topic_id===s.topic_id&&s.picks[r.id]).map(r=>({ch:r.ch,kind:r.kind,name:s.picks[r.id].c?cn[s.picks[r.id].c]:s.picks[r.id].n,y:s.picks[r.id].y}))})).filter(p=>p.t);
+  HOME.at=Date.now();
+  const names=[...HOME.calls.flatMap(c=>c.cs.map(x=>x.name)),...HOME.posts.flatMap(p=>p.cast.filter(c=>c.kind!=='option').map(c=>c.name)),...FANB.map(f=>f.name)];
+  if(HOMEV)renderHome();await loadNames(names);
+ }catch(e){}HOME.busy=false;if(HOMEV)renderHome()}
+const IC={heart:'<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 21s-7-4.4-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 6c-2.5 4.6-9.5 9-9.5 9z"/></svg>',
+ chat:'<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>',
+ send:'<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4z"/></svg>',
+ home:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 11 12 4l9 7v9h-6v-6H9v6H3z"/></svg>',
+ grid:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>',
+ plus:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><path d="M12 8v8M8 12h8"/></svg>',
+ star:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1 6.2L12 17.3 6.5 20.2l1-6.2L3 9.6l6.2-.9z"/></svg>',
+ user:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>'};
+const initial=n=>esc(String(n||'?')[0]);
+function photo(n,cls='ph'){const u=IMG['p:'+n];return `<span class="${cls}"${phStyle(u)}>${u?'':initial(n)}</span>`}
+function renderHome(){const box=$('#home');if(!box)return;
+ const st=FANB.slice(0,12).map(f=>`<a class="story" href="#a/${encodeURIComponent(f.name)}"><span class="ring"><i${phStyle(IMG['p:'+f.name])}>${IMG['p:'+f.name]?'':initial(f.name)}</i></span><span>${esc(f.name)}</span></a>`).join('');
+ const calls=HOME.calls.map(c=>`<a class="call" href="#${esc(c.t.id)}"><div class="cv"${phStyle(tBack(c.t))}><small>D-${dleft(c.t)}</small><b>${esc(c.t.title)}<br><span style="font:700 14px 'Noto Sans KR',sans-serif">${esc(c.r.ch)} 역은 누구?</span></b></div>
+  <div class="who">${c.cs.length?c.cs.map((x,i)=>`<div>${photo(x.name)}<b>${i+1}. ${esc(x.name)}</b><small style="color:var(--mute)">${c.tot?Math.round(x.votes/c.tot*100)+'%':'첫 표를 기다려요'}</small></div>`).join(''):'<p class="sub" style="grid-column:1/-1;margin:0">아직 후보가 없어요. 첫 후보를 올려 보세요</p>'}</div>
+  <div class="foot2"><span>${esc(CATS.find(x=>x.id===c.t.cat).name)}</span><span>${fmt(c.tot)}표</span></div></a>`).join('');
+ const posts=HOME.posts.map(p=>{const cast=p.cast.slice(0,4);return `<article class="post"><header><span class="pa" aria-hidden="true">${initial(p.s.nickname)}</span><div style="display:flex;flex-direction:column;min-width:0"><a href="#u/${encodeURIComponent(p.s.nickname)}"><b>${esc(p.s.nickname)}</b></a><a href="#${esc(p.t.id)}" class="sub">${esc(p.t.title)} 캐스팅 시트</a></div></header>
+  <div class="media"${phStyle(p.s.poster_url||tPoster(p.t))}><h3>${esc(p.t.title)}</h3><div class="cast" style="grid-template-columns:repeat(${Math.max(1,cast.length)},minmax(0,1fr))">${cast.map(c=>`<div>${c.kind==='option'?`<span class="ph" style="background:#141414">${initial(c.name)}</span>`:photo(c.name)}<small>${esc(c.ch)}</small><b>${esc(c.name||'')}${c.y?` (${c.y})`:''}</b></div>`).join('')}</div></div>
+  <div class="bar"><button data-act="hlike" data-sid="${p.s.id}" aria-label="공감">${IC.heart}</button><a href="#${esc(p.t.id)}" aria-label="토론 보기" style="color:var(--ink);min-width:44px;min-height:44px;display:grid;place-items:center">${IC.chat}</a><button data-act="hshare" data-sid="${p.s.id}" aria-label="공유 문구 복사">${IC.send}</button><a class="mk" href="#${esc(p.t.id)}">나도 시트 만들기</a></div>
+  <div class="cap"><b>공감 ${fmt(p.s.likes)}개</b>${p.s.reason?`<p style="margin:4px 0 0"><b>${esc(p.s.nickname)}</b> ${esc(p.s.reason)}</p>`:''}</div></article>`}).join('');
+ box.innerHTML=`${st?`<div class="stories" aria-label="배우 팬 채널">${st}</div>`:''}
+ <section class="hsec"><div class="sh"><h2>이번 주 캐스팅 콜</h2><span class="sub">배역마다 한 사람 한 표</span></div><div class="calls">${calls||'<p class="empty3">불러오는 중이에요</p>'}</div></section>
+ <section class="hsec"><div class="sh"><h2>캐스팅 시트 피드</h2><span class="sub">공감 순</span></div>${posts||`<div class="post" style="padding:18px"><b>아직 올라온 캐스팅 시트가 없어요</b><p class="sub" style="margin:6px 0 12px">작품을 골라 첫 시트를 올리면 이 피드의 첫 게시물이 돼요.</p>${HOME.calls[0]?`<a class="b buy" href="#${esc(HOME.calls[0].t.id)}" style="display:inline-block;padding:10px 16px;text-decoration:none">${esc(HOME.calls[0].t.title)} 시트 만들기</a>`:''}</div>`}</section>`}
+function showHome(on){HOMEV=on;const h=$('#home'),s=$('#topicView');if(h)h.hidden=!on;if(s)s.hidden=on;if(on){renderHome();loadHome()}renderTabbar()}
+function renderTabbar(){const b=$('#tabbar');if(!b)return;const h=location.hash.slice(1),me=PROF?'#u/'+encodeURIComponent(PROF.nickname):'#me';
+ const it=[['#','홈',IC.home,!h],['#explore','탐색',IC.grid,h==='explore'],['#make','만들기',IC.plus,false],['#actors','배우',IC.star,h.startsWith('a/')||h==='actors'],[me,'나',IC.user,h.startsWith('u/')]];
+ b.innerHTML=it.map(x=>`<a href="${x[0]}" class="${x[3]?'on':''}" ${x[3]?'aria-current="page"':''}>${x[2]}<span>${x[1]}</span></a>`).join('')}
+/* 특수 주소: 홈, 탐색, 만들기, 배우, 나 */
+function navSpecial(h){if(!h||h==='home'){showHome(true);return}
+ if(h==='explore'){showHome(true);$('#tabs').scrollIntoView({behavior:'smooth'});return}
+ if(h==='make'){if(!HOMEV&&D){const b=document.querySelector('.sheet [data-act=sheet]');if(b){b.closest('.sheet').scrollIntoView({behavior:'smooth'});return}}$('#propBox').open=true;$('#propBox').scrollIntoView({behavior:'smooth'});return}
+ if(h==='actors'){$('#fanb').scrollIntoView({behavior:'smooth'});setTimeout(()=>{const i=$('#aSearch');if(i)i.focus()},400);return}
+ if(h==='me'){if(needLogin())return;if(PROF)location.hash='u/'+encodeURIComponent(PROF.nickname);return}
+ showHome(true)}
+document.addEventListener('submit',e=>{if(e.target.id!=='gs')return;e.preventDefault();const q=$('#gq').value.trim();if(!q)return;
+ const t=TOPICS.find(x=>x.title.replace(/\s/g,'')===q.replace(/\s/g,''))||TOPICS.find(x=>x.title.includes(q));
+ location.hash=t?t.id:'a/'+encodeURIComponent(q);$('#gq').value=''});
 
 }
 </script>

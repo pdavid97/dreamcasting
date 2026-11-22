@@ -1,5 +1,6 @@
 <header class="mast">
   <div><div class="logo">드림캐스팅 <b>광장</b></div><p class="tag">웹소설이 드라마가 된다면, 옛 드라마를 다시 만든다면, 할리우드판이 나온다면. 내 캐스팅을 제안하고, 토론하고, 투표로 민심을 확인하세요.</p></div>
+  <form class="gsearch" id="gs" role="search"><label><span style="position:absolute;left:-9999px">작품, 배우 검색</span><input type="search" id="gq" maxlength="20" placeholder="작품, 배우 검색" autocomplete="off"></label></form>
   <div class="worth" id="who"></div>
 </header>
 <div class="chy"><span class="lab">광장</span><div class="track"><div id="chy"></div></div></div>
@@ -10,7 +11,8 @@
   <section id="page" hidden aria-live="polite"></section>
 
   <div class="desk">
-    <section aria-label="선택한 작품">
+    <div id="home" hidden aria-label="홈 피드"></div>
+    <section aria-label="선택한 작품" id="topicView">
       <div class="th"><img id="tPoster" class="tposter" alt="" hidden><div><span class="sub" id="tInfo"></span><h1 id="tTitle">불러오는 중</h1><p class="sub" id="tFact" style="margin-top:6px"></p><div class="flow" id="tFlow"></div></div><div class="clock"><span class="sub" id="tClockL"></span><b class="num" id="tClock"></b><span class="sub" id="tVotes"></span></div></div>
       <div id="tWork"></div><div id="tStats"></div><div id="tWatch"></div>
       <div id="duel"></div>
@@ -31,6 +33,7 @@
     </aside>
   </div>
 
+  <nav id="tabbar" class="tabbar" aria-label="하단 메뉴"></nav>
   <details class="rules" id="propBox">
     <summary>새 주제 제안하기</summary>
     <p class="sub">보고 싶은 리메이크나 실사화가 있나요? 작품과 배역만 올리면 후보와 토론은 광장이 채웁니다. 캐스팅 덕후(300P)부터 열 수 있어요.</p>
@@ -132,7 +135,7 @@ async function loadTopic(){
 }
 async function loadSide(){const [f,l]=await Promise.all([sb.from('feed').select('*').order('id',{ascending:false}).limit(30),sb.from('v_leaders').select('*')]);FEED=f.data||[];LEAD=l.data||[]}
 async function loadProfile(){if(!USER){PROF=null;NOTICES=[];return}const {data}=await sb.from('profiles').select('*').eq('id',USER.id).maybeSingle();PROF=data||null;await Promise.all([loadNotices(),loadWants()])}
-async function refresh(all){try{if(all)await loadTopics();await Promise.all([loadTopic(),loadSide(),loadProfile(),loadFanBoard()]);render();loadImages();if(PAGE&&PAGE.kind==='a'&&PAGE.pid&&!busy)renderActor().catch(()=>{})}catch(e){console.error(e);toast('불러오지 못했어요: '+errMsg(e))}}
+async function refresh(all){try{if(all)await loadTopics();await Promise.all([loadTopic(),loadSide(),loadProfile(),loadFanBoard()]);render();loadImages();if(HOMEV)loadHome();if(PAGE&&PAGE.kind==='a'&&PAGE.pid&&!busy)renderActor().catch(()=>{})}catch(e){console.error(e);toast('불러오지 못했어요: '+errMsg(e))}}
 async function act(fn,args,okMsg){if(busy)return;busy=true;try{const d=await rpc(fn,args);if(okMsg)toast(okMsg);await refresh(fn.startsWith('propose_topic')||fn.startsWith('admin'));return d}catch(e){toast(errMsg(e))}finally{busy=false}}
 
 /* ---------- images ---------- */
@@ -176,7 +179,7 @@ function renderWho(){const w=$('#who');
 function renderTabs(){const b=$('#tabs');if(!b.dataset.k){b.innerHTML=CATS.map(c=>`<button class="tab" data-act="cat" data-id="${c.id}" style="background:${c.col}"><b>${c.name}</b><small>${c.sub}</small></button>`).join('');b.dataset.k=1;$('#pCat').innerHTML=CATS.map(c=>`<option value="${c.id}">${c.name}</option>`).join('')}for(const x of b.children)x.setAttribute('aria-pressed',x.dataset.id===CAT)}
 const dleft=t=>Math.ceil((new Date(t.closes_at)-new Date())/864e5);
 function renderShelf(){const list=TOPICS.filter(t=>t.cat===CAT);
- $('#shelf').innerHTML=list.map(t=>`<button class="topic" data-act="topic" data-id="${esc(t.id)}" aria-current="${t.id===SEL}"><small>${esc(t.info)}</small><b>${esc(t.title)}</b>${t.user_made?'<small><span class="ustag">유저 제안</span></small>':''}<small>${isOpen(t)?`투표 마감 D-${dleft(t)}`:'투표 마감, 결과 확정'}</small></button>`).join('')+`<button class="topic" data-act="openprop"><small>보고 싶은 작품이 없나요?</small><b>+ 새 주제 제안</b></button>`}
+ $('#shelf').innerHTML=list.map(t=>`<button class="topic" data-act="topic" data-id="${esc(t.id)}" aria-current="${!HOMEV&&t.id===SEL}"><span class="tp"${tPoster(t)?` style="background-image:url('${esc(tPoster(t))}')"`:''}><span>${tPoster(t)?'':esc(t.title)}</span></span><b>${esc(t.title)}</b><small>${esc(t.info)}</small><small>${t.user_made?'유저 제안, ':''}${isOpen(t)?`D-${dleft(t)}`:'결과 확정'}</small></button>`).join('')+`<button class="topic add" data-act="openprop"><span class="tp">+ 새 주제 제안</span><b>보고 싶은 작품</b><small>300P부터</small></button>`}
 const tStage=()=>{const o=['dream','rumor','cast','airing'];return o[Math.max(0,...D.roles.map(r=>o.indexOf(r.stage)))]};
 const total=r=>(D.cands[r.id]||[]).reduce((a,c)=>a+c.votes,0);
 function renderHead(){const t=topic();$('#tTitle').textContent=t.title;$('#tInfo').innerHTML=`${esc(t.info)}, ${esc(CATS.find(c=>c.id===t.cat).name)}${t.src_medium&&t.dst_medium&&t.src_medium!==t.dst_medium?` <span class="chip2">${esc(t.src_medium)} > ${esc(t.dst_medium)}</span>`:''} <button class="b sm" data-act="want">${WANTS.has(t.id)?'보고 싶어요 취소':'이렇게 나오면 보고 싶어요'} ${fmt(t.wants||0)}</button>`;$('#tFact').textContent=t.fact||'';
@@ -222,9 +225,9 @@ function roleHTML(r,i){const t=topic(),open=isOpen(t),g=PROF?grade(PROF.points):
   <ol class="tl">${(r.events||[]).map(e=>`<li>${esc(e.d)} ${esc(e.t)}</li>`).join('')}</ol></div><div></div></div>${talkHTML(r)}</article>`}
  const cs=D.cands[r.id]||[],tot=total(r)||1,mv=D.myVote[r.id],lead=cs.reduce((a,c)=>!a||c.votes>a.votes?c:a,null),dps=D.dpicks.filter(d=>d.role_id===r.id);
  const rows=cs.map(c=>{const pct=c.votes/tot,dp=dps.filter(d=>d.candidate_id===c.candidate_id).map(d=>d.nickname),mine=mv&&mv.candidate_id===c.candidate_id;
-  return `<div class="cand1${lead&&c.candidate_id===lead.candidate_id&&c.votes>0?' lead':''}"><div class="nm cn">${isOpt(r)?'':avatar(c.name)}<span><b>${isOpt(r)?esc(c.name):actorLink(c.name)}</b><small>${!isOpt(r)&&ageTxt(c.name)?ageTxt(c.name)+', ':''}${c.proposer?`제안 ${esc(c.proposer)}`:'첫 후보'}${dp.length?`, 디렉터스 픽 ${esc(dp.join(', '))}`:''}${mine?`, 내 표${mv.weight>1?' x2':''}`:''}</small></span></div><div class="vb"><span><i style="width:${(pct*100).toFixed(1)}%"></i></span><b>${(pct*100).toFixed(1)}% ${fmt(c.votes)}표</b></div><div class="acts">${open?(mv?(mine?'<button class="b sm mine" disabled>내 표</button>':''):`<button class="b sm" data-act="vote" data-rid="${r.id}" data-cid="${c.candidate_id}">한 표</button>`):''}${g>=3?`<button class="b sm" data-act="dpick" data-rid="${r.id}" data-cid="${c.candidate_id}">디렉터스 픽</button>`:''}</div></div>`}).join('');
+  const rank=1+cs.filter(x=>x.votes>c.votes).length;return `<div class="cand1${lead&&c.candidate_id===lead.candidate_id&&c.votes>0?' lead':''}">${c.votes>0?`<span class="rkb">${rank}위</span>`:''}<div class="nm cn">${isOpt(r)?'':avatar(c.name)}<span><b>${isOpt(r)?esc(c.name):actorLink(c.name)}</b><small>${!isOpt(r)&&ageTxt(c.name)?ageTxt(c.name)+', ':''}${c.proposer?`제안 ${esc(c.proposer)}`:'첫 후보'}${dp.length?`, 디렉터스 픽 ${esc(dp.join(', '))}`:''}${mine?`, 내 표${mv.weight>1?' x2':''}`:''}</small></span></div><div class="vb"><span><i style="width:${(pct*100).toFixed(1)}%"></i></span><b>${(pct*100).toFixed(1)}% ${fmt(c.votes)}표</b></div><div class="acts">${open?(mv?(mine?'<button class="b sm mine" disabled>내 표</button>':''):`<button class="b sm" data-act="vote" data-rid="${r.id}" data-cid="${c.candidate_id}">한 표</button>`):''}${g>=3?`<button class="b sm" data-act="dpick" data-rid="${r.id}" data-cid="${c.candidate_id}">디렉터스 픽</button>`:''}</div></div>`}).join('');
  return `<article class="role${i===SROLE?' sel':''}" data-act="role" data-i="${i}">${head}${!open?`<div class="closed">투표 마감. 최종 결과${lead&&lead.votes?`: ${esc(lead.name)} ${Math.round(lead.votes/tot*100)}%`:''}</div>`:mv?`<p class="dl" style="margin:6px 0">이 배역에는 투표를 마쳤어요. 마음에 드는 후보가 없었다면 캐스팅 시트에 원하는 배우를 직접 적어 보세요.</p>`:''}${r.stage==='rumor'?'<div class="banner">실사화가 발표됐어요. 공식 캐스팅이 나오면 맞힌 사람에게 포인트가 가요.</div>':''}
- ${rows||'<p class="empty3">아직 후보가 없어요. 첫 후보를 올려 주세요.</p>'}
+ ${rows?`<div class="cgrid${isOpt(r)?' opt':''}">${rows}</div>`:'<p class="empty3">아직 후보가 없어요. 첫 후보를 올려 주세요.</p>'}
  ${open?`<div class="row2"><input type="text" id="ad${r.id}" placeholder="후보에 없는 배우 올리기" maxlength="20" aria-label="새 후보 배우 이름"><button class="b sm" data-act="add" data-rid="${r.id}">후보 등록</button></div>`:''}${talkHTML(r)}</article>`}
 function renderRoles(){const box=$('#roles'),open=[...box.querySelectorAll('details.talk')].map(d=>d.open),keep={};box.querySelectorAll('input[type=text],select').forEach(e=>{if(e.id)keep[e.id]=e.value});
  box.innerHTML=D.roles.length?D.roles.map(roleHTML).join(''):'<p class="empty3">배역이 없어요.</p>';
@@ -264,10 +267,10 @@ function renderPoster(){const box=$('#poster');const s=POSTER&&POSTER.tid===SEL&
  box.innerHTML=`<div class="pwrap"><div class="pfig">${posterSVG(s)}</div><div><h3 style="font-size:22px">가상 캐스팅 포스터</h3><p class="sub" style="margin:6px 0 10px">${esc(s.nickname)}의 시트로 만든 팬메이드 포스터예요. 실존 배우의 얼굴은 쓰지 않고 실루엣과 크레딧으로 구성해요.</p><div class="qty" role="group" aria-label="포스터 분위기">${Object.entries(PST).map(([k,v])=>`<button class="chip" data-act="pstyle" data-v="${k}" aria-pressed="${k===PSTYLE}">${v.n}</button>`).join('')}</div><div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap"><button class="b sm buy" data-act="share" data-sid="${s.id}">공유 문구 복사</button><button class="b sm" data-act="pclose">닫기</button></div>
  ${USER&&s.user_id===USER.id?`<div class="pup"><b>배경 이미지</b><p class="dl">직접 만든 이미지를 올리거나 AI로 얼굴 없는 실루엣 배경을 만들 수 있어요. 실존 인물 얼굴을 합성한 이미지, 남의 사진, 공식 포스터는 올리지 말아 주세요. 신고 3건이면 숨겨져요.</p><div class="row2"><label class="b sm">이미지 올리기<input type="file" accept="image/*" data-act-file="poster" data-sid="${s.id}" hidden></label><button class="b sm" data-act="paigen" data-sid="${s.id}">AI 배경 만들기</button>${s.poster_url?`<button class="b sm" data-act="pclear" data-sid="${s.id}">배경 지우기</button>`:''}</div></div>`:(s.poster_url&&USER?`<button class="lk" data-act="preport" data-sid="${s.id}">이 포스터 신고</button>`:'')}
  </div></div>`}
-function render(){renderWho();renderTabs();renderShelf();renderPerks();renderRank();renderFeed();renderFanBoard();if(!D||D.tid!==SEL)return;{const ns=[];D.roles.forEach(r=>{if(r.orig)ns.push(r.orig);if(r.actor)ns.push(r.actor);(D.cands[r.id]||[]).forEach(c=>ns.push(c.name))});D.sheets.forEach(x=>Object.values(x.picks||{}).forEach(p=>{if(p.n)ns.push(p.n)}));loadAges(ns)}renderHead();renderWork();renderStats();renderWatch();renderDuel();renderPoster();drawChart();renderRoles();renderSide();renderOps()}
+function render(){renderWho();renderTabs();renderShelf();renderPerks();renderRank();renderFeed();renderFanBoard();renderTabbar();if(HOMEV)renderHome();if(!D||D.tid!==SEL)return;{const ns=[];D.roles.forEach(r=>{if(r.orig)ns.push(r.orig);if(r.actor)ns.push(r.actor);(D.cands[r.id]||[]).forEach(c=>ns.push(c.name))});D.sheets.forEach(x=>Object.values(x.picks||{}).forEach(p=>{if(p.n)ns.push(p.n)}));loadAges(ns)}renderHead();renderWork();renderStats();renderWatch();renderDuel();renderPoster();drawChart();renderRoles();renderSide();renderOps()}
 
 /* ---------- events ---------- */
-async function selectTopic(id){closePage();SEL=id;CAT=topic().cat;SROLE=0;DUEL=null;POSTER=null;shareText='';D=null;try{history.replaceState(null,'','#'+id)}catch(e){}render();$('#tTitle').textContent=topic().title;await loadTopic();render();loadImages()}
+async function selectTopic(id){closePage();showHome(false);SEL=id;CAT=topic().cat;SROLE=0;DUEL=null;POSTER=null;shareText='';D=null;try{history.replaceState(null,'','#'+id)}catch(e){}render();$('#tTitle').textContent=topic().title;await loadTopic();render();loadImages()}
 document.addEventListener('click',async e=>{
  const b=e.target.closest('[data-act]');if(!b)return;const a=b.dataset.act,rid=+b.dataset.rid,cid=+b.dataset.cid;
  if(a==='role'){if(e.target.closest('button,input,select,summary,details,a'))return;SROLE=+b.dataset.i;renderRoles();drawChart();return}
@@ -296,7 +299,9 @@ document.addEventListener('click',async e=>{
  if(a==='share'){const s=D.sheets.find(x=>x.id===+b.dataset.sid);if(!s)return;const t=topic();shareText=`[드림캐스팅 광장] ${s.nickname} 님의 '${t.title}' ${CATS.find(c=>c.id===t.cat).name} 캐스팅\n`+D.roles.filter(r=>s.picks[r.id]).map(r=>`${r.ch}: ${pickLabel(r,s.picks[r.id])}`).join('\n')+(s.reason?`\n캐스팅 이유: ${s.reason}`:'')+`\n너의 캐스팅은? ${location.origin}${location.pathname}#${t.id}`;try{await navigator.clipboard.writeText(shareText);toast('공유 문구를 복사했어요')}catch(err){toast('아래 문구를 길게 눌러 복사하세요')}renderSide();return}
  if(a==='propose'){if(needLogin())return;const rs=[...document.querySelectorAll('#pRoles .prow')].map(r=>({ch:r.querySelector('.pc').value.trim(),orig:r.querySelector('.po').value.trim(),age:r.querySelector('.pa').value.trim(),kind:r.querySelector('.pk').value})).filter(r=>r.ch);const ct=$('#pCat').value,MED={wn:['웹소설','드라마'],k2:['드라마','드라마'],us2k:['드라마','드라마'],k2us:['드라마','드라마'],ip2live:[$('#pSrc').value,'드라마'],live2x:['드라마',$('#pDst').value]}[ct];if(!rs.length)return toast('배역을 하나 이상 적어 주세요');const tid=await act('propose_topic3',{ttl:$('#pTitle').value.trim(),ct,inf:$('#pInfo').value.trim(),rs,src:MED[0],dst:MED[1]},'주제를 올렸어요. 첫 후보를 올려 보세요');if(tid){['pTitle','pInfo'].forEach(id=>$('#'+id).value='');propRows([]);$('#propBox').open=false;await refresh(true);selectTopic(tid)}return}
  if(a==='want'){if(needLogin())return;try{const on=await rpc('want_topic',{tid:SEL});on?WANTS.add(SEL):WANTS.delete(SEL);toast(on?'보고 싶어요를 눌렀어요. 이런 수요가 쌓이면 제작사에 좋은 신호가 돼요':'취소했어요');await refresh(true);loadMatrix()}catch(err){toast(errMsg(err))}return}
- if(a==='back'){location.hash=SEL||'';closePage();return}
+ if(a==='back'){location.hash='';closePage();return}
+ if(a==='hlike'){if(needLogin())return;try{await rpc('like_sheet',{sid:+b.dataset.sid});toast('공감했어요');loadHome(true)}catch(err){toast(errMsg(err))}return}
+ if(a==='hshare'){const p=HOME.posts.find(x=>x.s.id===+b.dataset.sid);if(!p)return;const txt=`[드림캐스팅 광장] ${p.s.nickname} 님의 '${p.t.title}' 캐스팅\n`+p.cast.map(c=>`${c.ch}: ${c.name}${c.y?` (${c.y}년)`:''}`).join('\n')+(p.s.reason?`\n캐스팅 이유: ${p.s.reason}`:'')+`\n너의 캐스팅은? ${location.origin}${location.pathname}#${p.t.id}`;try{await navigator.clipboard.writeText(txt);toast('공유 문구를 복사했어요')}catch(err){toast('복사하지 못했어요')}return}
  if(a==='readall'){try{await rpc('read_notices',{});await loadNotices();renderWho()}catch(err){}return}
  if(a==='asearch'){const n=($('#aSearch')||{value:''}).value.trim();if(n)location.hash='a/'+encodeURIComponent(n);return}
  if(a==='follow'){if(needLogin())return;try{const on=await rpc('follow_person',{pid:+b.dataset.pid});toast(on?'팬 채널에 들어왔어요. 새 소식을 알려 드릴게요':'팬 채널에서 나왔어요');await renderActor();loadFanBoard().then(renderFanBoard)}catch(err){toast(errMsg(err))}return}
@@ -323,11 +328,11 @@ document.addEventListener('click',async e=>{
 document.addEventListener('change',e=>{const t=e.target;if(t.dataset&&t.dataset.actFile==='poster'&&t.files&&t.files[0]){if(needLogin())return;uploadPoster(+t.dataset.sid,t.files[0]);t.value='';return}if(t.id==='yIdx'){loadYearIndex();return}if(t.id&&(t.id.startsWith('sy')||t.id.startsWith('sp')||t.id.startsWith('sn'))){const rid=t.id.slice(2),r=D&&D.roles.find(x=>String(x.id)===rid),sp=$('#sp'+rid);if(r&&sp){const nm=sp.value==='__n'?($('#sn'+rid).value||'').trim():((D.cands[r.id]||[]).find(c=>String(c.candidate_id)===sp.value)||{}).name;const y=+($('#sy'+rid).value||0),a=nm?ageTxt(nm,y):'';const el=$('#sa'+rid);if(el)el.textContent=[r.age_hint?`배역 나이 ${r.age_hint}`:'',a?`${nm} ${a}`:''].filter(Boolean).join(', ')}}if(t.id&&t.id.startsWith('sp')){const n=document.getElementById('sn'+t.id.slice(2));if(n){n.hidden=t.value!=='__n';if(!n.hidden)n.focus()}renderChemBuild()}if(t.id&&t.id.startsWith('sn'))renderChemBuild()});
 document.addEventListener('input',e=>{const t=e.target;if(t.id&&t.id.startsWith('vt'))$('#vo'+t.id.slice(2)).textContent=t.value});
 $('#nickIn').addEventListener('keydown',e=>{if(e.key==='Enter')document.querySelector('[data-act=nick]').click()});
-addEventListener('hashchange',()=>{const h=decodeURIComponent(location.hash.slice(1));if(h.startsWith('a/')||h.startsWith('u/')){openRoute();return}if(h&&TOPICS.find(t=>t.id===h)){if(h!==SEL||PAGE)selectTopic(h)}else if(!h)closePage()});
+addEventListener('hashchange',()=>{const h=decodeURIComponent(location.hash.slice(1));if(h.startsWith('a/')||h.startsWith('u/')){openRoute();renderTabbar();return}if(h&&TOPICS.find(t=>t.id===h)){if(h!==SEL||PAGE||HOMEV)selectTopic(h)}else{closePage();navSpecial(h)}renderTabbar()});
 const ro=new ResizeObserver(()=>drawChart());ro.observe($('.fig'));
 
 sb.auth.onAuthStateChange(async(ev,session)=>{const u=session?session.user:null;const changed=(u&&u.id)!==(USER&&USER.id);USER=u;if(changed&&TOPICS.length){await refresh();if(USER&&!PROF){$('#nickIn').value='';$('#nickModal').classList.add('on')}}});
-(async()=>{const {data}=await sb.auth.getSession();USER=data.session?data.session.user:null;await refresh(true);openRoute();$('#yIdx').innerHTML=Array.from({length:6},(_,k)=>NOW_Y-k).map(y=>`<option value="${y}">${y}년</option>`).join('');loadYearIndex();loadMatrix();propRows([]);propMode();if(USER&&!PROF)$('#nickModal').classList.add('on');
+(async()=>{const {data}=await sb.auth.getSession();USER=data.session?data.session.user:null;await refresh(true);openRoute();{const h0=decodeURIComponent(location.hash.slice(1));if(!h0||!(TOPICS.find(t=>t.id===h0)||h0.startsWith('a/')||h0.startsWith('u/')))navSpecial(h0)}renderTabbar();$('#yIdx').innerHTML=Array.from({length:6},(_,k)=>NOW_Y-k).map(y=>`<option value="${y}">${y}년</option>`).join('');loadYearIndex();loadMatrix();propRows([]);propMode();if(USER&&!PROF)$('#nickModal').classList.add('on');
  setInterval(()=>{if(document.visibilityState==='visible'&&!busy){const f=document.activeElement;if(f&&(f.tagName==='INPUT'||f.tagName==='SELECT'||f.tagName==='TEXTAREA'))return;refresh()}},30000)})();
 }
 </script>
