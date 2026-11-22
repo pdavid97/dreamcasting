@@ -83,3 +83,10 @@
 .sheetm .lk{border:0;background:none;color:var(--mute);font:600 14px 'Noto Sans KR',sans-serif;min-height:44px;cursor:pointer}
 .dk-q{padding-top:44px}
 @media (max-width:420px){.dk-head h2{font-size:30px}.dk-q h3{font-size:26px}.dk-grid{gap:8px;padding:6px 10px 12px}}
+.cgrid .cand1 .nm>span{align-items:flex-start!important;text-align:left!important}
+.cgrid .cand1 .nm b{text-align:left}
+.cgrid .cand1 .acts{display:flex!important;flex-direction:column;gap:6px}
+.cgrid .cand1 .acts .b{width:100%!important}
+.cgrid .cand1 .av{max-width:none!important}
+.tastebox .tb{display:grid;grid-template-columns:110px 1fr;gap:10px;align-items:center;margin:6px 0;font-size:14px}
+.tastebox .tb i{display:block;height:10px;border-radius:5px;background:var(--acc)}

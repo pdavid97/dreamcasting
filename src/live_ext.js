@@ -106,7 +106,7 @@ async function renderActor(){const pid=PAGE.pid;
 const BADGES=[['첫 표',s=>s.votes>=1],['투표 마니아',s=>s.votes>=30],['첫 적중',s=>s.hits>=1],['적중 5회',s=>s.hits>=5],['후보 발굴',s=>s.proposals>=1],['원석 발굴',s=>s.proposal_hits>=1],['시트 장인',s=>s.sheets>=3],['공감 부자',s=>s.sheet_likes+s.comment_likes+s.fan_likes>=50],['토론가',s=>s.comments>=20],['VS 고수',s=>s.duels>=50],['싱크로 심사위원',s=>s.syncs>=5],['주제 개척자',s=>s.topics>=1]];
 const GENRES=['로맨스','코미디','드라마','사극','판타지','스릴러','범죄','미스터리','액션','가족','의학','법정'];
 async function openUser(nick){PAGE={kind:'u',nick};showPage(`<div class="pg"><p class="dl">${esc(nick)} 님 페이지를 여는 중이에요</p></div>`);
- try{const d=await rpc('user_page',{nick});if(!PAGE||PAGE.nick!==nick)return;if(!d){showPage(`<div class="pg"><button class="b sm" data-act="back">광장으로</button><p class="dl">없는 닉네임이에요.</p></div>`);return}renderUser(d)}catch(e){showPage(`<div class="pg"><button class="b sm" data-act="back">광장으로</button><p class="dl">${esc(errMsg(e))}</p></div>`)}}
+ try{const d=await rpc('user_page',{nick});if(!PAGE||PAGE.nick!==nick)return;if(d&&d.me){try{d.taste=await rpc('my_taste',{})}catch(e){}}if(!d){showPage(`<div class="pg"><button class="b sm" data-act="back">광장으로</button><p class="dl">없는 닉네임이에요.</p></div>`);return}renderUser(d)}catch(e){showPage(`<div class="pg"><button class="b sm" data-act="back">광장으로</button><p class="dl">${esc(errMsg(e))}</p></div>`)}}
 function renderUser(d){const p=d.profile,s=d.stats,g=grade(p.points),nx=GRADES[g+1],rate=s.decided?Math.round(s.hits/s.decided*100):null,ts=p.tastes||{};
  const cname=id=>(CATS.find(c=>c.id===id)||{}).name||id;
  const tile=(v,l)=>`<span><b class="num">${v}</b><small>${l}</small></span>`;
@@ -119,6 +119,11 @@ function renderUser(d){const p=d.profile,s=d.stats,g=grade(p.points),nx=GRADES[g
   <p class="sub">${[...(ts.cats||[]).map(cname),...(ts.genres||[]),...(ts.makers||[])].map(x=>`<span class="chip2">${esc(x)}</span>`).join(' ')}</p></div>
   <div class="astats">${tile(rate==null?'-':rate+'%','적중률')}${tile(fmt(s.hits)+'/'+fmt(s.decided),'결과 나온 표 중 적중')}${tile(fmt(s.proposal_hits)+'/'+fmt(s.proposals),'발굴 적중')}${tile(fmt(s.sheet_likes+s.comment_likes+s.fan_likes),'받은 공감')}${tile(fmt(s.votes),'투표')}${tile(fmt(s.sheets),'캐스팅 시트')}</div></div>
 
+ ${d.taste?`<section><div class="sh"><h2>내 캐스팅 취향</h2><span class="sub">투표, 팬 배우, 보고 싶어요, 카드 머문 시간으로 계산해요</span></div>
+  <div class="tastebox">${Object.entries(d.taste.cats||{}).sort((a,b)=>b[1]-a[1]).map(([k,v])=>{const mx=Math.max(...Object.values(d.taste.cats));return `<div class="tb"><span>${esc((CATS.find(c=>c.id===k)||{}).name||k)}</span><i style="width:${Math.round(v/mx*100)}%"></i></div>`}).join('')||'<p class="sub">투표를 하면 취향이 그려져요.</p>'}
+  ${Object.keys(d.taste.tags||{}).length?`<p class="sub" style="margin-top:8px">${Object.keys(d.taste.tags).slice(0,10).map(x=>`<span class="chip2">${esc(x)}</span>`).join(' ')}</p>`:''}
+  ${(d.taste.actors||[]).length?`<p style="margin-top:8px">자주 고른 배우 ${d.taste.actors.slice(0,8).map(a=>actorLink(a.name)).join(', ')}</p>`:''}
+  <p class="dl">이 취향으로 첫 화면 카드 순서를 정해요. 구글 계정에서는 이름, 이메일, 프로필 사진만 받아요.</p></div></section>`:''}
  <section><div class="sh"><h2>업적</h2><span class="sub">${BADGES.filter(b=>b[1](s)).length}/${BADGES.length}</span></div>
   <div class="badges">${BADGES.map(b=>`<span class="badge${b[1](s)?' on':''}">${b[0]}</span>`).join('')}</div></section>
 
@@ -218,6 +223,6 @@ function propMode(){const c=$('#pCat').value;$('#pSrcL').hidden=c!=='ip2live';$(
 document.addEventListener('change',e=>{if(e.target.id==='pCat'||e.target.id==='pDst'){if(e.target.id==='pDst')propRows([]);propMode()}});
 let WANTS=new Set();
 async function loadWants(){WANTS=new Set();if(!USER)return;const {data}=await sb.from('topic_wants').select('topic_id');(data||[]).forEach(x=>WANTS.add(x.topic_id))}
-async function loadMatrix(){try{const d=await rpc('media_matrix',{});const b=$('#mmx');if(b)b.innerHTML=(d||[]).filter(r=>r.src!==r.dst||r.src==='기타').slice(0,8).map(r=>`<div class="rk"><span><b>${esc(r.src)} > ${esc(r.dst)}</b><small>주제 ${r.topics}, 시트 ${r.sheets}</small></span><b class="num">보고 싶어요 ${fmt(r.wants)}</b></div>`).join('')||'<p class="empty3">IP 실사화와 크로스 미디어 주제가 올라오면 매체별 수요가 쌓여요.</p>'}catch(e){}}
+async function loadMatrix(){try{const d=await rpc('media_matrix',{});const b=$('#mmx');if(b)b.innerHTML=(d||[]).filter(r=>r.src!==r.dst||r.src==='기타').slice(0,8).map((r,i)=>`<div class="rk"><b>${i+1}</b><span><b>${esc(r.src)} > ${esc(r.dst)}</b><small>주제 ${r.topics}, 시트 ${r.sheets}</small></span><b class="num">보고 싶어요 ${fmt(r.wants)}</b></div>`).join('')||'<p class="empty3">IP 실사화와 크로스 미디어 주제가 올라오면 매체별 수요가 쌓여요.</p>'}catch(e){}}
 document.addEventListener('input',e=>{const t=e.target;if(t.id&&t.id.startsWith('ps')&&t.type==='range'){const o=document.getElementById('po'+t.id.slice(2));if(o)o.textContent=t.value}});
 document.addEventListener('change',e=>{if(e.target.id==='pTitle'&&$('#pCat').value!=='wn'&&![...document.querySelectorAll('#pRoles .pc')].some(x=>x.value.trim()))document.querySelector('[data-act=pfetch]').click()});
