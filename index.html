@@ -643,6 +643,63 @@ details.rules{padding:12px 16px;margin-top:14px}
 .dl-addf{display:grid;gap:8px;margin-top:6px}
 .dl-addf input{width:100%;box-sizing:border-box;padding:10px 12px;border-radius:10px;border:1px solid #444;background:#1d1d1d;color:#fff;font-size:15px}
 .dl-addf .b{justify-self:start}
+/* 필모그래피 캐러셀 */
+.fc{position:relative}
+.fc-bar{display:flex;align-items:center;gap:10px;margin:0 0 8px;font-size:13px}
+.fc-cnt{opacity:.75}.fc-yr{font:400 22px/1 'Black Han Sans',sans-serif;color:var(--red,#e3121e)}
+.fc-nav{margin-left:auto;display:flex;gap:6px}
+.fc-b{width:36px;height:36px;border-radius:50%;border:1px solid var(--line,#ddd);background:var(--card,#fff);font-size:22px;line-height:1;cursor:pointer}
+.fc-track{display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;padding:10px calc(50% - 80px) 16px;scrollbar-width:none;cursor:grab;-webkit-overflow-scrolling:touch}
+.fc-track::-webkit-scrollbar{display:none}.fc-track.drag{cursor:grabbing;scroll-snap-type:none}
+.fc-c{flex:0 0 160px;scroll-snap-align:center;position:relative;display:flex;flex-direction:column;gap:4px;transform:scale(.86);opacity:.55;transition:transform .25s ease,opacity .25s ease}
+.fc-c.on{transform:scale(1.06);opacity:1}
+.fc-poster{display:block;position:relative;border:0;padding:0;border-radius:12px;overflow:hidden;cursor:pointer;background:#222;aspect-ratio:2/3;width:100%;box-shadow:0 10px 24px rgba(0,0,0,.25)}
+.fc-poster img{width:100%;height:100%;object-fit:cover;display:block;pointer-events:none}
+.fc-poster .np{display:grid;place-items:center;height:100%;color:#fff;font-weight:700;padding:8px;text-align:center}
+.fc-yb{position:absolute;left:8px;top:8px;background:rgba(0,0,0,.65);color:#fff;font-size:11px;padding:2px 7px;border-radius:999px}
+.fc-t{font-size:14px;line-height:1.3}.fc-s{font-size:12px;opacity:.7}
+.fc-dots{display:flex;flex-wrap:wrap;gap:6px}
+.fc-y{border:1px solid var(--line,#ddd);background:transparent;border-radius:999px;padding:3px 10px;font-size:12px;cursor:pointer}
+/* 하트(컬렉션) */
+.hrt{position:absolute;right:8px;top:8px;width:34px;height:34px;border-radius:50%;border:0;background:rgba(0,0,0,.55);display:grid;place-items:center;cursor:pointer;z-index:2}
+.hrt svg{width:18px;height:18px;fill:none;stroke:#fff;stroke-width:2}
+.hrt.on svg{fill:#ff3b5c;stroke:#ff3b5c}
+.hrt.pop{animation:hrtpop .4s ease}
+@keyframes hrtpop{40%{transform:scale(1.35)}100%{transform:scale(1)}}
+.wk-acts .hrt{position:static;background:#222}
+/* 작품 상세 시트 */
+.wkm>div.wk{background:#141414;color:#fff;max-width:560px;width:100%;max-height:88vh;overflow:auto;border-radius:18px;padding:0;border-top:0}
+.wk-hero{height:180px;background:#222 center/cover;position:relative}
+.wk-hero::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.1),#141414)}
+.wk-x{position:absolute;right:10px;top:10px;z-index:1;width:36px;height:36px;border-radius:50%;border:0;background:rgba(0,0,0,.6);color:#fff;font-size:22px;cursor:pointer}
+.wk-top{display:flex;gap:14px;padding:0 18px;margin-top:-70px;position:relative;align-items:flex-end}
+.wk-p{width:96px;border-radius:10px;box-shadow:0 8px 20px rgba(0,0,0,.5)}
+.wk-top h3{margin:0;font:400 26px/1.1 'Black Han Sans',sans-serif}.wk-top small{opacity:.75}
+.wk-acts{display:flex;align-items:center;gap:8px;margin-top:8px}.wk-acts .sub{font-size:12px;opacity:.7}
+.wk-ps{padding:10px 18px 0;margin:0;font-size:14px}.wk-ps b{color:#ffe100;font-size:20px}
+.wk-ov{padding:12px 18px 0;margin:0;font-size:14px;line-height:1.6;opacity:.9;display:-webkit-box;-webkit-line-clamp:5;-webkit-box-orient:vertical;overflow:hidden}
+.wk-ov:hover{-webkit-line-clamp:unset}
+.wk-sec{padding:14px 18px 0}.wk-sec>b{display:block;font-size:13px;margin-bottom:8px;opacity:.8}
+.wk-chip{display:inline-block;margin:0 6px 6px 0;padding:6px 11px;border-radius:999px;background:#262626;color:#fff;border:0;font-size:13px;text-decoration:none;cursor:pointer}
+.wk-chip.hot{background:#ffe100;color:#111;font-weight:700}
+.wk-cast{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:6px}
+.wk-pc{flex:0 0 76px;scroll-snap-align:start;text-align:center;color:#fff;text-decoration:none;font-size:12px}
+.wk-pc .ph{display:grid;place-items:center;width:68px;height:68px;margin:0 auto 4px;border-radius:50%;background:#333 center/cover;font-weight:700}
+.wk-pc b{display:block;font-size:12px}.wk-pc small{opacity:.6;font-size:11px}
+.wk-sec.nf summary{cursor:pointer;font-size:13px}.wk-sec.nf input[type=range]{width:100%}
+/* 나의 AV룸 */
+.av{position:relative;border-radius:18px;overflow:hidden;background:radial-gradient(ellipse at 50% 0%,#3a2a1c 0%,#1a120c 55%,#0d0907 100%);padding:18px 16px 0;color:#fff}
+.av-screen{position:relative;height:200px;border-radius:8px;background:#000;overflow:hidden;box-shadow:0 0 0 6px #120c08,0 0 50px rgba(255,200,120,.18)}
+.av-glow{position:absolute;inset:-20px;background:center/cover;filter:blur(18px) brightness(.75);transform:scale(1.1)}
+.av-now{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:flex-end;align-items:flex-start;padding:16px;border:0;background:linear-gradient(180deg,rgba(0,0,0,0) 40%,rgba(0,0,0,.75));color:#fff;text-align:left;cursor:pointer}
+.av-now small{font-size:11px;letter-spacing:.08em;color:#ffcf7a}.av-now b{font:400 26px/1.1 'Black Han Sans',sans-serif}.av-now span{opacity:.7;font-size:12px}
+.av-empty{height:100%;display:grid;place-content:center;text-align:center;gap:6px;color:#d9c7b0}.av-empty small{opacity:.75}
+.av-shelf{display:flex;gap:10px;overflow-x:auto;padding:18px 4px 10px;margin-top:14px;border-bottom:10px solid #5a3b22;box-shadow:inset 0 -2px 0 #3a2615;scroll-snap-type:x proximity;scrollbar-width:thin}
+.av-dvd{flex:0 0 74px;aspect-ratio:2/3;border:0;padding:0;border-radius:4px;overflow:hidden;background:#2a1e14;cursor:pointer;scroll-snap-align:start;transform-origin:bottom;transition:transform .2s ease;box-shadow:0 6px 12px rgba(0,0,0,.5)}
+.av-dvd:hover{transform:translateY(-8px) rotate(-2deg)}
+.av-dvd img{width:100%;height:100%;object-fit:cover;display:block}.av-dvd span{display:grid;place-items:center;height:100%;font-size:11px;padding:4px;color:#eee}
+.av-floor{display:flex;justify-content:space-between;padding:10px 26px 14px}.av-floor i{width:26px;height:46px;border-radius:6px;background:linear-gradient(180deg,#2b2b2b,#111);box-shadow:inset 0 0 0 3px #1c1c1c}
+@media (max-width:520px){.fc-c{flex-basis:132px}.fc-track{padding-left:calc(50% - 66px);padding-right:calc(50% - 66px)}.av-screen{height:160px}}
 
 </style>
 </head>
@@ -795,7 +852,7 @@ async function loadTopic(){
 async function loadSide(){const [f,l]=await Promise.all([sb.from('feed').select('*').order('id',{ascending:false}).limit(30),sb.from('v_leaders').select('*')]);FEED=f.data||[];LEAD=l.data||[]}
 const TERMS_VER='2026-11-22',CONSENT_ON=true;let PRIV=null;
 function fillConsent(){if(CONSENT_ON){$('#cnsBox').hidden=false;$('#legalLinks').hidden=false}const p=PRIV||{};$('#cTerms').checked=p.terms_ver===TERMS_VER;$('#cStats').checked=!!p.stats_at;$('#cShare').checked=!!p.share_at;$('#cAge').value=p.age_band||'';$('#cGen').value=p.gender_self||'';$('#cReg').value=p.region_self||''}
-async function loadProfile(){if(!USER){PROF=null;PRIV=null;NOTICES=[];return}const {data}=await sb.from('profiles').select('*').eq('id',USER.id).maybeSingle();PROF=data||null;const pv=await sb.from('profile_private').select('*').eq('user_id',USER.id).maybeSingle();PRIV=pv.data||null;if(CONSENT_ON&&PROF&&!(PRIV&&PRIV.terms_ver===TERMS_VER)&&!(()=>{try{return sessionStorage.getItem('cnsAsk')}catch(e){return 1}})()){try{sessionStorage.setItem('cnsAsk','1')}catch(e){}setTimeout(()=>{$('#nickIn').value=PROF.nickname;fillConsent();$('#nickH').textContent='약관 동의와 내 정보 설정';$('#nickModal').classList.add('on')},600)}await Promise.all([loadNotices(),loadWants()])}
+async function loadProfile(){if(!USER){PROF=null;PRIV=null;NOTICES=[];return}const {data}=await sb.from('profiles').select('*').eq('id',USER.id).maybeSingle();PROF=data||null;const pv=await sb.from('profile_private').select('*').eq('user_id',USER.id).maybeSingle();PRIV=pv.data||null;if(typeof loadMyCol==='function')loadMyCol(true);if(CONSENT_ON&&PROF&&!(PRIV&&PRIV.terms_ver===TERMS_VER)&&!(()=>{try{return sessionStorage.getItem('cnsAsk')}catch(e){return 1}})()){try{sessionStorage.setItem('cnsAsk','1')}catch(e){}setTimeout(()=>{$('#nickIn').value=PROF.nickname;fillConsent();$('#nickH').textContent='약관 동의와 내 정보 설정';$('#nickModal').classList.add('on')},600)}await Promise.all([loadNotices(),loadWants()])}
 async function refresh(all){try{if(all)await loadTopics();await Promise.all([loadTopic(),loadSide(),loadProfile(),loadFanBoard()]);render();loadImages();if(HOMEV)loadHome();if(USER&&PROF&&pend().length)flushPending();if(PAGE&&PAGE.kind==='a'&&PAGE.pid&&!busy)renderActor().catch(()=>{})}catch(e){console.error(e);toast('불러오지 못했어요: '+errMsg(e))}}
 async function act(fn,args,okMsg){if(busy)return;busy=true;try{const d=await rpc(fn,args);if(okMsg)toast(okMsg);await refresh(fn.startsWith('propose_topic')||fn.startsWith('admin'));return d}catch(e){toast(errMsg(e))}finally{busy=false}}
 
@@ -1053,7 +1110,7 @@ async function openRoute(){const h=decodeURIComponent(location.hash.slice(1));
  if(h.startsWith('a/'))return openActor(h.slice(2));
  if(h.startsWith('u/'))return openUser(h.slice(2));
  closePage()}
-function showPage(html){if(typeof showDeck==='function')showDeck(false);$('#page').innerHTML=html;$('#page').hidden=false;document.querySelector('.desk').hidden=true;scrollTo({top:$('#page').offsetTop-10,behavior:'smooth'})}
+function showPage(html){if(typeof showDeck==='function')showDeck(false);$('#page').innerHTML=html;if(typeof bindFilmCarousel==='function')bindFilmCarousel();$('#page').hidden=false;document.querySelector('.desk').hidden=true;scrollTo({top:$('#page').offsetTop-10,behavior:'smooth'})}
 
 /* 배우 페이지 */
 async function openActor(name){name=name.trim();if(!name)return;PAGE={kind:'a',name};showPage(`<div class="pg"><p class="dl">${esc(name)} 배우 페이지를 여는 중이에요</p></div>`);
@@ -1102,8 +1159,8 @@ async function renderActor(){const pid=PAGE.pid;
   ${prof&&prof.bio?`<details class="talk"><summary>소개</summary><p class="bio">${esc(prof.bio)}</p></details>`:''}
  </section></div>
 
- <section><div class="sh"><h2>필모그래피</h2><span class="sub">TMDB 출연 기록, 최신순</span></div>
-  <div class="films">${works.slice(0,36).map((w,i)=>{const pf=perfOf(pid,w),aired=w.year&&+w.year<=NOW_Y;return `<div class="film">${w.poster?`<img src="${esc(w.poster)}" alt="" loading="lazy">`:'<span class="np"></span>'}<b>${esc(w.title)}</b><small>${esc(w.type)} ${esc(w.year||'미정')}${w.ch?`, ${esc(w.ch)}`:''}${w.rating&&w.votes>=20?`, 평점 ${w.rating}`:''}</small>${pf&&pf.n?`<span class="ps"><b class="num">${pf.avg}</b> 연기 점수, ${fmt(pf.n)}명</span>${(pf.reviews||[]).slice(0,1).map(r=>`<small class="rv">"${esc(r.review)}" ${esc(r.nick)} ${r.score}점</small>`).join('')}`:''}${aired?`<details class="nf"><summary>연기 점수 주기</summary><input type="range" min="0" max="100" step="5" value="70" id="ps${i}" aria-label="${esc(w.title)} 연기 점수"><output id="po${i}">70</output><input type="text" id="pr${i}" maxlength="200" placeholder="한줄평(선택)"><button class="b sm buy" data-act="perf" data-i="${i}">평가</button></details>`:''}</div>`}).join('')||'<p class="empty3">출연 기록을 불러오는 중이거나 없어요.</p>'}</div>
+ <section><div class="sh"><h2>필모그래피</h2><span class="sub">넘겨 보고, 눌러서 자세히, 하트로 내 AV룸에 담기</span></div>
+  ${filmCarousel(works.slice(0,40),pid)}
   ${prof&&prof.tmdb?`<p class="dl"><a href="${esc(prof.tmdb)}" target="_blank" rel="noopener">TMDB에서 전체 필모 보기</a></p>`:''}
  </section></div>`)}
 
@@ -1124,6 +1181,7 @@ function renderUser(d){const p=d.profile,s=d.stats,g=grade(p.points),nx=GRADES[g
   <p class="sub">${[...(ts.cats||[]).map(cname),...(ts.genres||[]),...(ts.makers||[])].map(x=>`<span class="chip2">${esc(x)}</span>`).join(' ')}</p></div>
   <div class="astats">${tile(rate==null?'-':rate+'%','적중률')}${tile(fmt(s.hits)+'/'+fmt(s.decided),'결과 나온 표 중 적중')}${tile(fmt(s.proposal_hits)+'/'+fmt(s.proposals),'발굴 적중')}${tile(fmt(s.sheet_likes+s.comment_likes+s.fan_likes),'받은 공감')}${tile(fmt(s.votes),'투표')}${tile(fmt(s.sheets),'캐스팅 시트')}</div></div>
 
+ <section id="avroom"></section>
  ${d.me?'<section id="insight"></section>':''}
  ${d.taste?`<section><div class="sh"><h2>내 캐스팅 취향</h2><span class="sub">투표, 팬 배우, 보고 싶어요, 카드 머문 시간으로 계산해요</span></div>
   <div class="tastebox">${Object.entries(d.taste.cats||{}).sort((a,b)=>b[1]-a[1]).map(([k,v])=>{const mx=Math.max(...Object.values(d.taste.cats));return `<div class="tb"><span>${esc((CATS.find(c=>c.id===k)||{}).name||k)}</span><i style="width:${Math.round(v/mx*100)}%"></i></div>`}).join('')||'<p class="sub">투표를 하면 취향이 그려져요.</p>'}
@@ -1152,7 +1210,7 @@ function renderUser(d){const p=d.profile,s=d.stats,g=grade(p.points),nx=GRADES[g
   <label class="sub">좋아하는 배우는 배우 페이지에서 팬 채널에 들어가면 함께 등록돼요</label>
   <label class="sub">한 줄 소개<input type="text" id="tBio" maxlength="100" value="${esc(p.bio||'')}" placeholder="예: 원작 싱크로율에 진심인 사람"></label>
   <button class="b buy" data-act="tastes">취향 저장</button></div></section>`:''}
- </div>`);if(d.me)loadInsights()}
+ </div>`);loadAvRoom(p.nickname,!!d.me);if(d.me)loadInsights()}
 
 /* ---------- 배우 화력 랭킹 ---------- */
 let FANB=[];
@@ -1527,6 +1585,76 @@ function rivalCards(arr){return `<div class="ig-vs">${igCnt2(arr).slice(0,6).map
 /* 히트맵: 줄 = 내가 고른 주연, 칸 = 내가 고른 조연, 색 = 같은 작품에서 함께 고른 횟수 */
 function heat(arr){const rs=igCnt(arr.map(x=>x.a)).map(x=>x[0]).slice(0,7),cs=igCnt(arr.map(x=>x.b)).map(x=>x[0]).slice(0,7);const m={};let mx=1;arr.forEach(x=>{const k=x.a+'|'+x.b;m[k]=(m[k]||0)+1;mx=Math.max(mx,m[k])});
  return `<div class="ig-heat" style="--n:${cs.length}"><span></span>${cs.map(c=>`<span class="ch">${esc(c)}</span>`).join('')}${rs.map(r=>`<span class="rh">${esc(r)}</span>${cs.map(c=>{const v=m[r+'|'+c]||0;return `<span class="cell" style="--a:${v?(.25+.75*v/mx).toFixed(2):0}" title="${esc(r)} + ${esc(c)}: ${v}번">${v||''}</span>`}).join('')}`).join('')}</div><p class="ig-cap">줄은 내가 고른 주연, 칸은 내가 고른 조연이에요. 진할수록 같이 고른 횟수가 많아요.</p>`}
+
+/* ================= 시네마: 필모그래피 캐러셀, 작품 상세 시트, 컬렉션(나의 AV룸) ================= */
+let MYCOL=new Set(),MYCOL_AT=0;
+async function loadMyCol(force){if(!USER){MYCOL=new Set();return}if(!force&&Date.now()-MYCOL_AT<60000)return;try{const r=await rpc('my_collect_ids',{});MYCOL=new Set(r||[]);MYCOL_AT=Date.now()}catch(e){}}
+const colKey=(m,id)=>`${m}:${id}`;
+const heartBtn=(m,id,title,year,poster,via)=>`<button class="hrt${MYCOL.has(colKey(m,id))?' on':''}" data-act="collect" data-m="${m}" data-id="${id}" data-t="${esc(title)}" data-y="${esc(year||'')}" data-p="${esc(poster||'')}" data-via="${esc(via||'')}" aria-pressed="${MYCOL.has(colKey(m,id))}" aria-label="${esc(title)} 내 AV룸에 담기"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.2C.9 8.4 3 4.5 6.7 4.5c2.1 0 3.7 1.2 5.3 3 1.6-1.8 3.2-3 5.3-3 3.7 0 5.8 3.9 4.3 7.3C19.5 16.4 12 21 12 21z"/></svg></button>`;
+
+/* 필모그래피: 스와이프 캐러셀. 카드를 누르면 작품 상세 시트 */
+function filmCarousel(works,pid){
+ if(!works.length)return '<p class="empty3">출연 기록을 불러오는 중이거나 없어요.</p>';
+ const years=[...new Set(works.map(w=>w.year).filter(Boolean))];
+ return `<div class="fc" data-pid="${pid}">
+  <div class="fc-bar"><span class="fc-cnt"><b class="num" id="fcIdx">1</b> / ${works.length}</span><span class="fc-yr" id="fcYr">${esc(works[0].year||'미정')}</span><span class="fc-nav"><button class="fc-b" data-act="fc-prev" aria-label="이전 작품">‹</button><button class="fc-b" data-act="fc-next" aria-label="다음 작품">›</button></span></div>
+  <div class="fc-track" id="fcTrack" tabindex="0" aria-label="필모그래피, 좌우로 넘겨 보기">${works.map((w,i)=>{const m=w.type==='영화'?'movie':'tv';return `<article class="fc-c" data-i="${i}" data-year="${esc(w.year||'미정')}">
+   <button class="fc-poster" data-act="wk-open" data-m="${m}" data-id="${w.id}" data-i="${i}" aria-label="${esc(w.title)} 자세히">${w.poster?`<img src="${esc(w.poster)}" alt="" loading="lazy" draggable="false">`:`<span class="np">${esc(w.title.slice(0,8))}</span>`}<span class="fc-yb">${esc(w.year||'미정')}</span></button>
+   ${heartBtn(m,w.id,w.title,w.year,w.poster,'person:'+pid)}
+   <b class="fc-t">${esc(w.title)}</b><small class="fc-s">${esc(w.type)}${w.ch?', '+esc(w.ch):''}${w.rating&&w.votes>=20?`, 평점 ${w.rating}`:''}</small></article>`}).join('')}</div>
+  <div class="fc-dots" aria-hidden="true">${years.slice(0,12).map(y=>`<button class="fc-y" data-act="fc-year" data-y="${esc(y)}" tabindex="-1">${esc(y)}</button>`).join('')}</div>
+ </div>`}
+function bindFilmCarousel(){const tr=$('#fcTrack');if(!tr)return;const cards=[...tr.querySelectorAll('.fc-c')];
+ const upd=()=>{const mid=tr.scrollLeft+tr.clientWidth/2;let best=0,bd=1e9;cards.forEach((c,i)=>{const d=Math.abs(c.offsetLeft+c.offsetWidth/2-mid);if(d<bd){bd=d;best=i}});cards.forEach((c,i)=>c.classList.toggle('on',i===best));const ix=$('#fcIdx'),yr=$('#fcYr');if(ix)ix.textContent=best+1;if(yr)yr.textContent=cards[best]?cards[best].dataset.year:''};
+ tr.addEventListener('scroll',()=>{cancelAnimationFrame(tr._r);tr._r=requestAnimationFrame(upd)},{passive:true});
+ tr.addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key==='ArrowLeft'){e.preventDefault();fcGo(e.key==='ArrowRight'?1:-1)}});
+ // 마우스 드래그로도 넘기기
+ let x0=null,s0=0,mv=0;tr.addEventListener('pointerdown',e=>{if(e.pointerType!=='mouse')return;x0=e.clientX;s0=tr.scrollLeft;mv=0;tr.classList.add('drag')});
+ addEventListener('pointermove',e=>{if(x0==null)return;mv=Math.abs(e.clientX-x0);tr.scrollLeft=s0-(e.clientX-x0)});
+ addEventListener('pointerup',()=>{if(x0==null)return;x0=null;tr.classList.remove('drag');if(mv>6){tr._drag=Date.now();fcGo(0)}});
+ upd()}
+function fcGo(d){const tr=$('#fcTrack');if(!tr)return;const cards=[...tr.querySelectorAll('.fc-c')];const cur=Math.max(0,cards.findIndex(c=>c.classList.contains('on')));const n=Math.min(cards.length-1,Math.max(0,cur+d));const c=cards[n];if(c)tr.scrollTo({left:c.offsetLeft-(tr.clientWidth-c.offsetWidth)/2,behavior:'smooth'})}
+
+/* 작품 상세 시트 */
+let WK=null;
+async function openWork(m,id,i){if(!$('#wkModal')){const d=document.createElement('div');d.className='modal wkm';d.id='wkModal';d.setAttribute('role','dialog');d.setAttribute('aria-modal','true');d.innerHTML='<div class="wk" id="wkBox"></div>';document.body.appendChild(d);d.addEventListener('click',e=>{if(e.target===d)closeWork()})}
+ $('#wkModal').classList.add('on');$('#wkBox').innerHTML='<p class="dl" style="padding:24px">작품 정보를 불러오는 중이에요</p>';track('work_open',{m:{media:m,id}});
+ try{const r=await fetch(SB_URL+'/functions/v1/wdetail',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+ANON,apikey:ANON},body:JSON.stringify({media:m,id})});const d=await r.json();if(!r.ok||d.error)throw new Error(d.error||'불러오지 못했어요');WK={...d,i};renderWork()}catch(e){$('#wkBox').innerHTML=`<p class="dl" style="padding:24px">${esc(errMsg(e))}</p><button class="b sm" data-act="wk-close">닫기</button>`}}
+function closeWork(){const m=$('#wkModal');if(m)m.classList.remove('on');WK=null}
+function renderWork(){const d=WK;if(!d)return;const box=$('#wkBox');
+ const fw=PAGE&&PAGE.works&&d.i!=null?PAGE.works[d.i]:null,aired=fw&&fw.year&&+fw.year<=NOW_Y;
+ const DIR={kr2us:'할리우드판',us2kr:'한국판',kr2cn:'중국판',cn2kr:'한국판',us2cn:'중국판',cn2us:'할리우드판',kr2tw:'대만판',tw2kr:'한국판',kr2hk:'홍콩판',hk2kr:'한국판',us2tw:'대만판',us2hk:'홍콩판',hk2us:'할리우드판'};
+ box.innerHTML=`<div class="wk-hero"${d.backdrop?` style="background-image:url('${esc(d.backdrop)}')"`:''}><button class="wk-x" data-act="wk-close" aria-label="닫기">×</button></div>
+ <div class="wk-top">${d.poster?`<img class="wk-p" src="${esc(d.poster)}" alt="">`:''}<div><h3>${esc(d.title)}</h3><small>${esc(d.media==='movie'?'영화':'드라마')} ${esc(d.year||'')}${d.genres&&d.genres.length?', '+esc(d.genres.slice(0,3).join(', ')):''}${d.votes>=20?`, 평점 ${d.rating}`:''}</small><div class="wk-acts">${heartBtn(d.media,d.id,d.title,d.year,d.poster,'work')}<span class="sub">내 AV룸에 담기</span></div></div></div>
+ ${(()=>{const pf=fw&&typeof perfOf==='function'?perfOf(PAGE.pid,fw):null;return pf&&pf.n?`<p class="wk-ps">광장 연기 점수 <b class="num">${pf.avg}</b>, ${fmt(pf.n)}명 평가${fw.ch?`, ${esc(fw.ch)} 역`:''}</p>`:''})()}
+ ${d.overview?`<p class="wk-ov">${esc(d.overview)}</p>`:''}
+ ${d.topics.length?`<div class="wk-sec"><b>광장에서 투표 중</b>${d.topics.map(t=>`<a class="wk-chip hot" href="#${esc(t.id)}" data-act="wk-go">${esc((CATS.find(c=>c.id===t.cat)||{}).name||'')} ${esc(t.title)} 가상 캐스팅</a>`).join('')}</div>`:''}
+ ${(d.remakes.length||d.origins.length)?`<div class="wk-sec"><b>리메이크 계보</b>${d.origins.map(o=>o.src?`<button class="wk-chip" data-act="wk-open" data-m="${o.src.media}" data-id="${o.src.tmdb_id}">원작 ${esc(o.src.title)} (${o.src.year||''})</button>`:'').join('')}${d.remakes.map(o=>o.dst?`<button class="wk-chip" data-act="wk-open" data-m="${o.dst.media}" data-id="${o.dst.tmdb_id}">${esc(DIR[o.direction]||'리메이크')} ${esc(o.dst.title)} (${o.dst.year||''})</button>`:'').join('')}</div>`:''}
+ <div class="wk-sec"><b>주요 출연진</b><div class="wk-cast">${d.cast.map(c=>`<a class="wk-pc" href="#a/${encodeURIComponent(c.name)}" data-act="wk-go"><span class="ph"${c.photo?` style="background-image:url('${esc(c.photo)}')"`:''}>${c.photo?'':esc(c.name[0]||'')}</span><b>${esc(c.name)}</b><small>${esc(c.ch||'')}</small></a>`).join('')}</div></div>
+ ${d.races.length?`<div class="wk-sec"><b>이 출연진이 후보로 오른 가상 캐스팅</b>${d.races.slice(0,8).map(r=>`<a class="wk-chip" href="#${esc(r.tid)}" data-act="wk-go">${esc(r.name)} → ${esc(r.title)} ${esc(r.ch)} 역</a>`).join('')}</div>`:''}
+ ${aired?`<details class="wk-sec nf"><summary>이 작품 속 연기 점수 주기</summary><input type="range" min="0" max="100" step="5" value="70" id="ps${d.i}" aria-label="연기 점수"><output id="po${d.i}">70</output><input type="text" id="pr${d.i}" maxlength="200" placeholder="한줄평(선택)"><button class="b sm buy" data-act="perf" data-i="${d.i}">평가</button></details>`:''}
+ <p class="dl" style="padding:0 18px 16px">작품 정보와 사진: TMDB</p>`}
+
+/* 나의 AV룸 */
+async function loadAvRoom(nick,me){const box=$('#avroom');if(!box)return;let items=[];try{items=await rpc('av_room',{nick})||[]}catch(e){}
+ const g={};items.forEach(w=>(w.genres||[]).forEach(x=>g[x]=(g[x]||0)+1));const tg=Object.entries(g).sort((a,b)=>b[1]-a[1]).slice(0,3).map(x=>x[0]);
+ const hero=items[0];
+ box.innerHTML=`<div class="sh"><h2>${me?'나의 AV룸':esc(nick)+' 님의 AV룸'}</h2><span class="sub">${items.length}편 소장${tg.length?`, 취향 ${esc(tg.join(', '))}`:''}</span></div>
+ <div class="av">
+  <div class="av-screen">${hero?`<div class="av-glow"${hero.poster?` style="background-image:url('${esc(hero.poster)}')"`:''}></div><button class="av-now" data-act="wk-open" data-m="${hero.media}" data-id="${hero.tmdb_id}"><small>지금 상영 중</small><b>${esc(hero.title)}</b><span>${esc(hero.year||'')}</span></button>`:`<div class="av-empty"><b>아직 상영할 작품이 없어요</b><small>${me?'배우 필모그래피나 작품 상세에서 하트를 눌러 담아 보세요':'아직 담은 작품이 없어요'}</small></div>`}</div>
+  <div class="av-shelf" tabindex="0" aria-label="소장 작품 선반">${items.map(w=>`<button class="av-dvd" data-act="wk-open" data-m="${w.media}" data-id="${w.tmdb_id}" title="${esc(w.title)}">${w.poster?`<img src="${esc(w.poster)}" alt="${esc(w.title)}" loading="lazy">`:`<span>${esc(w.title)}</span>`}</button>`).join('')}</div>
+  <div class="av-floor" aria-hidden="true"><i></i><i></i><i></i></div>
+ </div>`}
+
+document.addEventListener('click',async e=>{const b=e.target.closest('[data-act]');if(!b)return;const a=b.dataset.act;
+ if(a==='fc-prev'){fcGo(-1);return}if(a==='fc-next'){fcGo(1);return}
+ if(a==='fc-year'){const tr=$('#fcTrack');const c=tr&&[...tr.querySelectorAll('.fc-c')].find(x=>x.dataset.year===b.dataset.y);if(c)tr.scrollTo({left:c.offsetLeft-(tr.clientWidth-c.offsetWidth)/2,behavior:'smooth'});return}
+ if(a==='wk-open'){const tr=$('#fcTrack');if(tr&&tr._drag&&Date.now()-tr._drag<300)return;e.preventDefault();openWork(b.dataset.m,+b.dataset.id,b.dataset.i!=null?+b.dataset.i:null);return}
+ if(a==='wk-close'){closeWork();return}
+ if(a==='wk-go'){closeWork();return}
+ if(a==='collect'){e.preventDefault();e.stopPropagation();if(needLogin())return;try{const on=await rpc('toggle_collect',{media:b.dataset.m,tmdb_id:+b.dataset.id,title:b.dataset.t,yr:+b.dataset.y||null,poster:b.dataset.p||null,via:b.dataset.via||null});const k=colKey(b.dataset.m,b.dataset.id);if(on)MYCOL.add(k);else MYCOL.delete(k);document.querySelectorAll(`.hrt[data-m="${b.dataset.m}"][data-id="${b.dataset.id}"]`).forEach(h=>{h.classList.toggle('on',on);h.setAttribute('aria-pressed',on);if(on){h.classList.remove('pop');void h.offsetWidth;h.classList.add('pop')}});toast(on?`${b.dataset.t}, 내 AV룸에 담았어요`:'AV룸에서 뺐어요');if($('#avroom')&&PROF&&PAGE&&PAGE.nick===PROF.nickname)loadAvRoom(PROF.nickname,true)}catch(err){toast(errMsg(err))}return}
+});
+addEventListener('keydown',e=>{if(e.key==='Escape'&&$('#wkModal')&&$('#wkModal').classList.contains('on'))closeWork()});
 
 }
 </script>

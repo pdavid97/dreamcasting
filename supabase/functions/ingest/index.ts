@@ -1,6 +1,6 @@
 // 정본 데이터 적재 Edge Function
 // action=credits : TMDB 출연 기록을 work, credit에 적재(원본은 raw_fetch). 아직 안 한 인물부터, 30일 지난 인물 재적재
-// action=remakes : 위키데이터 "기반 작품(P144)" 관계로 한국과 미국 사이 리메이크 쌍을 찾아 adaptation, 배역 연결, 캐스팅 결과, 평점 적재
+// action=remakes : 위키데이터 "기반 작품(P144)" 관계로 한국, 미국, 중국, 대만, 홍콩 사이 리메이크 쌍을 찾아 adaptation, 배역 연결, 캐스팅 결과, 평점 적재
 // action=signals : 현재 후보 세트 인물의 뉴스 언급 건수(매시간), TMDB 인기와 위키백과 조회수(하루 1회, daily=true)
 const SB = Deno.env.get("SUPABASE_URL")!, SR = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 const H = { apikey: SR, Authorization: `Bearer ${SR}`, "Content-Type": "application/json" };
@@ -71,7 +71,7 @@ async function credits(limit: number) {
 async function wdPairs() {
   const q = `SELECT DISTINCT ?src ?dst ?sm ?st ?dm ?dt ?sc ?dc WHERE {
     ?dst wdt:P144 ?src . ?src wdt:P495 ?sco . ?dst wdt:P495 ?dco .
-    VALUES (?sco ?dco ?sc ?dc) { (wd:Q884 wd:Q30 "kr" "us") (wd:Q30 wd:Q884 "us" "kr") }
+    VALUES (?sco ?dco ?sc ?dc) { (wd:Q884 wd:Q30 "kr" "us") (wd:Q30 wd:Q884 "us" "kr") (wd:Q884 wd:Q148 "kr" "cn") (wd:Q148 wd:Q884 "cn" "kr") (wd:Q30 wd:Q148 "us" "cn") (wd:Q148 wd:Q30 "cn" "us") (wd:Q884 wd:Q865 "kr" "tw") (wd:Q865 wd:Q884 "tw" "kr") (wd:Q884 wd:Q8646 "kr" "hk") (wd:Q8646 wd:Q884 "hk" "kr") (wd:Q30 wd:Q865 "us" "tw") (wd:Q30 wd:Q8646 "us" "hk") (wd:Q8646 wd:Q30 "hk" "us") }
     OPTIONAL { ?src wdt:P4947 ?sm } OPTIONAL { ?src wdt:P4983 ?st }
     OPTIONAL { ?dst wdt:P4947 ?dm } OPTIONAL { ?dst wdt:P4983 ?dt }
     FILTER((BOUND(?sm) || BOUND(?st)) && (BOUND(?dm) || BOUND(?dt)))

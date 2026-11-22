@@ -174,3 +174,60 @@
 .dl-addf{display:grid;gap:8px;margin-top:6px}
 .dl-addf input{width:100%;box-sizing:border-box;padding:10px 12px;border-radius:10px;border:1px solid #444;background:#1d1d1d;color:#fff;font-size:15px}
 .dl-addf .b{justify-self:start}
+/* 필모그래피 캐러셀 */
+.fc{position:relative}
+.fc-bar{display:flex;align-items:center;gap:10px;margin:0 0 8px;font-size:13px}
+.fc-cnt{opacity:.75}.fc-yr{font:400 22px/1 'Black Han Sans',sans-serif;color:var(--red,#e3121e)}
+.fc-nav{margin-left:auto;display:flex;gap:6px}
+.fc-b{width:36px;height:36px;border-radius:50%;border:1px solid var(--line,#ddd);background:var(--card,#fff);font-size:22px;line-height:1;cursor:pointer}
+.fc-track{display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;padding:10px calc(50% - 80px) 16px;scrollbar-width:none;cursor:grab;-webkit-overflow-scrolling:touch}
+.fc-track::-webkit-scrollbar{display:none}.fc-track.drag{cursor:grabbing;scroll-snap-type:none}
+.fc-c{flex:0 0 160px;scroll-snap-align:center;position:relative;display:flex;flex-direction:column;gap:4px;transform:scale(.86);opacity:.55;transition:transform .25s ease,opacity .25s ease}
+.fc-c.on{transform:scale(1.06);opacity:1}
+.fc-poster{display:block;position:relative;border:0;padding:0;border-radius:12px;overflow:hidden;cursor:pointer;background:#222;aspect-ratio:2/3;width:100%;box-shadow:0 10px 24px rgba(0,0,0,.25)}
+.fc-poster img{width:100%;height:100%;object-fit:cover;display:block;pointer-events:none}
+.fc-poster .np{display:grid;place-items:center;height:100%;color:#fff;font-weight:700;padding:8px;text-align:center}
+.fc-yb{position:absolute;left:8px;top:8px;background:rgba(0,0,0,.65);color:#fff;font-size:11px;padding:2px 7px;border-radius:999px}
+.fc-t{font-size:14px;line-height:1.3}.fc-s{font-size:12px;opacity:.7}
+.fc-dots{display:flex;flex-wrap:wrap;gap:6px}
+.fc-y{border:1px solid var(--line,#ddd);background:transparent;border-radius:999px;padding:3px 10px;font-size:12px;cursor:pointer}
+/* 하트(컬렉션) */
+.hrt{position:absolute;right:8px;top:8px;width:34px;height:34px;border-radius:50%;border:0;background:rgba(0,0,0,.55);display:grid;place-items:center;cursor:pointer;z-index:2}
+.hrt svg{width:18px;height:18px;fill:none;stroke:#fff;stroke-width:2}
+.hrt.on svg{fill:#ff3b5c;stroke:#ff3b5c}
+.hrt.pop{animation:hrtpop .4s ease}
+@keyframes hrtpop{40%{transform:scale(1.35)}100%{transform:scale(1)}}
+.wk-acts .hrt{position:static;background:#222}
+/* 작품 상세 시트 */
+.wkm>div.wk{background:#141414;color:#fff;max-width:560px;width:100%;max-height:88vh;overflow:auto;border-radius:18px;padding:0;border-top:0}
+.wk-hero{height:180px;background:#222 center/cover;position:relative}
+.wk-hero::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.1),#141414)}
+.wk-x{position:absolute;right:10px;top:10px;z-index:1;width:36px;height:36px;border-radius:50%;border:0;background:rgba(0,0,0,.6);color:#fff;font-size:22px;cursor:pointer}
+.wk-top{display:flex;gap:14px;padding:0 18px;margin-top:-70px;position:relative;align-items:flex-end}
+.wk-p{width:96px;border-radius:10px;box-shadow:0 8px 20px rgba(0,0,0,.5)}
+.wk-top h3{margin:0;font:400 26px/1.1 'Black Han Sans',sans-serif}.wk-top small{opacity:.75}
+.wk-acts{display:flex;align-items:center;gap:8px;margin-top:8px}.wk-acts .sub{font-size:12px;opacity:.7}
+.wk-ps{padding:10px 18px 0;margin:0;font-size:14px}.wk-ps b{color:#ffe100;font-size:20px}
+.wk-ov{padding:12px 18px 0;margin:0;font-size:14px;line-height:1.6;opacity:.9;display:-webkit-box;-webkit-line-clamp:5;-webkit-box-orient:vertical;overflow:hidden}
+.wk-ov:hover{-webkit-line-clamp:unset}
+.wk-sec{padding:14px 18px 0}.wk-sec>b{display:block;font-size:13px;margin-bottom:8px;opacity:.8}
+.wk-chip{display:inline-block;margin:0 6px 6px 0;padding:6px 11px;border-radius:999px;background:#262626;color:#fff;border:0;font-size:13px;text-decoration:none;cursor:pointer}
+.wk-chip.hot{background:#ffe100;color:#111;font-weight:700}
+.wk-cast{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:6px}
+.wk-pc{flex:0 0 76px;scroll-snap-align:start;text-align:center;color:#fff;text-decoration:none;font-size:12px}
+.wk-pc .ph{display:grid;place-items:center;width:68px;height:68px;margin:0 auto 4px;border-radius:50%;background:#333 center/cover;font-weight:700}
+.wk-pc b{display:block;font-size:12px}.wk-pc small{opacity:.6;font-size:11px}
+.wk-sec.nf summary{cursor:pointer;font-size:13px}.wk-sec.nf input[type=range]{width:100%}
+/* 나의 AV룸 */
+.av{position:relative;border-radius:18px;overflow:hidden;background:radial-gradient(ellipse at 50% 0%,#3a2a1c 0%,#1a120c 55%,#0d0907 100%);padding:18px 16px 0;color:#fff}
+.av-screen{position:relative;height:200px;border-radius:8px;background:#000;overflow:hidden;box-shadow:0 0 0 6px #120c08,0 0 50px rgba(255,200,120,.18)}
+.av-glow{position:absolute;inset:-20px;background:center/cover;filter:blur(18px) brightness(.75);transform:scale(1.1)}
+.av-now{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:flex-end;align-items:flex-start;padding:16px;border:0;background:linear-gradient(180deg,rgba(0,0,0,0) 40%,rgba(0,0,0,.75));color:#fff;text-align:left;cursor:pointer}
+.av-now small{font-size:11px;letter-spacing:.08em;color:#ffcf7a}.av-now b{font:400 26px/1.1 'Black Han Sans',sans-serif}.av-now span{opacity:.7;font-size:12px}
+.av-empty{height:100%;display:grid;place-content:center;text-align:center;gap:6px;color:#d9c7b0}.av-empty small{opacity:.75}
+.av-shelf{display:flex;gap:10px;overflow-x:auto;padding:18px 4px 10px;margin-top:14px;border-bottom:10px solid #5a3b22;box-shadow:inset 0 -2px 0 #3a2615;scroll-snap-type:x proximity;scrollbar-width:thin}
+.av-dvd{flex:0 0 74px;aspect-ratio:2/3;border:0;padding:0;border-radius:4px;overflow:hidden;background:#2a1e14;cursor:pointer;scroll-snap-align:start;transform-origin:bottom;transition:transform .2s ease;box-shadow:0 6px 12px rgba(0,0,0,.5)}
+.av-dvd:hover{transform:translateY(-8px) rotate(-2deg)}
+.av-dvd img{width:100%;height:100%;object-fit:cover;display:block}.av-dvd span{display:grid;place-items:center;height:100%;font-size:11px;padding:4px;color:#eee}
+.av-floor{display:flex;justify-content:space-between;padding:10px 26px 14px}.av-floor i{width:26px;height:46px;border-radius:6px;background:linear-gradient(180deg,#2b2b2b,#111);box-shadow:inset 0 0 0 3px #1c1c1c}
+@media (max-width:520px){.fc-c{flex-basis:132px}.fc-track{padding-left:calc(50% - 66px);padding-right:calc(50% - 66px)}.av-screen{height:160px}}
