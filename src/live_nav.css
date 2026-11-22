@@ -154,3 +154,43 @@ body[data-view=page] #tabs,body[data-view=page] #shelf,body[data-view=deck] #tab
 
 @media (min-width:900px) and (max-width:1399px){.auth .lg.k{display:none}.gnav a span{font-size:13px}}
 @media (min-width:900px) and (max-width:1099px){.gnav a span{display:none}.gnav a{padding:8px}}
+
+/* 내 캐스팅 리포트: 표지와 스토리 카드 */
+.ig-cover{position:relative;overflow:hidden;border-radius:20px;padding:18px;color:#fff;background:radial-gradient(circle at 85% 10%,rgba(255,214,0,.45),transparent 45%),radial-gradient(circle at 0% 100%,rgba(29,86,214,.7),transparent 55%),#141414;display:grid;grid-template-columns:minmax(0,1fr);gap:14px;margin-bottom:10px}
+.ig-cv-t small{font-size:11px;letter-spacing:.12em;opacity:.7}
+.ig-cv-t b{display:block;font:400 30px/1.1 'Black Han Sans',sans-serif;margin:4px 0}
+.ig-cv-t span{font-size:13px;opacity:.85}
+.ig-cv-fav{display:grid;grid-template-columns:64px 1fr auto;grid-template-rows:auto auto;column-gap:12px;align-items:center;color:#fff;text-decoration:none;background:rgba(255,255,255,.08);border-radius:14px;padding:10px}
+.ig-cv-fav .ph{grid-row:1/3;width:64px;height:64px;border-radius:50%;background:#333 center 20%/cover;display:grid;place-items:center;font-size:24px;border:2px solid var(--hot)}
+.ig-cv-fav small{opacity:.7;font-size:11px}.ig-cv-fav b{font-size:20px}.ig-cv-fav em{grid-row:1/3;grid-column:3;font-style:normal;font:700 22px Inter,sans-serif;color:var(--hot)}
+.ig-cv-n{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.ig-cv-n span{display:flex;flex-direction:column;align-items:center;background:rgba(255,255,255,.08);border-radius:10px;padding:8px 2px}
+.ig-cv-n b{font-size:22px}.ig-cv-n small{font-size:10px;opacity:.75}
+.ig-meter{position:relative;height:8px;border-radius:9px;background:rgba(255,255,255,.15);margin:6px 0 16px}
+.ig-meter i{position:absolute;left:var(--p);top:50%;width:16px;height:16px;border-radius:50%;background:var(--hot);transform:translate(-50%,-50%);box-shadow:0 0 0 4px rgba(255,214,0,.25);animation:igm 1s ease-out both}
+@keyframes igm{from{left:0}}
+.ig-meter span{position:absolute;top:12px;font-size:10px;opacity:.7}.ig-meter span:last-child{right:0}
+.ig-dots{display:none;justify-content:center;gap:5px;margin:8px 0}
+.ig-dots i{width:6px;height:6px;border-radius:9px;background:var(--line);transition:width .2s}
+.ig-dots i.on{width:18px;background:var(--ink)}
+.ig-tip{min-height:1.4em;margin:8px 0 0;font-size:12px;color:var(--ink);font-weight:700}
+.ig-tip:empty::before{content:'그래프의 사람, 선, 칸을 눌러 보세요';color:var(--mute);font-weight:400}
+.ig .ig-bar i{width:0;transition:width .9s cubic-bezier(.2,.8,.2,1)}
+.ig.in .ig-bar i{width:var(--w)}
+.ig .ig-bar{cursor:pointer}
+.ig-svg .e{transition:stroke-opacity .2s,stroke-width .2s;cursor:pointer}
+.ig-svg .nd{cursor:pointer}
+.ig.focus .ig-svg .e{stroke-opacity:.1}
+.ig.focus .ig-svg .e.hi{stroke-opacity:1}
+.ig.focus .ig-svg .nd:not(.sel){opacity:.55}
+.ig-svg .nd.sel circle{stroke:var(--hot);stroke-width:3}
+.ig-heat .cell{cursor:pointer;transition:transform .15s}
+.ig-heat .cell.tipon{outline:2px solid var(--ink);transform:scale(1.06)}
+.ig{transition:transform .4s,opacity .4s}
+@media (max-width:899px){
+ .ig-story{grid-template-columns:none!important;grid-auto-flow:column;grid-auto-columns:88%;overflow-x:auto;scroll-snap-type:x mandatory;gap:10px;padding-bottom:6px;scrollbar-width:none}
+ .ig-story>.ig{scroll-snap-align:center}
+ .ig-dots{display:flex}
+}
+@media (min-width:900px){.ig-cover{grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);align-items:center}.ig-cv-n,.ig-meter{grid-column:1/-1}}
+.ig-svg .nd:focus{outline:none}.ig-svg .nd:focus-visible circle{stroke:var(--ink);stroke-width:2}
