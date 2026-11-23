@@ -170,6 +170,7 @@ function renderUser(d){const p=d.profile,s=d.stats,g=grade(p.points),nx=GRADES[g
   <label class="sub">좋아하는 배우는 배우 페이지에서 팬 채널에 들어가면 함께 등록돼요</label>
   <label class="sub">한 줄 소개<input type="text" id="tBio" maxlength="100" value="${esc(p.bio||'')}" placeholder="예: 원작 싱크로율에 진심인 사람"></label>
   <button class="b buy" data-act="tastes">취향 저장</button></div></section>`:''}
+ ${d.me?`<section class="acct-out"><button class="b" data-act="logout">로그아웃</button><small>로그아웃하면 처음 온 사람 화면으로 돌아가요</small></section>`:''}
  </div>`);loadAvRoom(p.nickname,!!d.me);if(d.me)loadInsights()}
 
 /* ---------- 배우 화력 랭킹 ---------- */
