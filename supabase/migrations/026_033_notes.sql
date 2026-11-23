@@ -17,3 +17,10 @@
 --     cast_vote_src(rid,cid,src), undo_vote(rid): 투표 후 15초 안 되돌리기(포인트, 팀 칸, 집계 함께 되돌림, 이벤트 vote_undo)
 -- Edge Function orig: 외국 배우 원어 이름과 사진(tmdb_cache orig:이름, 30일). 원작 배우 7명 people에 추가, roles.orig 레이철 맥아담스 -> 레이첼 맥아담스
 -- buzz: 광장 활동 집계 컬럼 오류(created_at -> at) 수정, 뉴스는 차례로 위키는 병렬, RSS 파싱 경량화
+
+-- 039 rolling_rounds (MCP 적용): topics.opens_at/season/settled_at, round_results, votes_archive,
+--   dc_round_settle(tid): 배역별 1위, 적중 10P + 언더독 보너스 10P(투표 당시 1위가 아니던 후보가 최종 1위), notices kind='result', feed
+--   dc_round_tick(per_day=3): 마감 판 결산, 결과 발표 2일 지난 판을 새 시즌(표 보관 후 초기화, 7일)으로 다시 엶
+--   cron dc-round-tick '5 15 * * *' (KST 00:05). 새 판 기본 7일. 기존 17개 판은 11/25~12/1 KST 자정에 하루 2~3개씩 마감하도록 분산
+-- 040 round_board(): 최근 7일 결과(내 픽, 적중 포인트), 24시간 안에 열린 판, 24시간 안에 마감할 판
+--   my_cast_graph: 지난 시즌 표(votes_archive) 포함, vote_deck: opens_at 반영과 새 판 +15, 오늘 마감 +8 가중

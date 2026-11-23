@@ -123,7 +123,7 @@ async function rpc(fn,args){const {data,error}=await sb.rpc(fn,args);if(error)th
 /* ---------- data ---------- */
 async function loadTopics(){const {data,error}=await sb.from('topics').select('*').order('sort');if(error)throw error;TOPICS=data||[];if(!SEL){const h=location.hash.slice(1);SEL=TOPICS.find(t=>t.id===h)?h:(TOPICS.find(t=>t.cat===CAT)||TOPICS[0]).id}CAT=topic().cat}
 const topic=()=>TOPICS.find(t=>t.id===SEL);
-const isOpen=t=>t&&!t.closed_at&&new Date(t.closes_at)>new Date();
+const isOpen=t=>t&&!t.closed_at&&(!t.opens_at||new Date(t.opens_at)<=new Date())&&new Date(t.closes_at)>new Date();
 async function loadTopic(){
  const t=topic(),tid=t.id;
  const {data:roles}=await sb.from('roles').select('*').eq('topic_id',tid).order('pos');
@@ -197,7 +197,7 @@ const tStage=()=>{const o=['dream','rumor','cast','airing'];return o[Math.max(0,
 const total=r=>(D.cands[r.id]||[]).reduce((a,c)=>a+c.votes,0);
 function renderHead(){const t=topic();$('#tTitle').textContent=t.title;$('#tInfo').innerHTML=`${esc(t.info)}, ${esc(CATS.find(c=>c.id===t.cat).name)}${t.src_medium&&t.dst_medium&&t.src_medium!==t.dst_medium?` <span class="chip2">${esc(t.src_medium)} > ${esc(t.dst_medium)}</span>`:''} <button class="b sm" data-act="want">${WANTS.has(t.id)?'보고 싶어요 취소':'이렇게 나오면 보고 싶어요'} ${fmt(t.wants||0)}</button>`;$('#tFact').textContent=t.fact||'';
  const pu=IMG['w:'+t.id],pi=$('#tPoster');if(pu){if(pi.src!==pu)pi.src=pu;pi.alt=t.title+' 포스터';pi.hidden=false}else pi.hidden=true;
- const open=isOpen(t);$('#tClockL').textContent=open?'투표 마감까지':'투표 상태';$('#tClock').textContent=open?`D-${dleft(t)}`:'마감';
+ const open=isOpen(t);$('#tClockL').textContent=open?(t.season>1?`시즌 ${t.season}, 마감까지`:'투표 마감까지'):'투표 상태';$('#tClock').textContent=open?(dleft(t)<=1?'오늘 자정':`D-${dleft(t)}`):'결과 발표';
  const tv=D.roles.reduce((a,r)=>a+(isSync(r)?(D.sync[r.id]?.n||0):total(r)),0);$('#tVotes').textContent=` 총 ${fmt(tv)}표`;
  $('#tFlow').innerHTML=t.cat==='wn'&&D.roles.length?STAGES.map(([k,n],i)=>`${i?'<i>›</i>':''}<span class="${k===tStage()?'on':''}">${n}</span>`).join(''):''}
 /* 배역별 득표율 원형 차트: 상위 5명 + 기타, 내 픽 강조 */
