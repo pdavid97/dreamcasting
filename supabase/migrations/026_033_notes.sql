@@ -24,3 +24,4 @@
 --   cron dc-round-tick '5 15 * * *' (KST 00:05). 새 판 기본 7일. 기존 17개 판은 11/25~12/1 KST 자정에 하루 2~3개씩 마감하도록 분산
 -- 040 round_board(): 최근 7일 결과(내 픽, 적중 포인트), 24시간 안에 열린 판, 24시간 안에 마감할 판
 --   my_cast_graph: 지난 시즌 표(votes_archive) 포함, vote_deck: opens_at 반영과 새 판 +15, 오늘 마감 +8 가중
+-- 041 role_peek(rid,cid): 비로그인 체험 투표 뒤 상위 3명과 내 후보 표 공개(anon 허용)

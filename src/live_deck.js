@@ -13,7 +13,7 @@ const PENDING_K='dcPending1';
 function pend(){try{return JSON.parse(localStorage.getItem(PENDING_K)||'[]')}catch(e){return[]}}
 function setPend(a){try{localStorage.setItem(PENDING_K,JSON.stringify(a))}catch(e){}}
 
-async function loadDeck(){if(deckBusy)return;deckBusy=true;try{loadRounds();DECK=await rpc('vote_deck',{lim:16})||[];
+async function loadDeck(){if(deckBusy)return;deckBusy=true;try{loadRounds();DECK=onbSort(await rpc('vote_deck',{lim:16})||[]);
  const keep=DECK.findIndex(d=>d.id===(DECK[DI]||{}).id);DI=Math.max(0,keep);
  const names=DECK.flatMap(d=>d.roles.flatMap(r=>[...(r.orig?[r.orig]:[]),...r.cands.map(c=>c.name)]));if(DECKV)renderDeck();await loadNames(names)}catch(e){}deckBusy=false;if(DECKV)renderDeck()}
 function cardLeave(){if(cardKey&&cardAt){const [t,r]=cardKey.split('|');track('card_view',{t,r:+r||null,ms:performance.now()-cardAt});cardAt=0;cardKey=''}}
@@ -65,18 +65,18 @@ function nextTopic(){cardLeave();DI++;const t=curTopic();DR=t?firstOpenRole(t):0
 
 async function deckPick(rid,cid){const t=curTopic(),r=curRole();if(!t||!r||r.id!==rid)return;track('cand_tap',{t:t.id,r:rid,c:cid});
  if(r.mine){toast('이 배역은 이미 투표했어요');nextRole();return}
- if(!USER||!PROF){const a=pend().filter(p=>p.rid!==rid);a.push({tid:t.id,rid,cid,at:Date.now()});setPend(a);track('login_prompt',{t:t.id,r:rid,c:cid});openLoginSheet();renderDeck();return}
+ if(!USER||!PROF){if(pend().filter(p=>p.rid!==rid).length<3){await guestPick(t,r,cid);return}const a=pend().filter(p=>p.rid!==rid);a.push({tid:t.id,rid,cid,at:Date.now()});setPend(a);track('login_prompt',{t:t.id,r:rid,c:cid});openLoginSheet(true);renderDeck();return}
  try{await rpc('cast_vote_src',{rid,cid,src:'wheel'});r.mine=cid;t.seen=true;try{localStorage.setItem('dialVotes',(+localStorage.getItem('dialVotes')||0)+1)}catch(e){}track('vote_done',{t:t.id,r:rid,c:cid});showUndo(rid,`${r.ch} 역 한 표 반영`);
   const card=$('#dkCard');if(card){card.classList.add('fly-r');await new Promise(o=>setTimeout(o,220))}
   // 결과 공개를 위해 덱을 새로 받아 득표를 채움
   const fresh=await rpc('vote_deck',{lim:16}).catch(()=>null);const ft=fresh&&fresh.find(x=>x.id===t.id);if(ft){Object.assign(t,{seen:ft.seen,roles:ft.roles})}
   nextRole()}catch(e){toast(errMsg(e))}}
 
-async function flushPending(){if(!USER||!PROF)return;const a=pend();if(!a.length)return;setPend([]);let ok=0;
+async function flushPending(){if(!USER||!PROF)return;try{const o=onbGet();if(o&&!o.saved&&(o.cats||[]).length&&!(PROF.tastes&&(PROF.tastes.cats||[]).length)){await rpc('set_tastes',{t:{cats:o.cats,genres:(PROF.tastes||{}).genres||[],makers:(PROF.tastes||{}).makers||[]},b:PROF.bio||''});onbSet({...o,saved:true})}}catch(e){}const a=pend();if(!a.length)return;setPend([]);let ok=0;
  for(const p of a){try{await rpc('cast_vote_src',{rid:p.rid,cid:p.cid,src:'wheel'});ok++;track('vote_done',{t:p.tid,r:p.rid,c:p.cid,m:{after_login:true}})}catch(e){}}
  if(ok){toast(`로그인 전에 고른 ${ok}표를 반영했어요`);track('login_done',{m:{flushed:ok}})}await loadDeck();const t=curTopic();if(t)DR=Math.min(DR+0,t.roles.length)}
 
-function openLoginSheet(){const m=$('#loginSheet');if(!m)return;m.classList.add('on');setTimeout(()=>{const b=m.querySelector('[data-act=login]');if(b)b.focus()},50)}
+function openLoginSheet(g){const m=$('#loginSheet');if(!m)return;const n=pend().length,h=$('#lsH'),pp=m.querySelector('p');if(h&&pp){if(g&&n){h.textContent=`${n}표를 골랐어요! 로그인하면 바로 저장돼요`;pp.textContent='7일 뒤 결과 발표 때 내 픽이 1위면 적중 포인트를 받아요. 구글 계정으로 3초면 끝나요.'}else{h.textContent='로그인하면 이 표가 바로 반영돼요';pp.textContent='고른 후보는 저장해 뒀어요. 구글 계정으로 3초면 끝나요.'}}m.classList.add('on');setTimeout(()=>{const b=m.querySelector('[data-act=login]');if(b)b.focus()},50)}
 
 /* 스와이프: 왼쪽 = 건너뛰기, 오른쪽 = 다음 작품 */
 function bindSwipe(){const c=$('#dkCard');if(!c)return;let x0=null,dx=0,id=null;

@@ -194,3 +194,45 @@ a.dl-ol{color:inherit;text-decoration:none;border-bottom:1px dashed currentColor
 .rres .nx{font-size:11px;color:var(--mute);margin:10px 16px}
 .rres .b.buy{display:block;margin:0 16px;text-align:center}
 .rres .b.buy{text-decoration:none}
+/* 온보딩 */
+.onb{position:fixed;inset:0;z-index:95;background:#0d0d0f;color:#fff;display:flex;justify-content:center;overflow:auto;animation:dpgIn .25s}
+.onb-in{width:min(100%,var(--appw,460px));min-height:100%;padding:24px 20px 28px;display:flex;flex-direction:column;box-sizing:border-box}
+.onb .sub{color:rgba(255,255,255,.65)}
+.onb-dots{display:flex;gap:6px;margin-bottom:14px}.onb-dots i{width:18px;height:4px;border-radius:2px;background:rgba(255,255,255,.25)}.onb-dots i.on{background:var(--hot);width:30px}
+.onb .b.big{width:100%;padding:15px;font-size:16px;border-radius:14px;margin-top:12px}.onb .b[disabled]{opacity:.4}
+.onb .lk{background:none;border:0;color:rgba(255,255,255,.6);font:inherit;font-size:13px;padding:10px;cursor:pointer}
+.onb-hook{padding:0;position:relative}
+.onb-wall{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;padding:6px;height:52vh;overflow:hidden;transform:rotate(-6deg) scale(1.15);transform-origin:center 40%}
+.onb-wall span{border-radius:10px;background:#333 center/cover;aspect-ratio:2/3;animation:onbUp .6s both;animation-delay:var(--d)}
+@keyframes onbUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:none}}
+.onb-copy{position:relative;margin-top:-18vh;padding:60px 22px 20px;background:linear-gradient(180deg,transparent,#0d0d0f 30%);display:flex;flex-direction:column}
+.onb-copy small{color:var(--hot);font-weight:700;letter-spacing:.04em}
+.onb-copy h1{font-size:34px;line-height:1.15;margin:6px 0 10px}
+.onb-copy p{font-size:14px;line-height:1.6;color:rgba(255,255,255,.75);margin:0 0 6px}
+.onb-taste h2,.onb-go h2{font-size:24px;margin:0 0 6px}.onb-taste h3{font-size:15px;margin:18px 0 8px}
+.onb-faces{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:12px}
+.onb-faces .fc{position:relative;background:none;border:0;color:#fff;font:inherit;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;padding:0}
+.onb-faces .fc span{width:100%;aspect-ratio:1;border-radius:50%;background:#333 center 20%/cover;box-shadow:0 0 0 2px transparent;transition:box-shadow .15s,transform .15s}
+.onb-faces .fc.on span{box-shadow:0 0 0 3px var(--hot);transform:scale(.94)}
+.onb-faces .fc b{font-size:11px;font-weight:600;line-height:1.2;text-align:center;word-break:keep-all}
+.onb-faces .fc i{position:absolute;top:0;right:2px;width:22px;height:22px;border-radius:50%;background:var(--hot);color:#141414;font-style:normal;font-weight:900;display:grid;place-items:center;font-size:12px}
+.onb-cats{display:flex;flex-wrap:wrap;gap:8px}
+.onb-cats .ct{border:1px solid rgba(255,255,255,.25);background:transparent;color:#fff;font:inherit;font-size:13px;padding:8px 12px;border-radius:20px;cursor:pointer;display:flex;gap:6px;align-items:center}
+.onb-cats .ct.on{background:var(--hot);color:#141414;border-color:var(--hot);font-weight:700}
+.onb-foot{margin-top:auto;padding-top:16px;display:flex;flex-direction:column;align-items:center}
+.onb-go{justify-content:center}.onb-big{font-size:64px;margin:10px 0}
+.onb-how{list-style:none;counter-reset:s;padding:0;margin:14px 0}.onb-how li{counter-increment:s;position:relative;padding:12px 0 12px 44px;border-bottom:1px solid rgba(255,255,255,.12);font-size:13px;color:rgba(255,255,255,.7)}
+.onb-how li::before{content:counter(s);position:absolute;left:0;top:12px;width:30px;height:30px;border-radius:50%;background:var(--hot);color:#141414;font-weight:900;display:grid;place-items:center}
+.onb-how b{display:block;color:#fff;font-size:15px;margin-bottom:2px}
+/* 체험 투표 민심 공개 */
+.peek{position:fixed;inset:0;z-index:92;background:rgba(0,0,0,.55);display:flex;align-items:flex-end;justify-content:center;animation:dpgIn .2s}
+.peek-in{width:min(100%,var(--appw,460px));background:var(--card);border-radius:20px 20px 0 0;padding:18px 18px 20px;box-sizing:border-box}
+.peek-in>small{color:var(--mute);font-size:12px}
+.peek-me{display:flex;align-items:center;gap:12px;margin:10px 0}.peek-me .av{width:56px;height:56px;border-radius:50%;background:#ddd center 20%/cover;box-shadow:0 0 0 3px var(--hot)}
+.peek-me small{color:var(--mute);font-size:11px}.peek-me b{display:block;font-size:20px}
+.peek-in p{font-size:14px;line-height:1.5;margin:0 0 10px}
+.peek-bars{display:flex;flex-direction:column;gap:6px}.peek-bars div{display:grid;grid-template-columns:96px 1fr 36px;align-items:center;gap:8px;font-size:12px}
+.peek-bars span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.peek-bars i{height:8px;border-radius:4px;background:linear-gradient(90deg,var(--acc) var(--p),var(--line) var(--p))}
+.peek-bars .me i{background:linear-gradient(90deg,var(--hot) var(--p),var(--line) var(--p))}.peek-bars .me span{font-weight:700}.peek-bars b{text-align:right}
+.peek-dots{display:flex;gap:6px;justify-content:center;margin:14px 0 4px}.peek-dots i{width:10px;height:10px;border-radius:50%;background:var(--line)}.peek-dots i.on{background:var(--hot)}
+.peek .b.big{width:100%;padding:14px;font-size:15px;border-radius:14px;margin-top:8px}.peek .lk{display:block;margin:6px auto 0;background:none;border:0;color:var(--mute);font:inherit;font-size:13px;cursor:pointer}

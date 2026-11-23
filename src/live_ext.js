@@ -177,7 +177,7 @@ function renderUser(d){const p=d.profile,s=d.stats,g=grade(p.points),nx=GRADES[g
   <label class="sub">한 줄 소개<input type="text" id="tBio" maxlength="100" value="${esc(p.bio||'')}" placeholder="예: 원작 싱크로율에 진심인 사람"></label>
   <button class="b buy" data-act="tastes">취향 저장</button></div></section>`:''}${d.me?`</div>`:''}
  ${d.me?`<div class="dpg" data-pg="bell"><section><div class="sh"><h2>알림</h2></div>${bellHTML().replace('<details class="bell">','<details class="bell inline page" open>')}</section></div>
- <div class="dpg" data-pg="set"><section><div class="sh"><h2>설정</h2></div><div class="dset"><button class="b" data-act="nickOpen">닉네임 변경</button><button class="b" data-act="upg" data-k="taste">취향과 한 줄 소개 수정</button></div></section>
+ <div class="dpg" data-pg="set"><section><div class="sh"><h2>설정</h2></div><div class="dset"><button class="b" data-act="nickOpen">닉네임 변경</button><button class="b" data-act="upg" data-k="taste">취향과 한 줄 소개 수정</button><a class="b" href="#welcome">처음 안내 다시 보기</a></div></section>
  <section class="acct-out"><button class="b" data-act="logout">로그아웃</button><small>로그아웃하면 처음 온 사람 화면으로 돌아가요</small></section></div>`:''}
  </div>
  </div>`);showUpg(upgCur(d));loadAvRoom(p.nickname,!!d.me);if(d.me)loadInsights()}
