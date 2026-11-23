@@ -33,7 +33,7 @@ async function loadInsights(){const box=$('#insight');if(!box)return;box.innerHT
   ${igCard('원작 배우와 내가 매치업한 배우',matchLine(match),match.length?matchFlow(match):igEmpty('원작 배우가 있는 배역에 투표하면 이어져요.'))}
   ${igCard('나도 모르게 계속 붙이는 라이벌 구도',pairLine(rivals,'라이벌'),rivals.length?rivalCards(rivals):igEmpty('같은 작품에서 주연과 같은 성별의 서브를 함께 고르면 라이벌 구도가 보여요.'))}
   ${igCard('주연과 조연, 내 단골 조합',pairLine(ls,'조합'),ls.length?heat(ls):igEmpty('같은 작품에서 주연과 조연을 함께 고르면 히트맵이 채워져요.'))}
- </div>`;igBind()}
+ </div><div id="igDeep"><p class="sub">나도 모르는 내 취향과 내 배우 소식을 모으는 중이에요</p></div>`;igBind();loadDeep()}
 function igCnt(arr){const m={};arr.forEach(k=>{if(k)m[k]=(m[k]||0)+1});return Object.entries(m).sort((a,b)=>b[1]-a[1])}
 const jj=(w,a,b)=>{const c=(w||'').trim().slice(-1).charCodeAt(0);return w+(c>=0xac00&&c<=0xd7a3&&(c-0xac00)%28?a:b)};
 const igEmpty=t=>`<p class="ig-empty">${esc(t)}</p>`;
@@ -75,3 +75,61 @@ function igBind(){const box=$('#insight');if(!box)return;
    const L=[...card.querySelectorAll('.e.hi')].map(x=>x.dataset.a===n?x.dataset.b:x.dataset.a);if(tipEl)tipEl.textContent=on?`${n}: ${L.length?L.join(', ')+'와 이어져 있어요':'이어진 짝이 없어요'}`:'';return}
   const t=e.target.closest('[data-tip]');if(t&&tipEl){card.querySelectorAll('.tipon').forEach(x=>x.classList.remove('tipon'));t.classList.add('tipon');tipEl.textContent=t.dataset.tip}}}
 function igDot(i){const d=$('#igDots');if(!d)return;[...d.children].forEach((x,k)=>x.classList.toggle('on',k===i))}
+
+/* ===== 나도 모르는 내 취향(광장 데이터) + 내 배우 소식(외부 데이터) ===== */
+const IG_ARCH=[['재벌, 후계자',/재벌|회장|본부장|후계자|대표|ceo|heir/i],['왕족, 귀족',/황제|황후|왕자|공주|황태자|왕비|대공|공작|영애|귀족|emperor|queen|prince/i],['기사, 무사',/기사|무사|검객|무림|장군|knight|sword/i],['형사, 검사, 변호사',/형사|경찰|검사|변호사|detective|lawyer/i],['의사',/의사|외과|doctor/i],['헌터, 각성자',/헌터|각성|레벨|hunter/i],['킬러, 요원',/킬러|암살|요원|스파이|killer|agent/i],['아이돌, 가수',/아이돌|가수|idol|singer/i],['학생, 청춘',/학생|고등|대학|청춘|student/i],['복수극 주인공',/복수|가해자|피해자|revenge/i],['초월적 존재',/도깨비|저승|신|요괴|뱀파이어|구미호|vampire/i]];
+const goExt=(p,k,u)=>goURL('',p,k,u);
+function dday(t){const d=Math.ceil((new Date(t)-Date.now())/864e5);return d<=0?'오늘 마감':`D-${d}`}
+function fmtDate(t){if(!t)return '';const d=new Date(t);return `${d.getMonth()+1}.${d.getDate()}`}
+async function loadDeep(){const box=$('#igDeep');if(!box)return;let I=null;try{I=await rpc('my_insights',{})}catch(e){}
+ if(!I){box.innerHTML='';return}
+ const H=I.hidden||[];try{await loadNames(H.map(h=>h.name))}catch(e){}
+ box.innerHTML=`<div class="sh ig-sh"><h2>나도 모르는 내 취향</h2><span class="sub">표, VS 한판, 응원, 인생작, 오래 본 카드까지 합쳐서</span></div>
+ <div class="ig-grid ig-story">${[igHidden(H),igArch(I),igAge(I.age||[]),igCrowd(I.crowd||[]),igTwin(I.twin),igRaces(I.races||[])].join('')}</div>
+ <div class="sh ig-sh"><h2>내 배우 소식</h2><span class="sub">숨은 최애 ${esc(H.slice(0,4).map(h=>h.name).join(', ')||'')} 기준</span></div>
+ <div id="igNews" class="ig-grid ig-story"><p class="sub">신작, 행사, 굿즈 소식을 찾는 중이에요</p></div>`;
+ igBind2(box);loadNews(H.slice(0,4).map(h=>h.name))}
+function igHidden(H){if(!H.length)return igCard('숨은 최애','',igEmpty('투표, VS 한판, 응원이 쌓이면 진짜 최애를 찾아드려요.'));
+ const mx=Math.max(...H.map(h=>h.score)),top=H[0],seg=[['votes',3,'투표','var(--acc)'],['best',3,'인생작','#8e24aa'],['duels',2,'VS 승리','var(--hot)'],['cheers',2,'응원','#e3121e'],['taps',1,'오래 본 카드','#90a4ae']];
+ const line=!top.followed?`<b>${esc(top.name)}</b>, 팬 채널엔 없지만 신호가 제일 강해요. 이쯤 되면 입덕 확인.`:`<b>${esc(top.name)}</b>, 팬 채널 배우이자 신호도 1위. 흔들림 없는 최애.`;
+ return igCard('숨은 최애',line,`<div class="hb">${H.slice(0,6).map(h=>{const u=IMG['p:'+h.name];return `<div class="hb-r" data-tip="${esc(h.name)}: 투표 ${h.votes}, VS 승리 ${h.duels}, 응원 ${h.cheers}일, 인생작 ${h.best}, 오래 본 카드 ${h.taps}"><a class="av" href="#a/${encodeURIComponent(h.name)}"${u?` style="background-image:url('${esc(u)}')"`:''}>${u?'':esc(h.name[0])}</a><span class="nm">${esc(h.name)}${h.followed?'':' <em>팬 채널 밖</em>'}</span><span class="hb-bar" style="--w:${Math.round(h.score/mx*100)}%">${seg.map(([k,w,_,c])=>h[k]?`<i style="flex:${h[k]*w};background:${c}"></i>`:'').join('')}</span><b>${h.score}</b></div>`}).join('')}</div>
+ <div class="hb-lg">${seg.map(([,w,l,c])=>`<span><i style="background:${c}"></i>${l} ${w}점</span>`).join('')}</div>`)}
+function igArch(I){const R=I.roles||[],cnt={};R.forEach(r=>{const t=`${r.ch} ${r.descr}`;IG_ARCH.forEach(([k,re])=>{if(re.test(t))cnt[k]=(cnt[k]||0)+1})});const L=Object.entries(cnt).sort((a,b)=>b[1]-a[1]);const mx=L.length?L[0][1]:1;
+ const me=I.sub_me??0,all=I.sub_all??0,d=me-all;const type=d>=10?['서브병 지수 높음','서브 배역에 광장 평균보다 마음을 많이 줘요']:d<=-10?['주연 직진파','주연 배역에 표가 몰려요']:['주연, 서브 균형형','광장 평균과 비슷하게 골고루 골라요'];
+ return igCard('내가 끌리는 배역 타입',L.length?`<b>${esc(L[0][0])}</b> 배역에 제일 자주 표를 던졌어요. ${esc(type[0])}.`:esc(type[1]),
+ `${L.length?`<div class="arch">${L.slice(0,8).map(([k,n])=>`<span style="--s:${(.8+.7*n/mx).toFixed(2)}" data-tip="${esc(k)} 배역에 ${n}표">${esc(k)} <b>${n}</b></span>`).join('')}</div>`:''}
+ <div class="dual"><div data-tip="내 표 중 서브 배역 ${me}%"><small>나</small><span><i style="width:${me}%"></i></span><b>${me}%</b></div><div data-tip="광장 전체 표 중 서브 배역 ${all}%"><small>광장 평균</small><span><i class="g" style="width:${all}%"></i></span><b>${all}%</b></div><p class="ig-cap">서브 배역에 던진 표의 비중</p></div>`)}
+function igAge(A){if(!A.length)return igCard('원작 충실파 vs 재해석파','',igEmpty('원작 배우가 있는 배역에 투표하면 나이 결을 비교해 드려요.'));
+ const g=A.map(a=>({...a,d:a.pick_age-a.orig_age})),avg=Math.round(g.reduce((s,x)=>s+x.d,0)/g.length);const ty=avg<=-3?'젊게 재해석파':avg>=3?'성숙하게 재해석파':'원작 충실파';
+ const X=d=>Math.max(-25,Math.min(25,d)),W=300,cx=150,sc=5.4;
+ const dots=g.map((x,i)=>`<circle class="e" cx="${cx+X(x.d)*sc}" cy="${40+((i%4)-1.5)*11}" r="7" fill="${x.d<0?'var(--acc)':'var(--hot)'}" fill-opacity=".85" stroke="var(--card)" data-tip="${esc(x.title)} ${esc(x.ch)}: 원작 ${esc(x.orig)} ${x.orig_age}살 때, 내 픽 ${esc(x.pick)} 지금 ${x.pick_age}살 (${x.d>0?'+':''}${x.d})"><title>${esc(x.pick)}</title></circle>`).join('');
+ return igCard('원작 충실파 vs 재해석파',`평균 <b>${avg>0?'+':''}${avg}살</b>, <b>${ty}</b>. 원작 배우가 그 역을 맡았을 때 나이와 내 픽의 지금 나이를 비교했어요.`,
+ `<svg class="ig-svg" viewBox="0 0 ${W} 92" role="img" aria-label="나이 차 분포"><line x1="10" x2="290" y1="40" y2="40" stroke="var(--line)" stroke-width="2"/><line x1="${cx}" x2="${cx}" y1="8" y2="72" stroke="var(--ink)" stroke-dasharray="3 3"/><text x="${cx}" y="88" text-anchor="middle" font-size="10" fill="var(--mute)">원작 나이 그대로</text><text x="12" y="88" font-size="10" fill="var(--mute)">더 젊게</text><text x="288" y="88" font-size="10" text-anchor="end" fill="var(--mute)">더 성숙하게</text><line x1="${cx+X(avg)*sc}" x2="${cx+X(avg)*sc}" y1="14" y2="66" stroke="var(--ink)" stroke-width="3"/>${dots}</svg>`)}
+function igCrowd(C){if(!C.length)return igCard('광장 민심 일치율','',igEmpty('투표가 쌓이면 보여드려요.'));
+ const agree=C.filter(c=>c.now_mine>=c.now_top&&c.now_top>0).length,pct=Math.round(agree/C.length*100);
+ const fore=C.filter(c=>c.then_top>0&&c.then_mine<c.then_top&&c.now_mine>=c.now_top),first=C.filter(c=>c.then_top===0);
+ const R=34,L=2*Math.PI*R;
+ return igCard('광장 민심 일치율과 선견지명',pct>=70?`<b>${pct}%</b> 일치, 광장 민심을 정확히 읽는 타입.`:pct<=30?`<b>${pct}%</b>만 일치, 나만의 길을 가는 소신파.`:`<b>${pct}%</b> 일치, 민심과 소신 사이 균형.`,
+ `<div class="crowd"><svg viewBox="0 0 90 90" class="donut" role="img" aria-label="일치율 ${pct}%"><circle cx="45" cy="45" r="${R}" fill="none" stroke="var(--line)" stroke-width="12"/><circle cx="45" cy="45" r="${R}" fill="none" stroke="var(--acc)" stroke-width="12" stroke-linecap="round" stroke-dasharray="${(L*pct/100).toFixed(1)} ${L.toFixed(1)}" transform="rotate(-90 45 45)" class="dn"/><text x="45" y="50" text-anchor="middle" font-size="18" font-weight="800" fill="var(--ink)">${pct}%</text></svg>
+ <div><p><b>선견지명 ${fore.length}번</b><small>내가 골랐을 땐 1위가 아니었는데 지금은 1위</small></p>${fore.slice(0,3).map(c=>`<a class="chip" href="#${esc(c.tid)}">${esc(c.title)} ${esc(c.ch)}: ${esc(c.pick)}</a>`).join('')}
+ <p><b>1호 지지자 ${first.length}번</b><small>그 배역에서 처음으로 표를 던진 사람이 나</small></p></div></div>`)}
+function igTwin(T){if(!T)return igCard('나의 취향 쌍둥이','',igEmpty('나와 같은 배역에 3번 이상 투표한 유저가 생기면 찾아드려요.'));const pct=Math.round(T.same/T.shared*100);
+ return igCard('나의 취향 쌍둥이',`<b>${esc(T.nick)}</b> 님과 같은 배역 ${T.shared}개 중 <b>${T.same}개</b>에서 같은 배우를 골랐어요.`,
+ `<a class="twin" href="#u/${encodeURIComponent(T.nick)}"><span class="tw-a">나</span><span class="tw-m"><b>${pct}%</b><small>싱크로</small></span><span class="tw-a">${esc(T.nick[0])}</span></a><p class="ig-cap">${T.sheets?`${esc(T.nick)} 님의 캐스팅 시트 ${T.sheets}장을 구경해 보세요.`:`${esc(T.nick)} 님 페이지에서 다른 픽도 확인해 보세요.`}</p>`)}
+function igRaces(R){if(!R.length)return igCard('내 최애, 마감 임박 레이스','',igEmpty('숨은 최애나 팬 채널 배우가 투표 중인 배역에 오르면 알려드려요.'));
+ return igCard('내 최애, 마감 임박 레이스',`${R.length}개 배역에서 내 배우가 뛰고 있어요.`,`<div class="races">${R.slice(0,6).map(r=>{const gap=Math.max(0,r.top-r.mine);return `<a href="#${esc(r.tid)}" class="race${gap?'':' lead'}"><span class="dd">${dday(r.closes_at)}</span><span><b>${esc(r.name)}</b><small>${esc(r.title)} ${esc(r.ch)}</small></span><em>${gap?`1위까지 ${gap}표`:'지금 1위'}${r.voted?'':', 아직 내 표 없음'}</em></a>`}).join('')}</div>`)}
+async function loadNews(names){const box=$('#igNews');if(!box)return;let works=[];try{works=((await rpc('av_room',{nick:PROF.nickname}))||[]).slice(0,8).map(w=>({media:w.media,id:w.tmdb_id,title:w.title}))}catch(e){}
+ const region=(PRIV&&/^[A-Z]{2}$/.test(PRIV.region_self||'')&&PRIV.region_self!=='ZZ')?PRIV.region_self:'KR';let F=null;
+ try{const r=await fetch(SB_URL+'/functions/v1/fanfeed',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+ANON,apikey:ANON},body:JSON.stringify({names,works,region})});F=await r.json();if(!r.ok||F.error)throw 0}catch(e){box.innerHTML=igEmpty('소식을 불러오지 못했어요. 잠시 뒤 다시 열어 주세요.');return}
+ const P=F.per||[];const up=P.flatMap(p=>p.up.map(u=>({...u,who:p.name}))).sort((a,b)=>a.date.localeCompare(b.date));
+ const ev=P.flatMap(p=>p.ev.map(e=>({...e,who:p.name}))).sort((a,b)=>(b.at||'').localeCompare(a.at||''));
+ const gd=P.flatMap(p=>p.gd.map(e=>({...e,who:p.name}))).sort((a,b)=>(b.at||'').localeCompare(a.at||''));
+ const art=e=>`<a class="nw" href="${goExt('news','news',e.u)}" target="_blank" rel="noopener"><span class="nw-w">${esc(e.who)}</span><b>${esc(e.t)}</b><small>${esc(e.src||'')}${e.at?` ${fmtDate(e.at)}`:''}</small></a>`;
+ const pv=(F.providers||[]).filter(p=>p.flat.length||p.rent.length||p.buy.length);
+ box.innerHTML=[
+  igCard('곧 만나는 신작',up.length?`<b>${esc(up[0].who)}</b>의 다음 작품, ${esc(up[0].date)} 공개 예정.`:'',up.length?`<div class="upc">${up.slice(0,8).map(u=>`<button class="up" data-act="wk-open" data-m="${esc(u.media)}" data-id="${u.id}">${u.poster?`<img src="${esc(u.poster)}" alt="" loading="lazy">`:'<span class="ph"></span>'}<b>${esc(u.title)}</b><small>${esc(u.who)}${u.ch?`, ${esc(u.ch)}`:''}</small><em>${esc(u.date)}</em></button>`).join('')}</div><p class="ig-cap">TMDB에 등록된 공개 예정일 기준이에요.</p>`:igEmpty('TMDB에 등록된 공개 예정작이 아직 없어요.')),
+  igCard('팬미팅, 내한, 무대인사, 콘서트',ev.length?`최근 60일 기사 ${ev.length}건.`:'',ev.length?`<div class="nws">${ev.slice(0,6).map(art).join('')}</div><p class="ig-cap">기사 제목 기준이라 정확한 일정과 예매는 기사에서 확인해 주세요.</p>`:igEmpty('최근 60일 안에 행사 기사가 없어요.')),
+  igCard('굿즈, 앨범, 팝업, 소장판',gd.length?`최근 60일 기사 ${gd.length}건.`:'',`${gd.length?`<div class="nws">${gd.slice(0,5).map(art).join('')}</div>`:igEmpty('최근 60일 안에 굿즈 소식이 없어요.')}<div class="shops">${names.slice(0,3).map(n=>`<span>${esc(n)}</span><a href="${goExt('yes24','shop','https://www.yes24.com/Product/Search?query='+encodeURIComponent(n))}" target="_blank" rel="noopener">예스24</a><a href="${goExt('aladin','shop','https://www.aladin.co.kr/search/wsearchresult.aspx?SearchTarget=All&SearchWord='+encodeURIComponent(n))}" target="_blank" rel="noopener">알라딘</a>`).join('')}</div>`),
+  igCard('내 AV룸 작품, 지금 어디서 볼까',pv.length?`AV룸 ${pv.length}편을 지금 볼 수 있어요.`:'',pv.length?`<div class="wps">${pv.map(p=>`<a class="wp" href="${p.link?goExt('tmdb','watch',p.link):'#'}" target="_blank" rel="noopener"><b>${esc(p.title)}</b><span>${[...p.flat.map(x=>[x,'구독']),...p.rent.map(x=>[x,'대여']),...p.buy.map(x=>[x,'구매'])].slice(0,5).map(([x,k])=>x.logo?`<img src="${esc(x.logo)}" alt="${esc(x.name)} ${k}" title="${esc(x.name)} ${k}">`:`<i>${esc(x.name)}</i>`).join('')}</span></a>`).join('')}</div><p class="ig-cap">시청처 정보는 JustWatch 제공(TMDB 경유), ${esc(F.region)} 기준이에요.</p>`:igEmpty(works.length?'AV룸 작품의 시청처 정보가 아직 없어요.':'AV룸에 작품을 담으면 지금 볼 수 있는 곳을 알려드려요.'))
+ ].join('');igBind2(box)}
+function igBind2(root){root.querySelectorAll('.ig').forEach(c=>c.classList.add('in'));root.onclick=e=>{const card=e.target.closest('.ig');if(!card)return;const t=e.target.closest('[data-tip]');const tip=card.querySelector('.ig-tip');if(t&&tip){card.querySelectorAll('.tipon').forEach(x=>x.classList.remove('tipon'));t.classList.add('tipon');tip.textContent=t.dataset.tip}}}

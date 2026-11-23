@@ -7,3 +7,7 @@
 -- 031 role_gender(rid): 원작 배우 성별, 없으면 roles.gender
 -- 032 roles.gender 컬럼: 원작 배우 또는 후보군 다수(70% 이상)로 채움. recommend가 이후 자동 저장
 -- 033 topics src/dst_medium에 연극, 뮤지컬 추가(드라마, 영화는 기존)
+-- 034 my_insights(): 숨은 최애(표3, 인생작3, VS승리2, 응원2, 카드탭1), 배역 타입과 서브 비중(광장 평균 비교), 원작 나이 비교,
+--     민심 일치율과 선견지명(당시 1위 아님 -> 지금 1위), 취향 쌍둥이(공통 배역 3개 이상), 마감 임박 레이스
+--     partners에 yes24, aladin(kind shop) 추가, kind 체크에 shop, ticket 추가
+-- Edge Function fanfeed: TMDB 공개 예정작, 구글 뉴스 행사/굿즈 기사(60일), TMDB 시청처(JustWatch 데이터), tmdb_cache 캐시
