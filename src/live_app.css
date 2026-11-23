@@ -141,3 +141,29 @@ a.dl-ol{color:inherit;text-decoration:none;border-bottom:1px dashed currentColor
 .ig-duel .t{position:absolute;left:0;bottom:0;font-size:10px;color:var(--mute)}
 .ig-legend{display:flex;gap:12px;font-size:11px;color:var(--mute);margin-bottom:4px}.ig-legend i{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:4px}.ig-legend .r{margin-left:auto}
 .ig-pairs .nm b+b::before{content:'♥ ';color:var(--hot);font-size:10px}.ig-pairs .nm small{grid-column:1/-1}
+/* 나 페이지 다이어리 */
+.dindex{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:14px 0 0;scroll-margin-top:8px}
+.dindex button{position:relative;display:flex;flex-direction:column;align-items:center;gap:5px;padding:10px 4px 9px;border:1px solid var(--line);border-radius:16px;background:var(--card);color:var(--ink);font:inherit;cursor:pointer;transition:transform .15s,box-shadow .15s}
+.dindex button .di{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;font-size:20px;background:color-mix(in srgb,var(--acc) 14%,transparent)}
+.dindex button:nth-child(4n+2) .di{background:color-mix(in srgb,var(--hot) 18%,transparent)}
+.dindex button:nth-child(4n+3) .di{background:color-mix(in srgb,#7bd88f 22%,transparent)}
+.dindex button:nth-child(4n) .di{background:color-mix(in srgb,#c39bff 22%,transparent)}
+.dindex button b{font-size:11px;font-weight:600;line-height:1.2;text-align:center;word-break:keep-all}
+.dindex button i{position:absolute;top:6px;right:10px;min-width:16px;height:16px;padding:0 4px;border-radius:8px;background:var(--red,#e5484d);color:#fff;font-size:10px;font-style:normal;font-weight:700;display:grid;place-items:center}
+.dindex button.on{border-color:var(--ink);box-shadow:0 4px 0 var(--ink);transform:translateY(-2px)}
+.diary{position:relative;margin:16px 0 0;padding:22px 12px 8px;border:1px solid var(--line);border-radius:18px;background:var(--card);
+ background-image:repeating-linear-gradient(transparent 0 31px,color-mix(in srgb,var(--line) 55%,transparent) 31px 32px)}
+.diary::before{content:'';position:absolute;left:18px;right:18px;top:-7px;height:14px;background:radial-gradient(circle,var(--bg,#fff) 4px,var(--mute) 4.5px,var(--mute) 5.5px,transparent 6px) 0 0/28px 14px repeat-x;opacity:.7}
+.dpg{display:none}.dpg.on{display:block;animation:dpgIn .25s ease}
+@keyframes dpgIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.dpg>section{margin-top:0}
+.dpg>section+section{margin-top:18px}
+.bell.page>summary{display:none}.bell.page .bellp{position:static;display:block;width:auto;box-shadow:none;border:0;padding:0;background:transparent}
+.dset{display:flex;flex-direction:column;gap:8px}.dset .b{width:100%}
+.user .uhero{display:block;padding:16px;border-radius:20px;background:linear-gradient(135deg,color-mix(in srgb,var(--acc) 22%,var(--card)),color-mix(in srgb,var(--hot) 18%,var(--card)));border:1px solid var(--line)}
+.user .uhero h1{font-size:30px;margin:2px 0 4px}
+.user .uhero p{font-size:13px;margin:0 0 6px}
+.user .astats{display:grid!important;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:12px}
+.user .astats span{border:0!important;border-radius:12px;background:color-mix(in srgb,var(--card) 80%,transparent);padding:8px 6px!important;text-align:center;min-width:0}
+.user .astats b{font-size:18px!important;display:block}
+.user .astats small{font-size:10px!important;line-height:1.2;display:block}
