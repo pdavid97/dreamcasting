@@ -1,0 +1,10 @@
+/* 모바일 앱 화면을 모든 기기의 기본으로. 넓은 화면에서는 가운데 앱 폭으로 */
+:root{--appw:460px}
+html{background:light-dark(#e9e6df,#060606)}
+body{max-width:var(--appw);margin:0 auto!important;min-height:100vh;background:var(--bg);box-shadow:0 0 0 1px rgba(0,0,0,.06),0 20px 60px rgba(0,0,0,.12)}
+.wrap,.mast{max-width:var(--appw)!important;width:100%!important;margin-left:auto!important;margin-right:auto!important;box-sizing:border-box}
+.tabbar{left:50%!important;right:auto!important;width:100%;max-width:var(--appw);transform:translateX(-50%)}
+.toast{max-width:min(92vw,calc(var(--appw) - 24px))!important;bottom:84px!important}
+.modal>div,.sheetm>*{max-width:calc(var(--appw) - 24px)!important;width:100%}
+.gnav{display:none!important}
+#tInfo{line-height:1.9;margin-bottom:22px}#tInfo .b{vertical-align:middle;margin-top:4px}
