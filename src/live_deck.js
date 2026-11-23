@@ -33,7 +33,7 @@ function renderDeck(){const box=$('#deck');if(!box||!DECKV)return;const t=curTop
  const tot=r.cands.reduce((a,c)=>a+(c.votes||0),0);
  const news=(t.news||[])[0];
  box.innerHTML=`<div class="dk">
- <div class="dk-top"><span class="dk-count">${DI+1} / ${DECK.length}</span><span class="dk-why ${t.why}">${WHY[t.why]||''}${t.nnews?`, 7일 기사 ${t.nnews}건`:''}${t.trending?', 이번 주 인기작':''}</span></div>
+ <div class="dk-top"><span class="dk-count">작품 ${DI+1} / ${DECK.length}</span><span class="dk-why ${t.why}">${WHY[t.why]||''}${t.nnews?`, 7일 기사 ${t.nnews}건`:''}${t.trending?', 이번 주 인기작':''}</span></div>
  <article class="dk-card" id="dkCard" style="${t.poster?`--bg:url('${esc(t.poster)}')`:''}">
   <header class="dk-head"><div><small>${esc(CATS.find(c=>c.id===t.cat)?.name||'')}, 마감 D-${Math.max(0,Math.ceil((new Date(t.closes_at)-new Date())/864e5))}</small><h2>${esc(t.title)}</h2></div>
    <div class="dk-steps" aria-label="배역 진행">${t.roles.map((x,i)=>`<i class="${i<DR?'ok':i===DR?'on':''}" title="${esc(SLOT[x.slot]||'')} ${esc(x.ch)}"></i>`).join('')}</div></header>
@@ -48,7 +48,7 @@ function renderDeck(){const box=$('#deck');if(!box||!DECKV)return;const t=curTop
  cardAt=performance.now();cardKey=t.id+'|'+r.id;bindSwipe();bindDial()}
 
 function renderDone(t){const box=$('#deck');track('result_view',{t:t.id});
- box.innerHTML=`<div class="dk"><div class="dk-top"><span class="dk-count">${DI+1} / ${DECK.length}</span></div>
+ box.innerHTML=`<div class="dk"><div class="dk-top"><span class="dk-count">작품 ${DI+1} / ${DECK.length}</span></div>
  <article class="dk-card done" style="${t.poster?`--bg:url('${esc(t.poster)}')`:''}"><header class="dk-head"><div><small>내 캐스팅 완성</small><h2>${esc(t.title)}</h2></div></header>
  <div class="dk-res" id="dkRes">${t.roles.map(r=>{const mine=r.cands.find(c=>c.id===r.mine),tot=r.cands.reduce((a,c)=>a+(c.votes||0),0),top=[...r.cands].sort((a,b)=>(b.votes||0)-(a.votes||0))[0];
   return `<div class="rr"><span class="slot">${esc(SLOT[r.slot]||'')}</span><b>${esc(r.ch)}</b><span>${mine?`내 픽 <strong>${esc(mine.name)}</strong>${tot?` ${Math.round((mine.votes||0)/tot*100)}%`:''}`:'건너뜀, 투표하면 결과 공개'}</span>${mine&&top&&tot?`<small>1위 ${esc(top.name)} ${Math.round((top.votes||0)/tot*100)}%</small>`:''}</div>`}).join('')}</div>
