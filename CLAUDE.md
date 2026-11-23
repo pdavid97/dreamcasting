@@ -9,3 +9,4 @@
 - 이미지: Supabase 프로젝트 dreamcasting(dnzcvbidppzaogtmwamc)의 Edge Function tmdb가 TMDB를 중계. 키는 비밀값 TMDB_TOKEN에만 있음. 결과는 tmdb_cache 테이블에 30일 캐시. 페이지 하단의 TMDB 출처 문구는 지우지 말 것
 - 실존 배우 얼굴을 합성한 이미지는 만들지 않음. 포스터는 실루엣과 크레딧 방식 유지
 - 화면 문구와 문서에 em dash와 가운뎃점을 쓰지 않음
+- 디자인은 모바일이 기본. 데스크탑도 가운데 앱 폭(src/live_app.css의 --appw)으로 같은 화면을 보여줌. tools/build.py가 480px 이상 max-width 규칙은 항상 적용하고 min-width(데스크탑 전용) 규칙은 빼므로, 새 CSS는 모바일 기준으로만 작성
