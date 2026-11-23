@@ -8,3 +8,23 @@ body{max-width:var(--appw);margin:0 auto!important;min-height:100vh;background:v
 .modal>div,.sheetm>*{max-width:calc(var(--appw) - 24px)!important;width:100%}
 .gnav{display:none!important}
 #tInfo{line-height:1.9;margin-bottom:22px}#tInfo .b{vertical-align:middle;margin-top:4px}
+/* 상단 바 없음: 브랜드, 검색, 계정, 알림은 하단 탭 체계 안으로 */
+.mast{display:none!important}
+.xsearch{display:none;margin:12px 0 10px}
+body[data-view=explore] .xsearch,body[data-view=topic] .xsearch{display:block}
+.xsearch input{width:100%;box-sizing:border-box;border:1px solid var(--line);border-radius:12px;padding:12px 14px;font:inherit;background:var(--panel);color:var(--ink)}
+.chy{display:none!important}
+body[data-view=explore] .chy{display:flex!important;margin:10px 0 0}
+.wrap{padding-top:10px}
+.tabbar a{position:relative}
+.tb-badge{position:absolute;top:4px;left:calc(50% + 6px);min-width:16px;height:16px;padding:0 4px;box-sizing:border-box;border-radius:99px;background:#e3121e;color:#fff;font:800 10px/16px Inter,sans-serif;font-style:normal;text-align:center}
+.acct{display:flex;flex-wrap:wrap;gap:6px;align-items:flex-start;margin:12px 0 4px}
+.bell.inline{flex:1 1 100%;position:static}
+.bell.inline>summary{display:inline-flex;gap:6px;align-items:center;cursor:pointer;font-weight:700;border:1px solid var(--line);border-radius:99px;padding:6px 12px;list-style:none}
+.bell.inline>summary i{font-style:normal;background:#e3121e;color:#fff;border-radius:99px;padding:0 6px;font-size:11px}
+.bell.inline .bellp{position:static!important;width:auto!important;margin-top:8px;box-shadow:none!important;border:1px solid var(--line);border-radius:12px;background:var(--card)}
+.loginbox{display:flex;flex-direction:column;gap:10px;background:var(--card);border-radius:18px;padding:22px}
+.loginbox h3{margin:0;font:400 22px 'Black Han Sans',sans-serif}
+.loginbox .lg{justify-content:center;padding:12px}
+.loginbox .lg{border:1px solid var(--line);border-radius:12px}
+.den-top{flex-wrap:wrap}.den-ctl select{max-width:128px}.den-sw{white-space:nowrap}

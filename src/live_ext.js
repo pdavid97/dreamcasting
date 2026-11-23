@@ -135,6 +135,7 @@ function renderUser(d){const p=d.profile,s=d.stats,g=grade(p.points),nx=GRADES[g
  <div class="uhero"><div><span class="sub">${d.me?'내 페이지':'캐스팅 디렉터 페이지'}</span><h1>${esc(p.nickname)}</h1>
   <p><b style="color:var(--red)">${GRADES[g][1]}</b> <span class="num">${fmt(p.points)}P</span>, 안목 랭킹 ${fmt(p.rank)}위${nx?`, 다음 등급 ${GRADES[g+1][1]}까지 ${fmt(nx[0]-p.points)}P`:''}</p>
   <div class="gbar" aria-hidden="true"><i style="width:${nx?clamp((p.points-GRADES[g][0])/(nx[0]-GRADES[g][0]),0,1)*100:100}%"></i></div>
+  ${d.me?`<div class="acct">${bellHTML().replace('<details class="bell">',`<details class="bell inline"${NOTICES.some(x=>!x.read)?' open':''}>`)}<button class="b sm" data-act="nickOpen">닉네임 변경</button><button class="b sm" data-act="logout">로그아웃</button></div>`:''}
   ${p.bio?`<p class="bio">${esc(p.bio)}</p>`:''}
   <p class="sub">${[...(ts.cats||[]).map(cname),...(ts.genres||[]),...(ts.makers||[])].map(x=>`<span class="chip2">${esc(x)}</span>`).join(' ')}</p></div>
   <div class="astats">${tile(rate==null?'-':rate+'%','내 촉 적중률')}${tile(fmt(s.hits)+'/'+fmt(s.decided),'실제 캐스팅과 일치')}${tile(fmt(s.proposal_hits)+'/'+fmt(s.proposals),'내 추천이 캐스팅됨')}${tile(fmt(s.sheet_likes+s.comment_likes+s.fan_likes),'받은 공감')}${tile(fmt(s.votes),'던진 표')}${tile(fmt(s.sheets),'내 드림캐스팅')}</div></div>
