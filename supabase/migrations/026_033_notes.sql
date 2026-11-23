@@ -15,3 +15,5 @@
 -- 037 team_likes, topic_teams(tid), like_team(tid, ck): 캐스팅 팀 공감(같은 팀 선택 + 공감)
 -- 038 vote_to_sheet: 표가 들어오면 내 팀(시트) 칸을 채우고 꾸미기는 유지, 출처(src: wheel, board, vs, actor) 기록
 --     cast_vote_src(rid,cid,src), undo_vote(rid): 투표 후 15초 안 되돌리기(포인트, 팀 칸, 집계 함께 되돌림, 이벤트 vote_undo)
+-- Edge Function orig: 외국 배우 원어 이름과 사진(tmdb_cache orig:이름, 30일). 원작 배우 7명 people에 추가, roles.orig 레이철 맥아담스 -> 레이첼 맥아담스
+-- buzz: 광장 활동 집계 컬럼 오류(created_at -> at) 수정, 뉴스는 차례로 위키는 병렬, RSS 파싱 경량화

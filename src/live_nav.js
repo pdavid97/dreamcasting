@@ -46,3 +46,14 @@ document.addEventListener('click',async e=>{const b=e.target.closest('[data-act=
  catch(err){b.disabled=false;toast(errMsg(err))}});
 /* 팀 카드의 빈칸을 누르면 그 배역 카드로 */
 document.addEventListener('click',e=>{const b=e.target.closest('[data-act="team-gap"]');if(!b)return;const el=document.querySelector(`#roles .role[data-rid="${b.dataset.rid}"]`)||document.querySelectorAll('#roles .role')[+b.dataset.i];if(el){el.scrollIntoView({behavior:'smooth',block:'start'});el.classList.add('flash');setTimeout(()=>el.classList.remove('flash'),1400)}});
+/* 외국 배우는 원어 이름(한국어 표기) */
+var ORIG={};
+async function loadOrig(names,ctx){const all=[...new Set((names||[]).filter(n=>n&&!(n in ORIG)))];if(!all.length)return false;let any=false;for(let i=0;i<all.length;i+=60){if(await loadOrig1(all.slice(i,i+60),ctx))any=true}return any}
+async function loadOrig1(need,ctx){need.forEach(n=>ORIG[n]=null);
+ try{const r=await fetch(SB_URL+'/functions/v1/orig',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+ANON,apikey:ANON},body:JSON.stringify({names:need,ctx:ctx||[]})});if(!r.ok)return false;const d=await r.json();let ch=false;
+  for(const n in d){const x=d[n]||{};if(x.o){ORIG[n]=x.o;ch=true}if(x.p&&!IMG['p:'+n]){IMG['p:'+n]=x.p;ch=true}}return ch}catch(e){return false}}
+function dispName(n){const o=n&&ORIG[n];return o&&o!==n?`${o} (${n})`:(n||'')}
+/* 문장 속 《작품명》을 눌러 바로 찾기 */
+function workLinks(h){return String(h).replace(/《([^《》]{1,40})》/g,(m,t)=>`<a class="wlink" href="#search" data-act="q" data-q="${t}">《${t}》</a>`)}
+function goSearch(q){location.hash='explore';setTimeout(()=>{const i=$('#gq'),f=$('#gs');if(!i||!f)return;i.value=q;if(f.requestSubmit)f.requestSubmit();else f.dispatchEvent(new Event('submit',{cancelable:true}))},80)}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-act="q"]');if(!b)return;e.preventDefault();track('work_link',{m:{q:b.dataset.q}});goSearch(b.dataset.q)});

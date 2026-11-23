@@ -84,3 +84,25 @@ body[data-view=rank] .side{grid-template-columns:1fr!important}
 .dk-acts .dk-btn.skip span{font-size:13px;font-weight:700;white-space:nowrap}
 .dk-acts .dk-btn.skip svg{width:18px;height:18px;flex:none}
 .dk-acts .dk-btn.next small{display:block;font-size:10px;font-weight:400;opacity:.75}
+/* 하단 고지는 나 탭과 랭킹에서만 */
+body:not([data-view=page]):not([data-view=rank]) .foot{display:none}
+.foot{font-size:11px;line-height:1.5;color:var(--mute);margin:24px 0 0}
+.dk-nextp{display:grid;grid-template-columns:44px 1fr auto;gap:10px;align-items:center;width:100%;margin:12px 0 0;padding:8px 12px 8px 8px;border:1px solid var(--line);border-radius:14px;background:var(--card);color:var(--ink);font:inherit;text-align:left;cursor:pointer}
+.dk-nextp .np{width:44px;height:62px;border-radius:8px;background:var(--panel) center/cover}
+.dk-nextp span:nth-child(2){display:flex;flex-direction:column;min-width:0}.dk-nextp small{font-size:11px;color:var(--mute)}.dk-nextp b{font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.dk-nextp em{font-style:normal;font-size:11px;color:var(--mute)}
+.dk-nextp i{font-style:normal;font-size:22px;color:var(--mute)}
+.dl-nm{color:inherit;text-decoration:none;border-bottom:1px dashed currentColor}
+a.dl-orig{display:grid;place-items:center;text-decoration:none;color:inherit}
+a.dl-ol{color:inherit;text-decoration:none;border-bottom:1px dashed currentColor}
+.wlink{color:inherit;text-decoration:underline;text-underline-offset:2px}
+.dk-tl{color:inherit;text-decoration:none}
+/* 오늘의 작품 캐러셀 */
+.dkst{display:flex;gap:10px;overflow-x:auto;scroll-behavior:smooth;padding:2px 2px 10px;margin:0 -2px 4px;scrollbar-width:none}
+.dkst::-webkit-scrollbar{display:none}
+.dkst .st{flex:0 0 64px;display:flex;flex-direction:column;align-items:center;gap:4px;border:0;background:none;padding:0;color:var(--ink);font:inherit;cursor:pointer;text-decoration:none}
+.dkst .sp{position:relative;width:60px;height:84px;border-radius:10px;background:var(--panel) center/cover;box-shadow:0 0 0 2px transparent;transition:box-shadow .15s,transform .15s;display:grid;place-items:center}
+.dkst .st.on .sp{box-shadow:0 0 0 3px var(--hot);transform:translateY(-2px)}
+.dkst .st.done .sp{filter:saturate(.4) brightness(.7)}
+.dkst .sp i{position:absolute;right:3px;bottom:3px;font-style:normal;font-size:10px;font-weight:800;background:#141414;color:#fff;border-radius:6px;padding:1px 5px}
+.dkst .st b{font-size:10px;line-height:1.2;text-align:center;max-width:64px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.dkst .st.add .sp{border:2px dashed var(--acc);color:var(--acc);font-size:26px;background:transparent}

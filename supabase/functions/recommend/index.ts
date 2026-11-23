@@ -177,7 +177,7 @@ async function chooseForRole(o: { role: Record<string, any>; topic: Record<strin
       }
       if (best && pc.indexOf(c) >= 6) break;
     }
-    if (best) picks.push({ pool: best.p, pick: "chem", why: pick([`상대역 1순위 ${gwawa(o.partnerTop.name)} ${T(ct(best.c))}에서 이미 호흡을 맞췄어요. 케미는 검증된 카드.`, `${T(ct(best.c))} 이후 ${gwawa(o.partnerTop.name)} 다시 만나는 그림. 재회 서사까지 덤이에요.`], hash(best.p.name)) });
+    if (best) picks.push({ pool: best.p, pick: "chem", why: pick([`상대역 후보 ${gwawa(o.partnerTop.name)} ${T(ct(best.c))}에서 이미 호흡을 맞췄어요. 케미는 검증된 카드.`, `${T(ct(best.c))} 이후 ${gwawa(o.partnerTop.name)} 다시 만나는 그림. 재회 서사까지 덤이에요.`], hash(best.p.name)) });
   }
   {
     const pool = POOL.filter((p) => p.kind !== "actor" && !ACTORS.has(p.name) && !(p.acted && (p.kind === "stage" || p.kind === "influencer")) && (region === "kr" ? /^[가-힣]{1,5}$/.test(p.name) : okName(p.name)) && ok(p) && !o.usedWild.has(p.id) && use(p.name) === 0).filter((p) => { const a = ageNow(p.birth); return a != null && Math.abs(a - target) <= 8; });

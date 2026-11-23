@@ -10,7 +10,7 @@ async function loadAges(names){const need=[...new Set(names)].filter(n=>n&&!(n i
 const ageAt=(name,y)=>{const b=AGE[name];if(!b)return null;const by=+b.slice(0,4),bm=+b.slice(5,7)||1;if(!by)return null;if(y&&y<NOW_Y)return y-by;const n=new Date();return n.getFullYear()-by-((n.getMonth()+1)<bm?1:0)};
 const ageTxt=(name,y)=>{const a=ageAt(name,y);return a==null?'':(y&&y<NOW_Y?`${y}년 당시 ${a}세`:`만 ${a}세`)};
 const pickLabel=(r,p)=>{const n=pickName(r,p);return n&&p&&p.w?`${n} (《${p.w}》 속 모습)`:n&&p&&p.y?`${n} (${p.y}년)`:n};
-const actorLink=(name,inner)=>`<a class="alink" href="#a/${encodeURIComponent(name)}" title="${esc(name)} 배우 페이지">${inner||esc(name)}</a>`;
+const actorLink=(name,inner)=>`<a class="alink" href="#a/${encodeURIComponent(name)}" title="${esc(name)} 배우 페이지">${inner||esc(dispName(name))}</a>`;
 
 /* ---------- 작품 정보 ---------- */
 let WORK={},workBusy=new Set();
@@ -59,6 +59,7 @@ async function renderActor(){const pid=PAGE.pid;
  const [pg,,posts,mine]=await Promise.all([rpc('person_page',{pid}),loadPerf(pid).then(()=>null),sb.from('v_fan_posts').select('*').eq('person_id',pid).order('created_at',{ascending:false}).limit(40),
   USER?sb.from('fan_follows').select('person_id').eq('person_id',pid):Promise.resolve({data:[]})]);
  try{PAGE.fan=await rpc('actor_fan',{pid})}catch(e){PAGE.fan=null}
+ try{await loadOrig([name])}catch(e){}
  let prof=pg.person.profile;if(!prof){try{prof=(await meta({person:pid})).profile}catch(e){prof=null}}
  if(!PAGE||PAGE.pid!==pid)return;
  const p=pg.person,fan=(mine.data||[]).length>0,name=p.name;
@@ -76,7 +77,7 @@ async function renderActor(){const pid=PAGE.pid;
  showPage(`<div class="pg actor">
  <button class="b sm" data-act="back">광장으로</button>
  <div class="ahero">${photo?`<img class="aph" src="${esc(photo)}" alt="${esc(name)}">`:`<span class="aph ph0">${esc(name[0])}</span>`}
-  <div><span class="sub">배우 팬 채널</span><h1>${esc(name)}</h1>
+  <div><span class="sub">배우 팬 채널</span><h1>${esc(ORIG[name]||name)}</h1>${ORIG[name]?`<p class="sub" style="margin:-4px 0 6px">${esc(name)}</p>`:''}
   <p class="sub">${prof&&prof.birthday?`${esc(prof.birthday)} 출생, ${ageTxt(name)}`:''}${prof&&prof.place?`, ${esc(prof.place)}`:''}</p>
   <div class="astats"><span><b class="num">${avgAll==null?'-':avgAll}</b><small>연기 점수</small></span><span><b class="num">${fmt(p.fans)}</b><small>팬</small></span><span><b class="num">${open.length}</b><small>물망 중</small></span><span><b class="num">${lead}</b><small>1위 배역</small></span><span><b class="num">${fmt(pg.sheet_mentions)}</b><small>시트 언급</small></span></div>
   <div class="row2"><button class="b ${fan?'':'buy'}" data-act="follow" data-pid="${p.id}">${fan?'팬 채널 나가기':'팬 채널 들어가기'}</button><button class="b" data-act="rally" data-pid="${p.id}">화력 요청 문구 복사</button></div>

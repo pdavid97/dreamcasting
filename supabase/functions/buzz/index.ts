@@ -16,10 +16,11 @@ async function news(q: string) {
     const r = await fetch(u, { headers: { "User-Agent": "Mozilla/5.0 dreamcasting" } });
     if (!r.ok) return null;
     const x = await r.text();
-    const items = [...x.matchAll(/<item>([\s\S]*?)<\/item>/g)].map((m) => {
-      const g = (t: string) => dec((m[1].match(new RegExp(`<${t}[^>]*>([\\s\\S]*?)</${t}>`)) || [])[1] || "");
-      return { t: g("title").slice(0, 140), u: g("link"), s: g("source"), d: g("pubDate") };
-    });
+    // CPU 제한(요청당 수 초) 때문에 정규식 대신 indexOf로 가볍게, 최대 40건만
+    const tag = (blk: string, t: string) => { const a = blk.indexOf(`<${t}`); if (a < 0) return ""; const b = blk.indexOf(">", a); const c = blk.indexOf(`</${t}>`, b); return c < 0 ? "" : dec(blk.slice(b + 1, c)); };
+    const items: { t: string; u: string; s: string; d: string }[] = [];
+    let i = 0;
+    while (items.length < 40) { const a = x.indexOf("<item>", i); if (a < 0) break; const b = x.indexOf("</item>", a); if (b < 0) break; const blk = x.slice(a, b); items.push({ t: tag(blk, "title").slice(0, 140), u: tag(blk, "link"), s: tag(blk, "source"), d: tag(blk, "pubDate") }); i = b + 7; }
     return items;
   } catch { return null; }
 }
@@ -132,7 +133,7 @@ async function run(req: Request) {
   }
   const topics = await (await rest("topics?select=id,title,work,buzz_meta&closed_at=is.null")).json();
   const since = new Date(Date.now() - 7 * 864e5).toISOString();
-  const ev = await (await rest(`events?select=topic_id&created_at=gte.${since}&topic_id=not.is.null&limit=50000`)).json();
+  const ev = await (await rest(`events?select=topic_id&at=gte.${since}&topic_id=not.is.null&limit=50000`)).json();
   const act: Record<string, number> = {};
   for (const e of (Array.isArray(ev) ? ev : [])) act[e.topic_id] = (act[e.topic_id] || 0) + 1;
 
@@ -144,16 +145,20 @@ async function run(req: Request) {
   const nv = await naverRatios(list.map((t) => t.title));
   type Row = { t: { id: string; title: string; work?: { tmdb_id?: number } }; items: { t: string }[] | null; n: number; tr: boolean; a: number; wiki: string | null; wv: { last: number; prev: number } | null; nav: number | null; tb: boolean };
   const rows: Row[] = [];
-  for (const t of list) {
-    const raw = await news(`"${t.title}" ${CTX}`);
+  // 주제마다 기사, 위키를 차례로 기다리면 150초 제한을 넘어서 5개씩 동시에 처리
+  // 구글 뉴스는 한꺼번에 부르면 막혀서 차례로, 위키는 5개씩 동시에
+  const NEWS: Record<string, { t: string }[] | null> = {};
+  for (const t of list) { NEWS[t.id] = await news(`"${t.title}" ${CTX}`); await sleep(300); }
+  const one = async (t: typeof list[number]) => {
+    const raw = NEWS[t.id];
     const items = raw ? raw.filter((x) => relevant(x.t, t.title, NM[t.id] || [])) : null;
     let wiki: string | null | undefined = t.buzz_meta?.wiki;
     if (!wiki) wiki = await wikiTitle(t.title);
     const wv = wiki ? await wikiViews(wiki) : null;
     const tb = tr7.some((x) => x.includes(t.title));
     rows.push({ t, items, n: items ? items.length : 0, tr: !!(t.work?.tmdb_id && trend.has(t.work.tmdb_id)), a: act[t.id] || 0, wiki: wiki || null, wv, nav: nv ? (nv[t.title] ?? 0) : null, tb });
-    await sleep(250);
-  }
+  };
+  for (let i = 0; i < list.length; i += 5) { await Promise.all(list.slice(i, i + 5).map(one)); await sleep(200); }
   const P = {
     news: p95(rows.map((r) => Math.log1p(r.n))), act: p95(rows.map((r) => Math.log1p(r.a))),
     wiki: p95(rows.map((r) => Math.log1p(r.wv?.last || 0))), nav: p95(rows.map((r) => Math.log1p(r.nav || 0))),

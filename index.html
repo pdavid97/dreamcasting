@@ -1022,6 +1022,28 @@ body[data-view=rank] .side{grid-template-columns:1fr!important}
 .dk-acts .dk-btn.skip span{font-size:13px;font-weight:700;white-space:nowrap}
 .dk-acts .dk-btn.skip svg{width:18px;height:18px;flex:none}
 .dk-acts .dk-btn.next small{display:block;font-size:10px;font-weight:400;opacity:.75}
+/* 하단 고지는 나 탭과 랭킹에서만 */
+body:not([data-view=page]):not([data-view=rank]) .foot{display:none}
+.foot{font-size:11px;line-height:1.5;color:var(--mute);margin:24px 0 0}
+.dk-nextp{display:grid;grid-template-columns:44px 1fr auto;gap:10px;align-items:center;width:100%;margin:12px 0 0;padding:8px 12px 8px 8px;border:1px solid var(--line);border-radius:14px;background:var(--card);color:var(--ink);font:inherit;text-align:left;cursor:pointer}
+.dk-nextp .np{width:44px;height:62px;border-radius:8px;background:var(--panel) center/cover}
+.dk-nextp span:nth-child(2){display:flex;flex-direction:column;min-width:0}.dk-nextp small{font-size:11px;color:var(--mute)}.dk-nextp b{font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.dk-nextp em{font-style:normal;font-size:11px;color:var(--mute)}
+.dk-nextp i{font-style:normal;font-size:22px;color:var(--mute)}
+.dl-nm{color:inherit;text-decoration:none;border-bottom:1px dashed currentColor}
+a.dl-orig{display:grid;place-items:center;text-decoration:none;color:inherit}
+a.dl-ol{color:inherit;text-decoration:none;border-bottom:1px dashed currentColor}
+.wlink{color:inherit;text-decoration:underline;text-underline-offset:2px}
+.dk-tl{color:inherit;text-decoration:none}
+/* 오늘의 작품 캐러셀 */
+.dkst{display:flex;gap:10px;overflow-x:auto;scroll-behavior:smooth;padding:2px 2px 10px;margin:0 -2px 4px;scrollbar-width:none}
+.dkst::-webkit-scrollbar{display:none}
+.dkst .st{flex:0 0 64px;display:flex;flex-direction:column;align-items:center;gap:4px;border:0;background:none;padding:0;color:var(--ink);font:inherit;cursor:pointer;text-decoration:none}
+.dkst .sp{position:relative;width:60px;height:84px;border-radius:10px;background:var(--panel) center/cover;box-shadow:0 0 0 2px transparent;transition:box-shadow .15s,transform .15s;display:grid;place-items:center}
+.dkst .st.on .sp{box-shadow:0 0 0 3px var(--hot);transform:translateY(-2px)}
+.dkst .st.done .sp{filter:saturate(.4) brightness(.7)}
+.dkst .sp i{position:absolute;right:3px;bottom:3px;font-style:normal;font-size:10px;font-weight:800;background:#141414;color:#fff;border-radius:6px;padding:1px 5px}
+.dkst .st b{font-size:10px;line-height:1.2;text-align:center;max-width:64px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.dkst .st.add .sp{border:2px dashed var(--acc);color:var(--acc);font-size:26px;background:transparent}
 
 </style>
 </head>
@@ -1102,7 +1124,7 @@ body[data-view=rank] .side{grid-template-columns:1fr!important}
       <li>안목 포인트는 투표, 토론, 시트 게시, 받은 공감으로 쌓이고 충전이나 현금 교환은 없어요. 실제 캐스팅이 발표되면 그 배우를 처음 제안한 사람에게 500P, 투표한 사람에게 200P를 주고, 민심이 낮았던 의외의 캐스팅일수록 최대 3배까지 보너스가 붙어요.</li>
     </ul>
   </details>
-  <p class="foot">원작과 실사화 정보는 공개 보도를 따랐고, 리메이크 관은 널리 알려진 방영 연도와 원작 출연진만 적었어요. 처음 제공된 후보 목록은 토론을 시작하기 위한 예시이며 실제 리메이크 계획이나 섭외와 관계가 없어요. 작품명과 인물명은 각 권리자의 것이에요. 배우 사진과 작품 포스터는 TMDB에서 불러옵니다. This product uses the TMDB API but is not endorsed or certified by TMDB.<span id="legalLinks"> <a href="terms.html">이용약관</a> | <a href="privacy.html"><b>개인정보처리방침</b></a></span></p>
+  <p class="foot">후보 목록은 토론을 위한 예시이며 실제 리메이크 계획이나 섭외와 관계없어요. 배우 사진과 작품 정보: TMDB. This product uses the TMDB API but is not endorsed or certified by TMDB.<span id="legalLinks"> <a href="terms.html">이용약관</a> | <a href="privacy.html"><b>개인정보처리방침</b></a></span></p>
 </main>
 
 <div class="sheetm" id="loginSheet" role="dialog" aria-modal="true" aria-labelledby="lsH"><div><h2 id="lsH">로그인하면 이 표가 바로 반영돼요</h2><p>고른 후보는 저장해 뒀어요. 구글 계정으로 3초면 끝나요.</p><button class="lg g big" data-act="google">구글로 계속하기</button><button class="lk" data-act="sheet-close">나중에</button></div></div>
@@ -1182,6 +1204,7 @@ async function act(fn,args,okMsg){if(busy)return;busy=true;try{const d=await rpc
 let imgBusy=false;const SEEN_T={};
 async function loadImages(){if(imgBusy||!D)return;const t=topic(),real=t.cat!=='wn'||D.roles.some(isSync),names=new Set();
  D.roles.forEach(r=>{if(isOpt(r))return;if(r.actor)names.add(r.actor);if(r.orig)names.add(r.orig);(D.cands[r.id]||[]).forEach(c=>names.add(c.name))});
+ loadOrig([...names]).then(ch=>{if(ch&&D)render()});
  const need=[...names].filter(n=>!(('p:'+n)in IMG)).slice(0,38),titles=real&&!(('w:'+t.id)in IMG)?[t.title]:[];if(!need.length&&!titles.length)return;
  imgBusy=true;try{const r=await fetch(SB_URL+'/functions/v1/tmdb',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+ANON,apikey:ANON},body:JSON.stringify({names:need,titles})});
   if(r.ok){const d=await r.json();for(const n in d.p)IMG['p:'+n]=d.p[n];if(titles.length)IMG['w:'+t.id]=d.w[t.title]||'';try{localStorage.setItem('tmdbImg2',JSON.stringify(IMG))}catch(e){}render()}}catch(e){}imgBusy=false}
@@ -1238,7 +1261,7 @@ function verLabel(cat){return ({k2cn:'중국판',k2tw:'대만판',k2hk:'홍콩�
 /* VS 한판 토너먼트: 이긴 배우가 남고 새 도전자와 붙음. 한 배역이 끝나면 다른 작품의 배역으로 */
 let DUEL_SKIP=(()=>{try{return JSON.parse(localStorage.getItem('duelDone')||'[]')}catch(e){return[]}})();
 function duelSaveSkip(){DUEL_SKIP=DUEL_SKIP.slice(-60);try{localStorage.setItem('duelDone',JSON.stringify(DUEL_SKIP))}catch(e){}}
-async function duelImgs(names){const need=names.filter(n=>!(('p:'+n)in IMG)).slice(0,38);if(!need.length)return;try{const r=await fetch(SB_URL+'/functions/v1/tmdb',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+ANON,apikey:ANON},body:JSON.stringify({names:need,titles:[]})});if(r.ok){const d=await r.json();for(const n in d.p)IMG['p:'+n]=d.p[n];try{localStorage.setItem('tmdbImg2',JSON.stringify(IMG))}catch(e){}}}catch(e){}}
+async function duelImgs(names){await loadOrig(names);const need=names.filter(n=>!(('p:'+n)in IMG)).slice(0,38);if(!need.length)return;try{const r=await fetch(SB_URL+'/functions/v1/tmdb',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+ANON,apikey:ANON},body:JSON.stringify({names:need,titles:[]})});if(r.ok){const d=await r.json();for(const n in d.p)IMG['p:'+n]=d.p[n];try{localStorage.setItem('tmdbImg2',JSON.stringify(IMG))}catch(e){}}}catch(e){}}
 function duelStart(role){const cs=[...role.cands];if(cs.length<2){DUEL=null;return}
  const ord=[...cs].sort((a,b)=>(b.votes||0)-(a.votes||0));const champ=ord[0];const rest=cs.filter(c=>c.candidate_id!==champ.candidate_id).sort(()=>Math.random()-0.5);
  DUEL={tid:role.tid,title:role.title,cat:role.cat||(TOPICS.find(x=>x.id===role.tid)||{}).cat,rid:role.rid,ch:role.ch,orig:role.orig,total:rest.length,a:champ,b:rest.shift(),queue:rest,wins:{},res:null,done:false,round:1};track&&track('duel_start',{t:role.tid,r:role.rid})}
@@ -1255,9 +1278,9 @@ function renderDuel(){const box=$('#duel');if(!box)return;if(!DUEL){box.innerHTM
  if(DUEL.done){const c=DUEL.a,w=DUEL.wins[c.candidate_id]||0;
   const L=DUEL.log||[],n=DUEL.total+1,direct=L.filter(x=>x.w===c.name).length,beaten=n-1-direct;
   const path=`<ol class="dpath">${L.map((x,k)=>`<li class="${x.w===c.name?'me':''}"><span>${k+1}판</span><b>${esc(x.w)}</b><em>승</em><s>${esc(x.l)}</s></li>`).join('')}</ol>`;
-  box.innerHTML=`<div class="duel">${head}<div class="vs dchamp"><button class="side-a" disabled>${face(c)}<b>${esc(c.name)}</b><span class="res">후보 ${n}명 중 내 최종 픽</span></button></div>
+  box.innerHTML=`<div class="duel">${head}<div class="vs dchamp"><button class="side-a" disabled>${face(c)}<b>${esc(dispName(c.name))}</b><span class="res">후보 ${n}명 중 내 최종 픽</span></button></div>
   <p class="dsum">${direct===n-1?`모든 도전자 ${n-1}명을 혼자 다 이겼어요. 압도적인 최종 픽.`:`직접 이긴 배우 ${direct}명${beaten?`, 그리고 앞서 왕좌를 지키던 배우를 꺾어서 그 배우가 이긴 ${beaten}명보다도 앞섰어요`:''}. 마지막까지 남은 한 명이 최종 픽이에요.`}</p>${path}<div class="dft"><span>${esc(DUEL.title)} ${esc(DUEL.ch)} 역 토너먼트 완료. 다른 작품으로 넘어가요.</span><span style="display:flex;gap:6px;align-items:center">${STREAK?`<span class="num">연속 ${STREAK}판</span>`:''}${DUEL.cast==='done'?'<span class="chip hot">정식 한 표 완료</span>':DUEL.cast==='already'?'<span class="chip">이 배역엔 이미 정식 투표했어요</span>':'<button class="chip hot" data-act="duelCast">'+(DUEL.cast==='guest'?'로그인하고 정식 한 표':'최종 픽에 정식 한 표')+'</button>'}<a class="chip" href="#${esc(DUEL.tid)}">작품 보러 가기</a><button class="chip" data-act="duelNext">다음 토너먼트</button></span></div></div>`;return}
- const side=(s,c)=>`<button class="side-${s}" data-act="duel" data-v="${s}">${face(c)}<b>${esc(c.name)}</b><span class="res num">${R?Math.round((s==='a'?R.pa:R.pb)*100)+'%':(s==='a'&&DUEL.round>1?`${DUEL.wins[c.candidate_id]||0}연승 중`:'')}</span></button>`;
+ const side=(s,c)=>`<button class="side-${s}" data-act="duel" data-v="${s}">${face(c)}<b>${esc(dispName(c.name))}</b><span class="res num">${R?Math.round((s==='a'?R.pa:R.pb)*100)+'%':(s==='a'&&DUEL.round>1?`${DUEL.wins[c.candidate_id]||0}연승 중`:'')}</span></button>`;
  box.innerHTML=`<div class="duel">${head}<div class="vs">${side('a',DUEL.a)}<div class="vsmid">VS<small class="dround">${DUEL.round}/${DUEL.total}</small></div>${side('b',DUEL.b)}</div><div class="dft"><span>${R?(R.guest?(GUEST>=3?'구경 모드 결과예요. 로그인하면 내 선택이 광장 민심에 반영되고 포인트도 쌓여요':'구경 모드 결과예요. 고른 배우가 남아 다음 도전자와 붙어요'):'고른 배우가 남아 다음 도전자와 붙어요. 이 비율은 지금까지 광장의 선택이에요'):'고른 배우는 남고, 새 도전자가 올라와요. 끝까지 남는 배우가 내 픽이에요'}</span><span style="display:flex;gap:6px;align-items:center">${STREAK?`<span class="num">연속 ${STREAK}판</span>`:''}${R&&R.guest&&GUEST>=3&&!USER?'<button class="lg g" data-act="google" style="min-height:36px"><span class="gdot"></span>로그인</button>':''}<button class="chip" data-act="duelNext">다른 배역</button></span></div></div>`}
 async function duelAutoCast(){const d=DUEL;if(!d)return;if(!USER||!PROF){d.cast='guest';return}
  try{await rpc('cast_vote_src',{rid:d.rid,cid:d.a.candidate_id,src:'vs'});d.cast='done';showUndo(d.rid,`최종 픽 ${d.a.name}에게 정식 한 표`);if(D&&D.roles.some(r=>r.id===d.rid))refresh()}
@@ -1299,7 +1322,7 @@ function roleHTML(r,i){const t=topic(),open=isOpen(t),g=PROF?grade(PROF.points):
   <ol class="tl">${(r.events||[]).map(e=>`<li>${esc(e.d)} ${esc(e.t)}</li>`).join('')}</ol></div><div></div></div>${talkHTML(r)}</article>`}
  const mv=D.myVote[r.id],blind=open&&!mv&&!isOpt(r),cs=blind?[...(D.cands[r.id]||[])].sort((a,b)=>a.candidate_id-b.candidate_id):(D.cands[r.id]||[]),tot=total(r)||1,lead=blind?null:cs.reduce((a,c)=>!a||c.votes>a.votes?c:a,null),dps=D.dpicks.filter(d=>d.role_id===r.id);
  const rows=cs.map(c=>{const pct=c.votes/tot,dp=dps.filter(d=>d.candidate_id===c.candidate_id).map(d=>d.nickname),mine=mv&&mv.candidate_id===c.candidate_id;
-  const rank=1+cs.filter(x=>x.votes>c.votes).length;return `<div class="cand1${lead&&c.candidate_id===lead.candidate_id&&c.votes>0?' lead':''}">${c.votes>0&&!blind?`<span class="rkb">${rank}위</span>`:''}<div class="nm cn">${isOpt(r)?'':`<a class="avl" href="#a/${encodeURIComponent(c.name)}" aria-hidden="true" tabindex="-1">${avatar(c.name)}</a>`}<span><b>${isOpt(r)?esc(c.name):actorLink(c.name,esc(c.name)+'<i class="go" aria-hidden="true">›</i>')}</b><small>${!isOpt(r)&&ageTxt(c.name)?ageTxt(c.name)+', ':''}${c.proposer?`제안 ${esc(c.proposer)}`:'첫 후보'}${dp.length?`, 디렉터스 픽 ${esc(dp.join(', '))}`:''}${mine?`, 내 표${mv.weight>1?' x2':''}`:''}</small></span></div>${blind?`<div class="vb blind"><span><i></i></span><b>투표하면 공개</b></div>`:`<div class="vb2"><b>${(pct*100).toFixed(0)}%</b> ${fmt(c.votes)}표</div>`}<div class="acts">${open?(mv?(mine?'<button class="b sm mine" disabled>내 표</button>':''):`<button class="b sm" data-act="vote" data-rid="${r.id}" data-cid="${c.candidate_id}">한 표</button>`):''}${g>=3?`<button class="b sm" data-act="dpick" data-rid="${r.id}" data-cid="${c.candidate_id}">디렉터스 픽</button>`:''}</div></div>`}).join('');
+  const rank=1+cs.filter(x=>x.votes>c.votes).length;return `<div class="cand1${lead&&c.candidate_id===lead.candidate_id&&c.votes>0?' lead':''}">${c.votes>0&&!blind?`<span class="rkb">${rank}위</span>`:''}<div class="nm cn">${isOpt(r)?'':`<a class="avl" href="#a/${encodeURIComponent(c.name)}" aria-hidden="true" tabindex="-1">${avatar(c.name)}</a>`}<span><b>${isOpt(r)?esc(c.name):actorLink(c.name,esc(dispName(c.name))+'<i class="go" aria-hidden="true">›</i>')}</b><small>${!isOpt(r)&&ageTxt(c.name)?ageTxt(c.name)+', ':''}${c.proposer?`제안 ${esc(c.proposer)}`:'첫 후보'}${dp.length?`, 디렉터스 픽 ${esc(dp.join(', '))}`:''}${mine?`, 내 표${mv.weight>1?' x2':''}`:''}</small></span></div>${blind?`<div class="vb blind"><span><i></i></span><b>투표하면 공개</b></div>`:`<div class="vb2"><b>${(pct*100).toFixed(0)}%</b> ${fmt(c.votes)}표</div>`}<div class="acts">${open?(mv?(mine?'<button class="b sm mine" disabled>내 표</button>':''):`<button class="b sm" data-act="vote" data-rid="${r.id}" data-cid="${c.candidate_id}">한 표</button>`):''}${g>=3?`<button class="b sm" data-act="dpick" data-rid="${r.id}" data-cid="${c.candidate_id}">디렉터스 픽</button>`:''}</div></div>`}).join('');
  return `<article class="role${i===SROLE?' sel':''}" data-act="role" data-i="${i}">${head}${blind&&cs.length?`<p class="dl blindmsg">내 표를 던지면 득표율과 순위가 열려요. 남의 표에 흔들리지 말고 먼저 골라 보세요.</p>`:''}${!open?`<div class="closed">투표 마감. 최종 결과${lead&&lead.votes?`: ${esc(lead.name)} ${Math.round(lead.votes/tot*100)}%`:''}</div>`:mv?`<p class="dl" style="margin:6px 0">이 배역에는 투표를 마쳤어요. 마음에 드는 후보가 없었다면 캐스팅 시트에 원하는 배우를 직접 적어 보세요.</p>`:''}${r.stage==='rumor'?'<div class="banner">실사화가 발표됐어요. 공식 캐스팅이 나오면 맞힌 사람에게 포인트가 가요.</div>':''}
  ${!blind&&!isOpt(r)&&cs.some(c=>c.votes)?rolePie(r,cs,tot,mv):''}${rows?`<div class="cgrid${isOpt(r)?' opt':''}">${rows}</div>`:'<p class="empty3">아직 후보가 없어요. 첫 후보를 올려 주세요.</p>'}
  ${open?`<div class="row2"><input type="text" id="ad${r.id}" placeholder="후보에 없는 배우 올리기" maxlength="20" aria-label="새 후보 배우 이름"><button class="b sm" data-act="add" data-rid="${r.id}">후보 등록</button></div>`:''}${talkHTML(r)}</article>`}
@@ -1429,7 +1452,7 @@ async function loadAges(names){const need=[...new Set(names)].filter(n=>n&&!(n i
 const ageAt=(name,y)=>{const b=AGE[name];if(!b)return null;const by=+b.slice(0,4),bm=+b.slice(5,7)||1;if(!by)return null;if(y&&y<NOW_Y)return y-by;const n=new Date();return n.getFullYear()-by-((n.getMonth()+1)<bm?1:0)};
 const ageTxt=(name,y)=>{const a=ageAt(name,y);return a==null?'':(y&&y<NOW_Y?`${y}년 당시 ${a}세`:`만 ${a}세`)};
 const pickLabel=(r,p)=>{const n=pickName(r,p);return n&&p&&p.w?`${n} (《${p.w}》 속 모습)`:n&&p&&p.y?`${n} (${p.y}년)`:n};
-const actorLink=(name,inner)=>`<a class="alink" href="#a/${encodeURIComponent(name)}" title="${esc(name)} 배우 페이지">${inner||esc(name)}</a>`;
+const actorLink=(name,inner)=>`<a class="alink" href="#a/${encodeURIComponent(name)}" title="${esc(name)} 배우 페이지">${inner||esc(dispName(name))}</a>`;
 
 /* ---------- 작품 정보 ---------- */
 let WORK={},workBusy=new Set();
@@ -1478,6 +1501,7 @@ async function renderActor(){const pid=PAGE.pid;
  const [pg,,posts,mine]=await Promise.all([rpc('person_page',{pid}),loadPerf(pid).then(()=>null),sb.from('v_fan_posts').select('*').eq('person_id',pid).order('created_at',{ascending:false}).limit(40),
   USER?sb.from('fan_follows').select('person_id').eq('person_id',pid):Promise.resolve({data:[]})]);
  try{PAGE.fan=await rpc('actor_fan',{pid})}catch(e){PAGE.fan=null}
+ try{await loadOrig([name])}catch(e){}
  let prof=pg.person.profile;if(!prof){try{prof=(await meta({person:pid})).profile}catch(e){prof=null}}
  if(!PAGE||PAGE.pid!==pid)return;
  const p=pg.person,fan=(mine.data||[]).length>0,name=p.name;
@@ -1495,7 +1519,7 @@ async function renderActor(){const pid=PAGE.pid;
  showPage(`<div class="pg actor">
  <button class="b sm" data-act="back">광장으로</button>
  <div class="ahero">${photo?`<img class="aph" src="${esc(photo)}" alt="${esc(name)}">`:`<span class="aph ph0">${esc(name[0])}</span>`}
-  <div><span class="sub">배우 팬 채널</span><h1>${esc(name)}</h1>
+  <div><span class="sub">배우 팬 채널</span><h1>${esc(ORIG[name]||name)}</h1>${ORIG[name]?`<p class="sub" style="margin:-4px 0 6px">${esc(name)}</p>`:''}
   <p class="sub">${prof&&prof.birthday?`${esc(prof.birthday)} 출생, ${ageTxt(name)}`:''}${prof&&prof.place?`, ${esc(prof.place)}`:''}</p>
   <div class="astats"><span><b class="num">${avgAll==null?'-':avgAll}</b><small>연기 점수</small></span><span><b class="num">${fmt(p.fans)}</b><small>팬</small></span><span><b class="num">${open.length}</b><small>물망 중</small></span><span><b class="num">${lead}</b><small>1위 배역</small></span><span><b class="num">${fmt(pg.sheet_mentions)}</b><small>시트 언급</small></span></div>
   <div class="row2"><button class="b ${fan?'':'buy'}" data-act="follow" data-pid="${p.id}">${fan?'팬 채널 나가기':'팬 채널 들어가기'}</button><button class="b" data-act="rally" data-pid="${p.id}">화력 요청 문구 복사</button></div>
@@ -1677,8 +1701,8 @@ const tPoster=t=>(t&&t.work&&t.work.poster)||IMG['w:'+(t&&t.id)]||'';
 const tBack=t=>(t&&t.work&&t.work.backdrop)||tPoster(t);
 const phStyle=u=>u?` style="background-image:url('${esc(u)}')"`:'';
 let HOMEV=false,HOME={calls:[],posts:[],busy:false,at:0};
-async function loadNames(names){const need=[...new Set(names)].filter(n=>n&&!(('p:'+n) in IMG)).slice(0,38);if(!need.length)return;
- try{const r=await fetch(SB_URL+'/functions/v1/tmdb',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+ANON,apikey:ANON},body:JSON.stringify({names:need,titles:[]})});if(r.ok){const d=await r.json();for(const n in d.p)IMG['p:'+n]=d.p[n];need.forEach(n=>{if(!(('p:'+n) in IMG))IMG['p:'+n]=''});try{localStorage.setItem('tmdbImg2',JSON.stringify(IMG))}catch(e){}}}catch(e){}}
+async function loadNames(names){const o=loadOrig(names);const need=[...new Set(names)].filter(n=>n&&!(('p:'+n) in IMG&&IMG['p:'+n])).slice(0,38);if(!need.length){await o;return}
+ try{const r=await fetch(SB_URL+'/functions/v1/tmdb',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+ANON,apikey:ANON},body:JSON.stringify({names:need,titles:[]})});if(r.ok){const d=await r.json();for(const n in d.p)IMG['p:'+n]=d.p[n];need.forEach(n=>{if(!(('p:'+n) in IMG))IMG['p:'+n]=''});try{localStorage.setItem('tmdbImg2',JSON.stringify(IMG))}catch(e){}}}catch(e){}await o}
 async function loadHome(force){if(HOME.busy||(!force&&Date.now()-HOME.at<30000))return;HOME.busy=true;
  try{const open=TOPICS.filter(isOpen).slice(0,8);
   const [roles,sheets]=await Promise.all([sb.from('roles').select('id,topic_id,ch,pos,kind,stage,actor').in('topic_id',open.map(t=>t.id)).order('pos'),sb.from('v_sheets').select('*').order('likes',{ascending:false}).order('updated_at',{ascending:false}).limit(12)]);
@@ -1755,23 +1779,27 @@ function renderDeck(){const box=$('#deck');if(!box||!DECKV)return;const t=curTop
  const cands=r.cands.slice(0,10),more=r.cands.length-cands.length;
  const tot=r.cands.reduce((a,c)=>a+(c.votes||0),0);
  const news=(t.news||[])[0];
- box.innerHTML=`<div class="dk">
+ box.innerHTML=`<div class="dk">${deckStrip()}
  <div class="dk-top"><span class="dk-count">작품 ${DI+1} / ${DECK.length}</span><span class="dk-why ${t.why}">${WHY[t.why]||''}${t.nnews?`, 7일 기사 ${t.nnews}건`:''}${t.trending?', 이번 주 인기작':''}</span></div>
  <article class="dk-card" id="dkCard" style="${t.poster?`--bg:url('${esc(t.poster)}')`:''}">
-  <header class="dk-head"><div><small>${esc(CATS.find(c=>c.id===t.cat)?.name||'')}, 마감 D-${Math.max(0,Math.ceil((new Date(t.closes_at)-new Date())/864e5))}</small><h2>${esc(t.title)}</h2></div>
+  <header class="dk-head"><div><small>${esc(CATS.find(c=>c.id===t.cat)?.name||'')}, 마감 D-${Math.max(0,Math.ceil((new Date(t.closes_at)-new Date())/864e5))}</small><h2><a class="dk-tl" href="#${esc(t.id)}">${esc(t.title)}</a></h2></div>
    <div class="dk-steps" aria-label="배역 진행">${t.roles.map((x,i)=>`<i class="${i<DR?'ok':i===DR?'on':''}" title="${esc(SLOT[x.slot]||'')} ${esc(x.ch)}"></i>`).join('')}</div></header>
-  <div class="dk-q"><span class="slot">${esc(SLOT[r.slot]||'배역')}</span><h3>${esc(r.ch)} 역은 누구?</h3>${r.descr?`<p>${esc(r.descr)}</p>`:''}<p class="hint">${r.orig?`원작 ${esc(r.orig)}, `:''}${r.age?`배역 나이 ${esc(r.age)}, `:''}돌려서 고르고, 맨 위 사진을 한 번 더 탭하면 확정</p></div>
+  <div class="dk-q"><span class="slot">${esc(SLOT[r.slot]||'배역')}</span><h3>${esc(r.ch)} 역은 누구?</h3>${r.descr?`<p>${esc(r.descr)}</p>`:''}<p class="hint">${r.age?`배역 나이 ${esc(r.age)}`:''}${dialHintOn()?`${r.age?', ':''}돌려서 고르고, 맨 위 사진을 한 번 더 탭하면 확정`:''}</p></div>
   ${dialHTML(t,r,cands,picked,tot)}
   ${more>0?`<a class="dk-more" href="#${esc(t.id)}">후보 ${more}명 더 보기</a>`:''}
   ${news?`<a class="dk-news" href="${esc(goURL(t.id,'news','news',news.u))}" target="_blank" rel="noopener">${esc(news.t)}${news.s?` <small>${esc(news.s)}</small>`:''}</a>`:''}
  </article>
  <div class="dk-acts"><button class="dk-btn skip" data-act="dk-skip" aria-label="이 배역만 넘기기"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg><span>${DR<t.roles.length-1?'이 배역 패스':'마지막 배역 패스'}</span></button><a class="dk-btn mid" href="#${esc(t.id)}" aria-label="작품 자세히">자세히</a><button class="dk-btn next" data-act="dk-nexttopic" aria-label="이 작품 통째로 넘기기">작품 패스 <small>${t.roles.length-DR}개 배역</small></button></div>
- <p class="dk-tip">사진을 돌려 고르고 맨 위 사진을 탭하면 다음 배역으로 넘어가요. 배역 패스는 이 배역만, 작품 패스는 남은 배역을 모두 넘기고 다음 작품으로 가요. 투표 결과는 이 작품에 투표한 사람에게만 보여요.</p>
+ ${DECK[DI+1]?`<button class="dk-nextp" data-act="dk-goto" data-i="${DI+1}"><span class="np"${DECK[DI+1].vposter||DECK[DI+1].poster?` style="background-image:url('${esc(DECK[DI+1].vposter||DECK[DI+1].poster)}')"`:''}></span><span><small>다음 작품</small><b>${esc(DECK[DI+1].title)}</b><em>${DECK[DI+1].roles.length}개 배역, ${esc(CATS.find(c=>c.id===DECK[DI+1].cat)?.name||'')}</em></span><i aria-hidden="true">›</i></button>`:''}
  </div>`;
- cardAt=performance.now();cardKey=t.id+'|'+r.id;bindSwipe();bindDial()}
+ cardAt=performance.now();cardKey=t.id+'|'+r.id;bindSwipe();bindDial();stripFocus()}
 
+/* 오늘의 작품 캐러셀: 관심 있는 작품으로 바로 가고, 없으면 작품 추가 */
+function dialHintOn(){try{return (+localStorage.getItem('dialVotes')||0)<3}catch(e){return true}}
+function deckStrip(){return `<nav class="dkst" id="dkst" aria-label="오늘의 작품">${DECK.map((d,i)=>{const n=d.roles.length,m=d.roles.filter(r=>r.mine).length;return `<button class="st${i===DI?' on':''}${m===n?' done':''}" data-act="dk-goto" data-i="${i}" aria-label="${esc(d.title)}${m===n?', 투표 완료':m?`, ${m}/${n} 배역 투표`:''}"><span class="sp"${d.vposter||d.poster?` style="background-image:url('${esc(d.vposter||d.poster)}')"`:''}>${m===n?'<i>✓</i>':m?`<i>${m}/${n}</i>`:''}</span><b>${esc(d.title)}</b></button>`}).join('')}<a class="st add" href="#make"><span class="sp">+</span><b>작품 추가</b></a></nav>`}
+function stripFocus(){const st=$('#dkst'),on=st&&st.querySelector('.st.on');if(on)st.scrollLeft=Math.max(0,on.offsetLeft-st.clientWidth/2+on.clientWidth/2)}
 function renderDone(t){const box=$('#deck');track('result_view',{t:t.id});
- box.innerHTML=`<div class="dk"><div class="dk-top"><span class="dk-count">작품 ${DI+1} / ${DECK.length}</span></div>
+ box.innerHTML=`<div class="dk">${deckStrip()}<div class="dk-top"><span class="dk-count">작품 ${DI+1} / ${DECK.length}</span></div>
  <article class="dk-card done" style="${t.poster?`--bg:url('${esc(t.poster)}')`:''}"><header class="dk-head"><div><small>내 캐스팅 완성</small><h2>${esc(t.title)}</h2></div></header>
  <div class="dk-res" id="dkRes">${t.roles.map(r=>{const mine=r.cands.find(c=>c.id===r.mine),tot=r.cands.reduce((a,c)=>a+(c.votes||0),0),top=[...r.cands].sort((a,b)=>(b.votes||0)-(a.votes||0))[0];
   return `<div class="rr"><span class="slot">${esc(SLOT[r.slot]||'')}</span><b>${esc(r.ch)}</b><span>${mine?`내 픽 <strong>${esc(mine.name)}</strong>${tot?` ${Math.round((mine.votes||0)/tot*100)}%`:''}`:'건너뜀, 투표하면 결과 공개'}</span>${mine&&top&&tot?`<small>1위 ${esc(top.name)} ${Math.round((top.votes||0)/tot*100)}%</small>`:''}</div>`}).join('')}</div>
@@ -1785,7 +1813,7 @@ function nextTopic(){cardLeave();DI++;const t=curTopic();DR=t?firstOpenRole(t):0
 async function deckPick(rid,cid){const t=curTopic(),r=curRole();if(!t||!r||r.id!==rid)return;track('cand_tap',{t:t.id,r:rid,c:cid});
  if(r.mine){toast('이 배역은 이미 투표했어요');nextRole();return}
  if(!USER||!PROF){const a=pend().filter(p=>p.rid!==rid);a.push({tid:t.id,rid,cid,at:Date.now()});setPend(a);track('login_prompt',{t:t.id,r:rid,c:cid});openLoginSheet();renderDeck();return}
- try{await rpc('cast_vote_src',{rid,cid,src:'wheel'});r.mine=cid;t.seen=true;track('vote_done',{t:t.id,r:rid,c:cid});showUndo(rid,`${r.ch} 역 한 표 반영`);
+ try{await rpc('cast_vote_src',{rid,cid,src:'wheel'});r.mine=cid;t.seen=true;try{localStorage.setItem('dialVotes',(+localStorage.getItem('dialVotes')||0)+1)}catch(e){}track('vote_done',{t:t.id,r:rid,c:cid});showUndo(rid,`${r.ch} 역 한 표 반영`);
   const card=$('#dkCard');if(card){card.classList.add('fly-r');await new Promise(o=>setTimeout(o,220))}
   // 결과 공개를 위해 덱을 새로 받아 득표를 채움
   const fresh=await rpc('vote_deck',{lim:16}).catch(()=>null);const ft=fresh&&fresh.find(x=>x.id===t.id);if(ft){Object.assign(t,{seen:ft.seen,roles:ft.roles})}
@@ -1821,11 +1849,11 @@ function dialHTML(t,r,cands,picked,tot){const ou=r.orig?IMG['p:'+r.orig]:null,N=
    return `<button class="dl-c${picked===c.id?' sel':''}" data-i="${i}" data-rid="${r.id}" data-cid="${c.id}" data-name="${esc(c.name)}" data-age="${esc(ageTxt(c.name)||'')}" data-pct="${pct==null?'':pct}" data-recent="${esc(c.blurb&&c.blurb.recent?`최근작 《${c.blurb.recent.t}》${c.blurb.recent.y?` (${c.blurb.recent.y})`:''}`:'')}" data-why="${esc(JSON.stringify(((c.blurb&&c.blurb.reasons)||(c.blurb&&c.blurb.why?[{text:c.blurb.why}]:[])).slice(0,2)))}" data-tid="${esc(t.id)}" data-pick="${esc(c.pick||'')}" data-kind="${esc(c.kind||'')}" data-acted="${c.acted===false?0:1}" role="option" aria-label="${esc(c.name)}"><span class="ph"${u?` style="background-image:url('${esc(u)}')"`:''}>${u?'':esc(c.name[0])}</span>${pct!=null?`<em>${pct}%</em>`:''}<i class="dl-tap">탭해서 한 표</i></button>`}).join('')}
   <button class="dl-c dl-add" data-i="${cands.length}" data-rid="${r.id}" data-tid="${esc(t.id)}" data-add="1" data-name="내 후보 추가" role="option" aria-label="원하는 후보 직접 추가"><span class="ph">+</span><i class="dl-tap">탭해서 추가</i></button>
   <div class="dl-mid">
-   <span class="dl-orig"${ou?` style="background-image:url('${esc(ou)}')"`:''}>${ou?'':(r.orig?esc(r.orig[0]):'?')}</span>
-   <small class="dl-ol">${r.orig?`원작 ${esc(r.orig)}`:'원작 배우 없음'}</small>
+   ${r.orig?`<a class="dl-orig" href="#a/${encodeURIComponent(r.orig)}" aria-label="원작 ${esc(r.orig)} 배우 페이지"${ou?` style="background-image:url('${esc(ou)}')"`:''}>${ou?'':esc(r.orig[0])}</a>`:'<span class="dl-orig">?</span>'}
+   ${r.orig?`<a class="dl-ol" href="#a/${encodeURIComponent(r.orig)}">원작 ${esc(dispName(r.orig))}</a>`:'<small class="dl-ol">원작 배우 없음</small>'}
   </div>
  </div>
- <div class="dl-pick" aria-live="polite"><div class="dl-pn"><span class="dl-badge" id="dlPick" hidden></span><b id="dlName"></b><small id="dlMeta"></small></div><p class="dl-rc" id="dlRecent"></p><div class="dl-why" id="dlWhy"></div></div>`}
+ <div class="dl-pick" aria-live="polite"><div class="dl-pn"><span class="dl-badge" id="dlPick" hidden></span><a id="dlName" class="dl-nm"></a><small id="dlMeta"></small></div><p class="dl-rc" id="dlRecent"></p><div class="dl-why" id="dlWhy"></div></div>`}
 function bindDial(){const el=$('#dial');DIAL=null;if(!el)return;const n=+el.dataset.n,step=360/n;
  const D=DIAL={el,n,step,rot:-(+el.dataset.start)*step,vel:0,raf:0,focus:-1};
  const btns=[...el.querySelectorAll('.dl-c')];
@@ -1837,10 +1865,10 @@ function bindDial(){const el=$('#dial');DIAL=null;if(!el)return;const n=+el.data
    const PK={classic:'정석',buzz:'화제',chem:'케미',wild:'와일드카드',user:'유저 추천',seed:'기본 후보'},KK={comedian:'개그맨',singer:'가수',idol:'아이돌',musical:'뮤지컬 배우',stage:'연극 배우',youtuber:'유튜버',influencer:'방송인'};
    const pb=$('#dlPick');if(pb){const k=b.dataset.pick;pb.className='dl-badge '+(k||'');pb.textContent=k?(PK[k]||'')+(k==='wild'&&KK[b.dataset.kind]?`, ${KK[b.dataset.kind]}`:''):'';pb.hidden=!k}
    if(b.dataset.add){$('#dlName').textContent='원하는 후보가 없나요?';$('#dlMeta').textContent='';$('#dlRecent').textContent='배우, 가수, 개그맨, 유튜버 누구든 올리고 바로 한 표를 줄 수 있어요.';$('#dlWhy').innerHTML=`<div class="dl-addf"><input id="dlNew" maxlength="20" placeholder="후보 이름" aria-label="새 후보 이름"><input id="dlPitch" maxlength="80" placeholder="추천 이유 한마디 (선택)" aria-label="추천 이유"><button class="b buy sm" data-act="dk-add" data-rid="${b.dataset.rid}">후보로 올리고 한 표</button></div>`;const pk0=el.parentNode.querySelector('.dl-pick');if(pk0){pk0.classList.remove('swap');void pk0.offsetWidth;pk0.classList.add('swap')}if(D.ticked)try{navigator.vibrate&&navigator.vibrate(6)}catch(e){}D.ticked=true;return}
-   $('#dlName').textContent=b.dataset.name;$('#dlMeta').textContent=[b.dataset.age,b.dataset.pct!==''?`득표 ${b.dataset.pct}%`:''].filter(Boolean).join(', ');
-   $('#dlRecent').textContent=b.dataset.recent||'';
+   {const nm=$('#dlName');nm.textContent=dispName(b.dataset.name);nm.href='#a/'+encodeURIComponent(b.dataset.name)}$('#dlMeta').textContent=[b.dataset.age,b.dataset.pct!==''?`득표 ${b.dataset.pct}%`:''].filter(Boolean).join(', ');
+   $('#dlRecent').innerHTML=workLinks(esc(b.dataset.recent||''));
    let rs=[];try{rs=JSON.parse(b.dataset.why||'[]')}catch(e){}
-   $('#dlWhy').innerHTML=rs.map(x=>`<span class="dl-r">${esc(x.text||'')}${x.src&&x.src.u?` <a class="dl-src" href="${esc(goURL(b.dataset.tid,'news','news',x.src.u))}" target="_blank" rel="noopener" title="${esc(x.src.t||'')}">출처</a>`:''}</span>`).join('');const pk=el.parentNode.querySelector('.dl-pick');if(pk){pk.classList.remove('swap');void pk.offsetWidth;pk.classList.add('swap')}
+   $('#dlWhy').innerHTML=rs.map(x=>`<span class="dl-r">${workLinks(esc(x.text||''))}${x.src&&x.src.u?` <a class="dl-src" href="${esc(goURL(b.dataset.tid,'news','news',x.src.u))}" target="_blank" rel="noopener" title="${esc(x.src.t||'')}">출처</a>`:''}</span>`).join('');const pk=el.parentNode.querySelector('.dl-pick');if(pk){pk.classList.remove('swap');void pk.offsetWidth;pk.classList.add('swap')}
    if(D.ticked)try{navigator.vibrate&&navigator.vibrate(6)}catch(e){}D.ticked=true;el.classList.remove('tick');void el.offsetWidth;el.classList.add('tick')}};
  const snap=(target)=>{cancelAnimationFrame(D.raf);const go=()=>{const d=target-D.rot;if(Math.abs(d)<0.3){D.rot=target;lay();return}D.rot+=d*0.22;lay();D.raf=requestAnimationFrame(go)};go()};
  const nearest=()=>Math.round(D.rot/step)*step;
@@ -1900,6 +1928,7 @@ document.addEventListener('click',async e=>{const b=e.target.closest('[data-act]
   try{const cid=await rpc('add_candidate',{rid,nm,pitch:pitch||null});track('cand_add',{t:t&&t.id,r:rid,c:cid,m:{pitch:!!pitch}});toast(`${nm} 후보를 올리고 한 표 반영`);if(r&&r.id===rid&&!r.mine)r.mine=cid;
    const fresh=await rpc('vote_deck',{lim:16}).catch(()=>null);const ft=fresh&&t&&fresh.find(x=>x.id===t.id);if(ft)Object.assign(t,{seen:ft.seen,roles:ft.roles});const c=$('#dkCard');if(c){c.classList.add('fly-r');await new Promise(o=>setTimeout(o,220))}nextRole()}catch(err){toast(errMsg(err))}return}
  if(a==='dk-skip'){const t=curTopic(),r=curRole();track('skip',{t:t&&t.id,r:r&&r.id});const c=$('#dkCard');if(c){c.classList.add('fly-l');setTimeout(nextRole,200)}else nextRole();return}
+ if(a==='dk-goto'){cardLeave();DI=+b.dataset.i;const t=curTopic();DR=t?firstOpenRole(t):0;track('topic_jump',{t:t&&t.id});renderDeck();scrollTo({top:0,behavior:'smooth'});return}
  if(a==='dk-nexttopic'){const t=curTopic();track('topic_skip',{t:t&&t.id});nextTopic();return}
  if(a==='dk-restart'){DI=0;DR=0;await loadDeck();const t=curTopic();if(t)DR=firstOpenRole(t);renderDeck();return}
  if(a==='sheet-close'){$('#loginSheet').classList.remove('on');return}
@@ -2183,6 +2212,17 @@ document.addEventListener('click',async e=>{const b=e.target.closest('[data-act=
  catch(err){b.disabled=false;toast(errMsg(err))}});
 /* 팀 카드의 빈칸을 누르면 그 배역 카드로 */
 document.addEventListener('click',e=>{const b=e.target.closest('[data-act="team-gap"]');if(!b)return;const el=document.querySelector(`#roles .role[data-rid="${b.dataset.rid}"]`)||document.querySelectorAll('#roles .role')[+b.dataset.i];if(el){el.scrollIntoView({behavior:'smooth',block:'start'});el.classList.add('flash');setTimeout(()=>el.classList.remove('flash'),1400)}});
+/* 외국 배우는 원어 이름(한국어 표기) */
+var ORIG={};
+async function loadOrig(names,ctx){const all=[...new Set((names||[]).filter(n=>n&&!(n in ORIG)))];if(!all.length)return false;let any=false;for(let i=0;i<all.length;i+=60){if(await loadOrig1(all.slice(i,i+60),ctx))any=true}return any}
+async function loadOrig1(need,ctx){need.forEach(n=>ORIG[n]=null);
+ try{const r=await fetch(SB_URL+'/functions/v1/orig',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+ANON,apikey:ANON},body:JSON.stringify({names:need,ctx:ctx||[]})});if(!r.ok)return false;const d=await r.json();let ch=false;
+  for(const n in d){const x=d[n]||{};if(x.o){ORIG[n]=x.o;ch=true}if(x.p&&!IMG['p:'+n]){IMG['p:'+n]=x.p;ch=true}}return ch}catch(e){return false}}
+function dispName(n){const o=n&&ORIG[n];return o&&o!==n?`${o} (${n})`:(n||'')}
+/* 문장 속 《작품명》을 눌러 바로 찾기 */
+function workLinks(h){return String(h).replace(/《([^《》]{1,40})》/g,(m,t)=>`<a class="wlink" href="#search" data-act="q" data-q="${t}">《${t}》</a>`)}
+function goSearch(q){location.hash='explore';setTimeout(()=>{const i=$('#gq'),f=$('#gs');if(!i||!f)return;i.value=q;if(f.requestSubmit)f.requestSubmit();else f.dispatchEvent(new Event('submit',{cancelable:true}))},80)}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-act="q"]');if(!b)return;e.preventDefault();track('work_link',{m:{q:b.dataset.q}});goSearch(b.dataset.q)});
 
 /* 배우 페이지 팬 참여: 오늘의 응원, 인생작 투표, 이 배역 어때요 */
 IC.crown='<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M3 7l4.5 4L12 4l4.5 7L21 7l-2 12H5z"/></svg>';

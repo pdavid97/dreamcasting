@@ -4,8 +4,8 @@ const tPoster=t=>(t&&t.work&&t.work.poster)||IMG['w:'+(t&&t.id)]||'';
 const tBack=t=>(t&&t.work&&t.work.backdrop)||tPoster(t);
 const phStyle=u=>u?` style="background-image:url('${esc(u)}')"`:'';
 let HOMEV=false,HOME={calls:[],posts:[],busy:false,at:0};
-async function loadNames(names){const need=[...new Set(names)].filter(n=>n&&!(('p:'+n) in IMG)).slice(0,38);if(!need.length)return;
- try{const r=await fetch(SB_URL+'/functions/v1/tmdb',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+ANON,apikey:ANON},body:JSON.stringify({names:need,titles:[]})});if(r.ok){const d=await r.json();for(const n in d.p)IMG['p:'+n]=d.p[n];need.forEach(n=>{if(!(('p:'+n) in IMG))IMG['p:'+n]=''});try{localStorage.setItem('tmdbImg2',JSON.stringify(IMG))}catch(e){}}}catch(e){}}
+async function loadNames(names){const o=loadOrig(names);const need=[...new Set(names)].filter(n=>n&&!(('p:'+n) in IMG&&IMG['p:'+n])).slice(0,38);if(!need.length){await o;return}
+ try{const r=await fetch(SB_URL+'/functions/v1/tmdb',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+ANON,apikey:ANON},body:JSON.stringify({names:need,titles:[]})});if(r.ok){const d=await r.json();for(const n in d.p)IMG['p:'+n]=d.p[n];need.forEach(n=>{if(!(('p:'+n) in IMG))IMG['p:'+n]=''});try{localStorage.setItem('tmdbImg2',JSON.stringify(IMG))}catch(e){}}}catch(e){}await o}
 async function loadHome(force){if(HOME.busy||(!force&&Date.now()-HOME.at<30000))return;HOME.busy=true;
  try{const open=TOPICS.filter(isOpen).slice(0,8);
   const [roles,sheets]=await Promise.all([sb.from('roles').select('id,topic_id,ch,pos,kind,stage,actor').in('topic_id',open.map(t=>t.id)).order('pos'),sb.from('v_sheets').select('*').order('likes',{ascending:false}).order('updated_at',{ascending:false}).limit(12)]);
