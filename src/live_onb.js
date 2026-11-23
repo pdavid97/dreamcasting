@@ -8,7 +8,8 @@ function onbSort(deck){const o=onbGet();if(USER||!o||!deck||!deck.length)return 
  return deck.map((d,i)=>[d,sc(d),i]).sort((a,b)=>b[1]-a[1]||a[2]-b[2]).map(x=>x[0])}
 let ONB={step:0,actors:[],cats:[]};
 function openOnb(){if($('#onb'))return;ONB={step:0,actors:[],cats:[]};const ov=document.createElement('div');ov.id='onb';ov.className='onb';document.body.appendChild(ov);renderOnb();track('onb_open',{})}
-function closeOnb(done){const o=$('#onb');if(o)o.remove();const cur=onbGet()||{};onbSet({...cur,done:true,actors:ONB.actors.length?ONB.actors:cur.actors||[],cats:ONB.cats.length?ONB.cats:cur.cats||[]});
+function onbPid(n){for(const d of DECK)for(const r of d.roles)for(const c of r.cands)if(c.name===n&&c.pid)return c.pid;return null}
+function closeOnb(done){const o=$('#onb');if(o)o.remove();const cur=onbGet()||{};const pids=ONB.actors.map(onbPid).filter(Boolean);onbSet({...cur,done:true,actors:ONB.actors.length?ONB.actors:cur.actors||[],pids:ONB.actors.length?pids:cur.pids||[],followed:ONB.actors.length?false:cur.followed,cats:ONB.cats.length?ONB.cats:cur.cats||[]});if(USER&&PROF&&pids.length)onbFollow();
  if(done){DECK=onbSort(DECK);DI=0;DR=DECK[0]?firstOpenRole(DECK[0]):0;if(location.hash&&location.hash!=='#')location.hash='';renderDeck();scrollTo({top:0})}track('onb_close',{m:{done:!!done,a:ONB.actors.length,c:ONB.cats.length}})}
 function onbFaces(){const seen=new Set(),out=[];const rank=['classic','buzz','chem','seed','user','wild'];
  const cs=DECK.flatMap(d=>d.roles.flatMap(r=>r.cands)).sort((a,b)=>rank.indexOf(a.pick)-rank.indexOf(b.pick));
@@ -52,3 +53,7 @@ function showPeek(r,me,pk,n){const old=$('#dkPeek');if(old)old.remove();const to
  document.body.appendChild(el)}
 document.addEventListener('click',e=>{const b=e.target.closest('[data-act="peek-x"],[data-act="peek-save"]');if(!b)return;const el=$('#dkPeek');if(el)el.remove();
  if(b.dataset.act==='peek-save'){openLoginSheet(true);return}nextRole()});
+
+/* 온보딩에서 고른 배우를 로그인 뒤 팬 채널에 등록(고유 번호 people.id 기준, 이미 들어간 채널은 그대로) */
+async function onbFollow(){const o=onbGet();if(!o||o.followed||!(o.pids||[]).length||!USER)return;try{const n=await rpc('follow_many',{pids:o.pids});onbSet({...o,followed:true});if(n)toast(`고른 배우 ${n}명의 팬 채널에 들어왔어요`)}catch(e){}}
+async function onbAfterLogin(){if(!USER||!PROF)return;try{const o=onbGet();if(o&&!o.saved&&(o.cats||[]).length&&!(PROF.tastes&&(PROF.tastes.cats||[]).length)){await rpc('set_tastes',{t:{cats:o.cats,genres:(PROF.tastes||{}).genres||[],makers:(PROF.tastes||{}).makers||[]},b:PROF.bio||''});onbSet({...o,saved:true})}}catch(e){}onbFollow()}

@@ -127,7 +127,7 @@ const BADGES=[
 
 /* 나 페이지: 다이어리 목차(아이콘 탭)로 한 장씩 보기 */
 let UPG=null,UPG_D=null;
-function UPGS(d){const me=d&&d.me,un=me?NOTICES.filter(x=>!x.read).length:0;return [me&&['report','📊','리포트'],['av','🎞️',me?'내 AV룸':'AV룸'],['vote','🗳️','투표 기록'],['sheet','🎬','시트, 팬 채널'],['badge','🏅','업적'],me&&['taste','💗','내 취향'],me&&['bell','🔔','알림',un||''],me&&['set','⚙️','설정']].filter(Boolean)}
+function UPGS(d){const me=d&&d.me,un=me?NOTICES.filter(x=>!x.read).length:0;return [me&&['week','📅','주간 결산'],me&&['report','📊','리포트'],['av','🎞️',me?'내 AV룸':'AV룸'],['vote','🗳️','투표 기록'],['sheet','🎬','시트, 팬 채널'],['badge','🏅','업적'],me&&['taste','💗','내 취향'],me&&['bell','🔔','알림',un||''],me&&['set','⚙️','설정']].filter(Boolean)}
 function upgCur(d){const ks=UPGS(d).map(x=>x[0]);let k=UPG;try{k=k||sessionStorage.getItem('upg')}catch(e){}return ks.includes(k)?k:ks[0]}
 function showUpg(k){UPG=k;try{sessionStorage.setItem('upg',k)}catch(e){}document.querySelectorAll('.dpg').forEach(x=>x.classList.toggle('on',x.dataset.pg===k));document.querySelectorAll('.dindex button').forEach(x=>x.classList.toggle('on',x.dataset.k===k));
  const pg=document.querySelector(`.dpg[data-pg="${k}"]`);if(pg)pg.querySelectorAll('.ig').forEach(c=>c.classList.add('in'))}
@@ -151,7 +151,7 @@ function renderUser(d){const p=d.profile,s=d.stats,g=grade(p.points),nx=GRADES[g
 
  <nav class="dindex" aria-label="내 다이어리 목차">${UPGS(d).map(([k,ic,l,n])=>`<button data-act="upg" data-k="${k}" class="${k===upgCur(d)?'on':''}"><span class="di" aria-hidden="true">${ic}</span><b>${l}</b>${n?`<i>${n}</i>`:''}</button>`).join('')}</nav>
  <div class="diary">
- ${d.me?`<div class="dpg" data-pg="report"><section id="insight"></section></div>`:''}
+ ${d.me?`<div class="dpg" data-pg="week"><section id="weekbox"></section></div><div class="dpg" data-pg="report"><section id="insight"></section></div>`:''}
  <div class="dpg" data-pg="av"><section id="avroom"></section></div>
  <div class="dpg" data-pg="vote">${d.me&&(d.next||[]).length?`<section><div class="sh"><h2>다음에 던질 한 표</h2><span class="sub">아직 투표하지 않은 배역</span></div><div class="races">${d.next.map(n=>`<a class="race" href="#${esc(n.tid)}"><b>${esc(n.title)}</b><span class="sub">${esc(n.ch)} 역${n.why==='fan'?', 내가 팬인 배우가 후보':n.why==='taste'?', 내 취향 분류':', 지금 뜨거운 배역'}</span></a>`).join('')}</div></section>`:''}
  <section><div class="sh"><h2>캐스팅 이력</h2><span class="sub">${d.me?'내 표 전체':'결과가 나온 배역만 공개'}</span></div>
@@ -180,7 +180,7 @@ function renderUser(d){const p=d.profile,s=d.stats,g=grade(p.points),nx=GRADES[g
  <div class="dpg" data-pg="set"><section><div class="sh"><h2>설정</h2></div><div class="dset"><button class="b" data-act="nickOpen">닉네임 변경</button><button class="b" data-act="upg" data-k="taste">취향과 한 줄 소개 수정</button><a class="b" href="#welcome">처음 안내 다시 보기</a></div></section>
  <section class="acct-out"><button class="b" data-act="logout">로그아웃</button><small>로그아웃하면 처음 온 사람 화면으로 돌아가요</small></section></div>`:''}
  </div>
- </div>`);showUpg(upgCur(d));loadAvRoom(p.nickname,!!d.me);if(d.me)loadInsights()}
+ </div>`);showUpg(upgCur(d));loadAvRoom(p.nickname,!!d.me);if(d.me){loadInsights();loadWeek()}}
 
 /* ---------- 배우 화력 랭킹 ---------- */
 let FANB=[];

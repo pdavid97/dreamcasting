@@ -26,7 +26,7 @@ function showDeck(on){DECKV=on;const d=$('#deck');if(!d)return;d.hidden=!on;['ta
 
 function renderDeck(){const box=$('#deck');if(!box||!DECKV)return;const t=curTopic();cardLeave();
  if(!DECK.length){box.innerHTML=`<div class="dk-empty">${deckBusy?'카드를 고르는 중이에요':'지금 열린 투표가 없어요'}</div>`;return}
- if(!t){box.innerHTML=`<div class="dk-empty"><b>오늘 준비한 카드를 다 봤어요</b><p>새 카드는 매일 화제성과 내 취향으로 다시 골라요.</p><button class="b buy" data-act="dk-restart">처음부터 다시</button> <a class="b" href="#explore">작품 둘러보기</a></div>`;return}
+ if(!t){deckEnd(box);return}
  if(DR>=t.roles.length){renderDone(t);return}
  const r=t.roles[DR],p=pend().find(x=>x.rid===r.id),picked=r.mine||(p&&p.cid);
  const cands=r.cands.slice(0,10),more=r.cands.length-cands.length;
@@ -57,7 +57,8 @@ function renderDone(t){const box=$('#deck');track('result_view',{t:t.id});
  <div class="dk-res" id="dkRes">${t.roles.map(r=>{const mine=r.cands.find(c=>c.id===r.mine),tot=r.cands.reduce((a,c)=>a+(c.votes||0),0),top=[...r.cands].sort((a,b)=>(b.votes||0)-(a.votes||0))[0];
   return `<div class="rr"><span class="slot">${esc(SLOT[r.slot]||'')}</span><b>${esc(r.ch)}</b><span>${mine?`내 픽 <strong>${esc(mine.name)}</strong>${tot?` ${Math.round((mine.votes||0)/tot*100)}%`:''}`:'건너뜀, 투표하면 결과 공개'}</span>${mine&&top&&tot?`<small>1위 ${esc(top.name)} ${Math.round((top.votes||0)/tot*100)}%</small>`:''}</div>`}).join('')}</div>
  <div id="dkCombo" class="dk-combo">${t.seen?'내 조합 순위를 불러오는 중이에요':'한 배역 이상 투표하면 결과와 토론방이 열려요'}</div></article>
- <div class="dk-acts"><a class="dk-btn mid" href="#${esc(t.id)}/talk">결과와 토론방</a><button class="dk-btn next" data-act="dk-nexttopic">다음 작품</button></div></div>`;
+ <div class="dk-rel" id="dkRel"></div><div class="dk-acts"><a class="dk-btn mid" href="#${esc(t.id)}/talk">결과와 토론방</a><button class="dk-btn next" data-act="dk-nexttopic">다음 작품</button></div></div>`;
+ relNext(t);
  if(t.seen)rpc('topic_combos',{tid:t.id}).then(cs=>{const el=$('#dkCombo');if(!el)return;const i=(cs||[]).findIndex(c=>c.mine);el.innerHTML=i>=0?`내 조합은 <b>${(cs||[]).length}개 조합 중 ${i+1}위</b>, 같은 조합 ${cs[i].users}명. 토론 ${cs[i].comments}개`:`모든 배역을 고르면 조합 순위에 올라가요. 지금 조합 ${(cs||[]).length}개`}).catch(()=>{})}
 
 function nextRole(){const t=curTopic();if(!t)return;cardLeave();DR++;if(DR>=t.roles.length){}renderDeck()}
@@ -72,7 +73,7 @@ async function deckPick(rid,cid){const t=curTopic(),r=curRole();if(!t||!r||r.id!
   const fresh=await rpc('vote_deck',{lim:16}).catch(()=>null);const ft=fresh&&fresh.find(x=>x.id===t.id);if(ft){Object.assign(t,{seen:ft.seen,roles:ft.roles})}
   nextRole()}catch(e){toast(errMsg(e))}}
 
-async function flushPending(){if(!USER||!PROF)return;try{const o=onbGet();if(o&&!o.saved&&(o.cats||[]).length&&!(PROF.tastes&&(PROF.tastes.cats||[]).length)){await rpc('set_tastes',{t:{cats:o.cats,genres:(PROF.tastes||{}).genres||[],makers:(PROF.tastes||{}).makers||[]},b:PROF.bio||''});onbSet({...o,saved:true})}}catch(e){}const a=pend();if(!a.length)return;setPend([]);let ok=0;
+async function flushPending(){if(!USER||!PROF)return;const a=pend();if(!a.length)return;setPend([]);let ok=0;
  for(const p of a){try{await rpc('cast_vote_src',{rid:p.rid,cid:p.cid,src:'wheel'});ok++;track('vote_done',{t:p.tid,r:p.rid,c:p.cid,m:{after_login:true}})}catch(e){}}
  if(ok){toast(`로그인 전에 고른 ${ok}표를 반영했어요`);track('login_done',{m:{flushed:ok}})}await loadDeck();const t=curTopic();if(t)DR=Math.min(DR+0,t.roles.length)}
 
@@ -215,3 +216,17 @@ function openResult(tid,season){const r=(RB.results||[]).find(x=>x.tid===tid&&St
   <a class="b buy" href="#${esc(tid)}" data-act="rres-x">작품 페이지에서 자세히</a></div>`;
  document.body.appendChild(ov);ov.addEventListener('click',e=>{if(e.target===ov||e.target.closest('[data-act="rres-x"]'))ov.remove()})}
 document.addEventListener('click',e=>{const b=e.target.closest('[data-act="rres"]');if(!b)return;openResult(b.dataset.t,b.dataset.s);try{track('round_result',{t:b.dataset.t})}catch(err){}});
+
+/* 작품을 다 고른 뒤: 같은 작품의 다른 판, 원작 배우나 내 픽이 후보인 배역으로 이어 주기 */
+async function relNext(t){const el=$('#dkRel');if(!el)return;const x=await rpc('duel_next',{skip:[],prefer:t.id}).catch(()=>null);if(!x||!x.why||!$('#dkRel'))return;
+ const why=x.why.replace(/(\S+)이\(가\)/,(m,n)=>jj(n,'이','가')),v=verLabel(x.cat);const di=DECK.findIndex(d=>d.id===x.tid);
+ el.innerHTML=`<small>🔗 이어서 고르기</small><a class="rel" ${di>=0?`href="#" data-act="dk-goto" data-i="${di}"`:`href="#${esc(x.tid)}"`}><b>《${esc(x.title)}》${v?` ${esc(v)}`:''} ${esc(x.ch)} 역</b><span>${esc(why)}</span><i>→</i></a>`}
+/* 덱을 끝까지 본 뒤: 막다른 화면 대신 다음 할 일 */
+function deckEnd(box){const rs=(RB.results||[]).slice(0,3),cl=RB.closing||[];const open=(TOPICS||[]).filter(x=>isOpen(x)&&!DECK.some(d=>d.id===x.id)).slice(0,6);
+ const tile=(href,ic,b,s,act)=>`<a class="de-t" href="${href}"${act||''}><span>${ic}</span><b>${b}</b><small>${s}</small></a>`;
+ box.innerHTML=`<div class="dk">${roundBanner()}${deckStrip()}<div class="dk-end"><div class="de-h"><span>🎬</span><b>오늘 카드는 여기까지!</b><p>내일 0시에 새 판이 열려요. 그 전에 이건 어때요?</p></div>
+  <div class="de-grid">${tile('#vs','⚡','VS 한판','두 명 중 한 명만, 빠르게')}${USER?tile('#me','📅','주간 결산','이번 주 내 캐스팅 돌아보기',' data-act="upg" data-k="week"'):tile('#','🗳️','표 저장하기','로그인하면 결과 알림',' data-act="dk-login"')}${tile('#make','➕','작품 제안','보고 싶은 판을 직접 열기')}${tile('#','🔁','처음부터 다시','넘긴 카드 다시 보기',' data-act="dk-restart"')}</div>
+  ${cl.length?`<h3>⏰ 오늘 자정 마감</h3><div class="de-list">${cl.map(x=>`<a href="#${esc(x.tid)}">${esc(x.title)}<i>→</i></a>`).join('')}</div>`:''}
+  ${open.length?`<h3>덱에 없던 작품</h3><div class="de-list">${open.map(x=>`<a href="#${esc(x.id)}">${esc(x.title)}${verLabel(x.cat)?` <small>${esc(verLabel(x.cat))}</small>`:''}<i>→</i></a>`).join('')}</div>`:''}</div></div>`;
+ stripFocus()}
+document.addEventListener('click',e=>{if(e.target.closest('[data-act="dk-login"]')){e.preventDefault();openLoginSheet(true)}});

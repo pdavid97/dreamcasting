@@ -1174,6 +1174,34 @@ a.dl-ol{color:inherit;text-decoration:none;border-bottom:1px dashed currentColor
 .peek-bars .me i{background:linear-gradient(90deg,var(--hot) var(--p),var(--line) var(--p))}.peek-bars .me span{font-weight:700}.peek-bars b{text-align:right}
 .peek-dots{display:flex;gap:6px;justify-content:center;margin:14px 0 4px}.peek-dots i{width:10px;height:10px;border-radius:50%;background:var(--line)}.peek-dots i.on{background:var(--hot)}
 .peek .b.big{width:100%;padding:14px;font-size:15px;border-radius:14px;margin-top:8px}.peek .lk{display:block;margin:6px auto 0;background:none;border:0;color:var(--mute);font:inherit;font-size:13px;cursor:pointer}
+.dq .dwhy{display:inline-block;margin-top:6px;font-style:normal;font-size:11px;font-weight:700;padding:3px 8px;border-radius:10px;background:color-mix(in srgb,var(--acc) 15%,transparent);color:var(--ink)}
+/* 이어서 고르기, 덱 끝, 주간 결산 */
+.dk-rel{margin:10px 14px 0}.dk-rel:empty{display:none}.dk-rel small{display:block;font-size:11px;color:rgba(255,255,255,.7);margin-bottom:4px}
+.dk-rel .rel{display:grid;grid-template-columns:1fr auto;gap:2px 8px;padding:10px 12px;border-radius:12px;background:rgba(255,255,255,.12);color:#fff;text-decoration:none}
+.dk-rel .rel b{font-size:14px}.dk-rel .rel span{grid-column:1;font-size:11px;opacity:.8}.dk-rel .rel i{grid-row:1/3;grid-column:2;align-self:center;font-style:normal;color:var(--hot)}
+.dk-end{padding:6px 0 20px}.de-h{text-align:center;padding:18px 0 8px}.de-h span{font-size:40px}.de-h b{display:block;font-size:20px;margin-top:4px}.de-h p{color:var(--mute);font-size:13px;margin:4px 0 0}
+.de-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.de-t{display:flex;flex-direction:column;gap:2px;padding:14px 12px;border-radius:16px;border:1px solid var(--line);background:var(--card);color:var(--ink);text-decoration:none}
+.de-t span{font-size:24px}.de-t b{font-size:14px}.de-t small{font-size:11px;color:var(--mute)}
+.dk-end h3{font-size:14px;margin:18px 0 6px}
+.de-list{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--card)}
+.de-list a{display:flex;align-items:center;gap:6px;padding:12px;color:var(--ink);text-decoration:none;font-size:14px;border-top:1px solid var(--line)}.de-list a:first-child{border-top:0}
+.de-list small{color:var(--mute);font-size:11px}.de-list i{margin-left:auto;font-style:normal;color:var(--mute)}
+.wkx-hero{padding:16px;border-radius:18px;background:linear-gradient(135deg,color-mix(in srgb,var(--acc) 25%,var(--card)),color-mix(in srgb,var(--hot) 20%,var(--card)));position:relative}
+.wkx-hero>small{font-size:12px;color:var(--mute)}.wkx-hero>b{display:block;font-size:44px;line-height:1.1}
+.wkx-hero em,.wkx-tiles em{font-style:normal;font-size:11px;font-weight:700}.wkx-up{color:#18a058}.wkx-dn{color:var(--red,#e5484d)}.wkx-eq{color:var(--mute)}
+.wkx-days{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-top:12px}
+.wkx-days .wd{display:flex;flex-direction:column;align-items:center;gap:4px}
+.wkx-days .wb{width:100%;max-width:28px;height:64px;display:flex;align-items:flex-end;border-radius:6px;background:color-mix(in srgb,var(--card) 55%,transparent)}
+.wkx-days .wf{width:100%;border-radius:6px;background:var(--ink)}
+.wkx-days .wl{font-size:10px;color:var(--mute);white-space:nowrap}
+.wkx-tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:10px}
+.wkx-tiles div{display:flex;flex-direction:column;align-items:center;padding:10px 4px;border-radius:14px;border:1px solid var(--line);background:var(--card);text-align:center}
+.wkx-tiles b{font-size:20px}.wkx-tiles small{font-size:10px;color:var(--mute)}.wkx-tiles em{color:var(--mute);margin-top:2px}
+.wkx-fav{display:flex;gap:12px;align-items:center;margin-top:10px;padding:12px;border-radius:16px;border:1px solid var(--line);background:var(--card);color:var(--ink);text-decoration:none}
+.wkx-fav .av{flex:none;width:58px;height:58px;border-radius:50%;background:#ddd center 20%/cover;box-shadow:0 0 0 3px var(--hot)}
+.wkx-fav small{font-size:11px;color:var(--mute)}.wkx-fav b{display:block;font-size:17px}.wkx-fav p{margin:2px 0 0;font-size:12px;color:var(--mute)}
+.wkx-next{display:flex;align-items:center;gap:6px;margin-top:10px;padding:12px;border-radius:14px;background:color-mix(in srgb,var(--hot) 18%,var(--card));color:var(--ink);text-decoration:none;font-size:13px}.wkx-next i{margin-left:auto;font-style:normal}
 
 </style>
 </head>
@@ -1327,7 +1355,7 @@ async function loadSide(){const [f,l]=await Promise.all([sb.from('feed').select(
 const TERMS_VER='2026-11-22b',CONSENT_ON=true;let PRIV=null;
 function fillConsent(){if(CONSENT_ON){$('#cnsBox').hidden=false;$('#legalLinks').hidden=false}const p=PRIV||{};$('#cTerms').checked=p.terms_ver===TERMS_VER;$('#cStats').checked=!!p.stats_at;$('#cAge').value=p.age_band||'';$('#cGen').value=p.gender_self||'';$('#cReg').value=p.region_self||''}
 async function loadProfile(){if(!USER){PROF=null;PRIV=null;NOTICES=[];return}const {data}=await sb.from('profiles').select('*').eq('id',USER.id).maybeSingle();PROF=data||null;const pv=await sb.from('profile_private').select('*').eq('user_id',USER.id).maybeSingle();PRIV=pv.data||null;if(typeof loadMyCol==='function')loadMyCol(true);if(CONSENT_ON&&PROF&&!(PRIV&&PRIV.terms_ver===TERMS_VER)&&!(()=>{try{return sessionStorage.getItem('cnsAsk')}catch(e){return 1}})()){try{sessionStorage.setItem('cnsAsk','1')}catch(e){}setTimeout(()=>{$('#nickIn').value=PROF.nickname;fillConsent();$('#nickH').textContent='약관 동의와 내 정보 설정';$('#nickModal').classList.add('on')},600)}await Promise.all([loadNotices(),loadWants()])}
-async function refresh(all){try{if(all)await loadTopics();await Promise.all([loadTopic(),loadSide(),loadProfile(),loadFanBoard()]);render();loadImages();if(HOMEV)loadHome();if(USER&&PROF&&pend().length)flushPending();if(PAGE&&PAGE.kind==='a'&&PAGE.pid&&!busy)renderActor().catch(()=>{})}catch(e){console.error(e);toast('불러오지 못했어요: '+errMsg(e))}}
+async function refresh(all){try{if(all)await loadTopics();await Promise.all([loadTopic(),loadSide(),loadProfile(),loadFanBoard()]);render();loadImages();if(HOMEV)loadHome();if(USER&&PROF){onbAfterLogin();if(pend().length)flushPending()}if(PAGE&&PAGE.kind==='a'&&PAGE.pid&&!busy)renderActor().catch(()=>{})}catch(e){console.error(e);toast('불러오지 못했어요: '+errMsg(e))}}
 async function act(fn,args,okMsg){if(busy)return;busy=true;try{const d=await rpc(fn,args);if(okMsg)toast(okMsg);await refresh(fn.startsWith('propose_topic')||fn.startsWith('admin'));return d}catch(e){toast(errMsg(e))}finally{busy=false}}
 
 /* ---------- images ---------- */
@@ -1394,17 +1422,17 @@ function duelSaveSkip(){DUEL_SKIP=DUEL_SKIP.slice(-60);try{localStorage.setItem(
 async function duelImgs(names){await loadOrig(names);const need=names.filter(n=>!(('p:'+n)in IMG)).slice(0,38);if(!need.length)return;try{const r=await fetch(SB_URL+'/functions/v1/tmdb',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+ANON,apikey:ANON},body:JSON.stringify({names:need,titles:[]})});if(r.ok){const d=await r.json();for(const n in d.p)IMG['p:'+n]=d.p[n];try{localStorage.setItem('tmdbImg2',JSON.stringify(IMG))}catch(e){}}}catch(e){}}
 function duelStart(role){const cs=[...role.cands];if(cs.length<2){DUEL=null;return}
  const ord=[...cs].sort((a,b)=>(b.votes||0)-(a.votes||0));const champ=ord[0];const rest=cs.filter(c=>c.candidate_id!==champ.candidate_id).sort(()=>Math.random()-0.5);
- DUEL={tid:role.tid,title:role.title,cat:role.cat||(TOPICS.find(x=>x.id===role.tid)||{}).cat,rid:role.rid,ch:role.ch,orig:role.orig,total:rest.length,a:champ,b:rest.shift(),queue:rest,wins:{},res:null,done:false,round:1};track&&track('duel_start',{t:role.tid,r:role.rid})}
+ DUEL={why:role.why||null,tid:role.tid,title:role.title,cat:role.cat||(TOPICS.find(x=>x.id===role.tid)||{}).cat,rid:role.rid,ch:role.ch,orig:role.orig,total:rest.length,a:champ,b:rest.shift(),queue:rest,wins:{},res:null,done:false,round:1};track&&track('duel_start',{t:role.tid,r:role.rid})}
 let duelLoading=false;
 async function newDuel(first){if(duelLoading)return;duelLoading=true;try{
  let role=null;const t=topic();
- if(first&&t&&isOpen(t)&&D){const rs=D.roles.filter(r=>!isSync(r)&&!isOpt(r)&&(D.cands[r.id]||[]).length>2&&!DUEL_SKIP.includes(r.id));const r=rs.length?pick(rs):null;if(r)role={rid:r.id,ch:r.ch,orig:r.orig,tid:t.id,title:t.title,cat:t.cat,cands:(D.cands[r.id]||[]).map(c=>({candidate_id:c.candidate_id,name:c.name,votes:c.votes}))}}
- if(!role){role=await rpc('duel_next',{skip:DUEL_SKIP,prefer:null}).catch(()=>null);if(!role&&DUEL_SKIP.length){DUEL_SKIP=[];duelSaveSkip();role=await rpc('duel_next',{skip:[],prefer:null}).catch(()=>null)}}
+ if(first&&t&&isOpen(t)&&D){const rs=D.roles.filter(r=>!isSync(r)&&!isOpt(r)&&!(D.myVote||{})[r.id]&&(D.cands[r.id]||[]).length>2&&!DUEL_SKIP.includes(r.id));const r=rs.length?pick(rs):null;if(r)role={rid:r.id,ch:r.ch,orig:r.orig,tid:t.id,title:t.title,cat:t.cat,cands:(D.cands[r.id]||[]).map(c=>({candidate_id:c.candidate_id,name:c.name,votes:c.votes}))}}
+ const pf=(curView()==='topic'||curView()==='page')&&t?t.id:(DUEL&&DUEL.tid)||null;if(!role){role=await rpc('duel_next',{skip:DUEL_SKIP,prefer:pf}).catch(()=>null);if(!role&&DUEL_SKIP.length){DUEL_SKIP=[];duelSaveSkip();role=await rpc('duel_next',{skip:[],prefer:pf}).catch(()=>null)}}
  if(!role){DUEL=null;return}await duelImgs(role.cands.map(c=>c.name));duelStart(role)}finally{duelLoading=false}}
 function renderDuel(){const box=$('#duel');if(!box)return;if(!DUEL){box.innerHTML='';if(!duelLoading)newDuel(true).then(()=>{if(DUEL)renderDuel()});return}const R=DUEL.res;
  const face=c=>`<span class="face">${IMG['p:'+c.name]?`<img src="${esc(IMG['p:'+c.name])}" alt="" style="width:100%;height:100%;border-radius:50%;object-fit:cover">`:esc(c.name[0])}</span>`;
  const other=DUEL.tid!==SEL;
- const ver=verLabel(DUEL.cat);const head=`<div class="dq"><b>VS 한판: ${ver?esc(ver)+' ':''}${esc(DUEL.ch)} 역, 누가 더 어울려요?</b><span><a href="#${esc(DUEL.tid)}">${esc(DUEL.title)}${ver?' '+esc(ver):''}</a>${DUEL.orig?`, 원작 ${esc(DUEL.orig)}`:''}</span></div>`;
+ const ver=verLabel(DUEL.cat);const head=`<div class="dq"><b>VS 한판: ${ver?esc(ver)+' ':''}${esc(DUEL.ch)} 역, 누가 더 어울려요?</b><span><a href="#${esc(DUEL.tid)}">${esc(DUEL.title)}${ver?' '+esc(ver):''}</a>${DUEL.orig?`, 원작 ${esc(DUEL.orig)}`:''}</span>${DUEL.why?`<em class="dwhy">🔗 ${esc(DUEL.why.replace(/(\S+)이\(가\)/,(m,n)=>jj(n,'이','가')))}</em>`:''}</div>`;
  if(DUEL.done){const c=DUEL.a,w=DUEL.wins[c.candidate_id]||0;
   const L=DUEL.log||[],n=DUEL.total+1,direct=L.filter(x=>x.w===c.name).length,beaten=n-1-direct;
   const path=`<ol class="dpath">${L.map((x,k)=>`<li class="${x.w===c.name?'me':''}"><span>${k+1}판</span><b>${esc(x.w)}</b><em>승</em><s>${esc(x.l)}</s></li>`).join('')}</ol>`;
@@ -1699,7 +1727,7 @@ const BADGES=[
 
 /* 나 페이지: 다이어리 목차(아이콘 탭)로 한 장씩 보기 */
 let UPG=null,UPG_D=null;
-function UPGS(d){const me=d&&d.me,un=me?NOTICES.filter(x=>!x.read).length:0;return [me&&['report','📊','리포트'],['av','🎞️',me?'내 AV룸':'AV룸'],['vote','🗳️','투표 기록'],['sheet','🎬','시트, 팬 채널'],['badge','🏅','업적'],me&&['taste','💗','내 취향'],me&&['bell','🔔','알림',un||''],me&&['set','⚙️','설정']].filter(Boolean)}
+function UPGS(d){const me=d&&d.me,un=me?NOTICES.filter(x=>!x.read).length:0;return [me&&['week','📅','주간 결산'],me&&['report','📊','리포트'],['av','🎞️',me?'내 AV룸':'AV룸'],['vote','🗳️','투표 기록'],['sheet','🎬','시트, 팬 채널'],['badge','🏅','업적'],me&&['taste','💗','내 취향'],me&&['bell','🔔','알림',un||''],me&&['set','⚙️','설정']].filter(Boolean)}
 function upgCur(d){const ks=UPGS(d).map(x=>x[0]);let k=UPG;try{k=k||sessionStorage.getItem('upg')}catch(e){}return ks.includes(k)?k:ks[0]}
 function showUpg(k){UPG=k;try{sessionStorage.setItem('upg',k)}catch(e){}document.querySelectorAll('.dpg').forEach(x=>x.classList.toggle('on',x.dataset.pg===k));document.querySelectorAll('.dindex button').forEach(x=>x.classList.toggle('on',x.dataset.k===k));
  const pg=document.querySelector(`.dpg[data-pg="${k}"]`);if(pg)pg.querySelectorAll('.ig').forEach(c=>c.classList.add('in'))}
@@ -1723,7 +1751,7 @@ function renderUser(d){const p=d.profile,s=d.stats,g=grade(p.points),nx=GRADES[g
 
  <nav class="dindex" aria-label="내 다이어리 목차">${UPGS(d).map(([k,ic,l,n])=>`<button data-act="upg" data-k="${k}" class="${k===upgCur(d)?'on':''}"><span class="di" aria-hidden="true">${ic}</span><b>${l}</b>${n?`<i>${n}</i>`:''}</button>`).join('')}</nav>
  <div class="diary">
- ${d.me?`<div class="dpg" data-pg="report"><section id="insight"></section></div>`:''}
+ ${d.me?`<div class="dpg" data-pg="week"><section id="weekbox"></section></div><div class="dpg" data-pg="report"><section id="insight"></section></div>`:''}
  <div class="dpg" data-pg="av"><section id="avroom"></section></div>
  <div class="dpg" data-pg="vote">${d.me&&(d.next||[]).length?`<section><div class="sh"><h2>다음에 던질 한 표</h2><span class="sub">아직 투표하지 않은 배역</span></div><div class="races">${d.next.map(n=>`<a class="race" href="#${esc(n.tid)}"><b>${esc(n.title)}</b><span class="sub">${esc(n.ch)} 역${n.why==='fan'?', 내가 팬인 배우가 후보':n.why==='taste'?', 내 취향 분류':', 지금 뜨거운 배역'}</span></a>`).join('')}</div></section>`:''}
  <section><div class="sh"><h2>캐스팅 이력</h2><span class="sub">${d.me?'내 표 전체':'결과가 나온 배역만 공개'}</span></div>
@@ -1752,7 +1780,7 @@ function renderUser(d){const p=d.profile,s=d.stats,g=grade(p.points),nx=GRADES[g
  <div class="dpg" data-pg="set"><section><div class="sh"><h2>설정</h2></div><div class="dset"><button class="b" data-act="nickOpen">닉네임 변경</button><button class="b" data-act="upg" data-k="taste">취향과 한 줄 소개 수정</button><a class="b" href="#welcome">처음 안내 다시 보기</a></div></section>
  <section class="acct-out"><button class="b" data-act="logout">로그아웃</button><small>로그아웃하면 처음 온 사람 화면으로 돌아가요</small></section></div>`:''}
  </div>
- </div>`);showUpg(upgCur(d));loadAvRoom(p.nickname,!!d.me);if(d.me)loadInsights()}
+ </div>`);showUpg(upgCur(d));loadAvRoom(p.nickname,!!d.me);if(d.me){loadInsights();loadWeek()}}
 
 /* ---------- 배우 화력 랭킹 ---------- */
 let FANB=[];
@@ -1913,7 +1941,7 @@ function showDeck(on){DECKV=on;const d=$('#deck');if(!d)return;d.hidden=!on;['ta
 
 function renderDeck(){const box=$('#deck');if(!box||!DECKV)return;const t=curTopic();cardLeave();
  if(!DECK.length){box.innerHTML=`<div class="dk-empty">${deckBusy?'카드를 고르는 중이에요':'지금 열린 투표가 없어요'}</div>`;return}
- if(!t){box.innerHTML=`<div class="dk-empty"><b>오늘 준비한 카드를 다 봤어요</b><p>새 카드는 매일 화제성과 내 취향으로 다시 골라요.</p><button class="b buy" data-act="dk-restart">처음부터 다시</button> <a class="b" href="#explore">작품 둘러보기</a></div>`;return}
+ if(!t){deckEnd(box);return}
  if(DR>=t.roles.length){renderDone(t);return}
  const r=t.roles[DR],p=pend().find(x=>x.rid===r.id),picked=r.mine||(p&&p.cid);
  const cands=r.cands.slice(0,10),more=r.cands.length-cands.length;
@@ -1944,7 +1972,8 @@ function renderDone(t){const box=$('#deck');track('result_view',{t:t.id});
  <div class="dk-res" id="dkRes">${t.roles.map(r=>{const mine=r.cands.find(c=>c.id===r.mine),tot=r.cands.reduce((a,c)=>a+(c.votes||0),0),top=[...r.cands].sort((a,b)=>(b.votes||0)-(a.votes||0))[0];
   return `<div class="rr"><span class="slot">${esc(SLOT[r.slot]||'')}</span><b>${esc(r.ch)}</b><span>${mine?`내 픽 <strong>${esc(mine.name)}</strong>${tot?` ${Math.round((mine.votes||0)/tot*100)}%`:''}`:'건너뜀, 투표하면 결과 공개'}</span>${mine&&top&&tot?`<small>1위 ${esc(top.name)} ${Math.round((top.votes||0)/tot*100)}%</small>`:''}</div>`}).join('')}</div>
  <div id="dkCombo" class="dk-combo">${t.seen?'내 조합 순위를 불러오는 중이에요':'한 배역 이상 투표하면 결과와 토론방이 열려요'}</div></article>
- <div class="dk-acts"><a class="dk-btn mid" href="#${esc(t.id)}/talk">결과와 토론방</a><button class="dk-btn next" data-act="dk-nexttopic">다음 작품</button></div></div>`;
+ <div class="dk-rel" id="dkRel"></div><div class="dk-acts"><a class="dk-btn mid" href="#${esc(t.id)}/talk">결과와 토론방</a><button class="dk-btn next" data-act="dk-nexttopic">다음 작품</button></div></div>`;
+ relNext(t);
  if(t.seen)rpc('topic_combos',{tid:t.id}).then(cs=>{const el=$('#dkCombo');if(!el)return;const i=(cs||[]).findIndex(c=>c.mine);el.innerHTML=i>=0?`내 조합은 <b>${(cs||[]).length}개 조합 중 ${i+1}위</b>, 같은 조합 ${cs[i].users}명. 토론 ${cs[i].comments}개`:`모든 배역을 고르면 조합 순위에 올라가요. 지금 조합 ${(cs||[]).length}개`}).catch(()=>{})}
 
 function nextRole(){const t=curTopic();if(!t)return;cardLeave();DR++;if(DR>=t.roles.length){}renderDeck()}
@@ -1959,7 +1988,7 @@ async function deckPick(rid,cid){const t=curTopic(),r=curRole();if(!t||!r||r.id!
   const fresh=await rpc('vote_deck',{lim:16}).catch(()=>null);const ft=fresh&&fresh.find(x=>x.id===t.id);if(ft){Object.assign(t,{seen:ft.seen,roles:ft.roles})}
   nextRole()}catch(e){toast(errMsg(e))}}
 
-async function flushPending(){if(!USER||!PROF)return;try{const o=onbGet();if(o&&!o.saved&&(o.cats||[]).length&&!(PROF.tastes&&(PROF.tastes.cats||[]).length)){await rpc('set_tastes',{t:{cats:o.cats,genres:(PROF.tastes||{}).genres||[],makers:(PROF.tastes||{}).makers||[]},b:PROF.bio||''});onbSet({...o,saved:true})}}catch(e){}const a=pend();if(!a.length)return;setPend([]);let ok=0;
+async function flushPending(){if(!USER||!PROF)return;const a=pend();if(!a.length)return;setPend([]);let ok=0;
  for(const p of a){try{await rpc('cast_vote_src',{rid:p.rid,cid:p.cid,src:'wheel'});ok++;track('vote_done',{t:p.tid,r:p.rid,c:p.cid,m:{after_login:true}})}catch(e){}}
  if(ok){toast(`로그인 전에 고른 ${ok}표를 반영했어요`);track('login_done',{m:{flushed:ok}})}await loadDeck();const t=curTopic();if(t)DR=Math.min(DR+0,t.roles.length)}
 
@@ -2102,6 +2131,20 @@ function openResult(tid,season){const r=(RB.results||[]).find(x=>x.tid===tid&&St
   <a class="b buy" href="#${esc(tid)}" data-act="rres-x">작품 페이지에서 자세히</a></div>`;
  document.body.appendChild(ov);ov.addEventListener('click',e=>{if(e.target===ov||e.target.closest('[data-act="rres-x"]'))ov.remove()})}
 document.addEventListener('click',e=>{const b=e.target.closest('[data-act="rres"]');if(!b)return;openResult(b.dataset.t,b.dataset.s);try{track('round_result',{t:b.dataset.t})}catch(err){}});
+
+/* 작품을 다 고른 뒤: 같은 작품의 다른 판, 원작 배우나 내 픽이 후보인 배역으로 이어 주기 */
+async function relNext(t){const el=$('#dkRel');if(!el)return;const x=await rpc('duel_next',{skip:[],prefer:t.id}).catch(()=>null);if(!x||!x.why||!$('#dkRel'))return;
+ const why=x.why.replace(/(\S+)이\(가\)/,(m,n)=>jj(n,'이','가')),v=verLabel(x.cat);const di=DECK.findIndex(d=>d.id===x.tid);
+ el.innerHTML=`<small>🔗 이어서 고르기</small><a class="rel" ${di>=0?`href="#" data-act="dk-goto" data-i="${di}"`:`href="#${esc(x.tid)}"`}><b>《${esc(x.title)}》${v?` ${esc(v)}`:''} ${esc(x.ch)} 역</b><span>${esc(why)}</span><i>→</i></a>`}
+/* 덱을 끝까지 본 뒤: 막다른 화면 대신 다음 할 일 */
+function deckEnd(box){const rs=(RB.results||[]).slice(0,3),cl=RB.closing||[];const open=(TOPICS||[]).filter(x=>isOpen(x)&&!DECK.some(d=>d.id===x.id)).slice(0,6);
+ const tile=(href,ic,b,s,act)=>`<a class="de-t" href="${href}"${act||''}><span>${ic}</span><b>${b}</b><small>${s}</small></a>`;
+ box.innerHTML=`<div class="dk">${roundBanner()}${deckStrip()}<div class="dk-end"><div class="de-h"><span>🎬</span><b>오늘 카드는 여기까지!</b><p>내일 0시에 새 판이 열려요. 그 전에 이건 어때요?</p></div>
+  <div class="de-grid">${tile('#vs','⚡','VS 한판','두 명 중 한 명만, 빠르게')}${USER?tile('#me','📅','주간 결산','이번 주 내 캐스팅 돌아보기',' data-act="upg" data-k="week"'):tile('#','🗳️','표 저장하기','로그인하면 결과 알림',' data-act="dk-login"')}${tile('#make','➕','작품 제안','보고 싶은 판을 직접 열기')}${tile('#','🔁','처음부터 다시','넘긴 카드 다시 보기',' data-act="dk-restart"')}</div>
+  ${cl.length?`<h3>⏰ 오늘 자정 마감</h3><div class="de-list">${cl.map(x=>`<a href="#${esc(x.tid)}">${esc(x.title)}<i>→</i></a>`).join('')}</div>`:''}
+  ${open.length?`<h3>덱에 없던 작품</h3><div class="de-list">${open.map(x=>`<a href="#${esc(x.id)}">${esc(x.title)}${verLabel(x.cat)?` <small>${esc(verLabel(x.cat))}</small>`:''}<i>→</i></a>`).join('')}</div>`:''}</div></div>`;
+ stripFocus()}
+document.addEventListener('click',e=>{if(e.target.closest('[data-act="dk-login"]')){e.preventDefault();openLoginSheet(true)}});
 
 /* ================= 내 캐스팅 리포트: 내 투표를 인포그래픽으로 (본인 페이지에서만) ================= */
 const LEADS=['male_lead','female_lead','lead'],SUBS=['male_sub','female_sub','support'];
@@ -2290,6 +2333,21 @@ async function loadNews(names){const box=$('#igNews');if(!box)return;let works=[
   igCard('내 AV룸 작품, 지금 어디서 볼까',pv.length?`AV룸 ${pv.length}편을 지금 볼 수 있어요.`:'',pv.length?`<div class="wps">${pv.map(p=>`<a class="wp" href="${p.link?goExt('tmdb','watch',p.link):'#'}" target="_blank" rel="noopener"><b>${esc(p.title)}</b><span>${[...p.flat.map(x=>[x,'구독']),...p.rent.map(x=>[x,'대여']),...p.buy.map(x=>[x,'구매'])].slice(0,5).map(([x,k])=>x.logo?`<img src="${esc(x.logo)}" alt="${esc(x.name)} ${k}" title="${esc(x.name)} ${k}">`:`<i>${esc(x.name)}</i>`).join('')}</span></a>`).join('')}</div><p class="ig-cap">시청처 정보는 JustWatch 제공(TMDB 경유), ${esc(F.region)} 기준이에요.</p>`:igEmpty(works.length?'AV룸 작품의 시청처 정보가 아직 없어요.':'AV룸에 작품을 담으면 지금 볼 수 있는 곳을 알려드려요.'))
  ].join('');igBind2(box)}
 function igBind2(root){root.querySelectorAll('.ig').forEach(c=>c.classList.add('in'));root.onclick=e=>{const card=e.target.closest('.ig');if(!card)return;const t=e.target.closest('[data-tip]');const tip=card.querySelector('.ig-tip');if(t&&tip){card.querySelectorAll('.tipon').forEach(x=>x.classList.remove('tipon'));t.classList.add('tipon');tip.textContent=t.dataset.tip}}}
+
+/* ===== 주간 결산: 최근 7일 vs 그 전 7일 ===== */
+async function loadWeek(){const box=$('#weekbox');if(!box)return;box.innerHTML='<p class="sub">이번 주를 정리하는 중이에요</p>';
+ let w=null;try{w=await rpc('my_week',{})}catch(e){}if(!w){box.innerHTML='';return}
+ if(w.fav)try{await loadNames([w.fav.name,...(w.fav_prev?[w.fav_prev.name]:[])])}catch(e){}
+ const dl=(a,b,u='')=>{const d=a-b;return d===0?'<em class="wkx-eq">지난주와 같아요</em>':`<em class="${d>0?'wkx-up':'wkx-dn'}">${d>0?'▲':'▼'} ${Math.abs(d)}${u}</em>`};
+ const mx=Math.max(1,...w.days.map(x=>x.n)),dn=['일','월','화','수','목','금','토'];
+ const fu=w.fav&&IMG['p:'+w.fav.name];
+ const favTxt=!w.fav?'이번 주에는 아직 고른 배우가 없어요':!w.fav_prev?`이번 주 가장 많이 부른 배우예요. ${w.fav.k}번 골랐어요.`:w.fav_prev.name===w.fav.name?`2주 연속 최애 자리를 지켰어요. 이쯤 되면 찐팬.`:`지난주 최애 ${esc(w.fav_prev.name)}에서 갈아탔어요. 새로운 마음?`;
+ box.innerHTML=`<div class="sh"><h2>주간 결산</h2><span class="sub">최근 7일, 지난주와 비교</span></div>
+ <div class="wkx-hero"><small>이번 주 던진 표</small><b class="num" data-cnt="${w.n}">${w.n}</b>${dl(w.n,w.n_prev,'표')}
+  <div class="wkx-days">${w.days.map(x=>{const d=new Date(x.d+'T00:00:00');return `<div class="wd" title="${d.getMonth()+1}/${d.getDate()} ${x.n}표"><div class="wb"><div class="wf" style="height:${Math.max(4,Math.round(x.n/mx*100))}%"></div></div><div class="wl">${dn[d.getDay()]}${x.n?` ${x.n}`:''}</div></div>`}).join('')}</div></div>
+ <div class="wkx-tiles"><div><b>${w.works}</b><small>작품</small></div><div><b>${w.actors}</b><small>고른 배우</small><em>새 얼굴 ${w.new_actors}</em></div><div><b>+${fmt(w.pts)}</b><small>얻은 포인트</small>${dl(w.pts,w.pts_prev,'P')}</div><div><b>${w.hits}</b><small>적중 판</small><em>${w.hitp?`+${w.hitp}P`:`결과 ${w.results}건`}</em></div></div>
+ ${w.fav?`<a class="wkx-fav" href="#a/${encodeURIComponent(w.fav.name)}"><span class="av"${fu?` style="background-image:url('${esc(fu)}')"`:''}></span><div><small>이번 주 최애</small><b>${esc(dispName(w.fav.name))}</b><p>${favTxt}</p></div></a>`:`<p class="sub">${favTxt}</p>`}
+ ${w.closing?`<a class="wkx-next" href="#">⏳ 내가 투표한 판 중 <b>${w.closing}개</b>가 7일 안에 결과 발표돼요<i>→</i></a>`:''}`}
 
 /* ================= 시네마: 필모그래피 캐러셀, 작품 상세 시트, 컬렉션(나의 AV룸) ================= */
 let MYCOL=new Set(),MYCOL_AT=0;
@@ -2488,7 +2546,8 @@ function onbSort(deck){const o=onbGet();if(USER||!o||!deck||!deck.length)return 
  return deck.map((d,i)=>[d,sc(d),i]).sort((a,b)=>b[1]-a[1]||a[2]-b[2]).map(x=>x[0])}
 let ONB={step:0,actors:[],cats:[]};
 function openOnb(){if($('#onb'))return;ONB={step:0,actors:[],cats:[]};const ov=document.createElement('div');ov.id='onb';ov.className='onb';document.body.appendChild(ov);renderOnb();track('onb_open',{})}
-function closeOnb(done){const o=$('#onb');if(o)o.remove();const cur=onbGet()||{};onbSet({...cur,done:true,actors:ONB.actors.length?ONB.actors:cur.actors||[],cats:ONB.cats.length?ONB.cats:cur.cats||[]});
+function onbPid(n){for(const d of DECK)for(const r of d.roles)for(const c of r.cands)if(c.name===n&&c.pid)return c.pid;return null}
+function closeOnb(done){const o=$('#onb');if(o)o.remove();const cur=onbGet()||{};const pids=ONB.actors.map(onbPid).filter(Boolean);onbSet({...cur,done:true,actors:ONB.actors.length?ONB.actors:cur.actors||[],pids:ONB.actors.length?pids:cur.pids||[],followed:ONB.actors.length?false:cur.followed,cats:ONB.cats.length?ONB.cats:cur.cats||[]});if(USER&&PROF&&pids.length)onbFollow();
  if(done){DECK=onbSort(DECK);DI=0;DR=DECK[0]?firstOpenRole(DECK[0]):0;if(location.hash&&location.hash!=='#')location.hash='';renderDeck();scrollTo({top:0})}track('onb_close',{m:{done:!!done,a:ONB.actors.length,c:ONB.cats.length}})}
 function onbFaces(){const seen=new Set(),out=[];const rank=['classic','buzz','chem','seed','user','wild'];
  const cs=DECK.flatMap(d=>d.roles.flatMap(r=>r.cands)).sort((a,b)=>rank.indexOf(a.pick)-rank.indexOf(b.pick));
@@ -2532,6 +2591,10 @@ function showPeek(r,me,pk,n){const old=$('#dkPeek');if(old)old.remove();const to
  document.body.appendChild(el)}
 document.addEventListener('click',e=>{const b=e.target.closest('[data-act="peek-x"],[data-act="peek-save"]');if(!b)return;const el=$('#dkPeek');if(el)el.remove();
  if(b.dataset.act==='peek-save'){openLoginSheet(true);return}nextRole()});
+
+/* 온보딩에서 고른 배우를 로그인 뒤 팬 채널에 등록(고유 번호 people.id 기준, 이미 들어간 채널은 그대로) */
+async function onbFollow(){const o=onbGet();if(!o||o.followed||!(o.pids||[]).length||!USER)return;try{const n=await rpc('follow_many',{pids:o.pids});onbSet({...o,followed:true});if(n)toast(`고른 배우 ${n}명의 팬 채널에 들어왔어요`)}catch(e){}}
+async function onbAfterLogin(){if(!USER||!PROF)return;try{const o=onbGet();if(o&&!o.saved&&(o.cats||[]).length&&!(PROF.tastes&&(PROF.tastes.cats||[]).length)){await rpc('set_tastes',{t:{cats:o.cats,genres:(PROF.tastes||{}).genres||[],makers:(PROF.tastes||{}).makers||[]},b:PROF.bio||''});onbSet({...o,saved:true})}}catch(e){}onbFollow()}
 
 }
 </script>

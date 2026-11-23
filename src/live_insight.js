@@ -185,3 +185,18 @@ async function loadNews(names){const box=$('#igNews');if(!box)return;let works=[
   igCard('내 AV룸 작품, 지금 어디서 볼까',pv.length?`AV룸 ${pv.length}편을 지금 볼 수 있어요.`:'',pv.length?`<div class="wps">${pv.map(p=>`<a class="wp" href="${p.link?goExt('tmdb','watch',p.link):'#'}" target="_blank" rel="noopener"><b>${esc(p.title)}</b><span>${[...p.flat.map(x=>[x,'구독']),...p.rent.map(x=>[x,'대여']),...p.buy.map(x=>[x,'구매'])].slice(0,5).map(([x,k])=>x.logo?`<img src="${esc(x.logo)}" alt="${esc(x.name)} ${k}" title="${esc(x.name)} ${k}">`:`<i>${esc(x.name)}</i>`).join('')}</span></a>`).join('')}</div><p class="ig-cap">시청처 정보는 JustWatch 제공(TMDB 경유), ${esc(F.region)} 기준이에요.</p>`:igEmpty(works.length?'AV룸 작품의 시청처 정보가 아직 없어요.':'AV룸에 작품을 담으면 지금 볼 수 있는 곳을 알려드려요.'))
  ].join('');igBind2(box)}
 function igBind2(root){root.querySelectorAll('.ig').forEach(c=>c.classList.add('in'));root.onclick=e=>{const card=e.target.closest('.ig');if(!card)return;const t=e.target.closest('[data-tip]');const tip=card.querySelector('.ig-tip');if(t&&tip){card.querySelectorAll('.tipon').forEach(x=>x.classList.remove('tipon'));t.classList.add('tipon');tip.textContent=t.dataset.tip}}}
+
+/* ===== 주간 결산: 최근 7일 vs 그 전 7일 ===== */
+async function loadWeek(){const box=$('#weekbox');if(!box)return;box.innerHTML='<p class="sub">이번 주를 정리하는 중이에요</p>';
+ let w=null;try{w=await rpc('my_week',{})}catch(e){}if(!w){box.innerHTML='';return}
+ if(w.fav)try{await loadNames([w.fav.name,...(w.fav_prev?[w.fav_prev.name]:[])])}catch(e){}
+ const dl=(a,b,u='')=>{const d=a-b;return d===0?'<em class="wkx-eq">지난주와 같아요</em>':`<em class="${d>0?'wkx-up':'wkx-dn'}">${d>0?'▲':'▼'} ${Math.abs(d)}${u}</em>`};
+ const mx=Math.max(1,...w.days.map(x=>x.n)),dn=['일','월','화','수','목','금','토'];
+ const fu=w.fav&&IMG['p:'+w.fav.name];
+ const favTxt=!w.fav?'이번 주에는 아직 고른 배우가 없어요':!w.fav_prev?`이번 주 가장 많이 부른 배우예요. ${w.fav.k}번 골랐어요.`:w.fav_prev.name===w.fav.name?`2주 연속 최애 자리를 지켰어요. 이쯤 되면 찐팬.`:`지난주 최애 ${esc(w.fav_prev.name)}에서 갈아탔어요. 새로운 마음?`;
+ box.innerHTML=`<div class="sh"><h2>주간 결산</h2><span class="sub">최근 7일, 지난주와 비교</span></div>
+ <div class="wkx-hero"><small>이번 주 던진 표</small><b class="num" data-cnt="${w.n}">${w.n}</b>${dl(w.n,w.n_prev,'표')}
+  <div class="wkx-days">${w.days.map(x=>{const d=new Date(x.d+'T00:00:00');return `<div class="wd" title="${d.getMonth()+1}/${d.getDate()} ${x.n}표"><div class="wb"><div class="wf" style="height:${Math.max(4,Math.round(x.n/mx*100))}%"></div></div><div class="wl">${dn[d.getDay()]}${x.n?` ${x.n}`:''}</div></div>`}).join('')}</div></div>
+ <div class="wkx-tiles"><div><b>${w.works}</b><small>작품</small></div><div><b>${w.actors}</b><small>고른 배우</small><em>새 얼굴 ${w.new_actors}</em></div><div><b>+${fmt(w.pts)}</b><small>얻은 포인트</small>${dl(w.pts,w.pts_prev,'P')}</div><div><b>${w.hits}</b><small>적중 판</small><em>${w.hitp?`+${w.hitp}P`:`결과 ${w.results}건`}</em></div></div>
+ ${w.fav?`<a class="wkx-fav" href="#a/${encodeURIComponent(w.fav.name)}"><span class="av"${fu?` style="background-image:url('${esc(fu)}')"`:''}></span><div><small>이번 주 최애</small><b>${esc(dispName(w.fav.name))}</b><p>${favTxt}</p></div></a>`:`<p class="sub">${favTxt}</p>`}
+ ${w.closing?`<a class="wkx-next" href="#">⏳ 내가 투표한 판 중 <b>${w.closing}개</b>가 7일 안에 결과 발표돼요<i>→</i></a>`:''}`}

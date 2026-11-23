@@ -25,3 +25,6 @@
 -- 040 round_board(): 최근 7일 결과(내 픽, 적중 포인트), 24시간 안에 열린 판, 24시간 안에 마감할 판
 --   my_cast_graph: 지난 시즌 표(votes_archive) 포함, vote_deck: opens_at 반영과 새 판 +15, 오늘 마감 +8 가중
 -- 041 role_peek(rid,cid): 비로그인 체험 투표 뒤 상위 3명과 내 후보 표 공개(anon 허용)
+-- 042 duel_next(skip,prefer): 보던 작품의 안 고른 배역 > 같은 작품 다른 판 > 원작 배우가 후보인 배역 > 내 픽이 후보인 배역 순, why 문구 반환
+-- 043 follow_many(pids): 온보딩에서 고른 배우를 로그인 뒤 팬 채널에 등록(멱등). vote_deck cands에 pid(people.id) 추가
+-- 044 my_week(): 최근 7일과 그 전 7일 비교(표, 작품, 배우, 새 얼굴, 포인트, 적중, 최애, 일별 표, 7일 안에 발표될 내 판)
