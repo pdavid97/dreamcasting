@@ -28,3 +28,36 @@ body[data-view=explore] .chy{display:flex!important;margin:10px 0 0}
 .loginbox .lg{justify-content:center;padding:12px}
 .loginbox .lg{border:1px solid var(--line);border-radius:12px}
 .den-top{flex-wrap:wrap}.den-ctl select{max-width:128px}.den-sw{white-space:nowrap}
+.vb.blind span{background:repeating-linear-gradient(90deg,var(--line) 0 6px,transparent 6px 10px)}.vb.blind b{color:var(--mute);font-weight:600}.blindmsg{margin:6px 0;color:var(--acc)!important;font-weight:700}
+.dsum{margin:10px 0 6px;font-size:13px;color:var(--ink)}
+.dpath{list-style:none;margin:0 0 8px;padding:0;display:flex;flex-direction:column;gap:4px;font-size:12px}
+.dpath li{display:grid;grid-template-columns:34px auto auto 1fr;gap:6px;align-items:center;padding:4px 8px;border-radius:8px;background:var(--panel)}
+.dpath li.me{background:color-mix(in srgb,var(--hot) 35%,var(--card))}
+.dpath span{color:var(--mute)}.dpath em{font-style:normal;color:var(--mute)}.dpath s{color:var(--mute)}
+/* 득표율은 배역 카드 안의 원형 차트 하나로(별도 득표율 차트 제거) */
+.sh:has(#cTitle),#chart{display:none!important}
+.rpie{display:grid;grid-template-columns:120px 1fr;gap:12px;align-items:center;margin:8px 0 12px;padding:10px;border:1px solid var(--line);border-radius:14px;background:var(--card)}
+.rpie svg{width:120px;height:120px}.rpie circle{transition:stroke-width .2s}
+.rpie ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:4px;font-size:12px}
+.rpie li{display:grid;grid-template-columns:10px 1fr auto;gap:6px;align-items:center}
+.rpie li i{width:10px;height:10px;border-radius:3px}.rpie li.mine{font-weight:800}.rpie li em{font-style:normal;font-size:10px;background:var(--hot);color:#141414;border-radius:4px;padding:0 4px}
+.rpie li.tot{display:block;color:var(--mute);font-size:11px;margin-top:2px}
+.vb2{font-size:12px;color:var(--mute);text-align:center}.vb2 b{color:var(--ink);font-size:14px}
+/* 캐스팅 팀 */
+.teams2{display:grid;grid-template-columns:1fr;gap:10px}
+.tcard{border:1px solid var(--line);border-radius:14px;padding:12px;background:var(--card)}
+.tcard.mine{background:linear-gradient(160deg,color-mix(in srgb,var(--hot) 25%,var(--card)),var(--card))}
+.th2{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}.th2 span{font-size:12px;color:var(--mute)}
+.team{display:grid;grid-template-columns:repeat(auto-fill,minmax(64px,1fr));gap:8px}
+.tm{display:flex;flex-direction:column;align-items:center;gap:2px;text-align:center;color:var(--ink);text-decoration:none;font-size:12px}
+.tm .av{width:52px;height:52px;border-radius:50%;background:var(--panel) center 20%/cover;display:grid;place-items:center;color:var(--mute);font-weight:800;border:2px solid var(--card);box-shadow:0 0 0 1px var(--line)}
+.tm small{font-size:10px;color:var(--mute)}.tm.empty b{color:var(--mute)}
+.tnote{margin:8px 0 0;font-size:12px;color:var(--ink)}
+.cbtn2{display:grid;grid-template-columns:28px 1fr auto;gap:6px;align-items:center}
+.tlike{display:flex;flex-direction:column;align-items:center;gap:0;border:1px solid var(--line);background:var(--card);border-radius:12px;padding:6px 8px;cursor:pointer;color:var(--mute);font:inherit}
+.tlike svg{width:20px;height:20px}.tlike b{font-size:12px;color:var(--ink)}
+.tlike.on{color:#e3121e;border-color:#e3121e}.tlike.on svg{fill:#e3121e}
+.cbtn2 .cbtn{display:flex!important;flex-direction:column;align-items:flex-start;gap:4px;min-width:0;text-align:left}
+.cbtn2 .cbtn .cls{display:flex;flex-wrap:wrap;gap:4px}
+.cbtn2 .cbtn .cn{white-space:normal;font-size:11px;color:var(--mute);text-align:left}
+.chip.hot{background:var(--hot);color:#141414;border-color:var(--hot);font-weight:800}

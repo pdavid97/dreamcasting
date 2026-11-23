@@ -11,3 +11,5 @@
 --     민심 일치율과 선견지명(당시 1위 아님 -> 지금 1위), 취향 쌍둥이(공통 배역 3개 이상), 마감 임박 레이스
 --     partners에 yes24, aladin(kind shop) 추가, kind 체크에 shop, ticket 추가
 -- Edge Function fanfeed: TMDB 공개 예정작, 구글 뉴스 행사/굿즈 기사(60일), TMDB 시청처(JustWatch 데이터), tmdb_cache 캐시
+-- 035, 036 중국어권(cn, tw, hk) 권역 가드: 중국어 이름이 없고 출생지가 중국어권이 아니면 intl로(people, cast_pool 트리거). 58명 정정
+-- 037 team_likes, topic_teams(tid), like_team(tid, ck): 캐스팅 팀 공감(같은 팀 선택 + 공감)

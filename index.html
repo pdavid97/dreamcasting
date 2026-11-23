@@ -966,6 +966,39 @@ body[data-view=explore] .chy{display:flex!important;margin:10px 0 0}
 .loginbox .lg{justify-content:center;padding:12px}
 .loginbox .lg{border:1px solid var(--line);border-radius:12px}
 .den-top{flex-wrap:wrap}.den-ctl select{max-width:128px}.den-sw{white-space:nowrap}
+.vb.blind span{background:repeating-linear-gradient(90deg,var(--line) 0 6px,transparent 6px 10px)}.vb.blind b{color:var(--mute);font-weight:600}.blindmsg{margin:6px 0;color:var(--acc)!important;font-weight:700}
+.dsum{margin:10px 0 6px;font-size:13px;color:var(--ink)}
+.dpath{list-style:none;margin:0 0 8px;padding:0;display:flex;flex-direction:column;gap:4px;font-size:12px}
+.dpath li{display:grid;grid-template-columns:34px auto auto 1fr;gap:6px;align-items:center;padding:4px 8px;border-radius:8px;background:var(--panel)}
+.dpath li.me{background:color-mix(in srgb,var(--hot) 35%,var(--card))}
+.dpath span{color:var(--mute)}.dpath em{font-style:normal;color:var(--mute)}.dpath s{color:var(--mute)}
+/* 득표율은 배역 카드 안의 원형 차트 하나로(별도 득표율 차트 제거) */
+.sh:has(#cTitle),#chart{display:none!important}
+.rpie{display:grid;grid-template-columns:120px 1fr;gap:12px;align-items:center;margin:8px 0 12px;padding:10px;border:1px solid var(--line);border-radius:14px;background:var(--card)}
+.rpie svg{width:120px;height:120px}.rpie circle{transition:stroke-width .2s}
+.rpie ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:4px;font-size:12px}
+.rpie li{display:grid;grid-template-columns:10px 1fr auto;gap:6px;align-items:center}
+.rpie li i{width:10px;height:10px;border-radius:3px}.rpie li.mine{font-weight:800}.rpie li em{font-style:normal;font-size:10px;background:var(--hot);color:#141414;border-radius:4px;padding:0 4px}
+.rpie li.tot{display:block;color:var(--mute);font-size:11px;margin-top:2px}
+.vb2{font-size:12px;color:var(--mute);text-align:center}.vb2 b{color:var(--ink);font-size:14px}
+/* 캐스팅 팀 */
+.teams2{display:grid;grid-template-columns:1fr;gap:10px}
+.tcard{border:1px solid var(--line);border-radius:14px;padding:12px;background:var(--card)}
+.tcard.mine{background:linear-gradient(160deg,color-mix(in srgb,var(--hot) 25%,var(--card)),var(--card))}
+.th2{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}.th2 span{font-size:12px;color:var(--mute)}
+.team{display:grid;grid-template-columns:repeat(auto-fill,minmax(64px,1fr));gap:8px}
+.tm{display:flex;flex-direction:column;align-items:center;gap:2px;text-align:center;color:var(--ink);text-decoration:none;font-size:12px}
+.tm .av{width:52px;height:52px;border-radius:50%;background:var(--panel) center 20%/cover;display:grid;place-items:center;color:var(--mute);font-weight:800;border:2px solid var(--card);box-shadow:0 0 0 1px var(--line)}
+.tm small{font-size:10px;color:var(--mute)}.tm.empty b{color:var(--mute)}
+.tnote{margin:8px 0 0;font-size:12px;color:var(--ink)}
+.cbtn2{display:grid;grid-template-columns:28px 1fr auto;gap:6px;align-items:center}
+.tlike{display:flex;flex-direction:column;align-items:center;gap:0;border:1px solid var(--line);background:var(--card);border-radius:12px;padding:6px 8px;cursor:pointer;color:var(--mute);font:inherit}
+.tlike svg{width:20px;height:20px}.tlike b{font-size:12px;color:var(--ink)}
+.tlike.on{color:#e3121e;border-color:#e3121e}.tlike.on svg{fill:#e3121e}
+.cbtn2 .cbtn{display:flex!important;flex-direction:column;align-items:flex-start;gap:4px;min-width:0;text-align:left}
+.cbtn2 .cbtn .cls{display:flex;flex-wrap:wrap;gap:4px}
+.cbtn2 .cbtn .cn{white-space:normal;font-size:11px;color:var(--mute);text-align:left}
+.chip.hot{background:var(--hot);color:#141414;border-color:var(--hot);font-weight:800}
 
 </style>
 </head>
@@ -1171,6 +1204,12 @@ function renderHead(){const t=topic();$('#tTitle').textContent=t.title;$('#tInfo
  const open=isOpen(t);$('#tClockL').textContent=open?'투표 마감까지':'투표 상태';$('#tClock').textContent=open?`D-${dleft(t)}`:'마감';
  const tv=D.roles.reduce((a,r)=>a+(isSync(r)?(D.sync[r.id]?.n||0):total(r)),0);$('#tVotes').textContent=` 총 ${fmt(tv)}표`;
  $('#tFlow').innerHTML=t.cat==='wn'&&D.roles.length?STAGES.map(([k,n],i)=>`${i?'<i>›</i>':''}<span class="${k===tStage()?'on':''}">${n}</span>`).join(''):''}
+/* 배역별 득표율 원형 차트: 상위 5명 + 기타, 내 픽 강조 */
+function rolePie(r,cs,tot,mv){const ord=[...cs].sort((a,b)=>b.votes-a.votes),top=ord.slice(0,5),etc=ord.slice(5).reduce((a,c)=>a+c.votes,0);
+ const COL=['#ffd600','#1d56d6','#e3121e','#2e7d32','#8e24aa','#90a4ae'];const segs=top.map((c,i)=>({n:c.name,v:c.votes,col:COL[i],mine:mv&&mv.candidate_id===c.candidate_id})).concat(etc?[{n:'기타',v:etc,col:COL[5]}]:[]);
+ const R=42,C=2*Math.PI*R;let off=0;const arcs=segs.map(s=>{const len=C*s.v/tot,a=`<circle cx="60" cy="60" r="${R}" fill="none" stroke="${s.col}" stroke-width="${s.mine?22:18}" stroke-dasharray="${len.toFixed(2)} ${(C-len).toFixed(2)}" stroke-dashoffset="${(-off).toFixed(2)}" transform="rotate(-90 60 60)"><title>${esc(s.n)} ${Math.round(s.v/tot*100)}%</title></circle>`;off+=len;return a}).join('');
+ const lead=top[0];return `<div class="rpie"><svg viewBox="0 0 120 120" role="img" aria-label="${esc(r.ch)} 역 득표율"><circle cx="60" cy="60" r="${R}" fill="none" stroke="var(--line)" stroke-width="18"/>${arcs}<text x="60" y="57" text-anchor="middle" font-size="9" fill="var(--mute)">1위</text><text x="60" y="71" text-anchor="middle" font-size="13" font-weight="800" fill="var(--ink)">${Math.round(lead.votes/tot*100)}%</text></svg>
+ <ul>${segs.map(s=>`<li class="${s.mine?'mine':''}"><i style="background:${s.col}"></i><span>${esc(s.n)}${s.mine?' <em>내 픽</em>':''}</span><b>${Math.round(s.v/tot*100)}%</b></li>`).join('')}<li class="tot">총 ${fmt(tot)}표</li></ul></div>`}
 /* 리메이크, 실사화 버전 이름: VS 한판 질문에 어느 판 캐스팅인지 붙임 */
 function verLabel(cat){return ({k2cn:'중국판',k2tw:'대만판',k2hk:'홍콩판',k2us:'할리우드판',us2k:'한국판',k2:'리메이크판',wn:'실사판',ip2live:'실사판'})[cat]||''}
 /* VS 한판 토너먼트: 이긴 배우가 남고 새 도전자와 붙음. 한 배역이 끝나면 다른 작품의 배역으로 */
@@ -1191,7 +1230,10 @@ function renderDuel(){const box=$('#duel');if(!box)return;if(!DUEL){box.innerHTM
  const other=DUEL.tid!==SEL;
  const ver=verLabel(DUEL.cat);const head=`<div class="dq"><b>VS 한판: ${ver?esc(ver)+' ':''}${esc(DUEL.ch)} 역, 누가 더 어울려요?</b><span><a href="#${esc(DUEL.tid)}">${esc(DUEL.title)}${ver?' '+esc(ver):''}</a>${DUEL.orig?`, 원작 ${esc(DUEL.orig)}`:''}</span></div>`;
  if(DUEL.done){const c=DUEL.a,w=DUEL.wins[c.candidate_id]||0;
-  box.innerHTML=`<div class="duel">${head}<div class="vs dchamp"><button class="side-a" disabled>${face(c)}<b>${esc(c.name)}</b><span class="res">내 최종 픽, ${w}연승</span></button></div><div class="dft"><span>${esc(DUEL.title)} ${esc(DUEL.ch)} 역 토너먼트 완료. 다른 작품으로 넘어가요.</span><span style="display:flex;gap:6px;align-items:center">${STREAK?`<span class="num">연속 ${STREAK}판</span>`:''}<a class="chip" href="#${esc(DUEL.tid)}">이 배역 투표하러 가기</a><button class="chip" data-act="duelNext">다음 토너먼트</button></span></div></div>`;return}
+  const L=DUEL.log||[],n=DUEL.total+1,direct=L.filter(x=>x.w===c.name).length,beaten=n-1-direct;
+  const path=`<ol class="dpath">${L.map((x,k)=>`<li class="${x.w===c.name?'me':''}"><span>${k+1}판</span><b>${esc(x.w)}</b><em>승</em><s>${esc(x.l)}</s></li>`).join('')}</ol>`;
+  box.innerHTML=`<div class="duel">${head}<div class="vs dchamp"><button class="side-a" disabled>${face(c)}<b>${esc(c.name)}</b><span class="res">후보 ${n}명 중 내 최종 픽</span></button></div>
+  <p class="dsum">${direct===n-1?`모든 도전자 ${n-1}명을 혼자 다 이겼어요. 압도적인 최종 픽.`:`직접 이긴 배우 ${direct}명${beaten?`, 그리고 앞서 왕좌를 지키던 배우를 꺾어서 그 배우가 이긴 ${beaten}명보다도 앞섰어요`:''}. 마지막까지 남은 한 명이 최종 픽이에요.`}</p>${path}<div class="dft"><span>${esc(DUEL.title)} ${esc(DUEL.ch)} 역 토너먼트 완료. 다른 작품으로 넘어가요.</span><span style="display:flex;gap:6px;align-items:center">${STREAK?`<span class="num">연속 ${STREAK}판</span>`:''}<button class="chip hot" data-act="duelCast">최종 픽에 정식 한 표</button><a class="chip" href="#${esc(DUEL.tid)}">작품 보러 가기</a><button class="chip" data-act="duelNext">다음 토너먼트</button></span></div></div>`;return}
  const side=(s,c)=>`<button class="side-${s}" data-act="duel" data-v="${s}">${face(c)}<b>${esc(c.name)}</b><span class="res num">${R?Math.round((s==='a'?R.pa:R.pb)*100)+'%':(s==='a'&&DUEL.round>1?`${DUEL.wins[c.candidate_id]||0}연승 중`:'')}</span></button>`;
  box.innerHTML=`<div class="duel">${head}<div class="vs">${side('a',DUEL.a)}<div class="vsmid">VS<small class="dround">${DUEL.round}/${DUEL.total}</small></div>${side('b',DUEL.b)}</div><div class="dft"><span>${R?(R.guest?(GUEST>=3?'구경 모드 결과예요. 로그인하면 내 선택이 광장 민심에 반영되고 포인트도 쌓여요':'구경 모드 결과예요. 고른 배우가 남아 다음 도전자와 붙어요'):'고른 배우가 남아 다음 도전자와 붙어요. 이 비율은 지금까지 광장의 선택이에요'):'고른 배우는 남고, 새 도전자가 올라와요. 끝까지 남는 배우가 내 픽이에요'}</span><span style="display:flex;gap:6px;align-items:center">${STREAK?`<span class="num">연속 ${STREAK}판</span>`:''}${R&&R.guest&&GUEST>=3&&!USER?'<button class="lg g" data-act="google" style="min-height:36px"><span class="gdot"></span>로그인</button>':''}<button class="chip" data-act="duelNext">다른 배역</button></span></div></div>`}
 function duelAdvance(){if(!DUEL)return;const winner=DUEL.lastWin;DUEL.res=null;
@@ -1210,6 +1252,7 @@ function drawChart(){const svg=$('#chart'),W=svg.clientWidth,H=svg.clientHeight;
   if(pts.length<2){svg.innerHTML=`<text x="${W/2}" y="${H/2-10}" text-anchor="middle" style="font-size:44px;font-weight:700;fill:var(--ink)">${s&&s.n?s.avg.toFixed(2):'첫 투표를 기다려요'}</text><text x="${W/2}" y="${H/2+22}" text-anchor="middle">${s&&s.n?`${fmt(s.n)}명 투표, 날짜별 추이는 이틀째부터 그려져요`:'공개 후 평가가 어떻게 바뀌는지 이곳에 기록돼요'}</text>`;return}
   const ser=pts.map(p=>p.avg);ser.name=`${r.actor} ${ser[ser.length-1].toFixed(2)}`;chartLines(svg,W,H,[ser],[pts[0].day,pts[pts.length-1].day],v=>v.toFixed(0),10);return}
  const cs=D.cands[r.id]||[],tot=total(r)||1;$('#cTitle').textContent=`${r.ch} 역 득표율${r.orig?` (원작 ${r.orig})`:''}`;$('#cSub').textContent='배역 카드를 누르면 차트가 바뀌어요';
+ if(isOpen(topic())&&!D.myVote[r.id]&&!isOpt(r)){$('#cSub').textContent='이 배역에 투표하면 득표율이 열려요';svg.innerHTML=`<text x="${W/2}" y="${H/2-6}" text-anchor="middle" style="font-size:40px;font-weight:800;fill:var(--ink)">?</text><text x="${W/2}" y="${H/2+26}" text-anchor="middle">내 표를 먼저 던지면 결과를 보여드려요</text>`;return}
  const days=[...new Set(D.tdaily.filter(d=>d.role_id===r.id).map(d=>d.day))];
  if(days.length>=2){const top=[...cs].sort((a,b)=>b.votes-a.votes).slice(0,4);const ser=top.map(c=>{const s=days.map(day=>{const rows=D.tdaily.filter(d=>d.role_id===r.id&&d.day===day),t=rows.reduce((a,x)=>a+x.votes,0)||1,m=rows.find(x=>x.candidate_id===c.candidate_id);return (m?m.votes:0)/t});s.name=`${c.name.slice(0,8)} ${Math.round(s[s.length-1]*100)}%`;return s});chartLines(svg,W,H,ser,[days[0],days[days.length-1]],v=>Math.round(v*100)+'%');return}
  const ord=[...cs].sort((a,b)=>b.votes-a.votes).slice(0,6),bh=Math.min(36,(H-20)/Math.max(ord.length,1)-8),lw=W<520?90:130;let o='';
@@ -1225,14 +1268,14 @@ function roleHTML(r,i){const t=topic(),open=isOpen(t),g=PROF?grade(PROF.points):
  const head=`<div class="top"><h3 class="cn">${isSync(r)?avatar(r.actor):''}<span>${esc(r.ch)}${isSync(r)?` <span style="font-family:'Noto Sans KR';font-size:17px;font-weight:700">${esc(r.actor)}</span>`:''}</span></h3><span class="sub">${r.age_hint?`배역 나이 ${esc(r.age_hint)} `:''}${r.orig?`원작 ${actorLink(r.orig)}${ageTxt(r.orig)?` (지금 ${ageTxt(r.orig)})`:''} `:''}${t.cat==='wn'?`<span class="st ${r.stage}">${SNAME[r.stage]}</span>`:''}</span></div>${r.descr?`<p class="sub">${esc(r.descr)}</p>`:''}`;
  if(isSync(r)){const s=D.sync[r.id]||{avg:0,n:0},mine=D.mySync[r.id];
   return `<article class="role${i===SROLE?' sel':''}" data-act="role" data-i="${i}">${head}${r.final_share!=null?`<div class="banner">캐스팅 확정 당시 광장 민심 ${Math.round(r.final_share*100)}%</div>`:''}
-  <div class="sync"><div><div class="ix"><b class="num">${s.n?s.avg.toFixed(2):'-'}</b><small> / 10 싱크로율, ${fmt(s.n)}표</small></div>
+  <div class="sync"><div><div class="ix"><b class="num">${!mine&&open?'?':s.n?s.avg.toFixed(2):'-'}</b><small> / 10 싱크로율, ${!mine&&open?'투표하면 평균 공개':fmt(s.n)+'표'}</small></div>
   ${mine?`<p class="dl" style="margin-top:8px">내 점수 ${mine}점으로 투표했어요</p>`:open?`<div class="vote"><input type="range" min="1" max="10" step="1" value="7" id="vt${r.id}" aria-label="${esc(r.ch)} 싱크로율 점수"><output id="vo${r.id}">7</output><button class="b sm buy" data-act="svote" data-rid="${r.id}">투표</button></div>`:'<p class="dl">투표가 마감됐어요</p>'}
   <ol class="tl">${(r.events||[]).map(e=>`<li>${esc(e.d)} ${esc(e.t)}</li>`).join('')}</ol></div><div></div></div>${talkHTML(r)}</article>`}
- const cs=D.cands[r.id]||[],tot=total(r)||1,mv=D.myVote[r.id],lead=cs.reduce((a,c)=>!a||c.votes>a.votes?c:a,null),dps=D.dpicks.filter(d=>d.role_id===r.id);
+ const mv=D.myVote[r.id],blind=open&&!mv&&!isOpt(r),cs=blind?[...(D.cands[r.id]||[])].sort((a,b)=>a.candidate_id-b.candidate_id):(D.cands[r.id]||[]),tot=total(r)||1,lead=blind?null:cs.reduce((a,c)=>!a||c.votes>a.votes?c:a,null),dps=D.dpicks.filter(d=>d.role_id===r.id);
  const rows=cs.map(c=>{const pct=c.votes/tot,dp=dps.filter(d=>d.candidate_id===c.candidate_id).map(d=>d.nickname),mine=mv&&mv.candidate_id===c.candidate_id;
-  const rank=1+cs.filter(x=>x.votes>c.votes).length;return `<div class="cand1${lead&&c.candidate_id===lead.candidate_id&&c.votes>0?' lead':''}">${c.votes>0?`<span class="rkb">${rank}위</span>`:''}<div class="nm cn">${isOpt(r)?'':`<a class="avl" href="#a/${encodeURIComponent(c.name)}" aria-hidden="true" tabindex="-1">${avatar(c.name)}</a>`}<span><b>${isOpt(r)?esc(c.name):actorLink(c.name,esc(c.name)+'<i class="go" aria-hidden="true">›</i>')}</b><small>${!isOpt(r)&&ageTxt(c.name)?ageTxt(c.name)+', ':''}${c.proposer?`제안 ${esc(c.proposer)}`:'첫 후보'}${dp.length?`, 디렉터스 픽 ${esc(dp.join(', '))}`:''}${mine?`, 내 표${mv.weight>1?' x2':''}`:''}</small></span></div><div class="vb"><span><i style="width:${(pct*100).toFixed(1)}%"></i></span><b>${(pct*100).toFixed(1)}% ${fmt(c.votes)}표</b></div><div class="acts">${open?(mv?(mine?'<button class="b sm mine" disabled>내 표</button>':''):`<button class="b sm" data-act="vote" data-rid="${r.id}" data-cid="${c.candidate_id}">한 표</button>`):''}${g>=3?`<button class="b sm" data-act="dpick" data-rid="${r.id}" data-cid="${c.candidate_id}">디렉터스 픽</button>`:''}</div></div>`}).join('');
- return `<article class="role${i===SROLE?' sel':''}" data-act="role" data-i="${i}">${head}${!open?`<div class="closed">투표 마감. 최종 결과${lead&&lead.votes?`: ${esc(lead.name)} ${Math.round(lead.votes/tot*100)}%`:''}</div>`:mv?`<p class="dl" style="margin:6px 0">이 배역에는 투표를 마쳤어요. 마음에 드는 후보가 없었다면 캐스팅 시트에 원하는 배우를 직접 적어 보세요.</p>`:''}${r.stage==='rumor'?'<div class="banner">실사화가 발표됐어요. 공식 캐스팅이 나오면 맞힌 사람에게 포인트가 가요.</div>':''}
- ${rows?`<div class="cgrid${isOpt(r)?' opt':''}">${rows}</div>`:'<p class="empty3">아직 후보가 없어요. 첫 후보를 올려 주세요.</p>'}
+  const rank=1+cs.filter(x=>x.votes>c.votes).length;return `<div class="cand1${lead&&c.candidate_id===lead.candidate_id&&c.votes>0?' lead':''}">${c.votes>0&&!blind?`<span class="rkb">${rank}위</span>`:''}<div class="nm cn">${isOpt(r)?'':`<a class="avl" href="#a/${encodeURIComponent(c.name)}" aria-hidden="true" tabindex="-1">${avatar(c.name)}</a>`}<span><b>${isOpt(r)?esc(c.name):actorLink(c.name,esc(c.name)+'<i class="go" aria-hidden="true">›</i>')}</b><small>${!isOpt(r)&&ageTxt(c.name)?ageTxt(c.name)+', ':''}${c.proposer?`제안 ${esc(c.proposer)}`:'첫 후보'}${dp.length?`, 디렉터스 픽 ${esc(dp.join(', '))}`:''}${mine?`, 내 표${mv.weight>1?' x2':''}`:''}</small></span></div>${blind?`<div class="vb blind"><span><i></i></span><b>투표하면 공개</b></div>`:`<div class="vb2"><b>${(pct*100).toFixed(0)}%</b> ${fmt(c.votes)}표</div>`}<div class="acts">${open?(mv?(mine?'<button class="b sm mine" disabled>내 표</button>':''):`<button class="b sm" data-act="vote" data-rid="${r.id}" data-cid="${c.candidate_id}">한 표</button>`):''}${g>=3?`<button class="b sm" data-act="dpick" data-rid="${r.id}" data-cid="${c.candidate_id}">디렉터스 픽</button>`:''}</div></div>`}).join('');
+ return `<article class="role${i===SROLE?' sel':''}" data-act="role" data-i="${i}">${head}${blind&&cs.length?`<p class="dl blindmsg">내 표를 던지면 득표율과 순위가 열려요. 남의 표에 흔들리지 말고 먼저 골라 보세요.</p>`:''}${!open?`<div class="closed">투표 마감. 최종 결과${lead&&lead.votes?`: ${esc(lead.name)} ${Math.round(lead.votes/tot*100)}%`:''}</div>`:mv?`<p class="dl" style="margin:6px 0">이 배역에는 투표를 마쳤어요. 마음에 드는 후보가 없었다면 캐스팅 시트에 원하는 배우를 직접 적어 보세요.</p>`:''}${r.stage==='rumor'?'<div class="banner">실사화가 발표됐어요. 공식 캐스팅이 나오면 맞힌 사람에게 포인트가 가요.</div>':''}
+ ${!blind&&!isOpt(r)&&cs.some(c=>c.votes)?rolePie(r,cs,tot,mv):''}${rows?`<div class="cgrid${isOpt(r)?' opt':''}">${rows}</div>`:'<p class="empty3">아직 후보가 없어요. 첫 후보를 올려 주세요.</p>'}
  ${open?`<div class="row2"><input type="text" id="ad${r.id}" placeholder="후보에 없는 배우 올리기" maxlength="20" aria-label="새 후보 배우 이름"><button class="b sm" data-act="add" data-rid="${r.id}">후보 등록</button></div>`:''}${talkHTML(r)}</article>`}
 function renderRoles(){const box=$('#roles'),open=[...box.querySelectorAll('details.talk')].map(d=>d.open),keep={};box.querySelectorAll('input[type=text],select').forEach(e=>{if(e.id)keep[e.id]=e.value});
  box.innerHTML=D.roles.length?D.roles.map(roleHTML).join(''):'<p class="empty3">배역이 없어요.</p>';
@@ -1295,7 +1338,8 @@ document.addEventListener('click',async e=>{
  if(a==='topic'){selectTopic(b.dataset.id);return}
  if(a==='openprop'){$('#propBox').open=true;$('#propBox').scrollIntoView({behavior:'smooth'});$('#pCat').value=CAT;return}
  if(a==='duelNext'){if(DUEL&&!DUEL.done){DUEL_SKIP.push(DUEL.rid);duelSaveSkip();track&&track('duel_skip',{t:DUEL.tid,r:DUEL.rid})}DUEL=null;await newDuel(false);renderDuel();return}
- if(a==='duel'){if(!DUEL||DUEL.res||DUEL.done)return;const w=b.dataset.v==='a'?DUEL.a:DUEL.b;const guest=!USER||!PROF;try{let d;if(guest){d=(await rpc('duel_stats',{rid:DUEL.rid,x:DUEL.a.candidate_id,y:DUEL.b.candidate_id}))[0];if(d.a===w.candidate_id)d.a_votes++;else d.b_votes++;d.already=false;GUEST++;try{localStorage.setItem('guestDuels',GUEST)}catch(e){}}else{d=(await rpc('duel_vote',{rid:DUEL.rid,x:DUEL.a.candidate_id,y:DUEL.b.candidate_id,win:w.candidate_id}))[0]}const tot=(d.a_votes+d.b_votes)||1,va=d.a===DUEL.a.candidate_id?d.a_votes:d.b_votes,vb=tot-va;DUEL.res={pa:va/tot,pb:vb/tot,already:d.already,guest};DUEL.lastWin=w;DUEL.wins[w.candidate_id]=(DUEL.wins[w.candidate_id]||0)+1;STREAK++;renderDuel();setTimeout(duelAdvance,1300);if(!guest)loadProfile().then(renderWho)}catch(err){toast(errMsg(err))}return}
+ if(a==='duelCast'){if(!DUEL||!DUEL.done||needLogin())return;try{await rpc('cast_vote',{rid:DUEL.rid,cid:DUEL.a.candidate_id});track('duel_cast',{t:DUEL.tid,r:DUEL.rid,c:DUEL.a.candidate_id});toast(`${DUEL.a.name}에게 정식 한 표를 넣었어요`);b.disabled=true;b.textContent='정식 한 표 완료'}catch(e){toast(/already|이미|duplicate/i.test(String(e.message||e))?'이 배역에는 이미 정식 투표를 했어요':errMsg(e))}return}
+ if(a==='duel'){if(!DUEL||DUEL.res||DUEL.done)return;const w=b.dataset.v==='a'?DUEL.a:DUEL.b;const guest=!USER||!PROF;try{let d;if(guest){d=(await rpc('duel_stats',{rid:DUEL.rid,x:DUEL.a.candidate_id,y:DUEL.b.candidate_id}))[0];if(d.a===w.candidate_id)d.a_votes++;else d.b_votes++;d.already=false;GUEST++;try{localStorage.setItem('guestDuels',GUEST)}catch(e){}}else{d=(await rpc('duel_vote',{rid:DUEL.rid,x:DUEL.a.candidate_id,y:DUEL.b.candidate_id,win:w.candidate_id}))[0]}const tot=(d.a_votes+d.b_votes)||1,va=d.a===DUEL.a.candidate_id?d.a_votes:d.b_votes,vb=tot-va;DUEL.res={pa:va/tot,pb:vb/tot,already:d.already,guest};DUEL.lastWin=w;(DUEL.log=DUEL.log||[]).push({w:w.name,l:(w===DUEL.a?DUEL.b:DUEL.a).name});DUEL.wins[w.candidate_id]=(DUEL.wins[w.candidate_id]||0)+1;STREAK++;renderDuel();setTimeout(duelAdvance,1300);if(!guest)loadProfile().then(renderWho)}catch(err){toast(errMsg(err))}return}
  if(a==='vote'){if(needLogin())return;const r=D.roles.find(x=>x.id===rid),c=(D.cands[rid]||[]).find(x=>x.candidate_id===cid);await act('cast_vote',{rid,cid},`${r.ch} 역에 ${c.name} 한 표! 투표는 한 번만 할 수 있어요`);return}
  if(a==='svote'){if(needLogin())return;await act('sync_vote',{rid,sc:+$('#vt'+rid).value},'싱크로율 투표 완료');return}
  if(a==='add'){if(needLogin())return;const n=$('#ad'+rid).value.trim();if(!n)return toast('배우 이름을 입력하세요');await act('add_candidate',{rid,nm:n},`${n} 후보 등록 완료`);return}
@@ -1747,7 +1791,7 @@ function dialHTML(t,r,cands,picked,tot){const ou=r.orig?IMG['p:'+r.orig]:null,N=
  const start=Math.max(0,cands.findIndex(c=>c.id===picked));
  return `<div class="dial" id="dial" data-n="${N}" data-start="${start}" tabindex="0" role="listbox" aria-label="${esc(r.ch)} 후보 다이얼, 좌우 화살표로 돌리고 Enter로 한 표">
   <div class="dl-ring" aria-hidden="true">${Array.from({length:N},(_,i)=>`<i style="--a:${i*360/N}deg"></i>`).join('')}</div>
-  ${cands.map((c,i)=>{const u=IMG['p:'+c.name],pct=t.seen&&tot?Math.round((c.votes||0)/tot*100):null;
+  ${cands.map((c,i)=>{const u=IMG['p:'+c.name],pct=r.mine&&tot?Math.round((c.votes||0)/tot*100):null;
    return `<button class="dl-c${picked===c.id?' sel':''}" data-i="${i}" data-rid="${r.id}" data-cid="${c.id}" data-name="${esc(c.name)}" data-age="${esc(ageTxt(c.name)||'')}" data-pct="${pct==null?'':pct}" data-recent="${esc(c.blurb&&c.blurb.recent?`최근작 《${c.blurb.recent.t}》${c.blurb.recent.y?` (${c.blurb.recent.y})`:''}`:'')}" data-why="${esc(JSON.stringify(((c.blurb&&c.blurb.reasons)||(c.blurb&&c.blurb.why?[{text:c.blurb.why}]:[])).slice(0,2)))}" data-tid="${esc(t.id)}" data-pick="${esc(c.pick||'')}" data-kind="${esc(c.kind||'')}" data-acted="${c.acted===false?0:1}" role="option" aria-label="${esc(c.name)}"><span class="ph"${u?` style="background-image:url('${esc(u)}')"`:''}>${u?'':esc(c.name[0])}</span>${pct!=null?`<em>${pct}%</em>`:''}<i class="dl-tap">탭해서 한 표</i></button>`}).join('')}
   <button class="dl-c dl-add" data-i="${cands.length}" data-rid="${r.id}" data-tid="${esc(t.id)}" data-add="1" data-name="내 후보 추가" role="option" aria-label="원하는 후보 직접 추가"><span class="ph">+</span><i class="dl-tap">탭해서 추가</i></button>
   <div class="dl-mid">
@@ -1792,13 +1836,23 @@ function dialConfirm(){const D=DIAL;if(!D||D.focus<0)return;const b=D.el.querySe
 /* ================= 결과와 토론방(작품 화면 하단) ================= */
 let TALK={tid:null,combos:[],open:null,thread:[],myv:{}};
 async function loadTalk(tid){TALK.tid=tid;const box=$('#talkBox');if(!box)return;
- try{TALK.combos=await rpc('topic_combos',{tid})||[]}catch(e){TALK.combos=[]}renderTalk()}
+ try{TALK.combos=await rpc('topic_teams',{tid})||[]}catch(e){TALK.combos=[]}renderTalk()}
 function comboLine(p){return (D?D.roles:[]).filter(r=>p[r.id]).map(r=>`<span class="cl"><small>${esc(SLOT[r.slot]||r.ch)}</small>${esc(p[r.id])}</span>`).join('')}
 function renderTalk(){const box=$('#talkBox');if(!box||!D)return;const t=topic(),seen=D.seen;
  if(!seen){box.innerHTML=`<div class="talk0"><b>결과와 토론방은 투표한 사람에게 열려요</b><p class="sub">배역 하나라도 투표하면 득표율, 캐스팅 조합 순위, 조합별 토론방을 볼 수 있어요.</p><a class="b buy" href="#">카드로 투표하기</a></div>`;return}
- const cs=TALK.combos;
- box.innerHTML=`<div class="sh"><h2>캐스팅 조합 순위</h2><span class="sub">같은 조합을 고른 사람 수</span></div>
- ${cs.length?`<ol class="combos">${cs.map((c,i)=>`<li class="${c.mine?'mine':''}${TALK.open===c.ckey?' open':''}"><button class="cbtn" data-act="talk-open" data-k="${c.ckey}" aria-expanded="${TALK.open===c.ckey}"><span class="rk">${i+1}</span><span class="cls">${comboLine(c.picks)}</span><span class="cn">${fmt(c.users)}명${c.mine?', 내 조합':''}<br><small>토론 ${fmt(c.comments)}</small></span></button>${TALK.open===c.ckey?`<div class="thread" id="thread">${threadHTML(c)}</div>`:''}</li>`).join('')}</ol>`:'<p class="empty3">모든 배역을 고른 사람이 아직 없어요. 남은 배역도 투표하면 내 조합이 순위에 올라가요.</p>'}`}
+ const cs=TALK.combos,RS=(D.roles||[]).filter(r=>!isSync(r)&&!isOpt(r));
+ const myTeam=RS.map(r=>{const v=D.myVote[r.id],c=v&&(D.cands[r.id]||[]).find(x=>x.candidate_id===v.candidate_id);return {r,name:c?c.name:null}});
+ const done=myTeam.filter(x=>x.name).length,lead=RS.map(r=>{const c=(D.cands[r.id]||[]).reduce((a,x)=>!a||x.votes>a.votes?x:a,null);return {r,name:c&&c.votes?c.name:null}});
+ const same=myTeam.every((x,i)=>x.name&&x.name===lead[i].name);
+ const teamRow=L=>`<div class="team">${L.map(x=>`<a class="tm${x.name?'':' empty'}" ${x.name?`href="#a/${encodeURIComponent(x.name)}"`:''}><span class="av"${x.name&&IMG['p:'+x.name]?` style="background-image:url('${esc(IMG['p:'+x.name])}')"`:''}>${x.name?'':'?'}</span><small>${esc(SLOT[x.r.slot]||x.r.ch)}</small><b>${x.name?esc(x.name):'미정'}</b></a>`).join('')}</div>`;
+ box.innerHTML=`<div class="sh"><h2>캐스팅 팀</h2><span class="sub">배역별 표가 모여 만들어진 팀, 그리고 팀에 대한 공감</span></div>
+ <div class="teams2">
+  <article class="tcard mine"><div class="th2"><b>내 캐스팅 팀</b><span>${done===RS.length?'완성':`${RS.length-done}개 배역 남음`}</span></div>${teamRow(myTeam)}
+   ${done===RS.length?(same?'<p class="tnote">광장 민심 팀과 똑같아요. 민심을 정확히 읽었네요.</p>':`<p class="tnote">광장 민심 팀과 ${myTeam.filter((x,i)=>x.name!==lead[i].name).length}자리가 달라요.</p>`):'<p class="tnote">남은 배역도 고르면 내 팀이 공감 순위에 올라가요.</p>'}</article>
+  <article class="tcard lteam"><div class="th2"><b>광장 민심 팀</b><span>배역별 1위</span></div>${teamRow(lead)}</article>
+ </div>
+ <div class="sh" style="margin-top:16px"><h3>팀 공감 순위</h3><span class="sub">같은 팀을 고른 사람 + 공감한 사람</span></div>
+ ${cs.length?`<ol class="combos">${cs.map((c,i)=>`<li class="${c.mine?'mine':''}${TALK.open===c.ckey?' open':''}"><div class="cbtn2"><span class="rk">${i+1}</span><button class="cbtn" data-act="talk-open" data-k="${c.ckey}" aria-expanded="${TALK.open===c.ckey}"><span class="cls">${comboLine(c.picks)}</span><span class="cn">같은 팀 ${fmt(c.users)}명${c.mine?', 내 팀':''}, 토론 ${fmt(c.comments)}</span></button><button class="tlike${c.liked?' on':''}" data-act="team-like" data-k="${c.ckey}" aria-pressed="${!!c.liked}" aria-label="이 팀에 공감">${IC.heart}<b>${fmt((c.likes||0)+c.users)}</b></button></div>${TALK.open===c.ckey?`<div class="thread" id="thread">${threadHTML(c)}</div>`:''}</li>`).join('')}</ol>`:'<p class="empty3">모든 배역을 고른 사람이 아직 없어요. 남은 배역도 투표하면 내 팀이 순위에 올라가요.</p>'}`}
 function threadHTML(c){if(!USER)return '<p class="sub">로그인하면 토론방을 볼 수 있어요.</p>';
  const all=TALK.thread,top=all.filter(x=>!x.parent_id).sort((a,b)=>b.rank_score-a.rank_score||(b.up-b.down)-(a.up-a.down)||new Date(b.created_at)-new Date(a.created_at));
  const kids=id=>all.filter(x=>x.parent_id===id).sort((a,b)=>new Date(a.created_at)-new Date(b.created_at));
@@ -1824,6 +1878,7 @@ document.addEventListener('click',async e=>{const b=e.target.closest('[data-act]
  if(a==='dk-restart'){DI=0;DR=0;await loadDeck();const t=curTopic();if(t)DR=firstOpenRole(t);renderDeck();return}
  if(a==='sheet-close'){$('#loginSheet').classList.remove('on');return}
  if(a==='talk-open'){openThread(b.dataset.k);return}
+ if(a==='team-like'){if(needLogin())return;const c=TALK.combos.find(x=>x.ckey===b.dataset.k);if(!c)return;if(c.mine){toast('내 팀에는 공감 대신 이미 한 표가 들어가 있어요');return}try{const on=await rpc('like_team',{tid:TALK.tid,ck:c.ckey});c.liked=on;c.likes=(c.likes||0)+(on?1:-1);track('team_like',{t:TALK.tid,m:{on}});renderTalk()}catch(e){toast(errMsg(e))}return}
  if(a==='tvote'){if(needLogin())return;try{const r=await rpc('vote_thread',{cid:+b.dataset.id,val:+b.dataset.v});const x=TALK.thread.find(y=>y.id===+b.dataset.id);if(x){x.up=r.up;x.down=r.down;x.hidden=r.hidden;const mv=TALK.myv[x.id]||0;TALK.myv[x.id]=mv===+b.dataset.v?0:+b.dataset.v}renderTalk()}catch(err){toast(errMsg(err))}return}
  if(a==='treply'){const f=$('#tr'+b.dataset.id);if(f){f.hidden=!f.hidden;if(!f.hidden)f.querySelector('input').focus()}return}
  if(a==='tpost'){if(needLogin())return;const parent=b.dataset.parent?+b.dataset.parent:null;const inp=parent?$('#tr'+parent).querySelector('input'):$('#tNew');const txt=inp.value.trim();if(!txt)return toast('내용을 적어 주세요');
