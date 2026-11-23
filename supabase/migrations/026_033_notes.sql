@@ -13,3 +13,5 @@
 -- Edge Function fanfeed: TMDB 공개 예정작, 구글 뉴스 행사/굿즈 기사(60일), TMDB 시청처(JustWatch 데이터), tmdb_cache 캐시
 -- 035, 036 중국어권(cn, tw, hk) 권역 가드: 중국어 이름이 없고 출생지가 중국어권이 아니면 intl로(people, cast_pool 트리거). 58명 정정
 -- 037 team_likes, topic_teams(tid), like_team(tid, ck): 캐스팅 팀 공감(같은 팀 선택 + 공감)
+-- 038 vote_to_sheet: 표가 들어오면 내 팀(시트) 칸을 채우고 꾸미기는 유지, 출처(src: wheel, board, vs, actor) 기록
+--     cast_vote_src(rid,cid,src), undo_vote(rid): 투표 후 15초 안 되돌리기(포인트, 팀 칸, 집계 함께 되돌림, 이벤트 vote_undo)

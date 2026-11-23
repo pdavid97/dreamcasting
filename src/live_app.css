@@ -70,3 +70,13 @@ body[data-view=rank] .rknav{display:grid;grid-template-columns:repeat(3,minmax(0
 .rknav button[aria-pressed=true]{background:#141414;color:#fff;border-color:#141414}
 body[data-view=rank] .side>section[data-rk]:not(.rkon){display:none!important}
 body[data-view=rank] .side{grid-template-columns:1fr!important}
+.undobar{position:fixed;left:50%;bottom:calc(78px + env(safe-area-inset-bottom));transform:translate(-50%,20px);width:min(calc(100% - 24px),calc(var(--appw) - 24px));display:flex;justify-content:space-between;align-items:center;gap:10px;background:#141414;color:#fff;border-radius:14px;padding:10px 12px 10px 16px;box-shadow:0 10px 30px rgba(0,0,0,.3);opacity:0;pointer-events:none;transition:.25s;z-index:90;font-size:14px;box-sizing:border-box}
+.undobar.on{opacity:1;pointer-events:auto;transform:translate(-50%,0)}
+.undobar button{border:0;background:var(--hot);color:#141414;font:inherit;font-weight:800;border-radius:10px;padding:8px 12px;cursor:pointer;white-space:nowrap}
+.undobar b{display:inline-block;min-width:16px;font:800 12px Inter,sans-serif}
+.tm.empty[data-act]{cursor:pointer}.tm.empty[data-act] .av{border:2px dashed var(--acc);color:var(--acc)}.tm.empty[data-act] b{color:var(--acc)!important}
+.role.flash{outline:3px solid var(--hot);outline-offset:3px;transition:outline .3s}
+.sheetd{border:1px dashed var(--line);border-radius:14px;padding:10px 12px;margin:8px 0 14px}
+.sheetd>summary{cursor:pointer;list-style:none;display:flex;flex-direction:column;gap:2px}
+.sheetd>summary small{font-size:11px;color:var(--mute)}
+.sheetd[open]>summary{margin-bottom:8px}

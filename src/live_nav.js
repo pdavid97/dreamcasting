@@ -32,3 +32,17 @@ const RK_SUBS=[['fire','배우 화력','🔥'],['meta','메타 지수','⭐'],['
  let cur='fire';try{cur=localStorage.getItem('rkSub')||'fire'}catch(e){}setRk(cur)})();
 function setRk(k){document.querySelectorAll('.side>section[data-rk]').forEach(s=>s.classList.toggle('rkon',s.dataset.rk===k));document.querySelectorAll('.rknav button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.k===k));try{localStorage.setItem('rkSub',k)}catch(e){}}
 document.addEventListener('click',e=>{const b=e.target.closest('[data-act="rksub"]');if(!b)return;setRk(b.dataset.k);track('rank_sub',{m:{k:b.dataset.k}});scrollTo({top:0,behavior:'smooth'})});
+/* 실수한 표 되돌리기: 투표 직후 10초 동안 하단에 되돌리기 바 */
+let UNDO_T=null;
+function showUndo(rid,label){let el=$('#undoBar');if(!el){el=document.createElement('div');el.id='undoBar';el.className='undobar';el.setAttribute('role','status');document.body.appendChild(el)}
+ clearTimeout(UNDO_T);let n=10;el.innerHTML=`<span>${esc(label)}</span><button data-act="undoVote" data-rid="${rid}">되돌리기 <b id="undoS">${n}</b></button>`;el.classList.add('on');
+ const tick=()=>{n--;const b=$('#undoS');if(b)b.textContent=n;if(n<=0)el.classList.remove('on');else UNDO_T=setTimeout(tick,1000)};UNDO_T=setTimeout(tick,1000);teamCheck(rid)}
+async function teamCheck(rid){if(!D||!D.roles.some(r=>r.id===rid))return;setTimeout(()=>{const RS=D.roles.filter(r=>!isSync(r)&&!isOpt(r));const left=RS.filter(r=>!D.myVote[r.id]).length;if(!left&&RS.length>1)toast('내 캐스팅 팀 완성! 팀 공감 순위에 올라갔어요');else if(left&&left<=2)toast(`${left}개 배역만 더 고르면 내 팀 완성`)},1600)}
+document.addEventListener('click',async e=>{const b=e.target.closest('[data-act="undoVote"]');if(!b)return;const rid=+b.dataset.rid;b.disabled=true;
+ try{await rpc('undo_vote',{rid});clearTimeout(UNDO_T);$('#undoBar').classList.remove('on');toast('표를 되돌렸어요. 다시 골라 주세요');track('vote_undo',{r:rid});
+  try{for(const t of (typeof DECK!=='undefined'?DECK:[]))for(const r of (t.roles||[]))if(r.id===rid)r.mine=null}catch(x){}
+  if(DUEL&&DUEL.rid===rid){DUEL.cast='undone'}
+  await refresh();try{if(DECKV)renderDeck()}catch(x){}try{if(VIEWX==='vs')renderDuel()}catch(x){}}
+ catch(err){b.disabled=false;toast(errMsg(err))}});
+/* 팀 카드의 빈칸을 누르면 그 배역 카드로 */
+document.addEventListener('click',e=>{const b=e.target.closest('[data-act="team-gap"]');if(!b)return;const el=document.querySelector(`#roles .role[data-rid="${b.dataset.rid}"]`)||document.querySelectorAll('#roles .role')[+b.dataset.i];if(el){el.scrollIntoView({behavior:'smooth',block:'start'});el.classList.add('flash');setTimeout(()=>el.classList.remove('flash'),1400)}});

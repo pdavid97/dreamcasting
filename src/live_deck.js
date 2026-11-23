@@ -62,14 +62,14 @@ function nextTopic(){cardLeave();DI++;const t=curTopic();DR=t?firstOpenRole(t):0
 async function deckPick(rid,cid){const t=curTopic(),r=curRole();if(!t||!r||r.id!==rid)return;track('cand_tap',{t:t.id,r:rid,c:cid});
  if(r.mine){toast('이 배역은 이미 투표했어요');nextRole();return}
  if(!USER||!PROF){const a=pend().filter(p=>p.rid!==rid);a.push({tid:t.id,rid,cid,at:Date.now()});setPend(a);track('login_prompt',{t:t.id,r:rid,c:cid});openLoginSheet();renderDeck();return}
- try{await rpc('cast_vote',{rid,cid});r.mine=cid;t.seen=true;track('vote_done',{t:t.id,r:rid,c:cid});toast('한 표 반영');
+ try{await rpc('cast_vote_src',{rid,cid,src:'wheel'});r.mine=cid;t.seen=true;track('vote_done',{t:t.id,r:rid,c:cid});showUndo(rid,`${r.ch} 역 한 표 반영`);
   const card=$('#dkCard');if(card){card.classList.add('fly-r');await new Promise(o=>setTimeout(o,220))}
   // 결과 공개를 위해 덱을 새로 받아 득표를 채움
   const fresh=await rpc('vote_deck',{lim:16}).catch(()=>null);const ft=fresh&&fresh.find(x=>x.id===t.id);if(ft){Object.assign(t,{seen:ft.seen,roles:ft.roles})}
   nextRole()}catch(e){toast(errMsg(e))}}
 
 async function flushPending(){if(!USER||!PROF)return;const a=pend();if(!a.length)return;setPend([]);let ok=0;
- for(const p of a){try{await rpc('cast_vote',{rid:p.rid,cid:p.cid});ok++;track('vote_done',{t:p.tid,r:p.rid,c:p.cid,m:{after_login:true}})}catch(e){}}
+ for(const p of a){try{await rpc('cast_vote_src',{rid:p.rid,cid:p.cid,src:'wheel'});ok++;track('vote_done',{t:p.tid,r:p.rid,c:p.cid,m:{after_login:true}})}catch(e){}}
  if(ok){toast(`로그인 전에 고른 ${ok}표를 반영했어요`);track('login_done',{m:{flushed:ok}})}await loadDeck();const t=curTopic();if(t)DR=Math.min(DR+0,t.roles.length)}
 
 function openLoginSheet(){const m=$('#loginSheet');if(!m)return;m.classList.add('on');setTimeout(()=>{const b=m.querySelector('[data-act=login]');if(b)b.focus()},50)}
@@ -147,10 +147,10 @@ function renderTalk(){const box=$('#talkBox');if(!box||!D)return;const t=topic()
  const myTeam=RS.map(r=>{const v=D.myVote[r.id],c=v&&(D.cands[r.id]||[]).find(x=>x.candidate_id===v.candidate_id);return {r,name:c?c.name:null}});
  const done=myTeam.filter(x=>x.name).length,lead=RS.map(r=>{const c=(D.cands[r.id]||[]).reduce((a,x)=>!a||x.votes>a.votes?x:a,null);return {r,name:c&&c.votes?c.name:null}});
  const same=myTeam.every((x,i)=>x.name&&x.name===lead[i].name);
- const teamRow=L=>`<div class="team">${L.map(x=>`<a class="tm${x.name?'':' empty'}" ${x.name?`href="#a/${encodeURIComponent(x.name)}"`:''}><span class="av"${x.name&&IMG['p:'+x.name]?` style="background-image:url('${esc(IMG['p:'+x.name])}')"`:''}>${x.name?'':'?'}</span><small>${esc(SLOT[x.r.slot]||x.r.ch)}</small><b>${x.name?esc(x.name):'미정'}</b></a>`).join('')}</div>`;
+ const teamRow=(L,gap)=>`<div class="team">${L.map((x,i)=>`<a class="tm${x.name?'':' empty'}" ${x.name?`href="#a/${encodeURIComponent(x.name)}"`:gap?`href="javascript:void 0" data-act="team-gap" data-i="${D.roles.indexOf(x.r)}" data-rid="${x.r.id}"`:''}><span class="av"${x.name&&IMG['p:'+x.name]?` style="background-image:url('${esc(IMG['p:'+x.name])}')"`:''}>${x.name?'':'?'}</span><small>${esc(SLOT[x.r.slot]||x.r.ch)}</small><b>${x.name?esc(x.name):gap?'고르기':'미정'}</b></a>`).join('')}</div>`;
  box.innerHTML=`<div class="sh"><h2>캐스팅 팀</h2><span class="sub">배역별 표가 모여 만들어진 팀, 그리고 팀에 대한 공감</span></div>
  <div class="teams2">
-  <article class="tcard mine"><div class="th2"><b>내 캐스팅 팀</b><span>${done===RS.length?'완성':`${RS.length-done}개 배역 남음`}</span></div>${teamRow(myTeam)}
+  <article class="tcard mine"><div class="th2"><b>내 캐스팅 팀</b><span>${done===RS.length?'완성':`${RS.length-done}개 배역 남음`}</span></div>${teamRow(myTeam,true)}
    ${done===RS.length?(same?'<p class="tnote">광장 민심 팀과 똑같아요. 민심을 정확히 읽었네요.</p>':`<p class="tnote">광장 민심 팀과 ${myTeam.filter((x,i)=>x.name!==lead[i].name).length}자리가 달라요.</p>`):'<p class="tnote">남은 배역도 고르면 내 팀이 공감 순위에 올라가요.</p>'}</article>
   <article class="tcard lteam"><div class="th2"><b>광장 민심 팀</b><span>배역별 1위</span></div>${teamRow(lead)}</article>
  </div>
