@@ -1171,23 +1171,25 @@ function renderHead(){const t=topic();$('#tTitle').textContent=t.title;$('#tInfo
  const open=isOpen(t);$('#tClockL').textContent=open?'투표 마감까지':'투표 상태';$('#tClock').textContent=open?`D-${dleft(t)}`:'마감';
  const tv=D.roles.reduce((a,r)=>a+(isSync(r)?(D.sync[r.id]?.n||0):total(r)),0);$('#tVotes').textContent=` 총 ${fmt(tv)}표`;
  $('#tFlow').innerHTML=t.cat==='wn'&&D.roles.length?STAGES.map(([k,n],i)=>`${i?'<i>›</i>':''}<span class="${k===tStage()?'on':''}">${n}</span>`).join(''):''}
+/* 리메이크, 실사화 버전 이름: VS 한판 질문에 어느 판 캐스팅인지 붙임 */
+function verLabel(cat){return ({k2cn:'중국판',k2tw:'대만판',k2hk:'홍콩판',k2us:'할리우드판',us2k:'한국판',k2:'리메이크판',wn:'실사판',ip2live:'실사판'})[cat]||''}
 /* VS 한판 토너먼트: 이긴 배우가 남고 새 도전자와 붙음. 한 배역이 끝나면 다른 작품의 배역으로 */
 let DUEL_SKIP=(()=>{try{return JSON.parse(localStorage.getItem('duelDone')||'[]')}catch(e){return[]}})();
 function duelSaveSkip(){DUEL_SKIP=DUEL_SKIP.slice(-60);try{localStorage.setItem('duelDone',JSON.stringify(DUEL_SKIP))}catch(e){}}
 async function duelImgs(names){const need=names.filter(n=>!(('p:'+n)in IMG)).slice(0,38);if(!need.length)return;try{const r=await fetch(SB_URL+'/functions/v1/tmdb',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+ANON,apikey:ANON},body:JSON.stringify({names:need,titles:[]})});if(r.ok){const d=await r.json();for(const n in d.p)IMG['p:'+n]=d.p[n];try{localStorage.setItem('tmdbImg2',JSON.stringify(IMG))}catch(e){}}}catch(e){}}
 function duelStart(role){const cs=[...role.cands];if(cs.length<2){DUEL=null;return}
  const ord=[...cs].sort((a,b)=>(b.votes||0)-(a.votes||0));const champ=ord[0];const rest=cs.filter(c=>c.candidate_id!==champ.candidate_id).sort(()=>Math.random()-0.5);
- DUEL={tid:role.tid,title:role.title,rid:role.rid,ch:role.ch,orig:role.orig,total:rest.length,a:champ,b:rest.shift(),queue:rest,wins:{},res:null,done:false,round:1};track&&track('duel_start',{t:role.tid,r:role.rid})}
+ DUEL={tid:role.tid,title:role.title,cat:role.cat||(TOPICS.find(x=>x.id===role.tid)||{}).cat,rid:role.rid,ch:role.ch,orig:role.orig,total:rest.length,a:champ,b:rest.shift(),queue:rest,wins:{},res:null,done:false,round:1};track&&track('duel_start',{t:role.tid,r:role.rid})}
 let duelLoading=false;
 async function newDuel(first){if(duelLoading)return;duelLoading=true;try{
  let role=null;const t=topic();
- if(first&&t&&isOpen(t)&&D){const rs=D.roles.filter(r=>!isSync(r)&&!isOpt(r)&&(D.cands[r.id]||[]).length>2&&!DUEL_SKIP.includes(r.id));const r=rs.length?pick(rs):null;if(r)role={rid:r.id,ch:r.ch,orig:r.orig,tid:t.id,title:t.title,cands:(D.cands[r.id]||[]).map(c=>({candidate_id:c.candidate_id,name:c.name,votes:c.votes}))}}
+ if(first&&t&&isOpen(t)&&D){const rs=D.roles.filter(r=>!isSync(r)&&!isOpt(r)&&(D.cands[r.id]||[]).length>2&&!DUEL_SKIP.includes(r.id));const r=rs.length?pick(rs):null;if(r)role={rid:r.id,ch:r.ch,orig:r.orig,tid:t.id,title:t.title,cat:t.cat,cands:(D.cands[r.id]||[]).map(c=>({candidate_id:c.candidate_id,name:c.name,votes:c.votes}))}}
  if(!role){role=await rpc('duel_next',{skip:DUEL_SKIP,prefer:null}).catch(()=>null);if(!role&&DUEL_SKIP.length){DUEL_SKIP=[];duelSaveSkip();role=await rpc('duel_next',{skip:[],prefer:null}).catch(()=>null)}}
  if(!role){DUEL=null;return}await duelImgs(role.cands.map(c=>c.name));duelStart(role)}finally{duelLoading=false}}
 function renderDuel(){const box=$('#duel');if(!box)return;if(!DUEL){box.innerHTML='';if(!duelLoading)newDuel(true).then(()=>{if(DUEL)renderDuel()});return}const R=DUEL.res;
  const face=c=>`<span class="face">${IMG['p:'+c.name]?`<img src="${esc(IMG['p:'+c.name])}" alt="" style="width:100%;height:100%;border-radius:50%;object-fit:cover">`:esc(c.name[0])}</span>`;
  const other=DUEL.tid!==SEL;
- const head=`<div class="dq"><b>VS 한판: ${esc(DUEL.ch)} 역, 누가 더 어울려요?</b><span>${other?`<a href="#${esc(DUEL.tid)}">${esc(DUEL.title)}</a>, `:''}${DUEL.orig?`원작 ${esc(DUEL.orig)}`:''}</span></div>`;
+ const ver=verLabel(DUEL.cat);const head=`<div class="dq"><b>VS 한판: ${ver?esc(ver)+' ':''}${esc(DUEL.ch)} 역, 누가 더 어울려요?</b><span><a href="#${esc(DUEL.tid)}">${esc(DUEL.title)}${ver?' '+esc(ver):''}</a>${DUEL.orig?`, 원작 ${esc(DUEL.orig)}`:''}</span></div>`;
  if(DUEL.done){const c=DUEL.a,w=DUEL.wins[c.candidate_id]||0;
   box.innerHTML=`<div class="duel">${head}<div class="vs dchamp"><button class="side-a" disabled>${face(c)}<b>${esc(c.name)}</b><span class="res">내 최종 픽, ${w}연승</span></button></div><div class="dft"><span>${esc(DUEL.title)} ${esc(DUEL.ch)} 역 토너먼트 완료. 다른 작품으로 넘어가요.</span><span style="display:flex;gap:6px;align-items:center">${STREAK?`<span class="num">연속 ${STREAK}판</span>`:''}<a class="chip" href="#${esc(DUEL.tid)}">이 배역 투표하러 가기</a><button class="chip" data-act="duelNext">다음 토너먼트</button></span></div></div>`;return}
  const side=(s,c)=>`<button class="side-${s}" data-act="duel" data-v="${s}">${face(c)}<b>${esc(c.name)}</b><span class="res num">${R?Math.round((s==='a'?R.pa:R.pb)*100)+'%':(s==='a'&&DUEL.round>1?`${DUEL.wins[c.candidate_id]||0}연승 중`:'')}</span></button>`;
