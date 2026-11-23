@@ -999,6 +999,15 @@ body[data-view=explore] .chy{display:flex!important;margin:10px 0 0}
 .cbtn2 .cbtn .cls{display:flex;flex-wrap:wrap;gap:4px}
 .cbtn2 .cbtn .cn{white-space:normal;font-size:11px;color:var(--mute);text-align:left}
 .chip.hot{background:var(--hot);color:#141414;border-color:var(--hot);font-weight:800}
+/* 랭킹 탭: 아이콘 타일 */
+.rknav{display:none}
+body[data-view=rank] .rknav{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;grid-column:1/-1}
+.rknav button{display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px 4px;border:1px solid var(--line);border-radius:14px;background:var(--card);color:var(--ink);font:inherit;cursor:pointer;transition:transform .12s}
+.rknav button:active{transform:scale(.96)}
+.rknav button span{font-size:26px;line-height:1}.rknav button b{font-size:12px}
+.rknav button[aria-pressed=true]{background:#141414;color:#fff;border-color:#141414}
+body[data-view=rank] .side>section[data-rk]:not(.rkon){display:none!important}
+body[data-view=rank] .side{grid-template-columns:1fr!important}
 
 </style>
 </head>
@@ -2133,6 +2142,16 @@ function navSpecial(h){VIEWX=null;
 /* 상단 바를 없애고 검색은 작품 탭 맨 위로 */
 (function(){const f=$('#gs'),t=$('#tabs');if(f&&t&&t.parentNode){t.parentNode.insertBefore(f,t);f.classList.add('xsearch')}const c=document.querySelector('.chy');if(c&&t&&t.parentNode)t.parentNode.insertBefore(c,f||t)})();
 document.addEventListener('click',e=>{const b=e.target.closest('[data-act="loginClose"]');if(b||e.target.id==='loginModal')$('#loginModal').classList.remove('on')});
+/* 랭킹 탭: 서브 랭킹을 아이콘 타일로 고르고, 고른 하나만 보여줌 */
+const RK_SUBS=[['fire','배우 화력','🔥'],['meta','메타 지수','⭐'],['eye','안목 랭킹','👁️'],['media','크로스 미디어','🔁'],['perks','등급과 권한','🎖️'],['news','광장 소식','📣']];
+(function(){const side=document.querySelector('.side');if(!side)return;const secs=[...side.querySelectorAll(':scope>section')].filter(s=>s.id!=='sideTop');
+ const order=['fire','meta','media','news','perks','eye'];secs.forEach((s,i)=>{if(order[i])s.dataset.rk=order[i]});
+ const nav=document.createElement('nav');nav.className='rknav';nav.setAttribute('aria-label','랭킹 종류');
+ nav.innerHTML=RK_SUBS.map(([k,l,ic])=>`<button data-act="rksub" data-k="${k}"><span aria-hidden="true">${ic}</span><b>${l}</b></button>`).join('');
+ side.insertBefore(nav,side.firstChild);
+ let cur='fire';try{cur=localStorage.getItem('rkSub')||'fire'}catch(e){}setRk(cur)})();
+function setRk(k){document.querySelectorAll('.side>section[data-rk]').forEach(s=>s.classList.toggle('rkon',s.dataset.rk===k));document.querySelectorAll('.rknav button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.k===k));try{localStorage.setItem('rkSub',k)}catch(e){}}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-act="rksub"]');if(!b)return;setRk(b.dataset.k);track('rank_sub',{m:{k:b.dataset.k}});scrollTo({top:0,behavior:'smooth'})});
 
 /* 배우 페이지 팬 참여: 오늘의 응원, 인생작 투표, 이 배역 어때요 */
 IC.crown='<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M3 7l4.5 4L12 4l4.5 7L21 7l-2 12H5z"/></svg>';

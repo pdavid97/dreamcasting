@@ -61,3 +61,12 @@ body[data-view=explore] .chy{display:flex!important;margin:10px 0 0}
 .cbtn2 .cbtn .cls{display:flex;flex-wrap:wrap;gap:4px}
 .cbtn2 .cbtn .cn{white-space:normal;font-size:11px;color:var(--mute);text-align:left}
 .chip.hot{background:var(--hot);color:#141414;border-color:var(--hot);font-weight:800}
+/* 랭킹 탭: 아이콘 타일 */
+.rknav{display:none}
+body[data-view=rank] .rknav{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;grid-column:1/-1}
+.rknav button{display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px 4px;border:1px solid var(--line);border-radius:14px;background:var(--card);color:var(--ink);font:inherit;cursor:pointer;transition:transform .12s}
+.rknav button:active{transform:scale(.96)}
+.rknav button span{font-size:26px;line-height:1}.rknav button b{font-size:12px}
+.rknav button[aria-pressed=true]{background:#141414;color:#fff;border-color:#141414}
+body[data-view=rank] .side>section[data-rk]:not(.rkon){display:none!important}
+body[data-view=rank] .side{grid-template-columns:1fr!important}

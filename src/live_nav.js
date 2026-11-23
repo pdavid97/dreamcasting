@@ -22,3 +22,13 @@ function navSpecial(h){VIEWX=null;
 /* 상단 바를 없애고 검색은 작품 탭 맨 위로 */
 (function(){const f=$('#gs'),t=$('#tabs');if(f&&t&&t.parentNode){t.parentNode.insertBefore(f,t);f.classList.add('xsearch')}const c=document.querySelector('.chy');if(c&&t&&t.parentNode)t.parentNode.insertBefore(c,f||t)})();
 document.addEventListener('click',e=>{const b=e.target.closest('[data-act="loginClose"]');if(b||e.target.id==='loginModal')$('#loginModal').classList.remove('on')});
+/* 랭킹 탭: 서브 랭킹을 아이콘 타일로 고르고, 고른 하나만 보여줌 */
+const RK_SUBS=[['fire','배우 화력','🔥'],['meta','메타 지수','⭐'],['eye','안목 랭킹','👁️'],['media','크로스 미디어','🔁'],['perks','등급과 권한','🎖️'],['news','광장 소식','📣']];
+(function(){const side=document.querySelector('.side');if(!side)return;const secs=[...side.querySelectorAll(':scope>section')].filter(s=>s.id!=='sideTop');
+ const order=['fire','meta','media','news','perks','eye'];secs.forEach((s,i)=>{if(order[i])s.dataset.rk=order[i]});
+ const nav=document.createElement('nav');nav.className='rknav';nav.setAttribute('aria-label','랭킹 종류');
+ nav.innerHTML=RK_SUBS.map(([k,l,ic])=>`<button data-act="rksub" data-k="${k}"><span aria-hidden="true">${ic}</span><b>${l}</b></button>`).join('');
+ side.insertBefore(nav,side.firstChild);
+ let cur='fire';try{cur=localStorage.getItem('rkSub')||'fire'}catch(e){}setRk(cur)})();
+function setRk(k){document.querySelectorAll('.side>section[data-rk]').forEach(s=>s.classList.toggle('rkon',s.dataset.rk===k));document.querySelectorAll('.rknav button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.k===k));try{localStorage.setItem('rkSub',k)}catch(e){}}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-act="rksub"]');if(!b)return;setRk(b.dataset.k);track('rank_sub',{m:{k:b.dataset.k}});scrollTo({top:0,behavior:'smooth'})});
