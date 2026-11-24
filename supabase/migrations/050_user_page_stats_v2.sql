@@ -1,0 +1,4 @@
+-- 050 user_page 통계를 새 구조 기준으로: 받은 공감 = 시트 좋아요 + 팀 공감(내 팀 ckey) + 토론 추천, 토론 글 수에 thread_comments 포함, VS 수는 vs_log 기준
+-- 적용 방식: 기존 함수 정의 문자열을 치환해 다시 실행 (DB에 적용된 그대로)
+-- sheet_likes += count(team_likes on sheet_ckey(내 시트), 본인 제외)
+-- comment_likes += sum(thread_comments.up), comments += count(thread_comments), duels = greatest(duel_votes, vs_log)

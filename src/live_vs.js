@@ -50,6 +50,6 @@ async function vsLoadRatings(){const tid=SEL;if(!tid)return;const rows=await rpc
  for(const r of rows)VSR[r.cand_id]={rk:r.rk,n:r.n,w:r.w,rid:r.role_id};if(D&&D.tid===tid){try{renderRoles()}catch(e){}}vsHereRender()}
 function vsHereRender(){const box=$('#vsHere');if(!box||!D)return;const t=topic(),open=t&&isOpen(t);
  const sur=[];for(const r of (D.roles||[])){const cs=(D.cands[r.id]||[]).filter(c=>VSR[c.candidate_id]);if(cs.length<2)continue;
-  const v1=cs.find(c=>VSR[c.candidate_id].rk===1);if(!v1)continue;const all=D.cands[r.id]||[],rank=1+all.filter(x=>x.votes>v1.votes).length;if(rank>1)sur.push({r,c:v1,rank})}
+  if(open&&!D.myVote[r.id])continue;const v1=cs.find(c=>VSR[c.candidate_id].rk===1);if(!v1)continue;const all=D.cands[r.id]||[],rank=1+all.filter(x=>x.votes>v1.votes).length;if(rank>1)sur.push({r,c:v1,rank})}
  box.innerHTML=`<div class="vsh"><div><b>⚡ VS 한판</b><span>${sur.length?sur.slice(0,2).map(x=>`${esc(x.r.ch.replace(/\s*\(.*\)$/,''))} 역 의외의 강자 <em>${esc(dispName(x.c.name))}</em>: 득표 ${x.rank}위, VS 1위`).join('<br>'):'둘씩 붙여 보면 득표로는 안 보이는 순위가 나와요. 공식 표에는 반영되지 않아요'}</span></div>${open?'<button class="b sm" data-act="vsHere">이 작품으로 VS 한판</button>':''}</div>`}
 const _vsLoadTopic=loadTopic;loadTopic=async function(){const r=await _vsLoadTopic.apply(this,arguments);vsHereRender();vsLoadRatings();return r};
