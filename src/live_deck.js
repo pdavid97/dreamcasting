@@ -147,7 +147,7 @@ async function loadTalk(tid){TALK.tid=tid;const box=$('#talkBox');if(!box)return
  try{TALK.combos=await rpc('topic_teams',{tid})||[]}catch(e){TALK.combos=[]}renderTalk()}
 function comboLine(p){return (D?D.roles:[]).filter(r=>p[r.id]).map(r=>`<span class="cl"><small>${esc(SLOT[r.slot]||r.ch)}</small>${esc(p[r.id])}</span>`).join('')}
 function renderTalk(){const box=$('#talkBox');if(!box||!D)return;const t=topic(),seen=D.seen;
- if(!seen){box.innerHTML=`<div class="talk0"><b>결과와 토론방은 투표한 사람에게 열려요</b><p class="sub">배역 하나라도 투표하면 득표율, 캐스팅 조합 순위, 조합별 토론방을 볼 수 있어요.</p><a class="b buy" href="#">카드로 투표하기</a></div>`;return}
+ if(!seen){box.innerHTML=`<div class="talk0"><b>캐스팅 팀 순위는 투표한 사람에게 열려요</b><p class="sub">배역 하나라도 투표하면 득표율, 내 팀과 광장 민심 팀, 팀 공감 순위를 볼 수 있어요. 토론은 토론 탭에서 누구나 읽을 수 있어요.</p><a class="b buy" href="#">카드로 투표하기</a></div>`;return}
  const cs=TALK.combos,RS=(D.roles||[]).filter(r=>!isSync(r)&&!isOpt(r));
  const myTeam=RS.map(r=>{const v=D.myVote[r.id],c=v&&(D.cands[r.id]||[]).find(x=>x.candidate_id===v.candidate_id);return {r,name:c?c.name:null}});
  const done=myTeam.filter(x=>x.name).length,lead=RS.map(r=>{const c=(D.cands[r.id]||[]).reduce((a,x)=>!a||x.votes>a.votes?x:a,null);return {r,name:c&&c.votes?c.name:null}});
