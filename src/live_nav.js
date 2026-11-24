@@ -52,7 +52,11 @@ async function loadOrig(names,ctx){const all=[...new Set((names||[]).filter(n=>n
 async function loadOrig1(need,ctx){need.forEach(n=>ORIG[n]=null);
  try{const r=await fetch(SB_URL+'/functions/v1/orig',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+ANON,apikey:ANON},body:JSON.stringify({names:need,ctx:ctx||[]})});if(!r.ok)return false;const d=await r.json();let ch=false;
   for(const n in d){const x=d[n]||{};if(x.o){ORIG[n]=x.o;ch=true}if(x.p&&!IMG['p:'+n]){IMG['p:'+n]=x.p;ch=true}}return ch}catch(e){return false}}
-function dispName(n){const o=n&&ORIG[n];return o&&o!==n?`${o} (${n})`:(n||'')}
+/* 배우 표기 이름(actor_meta.disp): 본명이 영어면 "영어명 (한글명)", 한국어면 "한국어 (영어명)", 중국어 등은 "원어 (영어명)" */
+var NM={};
+function loadNM(){try{fetch(SB_URL+'/rest/v1/actor_meta?select=name,disp&ok=eq.true',{headers:{apikey:ANON,Authorization:'Bearer '+ANON}}).then(r=>r.ok?r.json():[]).then(a=>{(a||[]).forEach(x=>{if(x.disp)NM[x.name]=x.disp});if(a&&a.length&&typeof render==='function')try{render()}catch(e){}}).catch(()=>{})}catch(e){}}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(loadNM,0));else setTimeout(loadNM,0);
+function dispName(n){if(n&&NM[n])return NM[n].replace(/\(([^)]*)\)$/,(m,x)=>'('+x.replace(/ /g,'\u00a0')+')');const o=n&&ORIG[n];return o&&o!==n?`${o} (${n})`:(n||'')}
 /* 문장 속 《작품명》을 눌러 바로 찾기 */
 function workLinks(h){return String(h).replace(/《([^《》]{1,40})》/g,(m,t)=>`<a class="wlink" href="#search" data-act="q" data-q="${t}">《${t}》</a>`)}
 function goSearch(q){location.hash='explore';setTimeout(()=>{const i=$('#gq'),f=$('#gs');if(!i||!f)return;i.value=q;if(f.requestSubmit)f.requestSubmit();else f.dispatchEvent(new Event('submit',{cancelable:true}))},80)}

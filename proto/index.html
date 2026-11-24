@@ -405,6 +405,10 @@ body.clean .sw{display:none}
 @keyframes wLd{from{clip-path:polygon(0 0,57% 0,41% 100%,0 100%);filter:grayscale(1) brightness(.9)}to{clip-path:polygon(0 0,16.5% 0,24.5% 100%,0 100%);filter:grayscale(1) brightness(.55)}}
 @keyframes wlL{from{opacity:1;clip-path:polygon(57.6% 0,58.4% 0,42.4% 100%,41.6% 100%)}to{opacity:1;clip-path:polygon(82.2% 0,83.2% 0,75.2% 100%,74.2% 100%)}}
 @keyframes wlR{from{opacity:1;clip-path:polygon(57.6% 0,58.4% 0,42.4% 100%,41.6% 100%)}to{opacity:1;clip-path:polygon(16.8% 0,17.8% 0,25.8% 100%,24.8% 100%)}}
+
+body{word-break:keep-all;overflow-wrap:break-word}
+.vsl6 .fight .nm .sub2{display:block;font-style:normal;font-size:13px;font-weight:700;opacity:.8;margin-top:2px}
+.vsl6 .fight .dim .nm .sub2{display:none}
 </style>
 </head>
 <body>
@@ -428,7 +432,7 @@ let T=null,R=null,C=[],P={},DEMO=false,TOP=null,RI=0,SID='proto'+Math.random().t
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const big=u=>u?u.replace('/w185/','/w500/'):'';
 const img=n=>P[n]?`background-image:url('${big(P[n])}')`:'';
-const nm=n=>String(n).replace(/\s*\(.*\)$/,'');
+let AM={};const nm2=n=>{const d=nm(n),m=d.match(/^(.*?)\s*\((.*)\)$/);return m?[m[1],m[2]]:[d,'']};const nm=n=>(AM[n]&&AM[n].disp)||String(n).replace(/\s*\(.*\)$/,'');
 const bat=w=>{const c=String(w).trim().slice(-1).charCodeAt(0);return c>=0xAC00&&c<=0xD7A3?(c-0xAC00)%28:0};const ro=w=>w+(bat(w)&&bat(w)!==8?'으로':'로');
 async function load(){
  const d=await fetch(SB+'/rest/v1/rpc/vote_deck',{method:'POST',headers:H,body:JSON.stringify({lim:24})}).then(r=>r.json());
@@ -437,6 +441,7 @@ async function load(){
  if(Q.get('pair')){const [x,y]=Q.get('pair').split(',').map(Number);const a=C[x],b=C[y];C=[a,b,...C.filter(c=>c!==a&&c!==b)]}
  if(!C.some(c=>+c.votes>0)){DEMO=true;const v=[38,24,15,11,7,5];C.forEach((c,i)=>c.votes=v[i]||1)}
  const r=await fetch(SB+'/functions/v1/tmdb',{method:'POST',headers:H,body:JSON.stringify({names:C.map(c=>c.name),titles:[]})}).then(r=>r.json()).catch(()=>({p:{}}));P=r.p||{};
+ try{const a=await fetch(SB+'/rest/v1/actor_meta?select=name,disp,photo,face&name=in.('+C.map(c=>'"'+c.name.replace(/"/g,'')+'"').map(encodeURIComponent).join(',')+')',{headers:H}).then(r=>r.json());(a||[]).forEach(x=>{AM[x.name]=x;if(x.photo&&x.face)FACE[x.photo.replace('/','')]=x.face})}catch(e){}
  try{const q=await fetch(SB+'/rest/v1/v_thread?topic_id=eq.'+encodeURIComponent(T.id)+'&order=up.desc&limit=1&select=body,up,nickname,role_id,cand_name',{headers:H}).then(r=>r.json());TOP=Array.isArray(q)&&q[0]||null}catch(e){}
  render();setInterval(()=>{RI++;const r=document.querySelector('.C .rail');if(r)r.outerHTML=rail()},3600);}
 const tot=()=>C.reduce((a,c)=>a+(+c.votes||0),0)||1;
@@ -537,7 +542,7 @@ function alSt(c,pos){if(VSL==='6'&&ALIGN)return alSt6(c);if(!ALIGN||VSL!=='1')re
  return `background-size:${Math.round(bw)}px auto;background-position:${Math.round(cx-ox-f[0]*iw*s)}px ${Math.round(ty-f[1]*ih*s)}px`}
 function cVS(){const a=C[0],b=C[1],w=S.vs,h=S.vsHi,pa=Math.round((+a.votes||1)/((+a.votes||1)+(+b.votes||1))*100);
  const cls=k=>w?(w===k?'win':'lose'):h?(h===k?'hi':'dim'):'idle';
- const half=(k,c,p,pos)=>`<button class="${pos} ${cls(k)}" data-vs="${k}" aria-label="${esc(nm(c.name))} 고르기"><span class="ph${alSt(c,pos)?' al':''}" style="${img(c.name)};${alSt(c,pos)}"></span><span class="hl"></span><span class="nm"><b>${esc(nm(c.name))}</b>${w?`<span>${p}%</span>`:''}</span>${h===k?'<span class="ask2"><b>한 번 더 탭하면 확정</b></span>':''}${w===k?'<span class="cast2">CAST!</span>':''}</button>`;
+ const half=(k,c,p,pos)=>`<button class="${pos} ${cls(k)}" data-vs="${k}" aria-label="${esc(nm(c.name))} 고르기"><span class="ph${alSt(c,pos)?' al':''}" style="${img(c.name)};${alSt(c,pos)}"></span><span class="hl"></span><span class="nm"><b>${esc(nm2(c.name)[0])}</b>${nm2(c.name)[1]?`<em class="sub2">${esc(nm2(c.name)[1])}</em>`:''}${w?`<span>${p}%</span>`:''}</span>${h===k?'<span class="ask2"><b>한 번 더 탭하면 확정</b></span>':''}${w===k?'<span class="cast2">CAST!</span>':''}</button>`;
  const fh=Math.max(440,innerHeight-210),iw=Math.round(fh*1.1*2/3),W=innerWidth;
  const pk=a.name+'|'+b.name,intro=/in/.test(FX)&&!h&&!w&&INK!==pk;if(intro)INK=pk;
  return `<div class="scr C vsC vsl${VSL}${/duo/.test(FX)?' duo':''}${' vb'+(Q.get('vsb')||(VSL==='6'?'d':'')).toUpperCase()}" style="--fh:${fh}px;--iw:${iw}px;--xl:${Math.round(W*.3-iw/2)}px;--xr:${Math.round(W*.7-iw/2)}px">${rail()}

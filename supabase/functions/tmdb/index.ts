@@ -7,6 +7,9 @@
 // filmo: "배우 이름", alt: "원어 이름" 을 주면 그 배우의 출연작 목록(제목, 연도, 배역, 포스터)을 돌려줌. DB에 출연 기록이 없는 배우용
 // tagged: "배우 이름", alt: "원어 이름", tk: "movie:123" 을 주면 TMDB에서 그 배우가 태그된 그 작품의 사진(스틸, 포스터)을 돌려줌
 // works: ["tv:123", "movie:456"] 를 주면 TMDB 번호로 정확한 포스터를 돌려줌(제목 검색보다 정확)
+// pids: [123, ...] 를 주면 TMDB 인물 번호로 이름(영문), 다른 이름, 출생지, 사진을 돌려줌(최대 40)
+// who: ["이름", ...] 를 주면 인물 검색 상위 3명(연기 분야 우선)의 번호, 이름, 사진, 인지도를 돌려줌(최대 20). 후보 사진 검수용
+// tmdb_cache의 updated_at이 먼 미래인 항목은 검수 끝난 값이라 다시 검색하지 않음
 // 결과는 tmdb_cache 테이블에 30일 보관해 TMDB 호출을 줄임
 const ORIGINS = [/^https:\/\/pdavid97\.github\.io$/, /^http:\/\/localhost(:\d+)?$/, /^http:\/\/127\.0\.0\.1(:\d+)?$/, /^null$/];
 const SB = Deno.env.get("SUPABASE_URL")!, SR = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
@@ -121,6 +124,33 @@ Deno.serve(async (req) => {
         .slice(0, 30).sort((a: { y: number }, z: { y: number }) => z.y - a.y).map(({ v: _v, ...x }: { v: number }) => x);
       const out = { f, p: person.profile_path ? `https://image.tmdb.org/t/p/w185${person.profile_path}` : "" };
       await cachePut([{ k: ck, url: JSON.stringify(out) }]);
+      return j(out, 200, h);
+    } catch (e) { return j({ error: String(e) }, 500, h); }
+  }
+  const auth = (u: URL) => { const hh: Record<string, string> = { accept: "application/json" }; if (token.length > 60) hh.Authorization = "Bearer " + token; else u.searchParams.set("api_key", token); return hh; };
+  if (Array.isArray((b as Record<string, unknown>).pids)) {
+    const ids = [...new Set(((b as Record<string, unknown>).pids as unknown[]).map(Number).filter((x) => Number.isInteger(x) && x > 0))].slice(0, 40);
+    try {
+      const out: Record<string, unknown> = {};
+      await Promise.all(ids.map(async (id) => {
+        const u = new URL(`https://api.themoviedb.org/3/person/${id}`); u.searchParams.set("language", "en-US");
+        const r = await fetch(u, { headers: auth(u) });
+        if (r.status === 401) throw new Error("TMDB 401");
+        const d = r.ok ? await r.json() : null;
+        out[id] = d ? { id, name: d.name, aka: (d.also_known_as || []).slice(0, 20), pob: d.place_of_birth || "", dep: d.known_for_department || "", pop: d.popularity || 0, p: d.profile_path || "" } : null;
+      }));
+      return j(out, 200, h);
+    } catch (e) { return j({ error: String(e) }, 500, h); }
+  }
+  if (Array.isArray((b as Record<string, unknown>).who)) {
+    const qs = [...new Set(((b as Record<string, unknown>).who as unknown[]).filter((x) => typeof x === "string" && x.trim() && (x as string).length <= 60).map((x) => (x as string).trim()))].slice(0, 20);
+    try {
+      const out: Record<string, unknown> = {};
+      await Promise.all(qs.map(async (q) => {
+        const d = await tmdb("/search/person", q, token);
+        const rs = ((d?.results || []) as Record<string, unknown>[]).sort((a, z) => (z.known_for_department === "Acting" ? 1 : 0) - (a.known_for_department === "Acting" ? 1 : 0));
+        out[q] = rs.slice(0, 3).map((r) => ({ id: r.id, name: r.name, dep: r.known_for_department, pop: r.popularity, p: r.profile_path || "", kf: ((r.known_for || []) as Record<string, unknown>[]).map((k) => k.title || k.name).slice(0, 3) }));
+      }));
       return j(out, 200, h);
     } catch (e) { return j({ error: String(e) }, 500, h); }
   }

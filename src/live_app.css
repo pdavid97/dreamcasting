@@ -574,3 +574,6 @@ body:not([data-view=vs]) #topicView>#duel{display:none}
 .hk.cls{background:linear-gradient(160deg,#F6B2A2,#E07A6A)}.hk.res{background:linear-gradient(160deg,#F3D79B,#D9A85F)}.hk.new{background:linear-gradient(160deg,#B9DDB0,#7FB58A)}.hk.live{background:linear-gradient(160deg,#A9B0C4,#6E7590)}
 .hk.p-hot{background:linear-gradient(180deg,#FFD36A 0 30%,#3a3646 30%)}.hk.p-news{background:linear-gradient(180deg,#8FD3FF 0 30%,#3a3646 30%)}.hk.p-tight{background:linear-gradient(180deg,#C4A8FF 0 30%,#3a3646 30%)}
 .hk.pt0{background:linear-gradient(0deg,rgba(255,255,255,.18) 0 28%,#3a3646 28%)}.hk.pt1{background:linear-gradient(90deg,#8EE3B0 0 50%,#3a3646 50%) bottom/100% 28% no-repeat,#3a3646}.hk.pt2{background:linear-gradient(0deg,#8EE3B0 0 28%,#3a3646 28%)}
+
+/* 이름이 길어 줄이 바뀌어도 한 단어 안에서는 끊지 않음 */
+body{word-break:keep-all;overflow-wrap:break-word}

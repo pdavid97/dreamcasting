@@ -1513,6 +1513,9 @@ body:not([data-view=vs]) #topicView>#duel{display:none}
 .hk.p-hot{background:linear-gradient(180deg,#FFD36A 0 30%,#3a3646 30%)}.hk.p-news{background:linear-gradient(180deg,#8FD3FF 0 30%,#3a3646 30%)}.hk.p-tight{background:linear-gradient(180deg,#C4A8FF 0 30%,#3a3646 30%)}
 .hk.pt0{background:linear-gradient(0deg,rgba(255,255,255,.18) 0 28%,#3a3646 28%)}.hk.pt1{background:linear-gradient(90deg,#8EE3B0 0 50%,#3a3646 50%) bottom/100% 28% no-repeat,#3a3646}.hk.pt2{background:linear-gradient(0deg,#8EE3B0 0 28%,#3a3646 28%)}
 
+/* 이름이 길어 줄이 바뀌어도 한 단어 안에서는 끊지 않음 */
+body{word-break:keep-all;overflow-wrap:break-word}
+
 </style>
 </head>
 <body>
@@ -2894,7 +2897,11 @@ async function loadOrig(names,ctx){const all=[...new Set((names||[]).filter(n=>n
 async function loadOrig1(need,ctx){need.forEach(n=>ORIG[n]=null);
  try{const r=await fetch(SB_URL+'/functions/v1/orig',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+ANON,apikey:ANON},body:JSON.stringify({names:need,ctx:ctx||[]})});if(!r.ok)return false;const d=await r.json();let ch=false;
   for(const n in d){const x=d[n]||{};if(x.o){ORIG[n]=x.o;ch=true}if(x.p&&!IMG['p:'+n]){IMG['p:'+n]=x.p;ch=true}}return ch}catch(e){return false}}
-function dispName(n){const o=n&&ORIG[n];return o&&o!==n?`${o} (${n})`:(n||'')}
+/* 배우 표기 이름(actor_meta.disp): 본명이 영어면 "영어명 (한글명)", 한국어면 "한국어 (영어명)", 중국어 등은 "원어 (영어명)" */
+var NM={};
+function loadNM(){try{fetch(SB_URL+'/rest/v1/actor_meta?select=name,disp&ok=eq.true',{headers:{apikey:ANON,Authorization:'Bearer '+ANON}}).then(r=>r.ok?r.json():[]).then(a=>{(a||[]).forEach(x=>{if(x.disp)NM[x.name]=x.disp});if(a&&a.length&&typeof render==='function')try{render()}catch(e){}}).catch(()=>{})}catch(e){}}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(loadNM,0));else setTimeout(loadNM,0);
+function dispName(n){if(n&&NM[n])return NM[n].replace(/\(([^)]*)\)$/,(m,x)=>'('+x.replace(/ /g,'\u00a0')+')');const o=n&&ORIG[n];return o&&o!==n?`${o} (${n})`:(n||'')}
 /* 문장 속 《작품명》을 눌러 바로 찾기 */
 function workLinks(h){return String(h).replace(/《([^《》]{1,40})》/g,(m,t)=>`<a class="wlink" href="#search" data-act="q" data-q="${t}">《${t}》</a>`)}
 function goSearch(q){location.hash='explore';setTimeout(()=>{const i=$('#gq'),f=$('#gs');if(!i||!f)return;i.value=q;if(f.requestSubmit)f.requestSubmit();else f.dispatchEvent(new Event('submit',{cancelable:true}))},80)}
