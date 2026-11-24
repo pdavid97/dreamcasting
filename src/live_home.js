@@ -71,7 +71,7 @@ function hcRoleStat(r){const tot=r.cands.reduce((a,c)=>a+(c.votes||0),0),srt=[..
  if(!mine)return null;const rank=1+r.cands.filter(c=>(c.votes||0)>(mine.votes||0)).length;
  return {r,mine,top,tot,rank,share:tot?(mine.votes||0)/tot:0,topShare:tot?(top.votes||0)/tot:0,n:r.cands.length}}
 /* 성향 평가: 1위와 겹친 비율, 내 픽 평균 득표율, 원작과의 연결고리와 나이 차이로 유형과 한 줄 평을 정함 */
-function hcType(S0,links){if(!S0.length)return null;const S=S0.filter(s=>s.tot>=3),k=S.length;if(!k)return {tag:'선발대 감독',say:'이 판에 거의 처음 표를 던졌어요. 광장 표가 쌓이면 내 픽이 대중픽인지 소신픽인지 드러나요.',badges:[],m1:0,k:0};const m1=S.filter(s=>s.rank===1).length,avg=S.reduce((a,s)=>a+s.share,0)/k,low=S.filter(s=>s.share<.1).length;
+function hcType(S0,links){if(S0.length<2)return null;/* 성향 평가는 2개 이상 배역을 고른 팀 캐스팅에서만 */const S=S0.filter(s=>s.tot>=3),k=S.length;if(!k)return {tag:'선발대 감독',say:'이 판에 거의 처음 표를 던졌어요. 광장 표가 쌓이면 내 픽이 대중픽인지 소신픽인지 드러나요.',badges:[],m1:0,k:0};const m1=S.filter(s=>s.rank===1).length,avg=S.reduce((a,s)=>a+s.share,0)/k,low=S.filter(s=>s.share<.1).length;
  const solo=S.filter(s=>s.rank!==1).map(s=>String(s.r.ch).replace(/\s*\(.*\)$/,''));
  let t;
  if(m1===k)t={tag:'광장 대표 감독',say:k>1?`고른 ${k}개 배역 모두 광장 1위와 같아요. 대중의 마음을 정확히 읽는 흥행 감각이에요.`:'광장 1위와 같은 선택이에요. 대중의 마음을 정확히 읽었어요.'};

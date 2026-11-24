@@ -9,6 +9,8 @@
 // works: ["tv:123", "movie:456"] 를 주면 TMDB 번호로 정확한 포스터를 돌려줌(제목 검색보다 정확)
 // pids: [123, ...] 를 주면 TMDB 인물 번호로 이름(영문), 다른 이름, 출생지, 사진을 돌려줌(최대 40)
 // who: ["이름", ...] 를 주면 인물 검색 상위 3명(연기 분야 우선)의 번호, 이름, 사진, 인지도를 돌려줌(최대 20). 후보 사진 검수용
+// imgs: "tv:123" 을 주면 그 작품의 포스터와 배경 이미지 목록(경로, 크기, 언어, 평점)을 돌려줌. 단체 사진 고르기용
+// tagl: 123, tk: "tv:456" 을 주면 TMDB에서 그 인물이 태그된 그 작품 이미지 경로 목록을 돌려줌(사람이 태그한 정보, 얼굴 인식 아님). 원작 배우들이 함께 나온 단체 사진 찾기용
 // tmdb_cache의 updated_at이 먼 미래인 항목은 검수 끝난 값이라 다시 검색하지 않음
 // 결과는 tmdb_cache 테이블에 30일 보관해 TMDB 호출을 줄임
 const ORIGINS = [/^https:\/\/pdavid97\.github\.io$/, /^http:\/\/localhost(:\d+)?$/, /^http:\/\/127\.0\.0\.1(:\d+)?$/, /^null$/];
@@ -128,6 +130,33 @@ Deno.serve(async (req) => {
     } catch (e) { return j({ error: String(e) }, 500, h); }
   }
   const auth = (u: URL) => { const hh: Record<string, string> = { accept: "application/json" }; if (token.length > 60) hh.Authorization = "Bearer " + token; else u.searchParams.set("api_key", token); return hh; };
+  const im = (b as Record<string, unknown>).imgs;
+  if (typeof im === "string" && /^(tv|movie):\d{1,9}$/.test(im)) {
+    try {
+      const [m, id] = im.split(":");
+      const u = new URL(`https://api.themoviedb.org/3/${m}/${id}/images`); u.searchParams.set("include_image_language", "ko,en,null");
+      const r = await fetch(u, { headers: auth(u) });
+      if (r.status === 401) throw new Error("TMDB 401");
+      const d = r.ok ? await r.json() : {};
+      const pick = (a: Record<string, unknown>[]) => (a || []).slice(0, 30).map((x) => ({ p: x.file_path, w: x.width, h: x.height, l: x.iso_639_1, v: x.vote_average }));
+      return j({ posters: pick(d.posters), backdrops: pick(d.backdrops) }, 200, h);
+    } catch (e) { return j({ error: String(e) }, 500, h); }
+  }
+  const tl = Number((b as Record<string, unknown>).tagl), tlk = String((b as Record<string, unknown>).tk || "");
+  if (Number.isInteger(tl) && tl > 0 && /^(tv|movie):\d{1,9}$/.test(tlk)) {
+    try {
+      const [m, id] = tlk.split(":"), out: unknown[] = [];
+      for (let page = 1; page <= 5; page++) {
+        const u = new URL(`https://api.themoviedb.org/3/person/${tl}/tagged_images`); u.searchParams.set("page", String(page));
+        const r = await fetch(u, { headers: auth(u) });
+        if (!r.ok) break;
+        const d = await r.json();
+        for (const x of (d.results || []) as Record<string, unknown>[]) { const md = x.media as Record<string, unknown> | undefined; if (md && String(md.id) === id) out.push({ p: x.file_path, w: x.width, h: x.height, t: x.image_type, v: x.vote_average }); }
+        if (!d.total_pages || page >= d.total_pages) break;
+      }
+      return j({ imgs: out }, 200, h);
+    } catch (e) { return j({ error: String(e) }, 500, h); }
+  }
   if (Array.isArray((b as Record<string, unknown>).pids)) {
     const ids = [...new Set(((b as Record<string, unknown>).pids as unknown[]).map(Number).filter((x) => Number.isInteger(x) && x > 0))].slice(0, 40);
     try {
