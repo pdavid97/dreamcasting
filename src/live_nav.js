@@ -30,7 +30,7 @@ const RK_SUBS=[['fire','배우 화력','🔥'],['meta','메타 지수','⭐'],['
  nav.innerHTML=RK_SUBS.map(([k,l,ic])=>`<button data-act="rksub" data-k="${k}"><span aria-hidden="true">${ic}</span><b>${l}</b></button>`).join('');
  side.insertBefore(nav,side.firstChild);
  let cur='fire';try{cur=localStorage.getItem('rkSub')||'fire'}catch(e){}setRk(cur)})();
-function setRk(k){document.querySelectorAll('.side>section[data-rk]').forEach(s=>s.classList.toggle('rkon',s.dataset.rk===k));document.querySelectorAll('.rknav button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.k===k));try{localStorage.setItem('rkSub',k)}catch(e){}}
+function setRk(k){document.querySelectorAll('.side>section[data-rk]').forEach(s=>{s.classList.toggle('rkon',s.dataset.rk===k);if(!s.querySelector(':scope>.rkmore')){const b=document.createElement('button');b.className='rkmore';b.dataset.act='rkmore';b.textContent='모두 보기';s.appendChild(b)}});document.querySelectorAll('.rknav button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.k===k));try{localStorage.setItem('rkSub',k)}catch(e){}}
 document.addEventListener('click',e=>{const b=e.target.closest('[data-act="rksub"]');if(!b)return;setRk(b.dataset.k);track('rank_sub',{m:{k:b.dataset.k}});scrollTo({top:0,behavior:'smooth'})});
 /* 실수한 표 되돌리기: 투표 직후 10초 동안 하단에 되돌리기 바 */
 let UNDO_T=null;
@@ -57,3 +57,5 @@ function dispName(n){const o=n&&ORIG[n];return o&&o!==n?`${o} (${n})`:(n||'')}
 function workLinks(h){return String(h).replace(/《([^《》]{1,40})》/g,(m,t)=>`<a class="wlink" href="#search" data-act="q" data-q="${t}">《${t}》</a>`)}
 function goSearch(q){location.hash='explore';setTimeout(()=>{const i=$('#gq'),f=$('#gs');if(!i||!f)return;i.value=q;if(f.requestSubmit)f.requestSubmit();else f.dispatchEvent(new Event('submit',{cancelable:true}))},80)}
 document.addEventListener('click',e=>{const b=e.target.closest('[data-act="q"]');if(!b)return;e.preventDefault();track('work_link',{m:{q:b.dataset.q}});goSearch(b.dataset.q)});
+
+document.addEventListener('click',e=>{const b=e.target.closest('[data-act="rkmore"]');if(!b)return;const sec=b.parentElement;sec.classList.toggle('all');b.textContent=sec.classList.contains('all')?'접기':'모두 보기'});

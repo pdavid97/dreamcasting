@@ -194,9 +194,26 @@ async function loadWeek(){const box=$('#weekbox');if(!box)return;box.innerHTML='
  const mx=Math.max(1,...w.days.map(x=>x.n)),dn=['일','월','화','수','목','금','토'];
  const fu=w.fav&&IMG['p:'+w.fav.name];
  const favTxt=!w.fav?'이번 주에는 아직 고른 배우가 없어요':!w.fav_prev?`이번 주 가장 많이 부른 배우예요. ${w.fav.k}번 골랐어요.`:w.fav_prev.name===w.fav.name?`2주 연속 최애 자리를 지켰어요. 이쯤 되면 찐팬.`:`지난주 최애 ${esc(w.fav_prev.name)}에서 갈아탔어요. 새로운 마음?`;
- box.innerHTML=`<div class="sh"><h2>주간 결산</h2><span class="sub">최근 7일, 지난주와 비교</span></div>
+ box.innerHTML=`<div class="sh"><h2>주간 결산</h2><span class="sub">최근 7일, 지난주와 비교</span></div><button class="wkx-story" data-act="week-story">▶ 스토리로 보기</button>
  <div class="wkx-hero"><small>이번 주 던진 표</small><b class="num" data-cnt="${w.n}">${w.n}</b>${dl(w.n,w.n_prev,'표')}
   <div class="wkx-days">${w.days.map(x=>{const d=new Date(x.d+'T00:00:00');return `<div class="wd" title="${d.getMonth()+1}/${d.getDate()} ${x.n}표"><div class="wb"><div class="wf" style="height:${Math.max(4,Math.round(x.n/mx*100))}%"></div></div><div class="wl">${dn[d.getDay()]}${x.n?` ${x.n}`:''}</div></div>`}).join('')}</div></div>
  <div class="wkx-tiles"><div><b>${w.works}</b><small>작품</small></div><div><b>${w.actors}</b><small>고른 배우</small><em>새 얼굴 ${w.new_actors}</em></div><div><b>+${fmt(w.pts)}</b><small>얻은 포인트</small>${dl(w.pts,w.pts_prev,'P')}</div><div><b>${w.hits}</b><small>적중 판</small><em>${w.hitp?`+${w.hitp}P`:`결과 ${w.results}건`}</em></div></div>
  ${w.fav?`<a class="wkx-fav" href="#a/${encodeURIComponent(w.fav.name)}"><span class="av"${fu?` style="background-image:url('${esc(fu)}')"`:''}></span><div><small>이번 주 최애</small><b>${esc(dispName(w.fav.name))}</b><p>${favTxt}</p></div></a>`:`<p class="sub">${favTxt}</p>`}
  ${w.closing?`<a class="wkx-next" href="#">⏳ 내가 투표한 판 중 <b>${w.closing}개</b>가 7일 안에 결과 발표돼요<i>→</i></a>`:''}`}
+/* ===== 주간 결산 스토리: 9:16 카드를 탭해서 넘기고 마지막 장에서 공유 ===== */
+async function openWeekStory(){if(!USER){openLoginSheet&&openLoginSheet();return}let w=null;try{w=await rpc('my_week',{})}catch(e){}if(!w){toast('결산을 불러오지 못했어요');return}
+ if(w.fav)try{await loadNames([w.fav.name])}catch(e){}
+ const fu=w.fav&&IMG['p:'+w.fav.name],d=w.n-w.n_prev;
+ const slides=[
+  {bg:'radial-gradient(120% 80% at 20% 10%,#FF4F7B 0%,#6A1F8C 55%,#1A0F2E 100%)',h:`<span class="ws-tag">이번 주 결산</span><h1>나의 한 주<br>캐스팅</h1><p>최근 7일 동안 광장에서 남긴 기록이에요</p><small class="ws-tip">화면을 탭해서 넘겨요</small>`},
+  {bg:'radial-gradient(120% 80% at 80% 10%,#7B5CFF 0%,#2B1D6B 55%,#0F0B22 100%)',h:`<p class="ws-k">던진 표</p><b class="ws-big">${w.n}</b><p>${d>0?`지난주보다 ${d}표 더 던졌어요`:d<0?`지난주보다 ${-d}표 적어요`:'지난주와 같은 페이스'}</p><p>${w.works}개 작품, ${w.actors}명의 배우, 그중 새 얼굴 ${w.new_actors}명</p>`},
+  {bg:'radial-gradient(120% 80% at 50% 30%,#FF8A3D 0%,#B0244F 55%,#2A0B1A 100%)',h:w.fav?`<p class="ws-k">이번 주 최애</p><span class="ws-av"${fu?` style="background-image:url('${esc(fu)}')"`:''}></span><b class="ws-nm">${esc(dispName(w.fav.name))}</b><p>${w.fav_prev&&w.fav_prev.name===w.fav.name?'2주 연속 최애 자리를 지켰어요':w.fav_prev?`지난주 최애 ${esc(w.fav_prev.name)}에서 갈아탔어요`:`${w.fav.k}번 이 배우를 불렀어요`}</p>`:`<p class="ws-k">이번 주 최애</p><h1>아직<br>비어 있어요</h1><p>한 표만 던져도 채워져요</p>`},
+  {bg:'radial-gradient(120% 80% at 30% 20%,#00C2A8 0%,#14507A 55%,#0A1424 100%)',h:`<p class="ws-k">적중과 포인트</p><b class="ws-big">${w.hits}</b><p>개 판에서 1위를 맞혔어요${w.hitp?`, +${w.hitp}P`:''}</p><span class="ws-pts">+${fmt(w.pts)}P</span><p>${w.closing?`7일 안에 내 판 ${w.closing}개의 결과가 나와요`:''}</p><button class="ws-share" data-act="ws-share">결산 공유하기</button>`}
+ ];
+ let i=0;const el=document.createElement('div');el.className='wstory';document.body.appendChild(el);
+ const draw=()=>{const s=slides[i];el.innerHTML=`<div class="ws-card" style="background:${s.bg}"><div class="ws-bars">${slides.map((_,k)=>`<i class="${k<=i?'on':''}"></i>`).join('')}</div><button class="ws-x" data-act="ws-close" aria-label="닫기">×</button><div class="ws-body">${s.h}</div><button class="ws-prev" data-act="ws-prev" aria-label="이전 장"></button><button class="ws-next" data-act="ws-next" aria-label="다음 장"></button></div>`};
+ el.addEventListener('click',async e=>{const a=e.target.closest('[data-act]');if(!a)return;const k=a.dataset.act;
+  if(k==='ws-close'){el.remove();return}if(k==='ws-next'){if(i<slides.length-1){i++;draw()}else el.remove();return}if(k==='ws-prev'){if(i>0){i--;draw()}return}
+  if(k==='ws-share'){const txt=`드림캐스팅 이번 주 결산: ${w.n}표, 최애 ${w.fav?w.fav.name:'아직 없음'}, 적중 ${w.hits}판 ${location.origin+location.pathname}`;try{if(navigator.share)await navigator.share({text:txt});else{await navigator.clipboard.writeText(txt);toast('공유 문구를 복사했어요')}}catch(err){}track('week_share',{})}});
+ draw();track('week_story',{})}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-act="week-story"]');if(!b)return;e.preventDefault();e.stopPropagation();openWeekStory()},true);

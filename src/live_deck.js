@@ -239,7 +239,7 @@ function storyRings(){const rs=(RB.results||[]).filter(r=>Date.now()-new Date(r.
  for(const r of rs)out.push(ring('res',r.poster,r.title,`data-act="rres" data-t="${esc(r.tid)}" data-s="${r.season}" aria-label="${esc(r.title)} 결과 발표"`,'<b>발표</b>'));
  DECK.forEach((d,i)=>{if(isNewT(d))out.push(ring('new',d.vposter||d.poster,d.title,`data-act="dk-goto" data-i="${i}" aria-label="새 판 ${esc(d.title)}"`,`<b>${d.season>1?'S'+d.season:'NEW'}</b>`))});
  DECK.forEach((d,i)=>{const ms=new Date(d.closes_at)-Date.now();if(ms>0&&ms<864e5&&!isNewT(d))out.push(ring('cls',d.vposter||d.poster,d.title,`data-act="dk-goto" data-i="${i}" aria-label="오늘 마감 ${esc(d.title)}"`,'<b>D-0</b>'))});
- if(USER)out.push(ring('wk',null,'주간 결산','data-act="upg" data-k="week" data-go="me"','<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>'));
+ if(USER)out.push(ring('wk',null,'주간 결산','data-act="week-story"','<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>'));
  out.push(ring('all',null,'작품 '+DECK.length,'data-act="works" aria-label="오늘의 작품 모두 보기"','<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>'));
  return `<nav class="srow" aria-label="오늘의 소식">${out.join('')}</nav>`}
 function openWorks(){const old=$('#worksSheet');if(old)old.remove();const el=document.createElement('div');el.id='worksSheet';el.className='wsheet';
