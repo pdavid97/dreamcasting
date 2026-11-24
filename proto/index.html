@@ -250,6 +250,38 @@ body.clean .sw{display:none}
 .cH .dock{flex:none;padding-bottom:74px}
 .cH .dock .quote{margin:0 16px}
 .cH .dock .tmdb{padding:6px 16px 0;font-size:8px}
+
+/* VS 구도 시안: vsl1 가파른 사선, vsl2 번개 지그재그, vsl3 기울인 두 카드 */
+.vsl1 .fight .l,.vsl2 .fight .l{left:0;top:0;bottom:0;height:auto;width:62%}
+.vsl1 .fight .r,.vsl2 .fight .r{left:38%;right:0;top:0;bottom:0;height:auto;width:auto}
+.vsl1 .fight .l{clip-path:polygon(0 0,100% 0,61.3% 100%,0 100%)}
+.vsl1 .fight .r{clip-path:polygon(38.7% 0,100% 0,100% 100%,0 100%)}
+.vsl2 .fight .l{clip-path:polygon(0 0,100% 0,82% 38%,96% 44%,64% 100%,0 100%)}
+.vsl2 .fight .r{clip-path:polygon(38.7% 0,100% 0,100% 100%,0 100%,9% 44%,0% 38%)}
+.vsl1 .fight .ph,.vsl2 .fight .ph{background-position:center 18%}
+.vsl1 .fight .l .nm,.vsl2 .fight .l .nm{left:14px;top:auto;bottom:16px}
+.vsl1 .fight .r .nm,.vsl2 .fight .r .nm{right:14px;top:16px;bottom:auto}
+.vsl1 .fight .nm b,.vsl2 .fight .nm b{font-size:22px}
+.vsl1 .vsb,.vsl2 .vsb{transform:translate(-50%,-50%) rotate(-66deg)!important;font-size:40px}
+.vsl1 .fight .l .ask2,.vsl2 .fight .l .ask2{left:34%;top:62%}.vsl1 .fight .r .ask2,.vsl2 .fight .r .ask2{left:66%;top:62%}
+.vsl1 .fight .l .cast2,.vsl2 .fight .l .cast2{left:32%;top:70%}.vsl1 .fight .r .cast2,.vsl2 .fight .r .cast2{left:68%;top:30%}
+.vsl3 .fight{display:flex;gap:0;align-items:center;justify-content:center;padding:0 8px}
+.vsl3 .fight button{position:relative;left:auto;top:auto;bottom:auto;width:48%;height:86%;clip-path:none;border-radius:18px;overflow:hidden;box-shadow:0 16px 40px rgba(0,0,0,.6)}
+.vsl3 .fight .l{transform:rotate(-4deg) translateX(6px);z-index:2}.vsl3 .fight .r{transform:rotate(4deg) translate(-6px,26px)}
+.vsl3 .fight .l .nm{left:12px;top:auto;bottom:14px}.vsl3 .fight .r .nm{right:auto;left:12px;bottom:14px;text-align:left}
+.vsl3 .fight .nm b{font-size:20px}
+.vsl3 .vsb{z-index:5}
+.vsl3 .fight .ask2{top:50%!important}.vsl3 .fight .cast2{top:24%!important;left:50%!important;font-size:34px}
+
+.vsl1 .fight .l .ph,.vsl2 .fight .l .ph{right:-8%;background-position:62% 18%}
+.vsl1 .fight .r .ph,.vsl2 .fight .r .ph{left:-8%;background-position:38% 18%}
+.vsl1 .fight button,.vsl2 .fight button{background:#0A0A0A}
+.vsl3 .fight{padding:0 14px;gap:0}
+.vsl3 .fight button{width:47%;height:80%}
+.vsl3 .fight .l{transform:rotate(-3deg) translate(4px,-14px)}.vsl3 .fight .r{transform:rotate(3deg) translate(-4px,14px)}
+.vsl3 .fight .nm{left:12px!important;right:12px!important;bottom:12px!important;top:auto!important;text-align:left!important}
+.vsl3 .fight .nm b{font-size:17px}
+.vsl3 .fight .l{z-index:3!important}.vsl3 .fight .r{z-index:1!important}
 </style>
 </head>
 <body>
@@ -258,7 +290,7 @@ body.clean .sw{display:none}
 <script>
 const SB='https://dnzcvbidppzaogtmwamc.supabase.co',ANON='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRuemN2YmlkcHB6YW9ndG13YW1jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTUyODgwNzgsImV4cCI6MjExMDg2NDA3OH0.yiKbCh3iuH8_GFpx-ezzbauZNOkffOe5cuIGKUQGBIE';
 const H={'Content-Type':'application/json',apikey:ANON,Authorization:'Bearer '+ANON};
-const Q=new URLSearchParams(location.search);let DIR=(Q.get('d')||'a').toLowerCase(),SCR=Q.get('s')||'home',TID=Q.get('t')||'cloy';
+const Q=new URLSearchParams(location.search);let VSL=Q.get('vsl')||'0',DIR=(Q.get('d')||'a').toLowerCase(),SCR=Q.get('s')||'home',TID=Q.get('t')||'cloy';
 if(Q.get('clean'))document.body.classList.add('clean');
 const S={sel:0,voted:false,vs:null,confirm:false,vsHi:null};let STK=3;let T=null,R=null,C=[],P={},DEMO=false,TOP=null,RI=0,SID='proto'+Math.random().toString(36).slice(2,10);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -362,7 +394,7 @@ function cVote(){const me=C[S.sel];return `<div class="scr C">${cHead(`${esc(R.c
 function cVS(){const a=C[0],b=C[1],w=S.vs,h=S.vsHi,pa=Math.round((+a.votes||1)/((+a.votes||1)+(+b.votes||1))*100);
  const cls=k=>w?(w===k?'win':'lose'):h?(h===k?'hi':'dim'):'idle';
  const half=(k,c,p,pos)=>`<button class="${pos} ${cls(k)}" data-vs="${k}" aria-label="${esc(nm(c.name))} 고르기"><span class="ph" style="${img(c.name)}"></span><span class="hl"></span><span class="nm"><b>${esc(nm(c.name))}</b>${w?`<span>${p}%</span>`:''}</span>${h===k?'<span class="ask2"><b>한 번 더 탭하면 확정</b></span>':''}${w===k?'<span class="cast2">CAST!</span>':''}</button>`;
- return `<div class="scr C vsC">${rail()}
+ return `<div class="scr C vsC vsl${VSL}">${rail()}
 <div class="fight">${half('a',a,pa,'l')}${half('b',b,100-pa,'r')}<span class="vsb">VS</span></div>
 <div class="streak"><span>${w?'다음 대결로 넘어가요':h?'다른 쪽을 누르면 바꾸고, 바깥을 누르면 취소':'더 어울리는 쪽을 탭'}</span><span>연속 <b>${STK}</b> 판</span></div>${tmdb}${nav()}</div>`}
 /* 아크 덱 스와이프 */
