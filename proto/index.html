@@ -326,6 +326,27 @@ body.clean .sw{display:none}
 .vsl6 .fight:has(.hi) .vsb,.vsl6 .fight:has(.win) .vsb{opacity:0;transition:opacity .2s}
 .vsl6 .fight .hl{box-shadow:inset 0 0 0 3px #D4FF3A,inset 0 0 50px rgba(212,255,58,.25)}
 .vsl6 .fight .lose .nm span{font-size:22px}
+
+/* fx=in: 입장 연출. 패틴슨 온전히 → 홀트가 덮으며 온전히 → 둘 다 반으로 갈라져 흑백 대기 */
+.vsl6 .fight.intro .l{animation:inL 2s cubic-bezier(.65,0,.35,1) both}
+.vsl6 .fight.intro .r{animation:inR 2s cubic-bezier(.65,0,.35,1) both}
+.vsl6 .fight.intro .vsb{animation:inV 2s both}
+.vsl6 .fight.intro .nm{animation:inN 2s both}
+@keyframes inL{0%,42%{clip-path:polygon(0 0,100% 0,100% 100%,0 100%);filter:none}100%{clip-path:polygon(0 0,57% 0,41% 100%,0 100%);filter:grayscale(1) contrast(1.05) brightness(.9)}}
+@keyframes inR{0%,20%{clip-path:polygon(100% 0,100% 0,100% 100%,100% 100%);filter:none}45%,60%{clip-path:polygon(0 0,100% 0,100% 100%,0 100%);filter:none}100%{clip-path:polygon(59% 0,100% 0,100% 100%,43% 100%);filter:grayscale(1) contrast(1.05) brightness(.9)}}
+@keyframes inV{0%,82%{opacity:0;transform:translate(-50%,-50%) scale(2.2)}92%{opacity:1;transform:translate(-50%,-50%) scale(.9)}100%{opacity:1;transform:translate(-50%,-50%) scale(1)}}
+@keyframes inN{0%,85%{opacity:0}100%{opacity:1}}
+/* fx=duo: 대기 상태 듀오톤. 왼쪽 청록, 오른쪽 라임 */
+.duo.vsl6 .fight button::after{content:"";position:absolute;inset:0;pointer-events:none;mix-blend-mode:color;opacity:0;transition:opacity .45s}
+.duo.vsl6 .fight .l::after{background:#19D3C5}.duo.vsl6 .fight .r::after{background:#D4FF3A}
+.duo.vsl6 .fight button.idle::after{opacity:.7}
+.duo.vsl6 .fight button.dim::after,.duo.vsl6 .fight button.lose::after{opacity:.5}
+.duo.vsl6 .fight .l .nm b{color:#5EF0E4}.duo.vsl6 .fight .r .nm b{color:#D4FF3A}
+.duo.vsl6 .fight .hi .nm b,.duo.vsl6 .fight .win .nm b{color:#fff}
+.duo.vsl6 .fight button.idle,.duo.vsl6 .fight button.dim,.duo.vsl6 .fight button.lose{filter:none}
+.duo.vsl6 .fight button .ph{transition:filter .45s}
+.duo.vsl6 .fight button.idle .ph{filter:grayscale(1) contrast(1.1)}
+.duo.vsl6 .fight button.dim .ph,.duo.vsl6 .fight button.lose .ph{filter:grayscale(1) brightness(.35)}
 </style>
 </head>
 <body>
@@ -334,7 +355,7 @@ body.clean .sw{display:none}
 <script>
 const SB='https://dnzcvbidppzaogtmwamc.supabase.co',ANON='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRuemN2YmlkcHB6YW9ndG13YW1jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTUyODgwNzgsImV4cCI6MjExMDg2NDA3OH0.yiKbCh3iuH8_GFpx-ezzbauZNOkffOe5cuIGKUQGBIE';
 const H={'Content-Type':'application/json',apikey:ANON,Authorization:'Bearer '+ANON};
-const Q=new URLSearchParams(location.search);let VSL=Q.get('vsl')||'0',DIR=(Q.get('d')||'a').toLowerCase(),SCR=Q.get('s')||'home',TID=Q.get('t')||'cloy';
+const Q=new URLSearchParams(location.search);let VSL=Q.get('vsl')||'0',FX=Q.get('fx')||'',INK='',DIR=(Q.get('d')||'a').toLowerCase(),SCR=Q.get('s')||'home',TID=Q.get('t')||'cloy';
 if(Q.get('clean'))document.body.classList.add('clean');
 const S={sel:0,voted:false,vs:null,confirm:false,vsHi:null};let STK=3;const FACE={"3qZ09UE7lN6AtorfXFRYpEtSY93.jpg": [0.4709, 0.4601, 0.168, 0.1632, 0.2875, -4.78], "pXm8GWTm9eIA8pUGOjvmYjlxamu.jpg": [0.4787, 0.312, 0.1727, 0.1636, 0.2998, -1.22], "v6WBJbm02mfzLhs8zeUzFRDtoly.jpg": [0.4954, 0.3833, 0.1393, 0.1462, 0.2542, -0.59], "9zec61HuFJgiUEzPSt0NfPIj0Xv.jpg": [0.5132, 0.4057, 0.1702, 0.156, 0.3006, 1.53], "lyUyVARQKhGxaxy0FbPJCQRpiaW.jpg": [0.5169, 0.3402, 0.1675, 0.1499, 0.2904, 3.34], "atdAs4pFGjUQ4m2W8kJYly7N6cC.jpg": [0.4873, 0.4347, 0.1671, 0.1543, 0.2942, -3.37]};/* 눈 중심 x, y, 눈에서 입까지, 두 눈 사이, 눈에서 턱까지 (사진 높이 대비), 눈 기울기(도). 얼굴 위치만 찾은 값 */
 const ALIGN=Q.get('align')!=='0';
@@ -453,8 +474,9 @@ function cVS(){const a=C[0],b=C[1],w=S.vs,h=S.vsHi,pa=Math.round((+a.votes||1)/(
  const cls=k=>w?(w===k?'win':'lose'):h?(h===k?'hi':'dim'):'idle';
  const half=(k,c,p,pos)=>`<button class="${pos} ${cls(k)}" data-vs="${k}" aria-label="${esc(nm(c.name))} 고르기"><span class="ph${alSt(c,pos)?' al':''}" style="${img(c.name)};${alSt(c,pos)}"></span><span class="hl"></span><span class="nm"><b>${esc(nm(c.name))}</b>${w?`<span>${p}%</span>`:''}</span>${h===k?'<span class="ask2"><b>한 번 더 탭하면 확정</b></span>':''}${w===k?'<span class="cast2">CAST!</span>':''}</button>`;
  const fh=Math.max(440,innerHeight-210),iw=Math.round(fh*1.1*2/3),W=innerWidth;
- return `<div class="scr C vsC vsl${VSL}" style="--fh:${fh}px;--iw:${iw}px;--xl:${Math.round(W*.3-iw/2)}px;--xr:${Math.round(W*.7-iw/2)}px">${rail()}
-<div class="fight">${half('a',a,pa,'l')}${half('b',b,100-pa,'r')}<span class="vsb">VS</span></div>
+ const pk=a.name+'|'+b.name,intro=/in/.test(FX)&&!h&&!w&&INK!==pk;if(intro)INK=pk;
+ return `<div class="scr C vsC vsl${VSL}${/duo/.test(FX)?' duo':''}" style="--fh:${fh}px;--iw:${iw}px;--xl:${Math.round(W*.3-iw/2)}px;--xr:${Math.round(W*.7-iw/2)}px">${rail()}
+<div class="fight${intro?' intro':''}">${half('a',a,pa,'l')}${half('b',b,100-pa,'r')}<span class="vsb">VS</span></div>
 <div class="streak"><span>${w?'다음 대결로 넘어가요':h?'다른 쪽을 누르면 바꾸고, 바깥을 누르면 취소':'더 어울리는 쪽을 탭'}</span><span>연속 <b>${STK}</b> 판</span></div>${tmdb}${nav()}</div>`}
 /* 아크 덱 스와이프 */
 let SX=null;document.addEventListener('pointerdown',e=>{if(e.target.closest('#arc'))SX=e.clientX});
