@@ -13,7 +13,7 @@ const PENDING_K='dcPending1';
 function pend(){try{return JSON.parse(localStorage.getItem(PENDING_K)||'[]')}catch(e){return[]}}
 function setPend(a){try{localStorage.setItem(PENDING_K,JSON.stringify(a))}catch(e){}}
 
-async function loadDeck(){if(deckBusy)return;deckBusy=true;try{loadRounds();DECK=onbSort(await rpc('vote_deck',{lim:16})||[]);
+async function loadDeck(){if(deckBusy)return;deckBusy=true;try{loadRounds();DECK=passSort(onbSort(await rpc('vote_deck',{lim:24})||[])).slice(0,16);
  const keep=DECK.findIndex(d=>d.id===(DECK[DI]||{}).id);DI=Math.max(0,keep);
  const names=DECK.flatMap(d=>d.roles.flatMap(r=>[...(r.orig?[r.orig]:[]),...r.cands.map(c=>c.name)]));if(DECKV)renderDeck();await loadNames(names)}catch(e){}deckBusy=false;if(DECKV)renderDeck()}
 function cardLeave(){if(cardKey&&cardAt){const [t,r]=cardKey.split('|');track('card_view',{t,r:+r||null,ms:performance.now()-cardAt});cardAt=0;cardKey=''}}
@@ -183,7 +183,7 @@ document.addEventListener('click',async e=>{const b=e.target.closest('[data-act]
    const fresh=await rpc('vote_deck',{lim:16}).catch(()=>null);const ft=fresh&&t&&fresh.find(x=>x.id===t.id);if(ft)Object.assign(t,{seen:ft.seen,roles:ft.roles});const c=$('#dkCard');if(c){c.classList.add('fly-r');await new Promise(o=>setTimeout(o,220))}nextRole()}catch(err){toast(errMsg(err))}return}
  if(a==='dk-skip'){const t=curTopic(),r=curRole();track('skip',{t:t&&t.id,r:r&&r.id});const c=$('#dkCard');if(c){c.classList.add('fly-l');setTimeout(nextRole,200)}else nextRole();return}
  if(a==='dk-goto'){cardLeave();DI=+b.dataset.i;const t=curTopic();DR=t?firstOpenRole(t):0;track('topic_jump',{t:t&&t.id});renderDeck();scrollTo({top:0,behavior:'smooth'});return}
- if(a==='dk-nexttopic'){const t=curTopic();track('topic_skip',{t:t&&t.id});nextTopic();return}
+ if(a==='dk-nexttopic'){const t=curTopic();track('topic_skip',{t:t&&t.id});if(t&&!t.done)markPass(t.id);nextTopic();return}
  if(a==='dk-restart'){DI=0;DR=0;await loadDeck();const t=curTopic();if(t)DR=firstOpenRole(t);renderDeck();return}
  if(a==='sheet-close'){$('#loginSheet').classList.remove('on');return}
  if(a==='talk-open'){openThread(b.dataset.k);return}
@@ -230,3 +230,8 @@ function deckEnd(box){const rs=(RB.results||[]).slice(0,3),cl=RB.closing||[];con
   ${open.length?`<h3>덱에 없던 작품</h3><div class="de-list">${open.map(x=>`<a href="#${esc(x.id)}">${esc(x.title)}${verLabel(x.cat)?` <small>${esc(verLabel(x.cat))}</small>`:''}<i>→</i></a>`).join('')}</div>`:''}</div></div>`;
  stripFocus()}
 document.addEventListener('click',e=>{if(e.target.closest('[data-act="dk-login"]')){e.preventDefault();openLoginSheet(true)}});
+
+/* 넘긴 작품은 3일 동안 덱 뒤로 보내고, 그 자리는 아직 안 본 작품으로 채움 */
+function passMap(){try{return JSON.parse(localStorage.getItem('dk_pass')||'{}')}catch(e){return {}}}
+function markPass(tid){const m=passMap(),now=Date.now();m[tid]=now;for(const k in m)if(now-m[k]>3*864e5)delete m[k];try{localStorage.setItem('dk_pass',JSON.stringify(m))}catch(e){}}
+function passSort(deck){const m=passMap(),now=Date.now(),ok=t=>!(m[t.id]&&now-m[t.id]<3*864e5);return [...deck.filter(ok),...deck.filter(t=>!ok(t))]}

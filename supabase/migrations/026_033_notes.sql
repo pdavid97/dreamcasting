@@ -28,3 +28,5 @@
 -- 042 duel_next(skip,prefer): 보던 작품의 안 고른 배역 > 같은 작품 다른 판 > 원작 배우가 후보인 배역 > 내 픽이 후보인 배역 순, why 문구 반환
 -- 043 follow_many(pids): 온보딩에서 고른 배우를 로그인 뒤 팬 채널에 등록(멱등). vote_deck cands에 pid(people.id) 추가
 -- 044 my_week(): 최근 7일과 그 전 7일 비교(표, 작품, 배우, 새 얼굴, 포인트, 적중, 최애, 일별 표, 7일 안에 발표될 내 판)
+-- 045 buzz 분할 실행: topic_activity(days) 집계 함수, topics.buzz_raw. cron dc-buzz-collect-0..5(6개씩) 후 dc-buzz-score(18:40 UTC)
+-- 046 vote_deck: 날짜와 사용자로 정해지는 하루 단위 가중치(0~12) 추가해 매일 순서가 바뀜, lim 24 요청 후 클라이언트에서 넘긴 작품(3일) 뒤로

@@ -1,4 +1,4 @@
-// 화제성 계산 Edge Function (pg_cron 하루 1회, 20시간 안에 다시 부르면 건너뜀)
+// 화제성 계산 Edge Function (pg_cron 하루 1회: collect를 6개씩 여러 번 부른 뒤 score 한 번)
 // v3 점수(0~100): 소스별 log1p 값을 그날 전체 작품의 95번째 백분위로 나눠 0~1로 맞춘 뒤 가중 평균
 //   뉴스 0.20(Google News RSS, 드라마/영화 등 맥락어 포함), 광장 활동 0.20, 네이버 데이터랩 0.20(키 있을 때만),
 //   위키백과 조회수 0.10, TMDB 주간 트렌딩 0.10. 데이터가 없는 소스는 분모에서 뺌
@@ -118,72 +118,72 @@ async function tm(path: string, token: string) {
 Deno.serve(async (req) => {
   try { return await run(req); } catch (e) { return new Response(JSON.stringify({ error: String((e as Error)?.stack || e) }), { status: 500 }); }
 });
+// 한 번에 모든 작품을 처리하면 워커 자원 한도를 넘어서 단계를 나눔
+//  phase "collect": offset부터 limit개 작품의 기사, 위키, 네이버, 트렌드 신호를 모아 topics.buzz_raw에 저장
+//  phase "score": 저장된 신호와 활동량(topic_activity)으로 정규화 점수를 매기고, 새 주제 후보 뉴스를 모음
 async function run(req: Request) {
-  let force = false;
-  try { force = !!(await req.json()).force; } catch { /* 빈 본문 */ }
-  const cfg = await (await rest("app_config?select=v&k=eq.buzz_run")).json();
-  const last = Array.isArray(cfg) ? cfg[0]?.v?.last : null;
-  if (!force && last && Date.now() - Date.parse(last) < 20 * 3600e3) return new Response(JSON.stringify({ skipped: true, last }));
-  await rest("app_config?on_conflict=k", { method: "POST", headers: { Prefer: "resolution=merge-duplicates" }, body: JSON.stringify([{ k: "buzz_run", v: { last: new Date().toISOString() } }]) });
-
-  const token = Deno.env.get("TMDB_TOKEN") || "";
-  const trend = new Set<number>();
-  if (token) for (const p of ["/trending/tv/week?language=ko-KR", "/trending/movie/week?language=ko-KR"]) {
-    const d = await tm(p, token); (d?.results || []).forEach((x: { id: number }) => trend.add(x.id));
+  let b: { phase?: string; offset?: number; limit?: number } = {};
+  try { b = await req.json(); } catch { /* 빈 본문 */ }
+  const phase = b.phase || "collect", off = b.offset || 0, lim = Math.min(b.limit || 6, 8);
+  const all = await (await rest("topics?select=id,title,work,buzz_meta,buzz_raw&closed_at=is.null&order=id")).json();
+  const list = (Array.isArray(all) ? all : []) as { id: string; title: string; work?: { tmdb_id?: number }; buzz_meta?: { wiki?: string }; buzz_raw?: Record<string, unknown> }[];
+  if (phase === "collect") {
+    const part = list.slice(off, off + lim);
+    if (!part.length) return new Response(JSON.stringify({ phase, done: 0 }));
+    const token = Deno.env.get("TMDB_TOKEN") || "";
+    const trend = new Set<number>();
+    if (token) for (const p of ["/trending/tv/week?language=ko-KR", "/trending/movie/week?language=ko-KR"]) {
+      const d = await tm(p, token); (d?.results || []).forEach((x: { id: number }) => trend.add(x.id));
+    }
+    const rl = await (await rest(`roles?select=topic_id,ch,orig&topic_id=in.(${part.map((t) => encodeURIComponent(t.id)).join(",")})`)).json();
+    const NM: Record<string, string[]> = {};
+    for (const r of (Array.isArray(rl) ? rl : [])) (NM[r.topic_id] ||= []).push(...[r.orig, (r.ch || "").split(/[ (]/)[0]].filter(Boolean));
+    const tr7 = await trendsKR();
+    const nv = await naverRatios(part.map((t) => t.title));
+    let done = 0;
+    for (const t of part) {
+      const raw = await news(`"${t.title}" ${CTX}`); await sleep(300);
+      const items = raw ? raw.filter((x) => relevant(x.t, t.title, NM[t.id] || [])) : null;
+      let wiki: string | null | undefined = t.buzz_meta?.wiki;
+      if (!wiki) wiki = await wikiTitle(t.title);
+      const wv = wiki ? await wikiViews(wiki) : null;
+      const r = { n: items ? items.length : 0, news: (items || []).slice(0, 3), tr: !!(t.work?.tmdb_id && trend.has(t.work.tmdb_id)), tb: tr7.some((x) => x.includes(t.title)), wiki: wiki || null, wv, nav: nv ? (nv[t.title] ?? 0) : null, at: new Date().toISOString() };
+      await rest(`topics?id=eq.${encodeURIComponent(t.id)}`, { method: "PATCH", body: JSON.stringify({ buzz_raw: r }) });
+      done++;
+    }
+    return new Response(JSON.stringify({ phase, offset: off, done, total: list.length }), { headers: { "Content-Type": "application/json" } });
   }
-  const topics = await (await rest("topics?select=id,title,work,buzz_meta&closed_at=is.null")).json();
-  const since = new Date(Date.now() - 7 * 864e5).toISOString();
-  const ev = await (await rest(`events?select=topic_id&at=gte.${since}&topic_id=not.is.null&limit=50000`)).json();
+  // score
+  const actRows = await (await fetch(`${SB}/rest/v1/rpc/topic_activity`, { method: "POST", headers: { ...H, "Content-Type": "application/json" }, body: JSON.stringify({ days: 7 }) })).json();
   const act: Record<string, number> = {};
-  for (const e of (Array.isArray(ev) ? ev : [])) act[e.topic_id] = (act[e.topic_id] || 0) + 1;
-
-  const rl = await (await rest("roles?select=topic_id,ch,orig")).json();
-  const NM: Record<string, string[]> = {};
-  for (const r of (Array.isArray(rl) ? rl : [])) (NM[r.topic_id] ||= []).push(...[r.orig, (r.ch || "").split(/[ (]/)[0]].filter(Boolean));
-  const tr7 = await trendsKR();
-  const list = Array.isArray(topics) ? topics : [];
-  const nv = await naverRatios(list.map((t) => t.title));
-  type Row = { t: { id: string; title: string; work?: { tmdb_id?: number } }; items: { t: string }[] | null; n: number; tr: boolean; a: number; wiki: string | null; wv: { last: number; prev: number } | null; nav: number | null; tb: boolean };
-  const rows: Row[] = [];
-  // 주제마다 기사, 위키를 차례로 기다리면 150초 제한을 넘어서 5개씩 동시에 처리
-  // 구글 뉴스는 한꺼번에 부르면 막혀서 차례로, 위키는 5개씩 동시에
-  const NEWS: Record<string, { t: string }[] | null> = {};
-  for (const t of list) { NEWS[t.id] = await news(`"${t.title}" ${CTX}`); await sleep(300); }
-  const one = async (t: typeof list[number]) => {
-    const raw = NEWS[t.id];
-    const items = raw ? raw.filter((x) => relevant(x.t, t.title, NM[t.id] || [])) : null;
-    let wiki: string | null | undefined = t.buzz_meta?.wiki;
-    if (!wiki) wiki = await wikiTitle(t.title);
-    const wv = wiki ? await wikiViews(wiki) : null;
-    const tb = tr7.some((x) => x.includes(t.title));
-    rows.push({ t, items, n: items ? items.length : 0, tr: !!(t.work?.tmdb_id && trend.has(t.work.tmdb_id)), a: act[t.id] || 0, wiki: wiki || null, wv, nav: nv ? (nv[t.title] ?? 0) : null, tb });
-  };
-  for (let i = 0; i < list.length; i += 5) { await Promise.all(list.slice(i, i + 5).map(one)); await sleep(200); }
+  for (const a of (Array.isArray(actRows) ? actRows : [])) act[a.topic_id] = +a.n || 0;
+  type Raw = { n: number; news: { t: string }[]; tr: boolean; tb: boolean; wiki: string | null; wv: { last: number; prev: number } | null; nav: number | null };
+  const rows = list.filter((t) => t.buzz_raw).map((t) => ({ t, r: t.buzz_raw as unknown as Raw, a: act[t.id] || 0 }));
   const P = {
-    news: p95(rows.map((r) => Math.log1p(r.n))), act: p95(rows.map((r) => Math.log1p(r.a))),
-    wiki: p95(rows.map((r) => Math.log1p(r.wv?.last || 0))), nav: p95(rows.map((r) => Math.log1p(r.nav || 0))),
+    news: p95(rows.map((x) => Math.log1p(x.r.n))), act: p95(rows.map((x) => Math.log1p(x.a))),
+    wiki: p95(rows.map((x) => Math.log1p(x.r.wv?.last || 0))), nav: p95(rows.map((x) => Math.log1p(x.r.nav || 0))),
   };
   const nz = (x: number, p: number) => (p > 0 ? Math.min(1, x / p) : 0);
   let done = 0;
-  for (const r of rows) {
-    const parts: [number, number][] = [[0.20, nz(Math.log1p(r.n), P.news)], [0.20, nz(Math.log1p(r.a), P.act)], [0.10, r.tr ? 1 : 0]];
+  for (const { t, r, a } of rows) {
+    const parts: [number, number][] = [[0.20, nz(Math.log1p(r.n), P.news)], [0.20, nz(Math.log1p(a), P.act)], [0.10, r.tr ? 1 : 0]];
     if (r.wv) parts.push([0.10, nz(Math.log1p(r.wv.last), P.wiki)]);
     if (r.nav !== null) parts.push([0.20, nz(Math.log1p(r.nav), P.nav)]);
-    const wsum = parts.reduce((a, b) => a + b[0], 0);
-    let base = parts.reduce((a, b) => a + b[0] * b[1], 0) / wsum;
+    const wsum = parts.reduce((x, y) => x + y[0], 0);
+    let base = parts.reduce((x, y) => x + y[0] * y[1], 0) / wsum;
     const mom = r.wv && r.wv.prev > 0 ? Math.max(-0.15, Math.min(0.15, (r.wv.last - r.wv.prev) / r.wv.prev * 0.15)) : 0;
     base = base * (1 + mom) + (r.tb ? 0.05 : 0);
     const score = Math.round(Math.min(1, base) * 1000) / 10;
-    const meta = { n: r.n, trending: r.tr, act: r.a, wiki: r.wiki || null, wiki7: r.wv?.last ?? null, wikiPrev7: r.wv?.prev ?? null, naver: r.nav, gtrend: r.tb, mom: Math.round(mom * 1000) / 1000, news: (r.items || []).slice(0, 3), v: 3 };
-    await rest(`topics?id=eq.${encodeURIComponent(r.t.id)}`, { method: "PATCH", body: JSON.stringify({ buzz: score, buzz_at: new Date().toISOString(), buzz_meta: meta }) });
+    const meta = { n: r.n, trending: r.tr, act: a, wiki: r.wiki, wiki7: r.wv?.last ?? null, wikiPrev7: r.wv?.prev ?? null, naver: r.nav, gtrend: r.tb, mom: Math.round(mom * 1000) / 1000, news: r.news || [], v: 4 };
+    await rest(`topics?id=eq.${encodeURIComponent(t.id)}`, { method: "PATCH", body: JSON.stringify({ buzz: score, buzz_at: new Date().toISOString(), buzz_meta: meta }) });
     done++;
   }
-
-  // 새 주제 후보: 실사화, 드라마화 소식
   const ideas: Record<string, unknown>[] = [];
   for (const q of ["실사화 확정", "드라마화 확정", "웹툰 원작 드라마 캐스팅", "웹소설 원작 드라마 캐스팅"]) {
     for (const it of (await news(q)) || []) if (it.u) ideas.push({ title: it.t, url: it.u.slice(0, 1000), source: it.s || null, published: it.d ? new Date(it.d).toISOString() : null });
+    await sleep(300);
   }
   if (ideas.length) await rest("buzz_ideas?on_conflict=url", { method: "POST", headers: { Prefer: "resolution=ignore-duplicates" }, body: JSON.stringify(ideas.slice(0, 200)) });
-  return new Response(JSON.stringify({ topics: done, trending: trend.size, gtrends: tr7.length, naver: nv !== null, ideas: ideas.length, top: rows.map((r) => [r.t.title, r.n, (r.items || [])[0]?.t || null]) }), { headers: { "Content-Type": "application/json" } });
+  await rest("app_config?on_conflict=k", { method: "POST", headers: { Prefer: "resolution=merge-duplicates" }, body: JSON.stringify([{ k: "buzz_run", v: { last: new Date().toISOString() } }]) });
+  return new Response(JSON.stringify({ phase, topics: done, ideas: ideas.length, top: rows.sort((x, y) => y.r.n - x.r.n).slice(0, 5).map((x) => [x.t.title, x.r.n]) }), { headers: { "Content-Type": "application/json" } });
 }
