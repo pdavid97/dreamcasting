@@ -578,3 +578,63 @@ body:not([data-view=vs]) #topicView>#duel{display:none}
 /* 이름이 길어 줄이 바뀌어도 한 단어 안에서는 끊지 않음 */
 body{word-break:keep-all;overflow-wrap:break-word}
 .nmp{display:inline-block;max-width:100%}
+
+/* ===== VS 한판 확정 디자인(11/24) ===== */
+#duel>.vsf{background:#0A0A0A!important;border:0!important;border-radius:18px;overflow:hidden;color:#fff;padding:0}
+.vsf-hd{display:flex;align-items:baseline;gap:8px;padding:12px 14px 10px;flex-wrap:wrap}
+.vsf-hd a{font-size:12px;color:#9A9A9A;text-decoration:none}
+.vsf-hd b{font-size:20px;font-weight:900;letter-spacing:-.03em;color:#fff}
+.vsf .fight{position:relative;overflow:hidden}
+.vsf .fight button{position:absolute;inset:0;border:0;padding:0;margin:0;overflow:hidden;background:#0A0A0A;cursor:pointer;color:#fff;font:inherit}
+.vsf .fight .ph{position:absolute;inset:0;background:#1A1A1A center 22%/cover no-repeat}
+.vsf .fight .ph.al{background-color:#0A0A0A;background-repeat:no-repeat}
+.vsf .fight .l{clip-path:polygon(0 0,57% 0,41% 100%,0 100%)}
+.vsf .fight .r{clip-path:polygon(59% 0,100% 0,100% 100%,43% 100%)}
+.vsf .fight button.idle{filter:grayscale(1) contrast(1.05) brightness(.9)}
+.vsf .fight .l.hi,.vsf .fight .l.win{clip-path:polygon(0 0,82% 0,74% 100%,0 100%);z-index:2}
+.vsf .fight .r.hi,.vsf .fight .r.win{clip-path:polygon(18% 0,100% 0,100% 100%,26% 100%);z-index:2}
+.vsf .fight .r.dim,.vsf .fight .r.lose{clip-path:polygon(83.5% 0,100% 0,100% 100%,75.5% 100%);filter:grayscale(1) brightness(.55)}
+.vsf .fight .l.dim,.vsf .fight .l.lose{clip-path:polygon(0 0,16.5% 0,24.5% 100%,0 100%);filter:grayscale(1) brightness(.55)}
+.vsf .fight .l.hi{animation:vfLh .6s cubic-bezier(.7,0,.25,1) both}.vsf .fight .r.dim{animation:vfRd .6s cubic-bezier(.7,0,.25,1) both}
+.vsf .fight .r.hi{animation:vfRh .6s cubic-bezier(.7,0,.25,1) both}.vsf .fight .l.dim{animation:vfLd .6s cubic-bezier(.7,0,.25,1) both}
+@keyframes vfLh{from{clip-path:polygon(0 0,57% 0,41% 100%,0 100%);filter:grayscale(1) brightness(.9)}to{clip-path:polygon(0 0,82% 0,74% 100%,0 100%);filter:none}}
+@keyframes vfRd{from{clip-path:polygon(59% 0,100% 0,100% 100%,43% 100%);filter:grayscale(1) brightness(.9)}to{clip-path:polygon(83.5% 0,100% 0,100% 100%,75.5% 100%);filter:grayscale(1) brightness(.55)}}
+@keyframes vfRh{from{clip-path:polygon(59% 0,100% 0,100% 100%,43% 100%);filter:grayscale(1) brightness(.9)}to{clip-path:polygon(18% 0,100% 0,100% 100%,26% 100%);filter:none}}
+@keyframes vfLd{from{clip-path:polygon(0 0,57% 0,41% 100%,0 100%);filter:grayscale(1) brightness(.9)}to{clip-path:polygon(0 0,16.5% 0,24.5% 100%,0 100%);filter:grayscale(1) brightness(.55)}}
+.vsf .fight.intro .l{animation:vfInL 2s cubic-bezier(.65,0,.35,1) both}.vsf .fight.intro .r{animation:vfInR 2s cubic-bezier(.65,0,.35,1) both}
+.vsf .fight.intro .vsb,.vsf .fight.intro .nm{animation:vfInN 2s both}
+@keyframes vfInL{0%,42%{clip-path:polygon(0 0,100% 0,100% 100%,0 100%);filter:none}100%{clip-path:polygon(0 0,57% 0,41% 100%,0 100%);filter:grayscale(1) contrast(1.05) brightness(.9)}}
+@keyframes vfInR{0%,20%{clip-path:polygon(100% 0,100% 0,100% 100%,100% 100%);filter:none}45%,60%{clip-path:polygon(0 0,100% 0,100% 100%,0 100%);filter:none}100%{clip-path:polygon(59% 0,100% 0,100% 100%,43% 100%);filter:grayscale(1) contrast(1.05) brightness(.9)}}
+@keyframes vfInN{0%,85%{opacity:0}100%{opacity:1}}
+.vsf .fight .hl{position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity .3s;box-shadow:inset 0 0 0 3px #D4FF3A,inset 0 0 50px rgba(212,255,58,.25)}
+.vsf .fight .hi .hl,.vsf .fight .win .hl{opacity:1}
+.vsf .fight .nm{position:absolute;bottom:130px;z-index:2;max-width:46%;line-height:1.15;text-shadow:0 2px 8px rgba(0,0,0,.7);transition:opacity .3s}
+.vsf .fight .l .nm{left:14px;text-align:left}.vsf .fight .r .nm{right:14px;text-align:right}
+.vsf .fight .nm b{display:block;font-size:20px;font-weight:900;letter-spacing:-.03em}
+.vsf .fight .nm em{display:block;font-style:normal;font-size:12px;font-weight:700;opacity:.85;margin-top:2px}
+.vsf .fight .hi .nm,.vsf .fight .win .nm{max-width:70%}
+.vsf .fight .dim .nm{bottom:16px;max-width:none}.vsf .fight .dim .nm em{display:none}
+.vsf .fight .dim .nm b{font-size:12px;writing-mode:vertical-rl;letter-spacing:2px;opacity:.85}
+.vsf .fight .l.dim .nm{left:8px}.vsf .fight .r.dim .nm{right:8px;top:16px;bottom:auto}
+.vsf .fight .lose .nm{opacity:0}
+.vsf .fight .pct{display:block;font-family:Anton,'Black Han Sans',sans-serif;font-size:40px;color:#D4FF3A;text-shadow:0 3px 0 #000}
+.vsf .vsb{position:absolute;left:50%;bottom:-6px;transform:translateX(-50%);z-index:3;pointer-events:none;font-family:Anton,'Black Han Sans',sans-serif;font-size:140px;line-height:1;color:transparent;-webkit-text-stroke:2px #D4FF3A;letter-spacing:6px;opacity:.9;transition:opacity .2s}
+.vsf .fight:has(.hi) .vsb,.vsf .fight:has(.win) .vsb,.vsf .fight:has(.lose) .vsb{opacity:0}
+.vsf .wl{position:absolute;inset:0;z-index:3;pointer-events:none;background:#D4FF3A;filter:drop-shadow(0 0 8px #D4FF3A);opacity:0;clip-path:polygon(57.6% 0,58.4% 0,42.4% 100%,41.6% 100%)}
+.vsf .fight:has(.l.hi) .wl{opacity:1;clip-path:polygon(82.2% 0,83.2% 0,75.2% 100%,74.2% 100%);animation:vfWl .6s cubic-bezier(.7,0,.25,1) both}
+.vsf .fight:has(.r.hi) .wl{opacity:1;clip-path:polygon(16.8% 0,17.8% 0,25.8% 100%,24.8% 100%);animation:vfWr .6s cubic-bezier(.7,0,.25,1) both}
+@keyframes vfWl{from{clip-path:polygon(57.6% 0,58.4% 0,42.4% 100%,41.6% 100%)}to{clip-path:polygon(82.2% 0,83.2% 0,75.2% 100%,74.2% 100%)}}
+@keyframes vfWr{from{clip-path:polygon(57.6% 0,58.4% 0,42.4% 100%,41.6% 100%)}to{clip-path:polygon(16.8% 0,17.8% 0,25.8% 100%,24.8% 100%)}}
+.vsf .ask2{position:absolute;top:78%;left:40%;transform:translate(-50%,-50%);z-index:4;padding:10px 14px;border-radius:12px;background:rgba(10,10,10,.72);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid rgba(212,255,58,.55);white-space:nowrap}
+.vsf .r .ask2{left:60%}.vsf .ask2 b{font-size:14px;font-weight:900;color:#D4FF3A}
+.vsf .cast2{position:absolute;top:20%;left:42%;z-index:4;transform:translate(-50%,-50%) rotate(-8deg);font-family:Anton,'Black Han Sans',sans-serif;font-size:44px;color:#0A0A0A;background:#D4FF3A;padding:0 14px;animation:vfSt .45s cubic-bezier(.2,1.6,.4,1) both}
+.vsf .r .cast2{left:58%}
+@keyframes vfSt{0%{transform:translate(-50%,-50%) scale(2.4) rotate(-20deg);opacity:0}100%{transform:translate(-50%,-50%) scale(1) rotate(-8deg);opacity:1}}
+.vsf-ft{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 14px 4px;font-size:12px;font-weight:800;color:#ddd}
+.vsf-ft .stk{white-space:nowrap}.vsf-ft .stk b{font-family:Anton,'Black Han Sans',sans-serif;font-size:22px;color:#D4FF3A}
+.vsf-links{display:flex;gap:14px;padding:4px 14px 14px;min-height:20px}
+.vsf-links button{border:0;background:none;color:#8A8A8A;font-size:12px;text-decoration:underline;padding:4px 0;cursor:pointer}
+.vsf-empty{display:flex;flex-direction:column;gap:6px;padding:28px 18px}.vsf-empty b{font-size:16px}.vsf-empty span{font-size:13px;color:#9A9A9A}
+.vsf .fight .ph.bgc{filter:blur(18px) brightness(.7);transform:scale(1.15)}
+.vsf .fight .ph.al{background-color:transparent}
+.vsf .ask2{top:90%}

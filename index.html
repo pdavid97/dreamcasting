@@ -6,7 +6,7 @@
 <title>드림캐스팅 광장</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Inter:wght@500;700&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Black+Han+Sans&family=Inter:wght@500;700&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
 
 /* VOICE community portal with a game inside: lively masthead, calm readable boards
@@ -1517,6 +1517,66 @@ body:not([data-view=vs]) #topicView>#duel{display:none}
 body{word-break:keep-all;overflow-wrap:break-word}
 .nmp{display:inline-block;max-width:100%}
 
+/* ===== VS 한판 확정 디자인(11/24) ===== */
+#duel>.vsf{background:#0A0A0A!important;border:0!important;border-radius:18px;overflow:hidden;color:#fff;padding:0}
+.vsf-hd{display:flex;align-items:baseline;gap:8px;padding:12px 14px 10px;flex-wrap:wrap}
+.vsf-hd a{font-size:12px;color:#9A9A9A;text-decoration:none}
+.vsf-hd b{font-size:20px;font-weight:900;letter-spacing:-.03em;color:#fff}
+.vsf .fight{position:relative;overflow:hidden}
+.vsf .fight button{position:absolute;inset:0;border:0;padding:0;margin:0;overflow:hidden;background:#0A0A0A;cursor:pointer;color:#fff;font:inherit}
+.vsf .fight .ph{position:absolute;inset:0;background:#1A1A1A center 22%/cover no-repeat}
+.vsf .fight .ph.al{background-color:#0A0A0A;background-repeat:no-repeat}
+.vsf .fight .l{clip-path:polygon(0 0,57% 0,41% 100%,0 100%)}
+.vsf .fight .r{clip-path:polygon(59% 0,100% 0,100% 100%,43% 100%)}
+.vsf .fight button.idle{filter:grayscale(1) contrast(1.05) brightness(.9)}
+.vsf .fight .l.hi,.vsf .fight .l.win{clip-path:polygon(0 0,82% 0,74% 100%,0 100%);z-index:2}
+.vsf .fight .r.hi,.vsf .fight .r.win{clip-path:polygon(18% 0,100% 0,100% 100%,26% 100%);z-index:2}
+.vsf .fight .r.dim,.vsf .fight .r.lose{clip-path:polygon(83.5% 0,100% 0,100% 100%,75.5% 100%);filter:grayscale(1) brightness(.55)}
+.vsf .fight .l.dim,.vsf .fight .l.lose{clip-path:polygon(0 0,16.5% 0,24.5% 100%,0 100%);filter:grayscale(1) brightness(.55)}
+.vsf .fight .l.hi{animation:vfLh .6s cubic-bezier(.7,0,.25,1) both}.vsf .fight .r.dim{animation:vfRd .6s cubic-bezier(.7,0,.25,1) both}
+.vsf .fight .r.hi{animation:vfRh .6s cubic-bezier(.7,0,.25,1) both}.vsf .fight .l.dim{animation:vfLd .6s cubic-bezier(.7,0,.25,1) both}
+@keyframes vfLh{from{clip-path:polygon(0 0,57% 0,41% 100%,0 100%);filter:grayscale(1) brightness(.9)}to{clip-path:polygon(0 0,82% 0,74% 100%,0 100%);filter:none}}
+@keyframes vfRd{from{clip-path:polygon(59% 0,100% 0,100% 100%,43% 100%);filter:grayscale(1) brightness(.9)}to{clip-path:polygon(83.5% 0,100% 0,100% 100%,75.5% 100%);filter:grayscale(1) brightness(.55)}}
+@keyframes vfRh{from{clip-path:polygon(59% 0,100% 0,100% 100%,43% 100%);filter:grayscale(1) brightness(.9)}to{clip-path:polygon(18% 0,100% 0,100% 100%,26% 100%);filter:none}}
+@keyframes vfLd{from{clip-path:polygon(0 0,57% 0,41% 100%,0 100%);filter:grayscale(1) brightness(.9)}to{clip-path:polygon(0 0,16.5% 0,24.5% 100%,0 100%);filter:grayscale(1) brightness(.55)}}
+.vsf .fight.intro .l{animation:vfInL 2s cubic-bezier(.65,0,.35,1) both}.vsf .fight.intro .r{animation:vfInR 2s cubic-bezier(.65,0,.35,1) both}
+.vsf .fight.intro .vsb,.vsf .fight.intro .nm{animation:vfInN 2s both}
+@keyframes vfInL{0%,42%{clip-path:polygon(0 0,100% 0,100% 100%,0 100%);filter:none}100%{clip-path:polygon(0 0,57% 0,41% 100%,0 100%);filter:grayscale(1) contrast(1.05) brightness(.9)}}
+@keyframes vfInR{0%,20%{clip-path:polygon(100% 0,100% 0,100% 100%,100% 100%);filter:none}45%,60%{clip-path:polygon(0 0,100% 0,100% 100%,0 100%);filter:none}100%{clip-path:polygon(59% 0,100% 0,100% 100%,43% 100%);filter:grayscale(1) contrast(1.05) brightness(.9)}}
+@keyframes vfInN{0%,85%{opacity:0}100%{opacity:1}}
+.vsf .fight .hl{position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity .3s;box-shadow:inset 0 0 0 3px #D4FF3A,inset 0 0 50px rgba(212,255,58,.25)}
+.vsf .fight .hi .hl,.vsf .fight .win .hl{opacity:1}
+.vsf .fight .nm{position:absolute;bottom:130px;z-index:2;max-width:46%;line-height:1.15;text-shadow:0 2px 8px rgba(0,0,0,.7);transition:opacity .3s}
+.vsf .fight .l .nm{left:14px;text-align:left}.vsf .fight .r .nm{right:14px;text-align:right}
+.vsf .fight .nm b{display:block;font-size:20px;font-weight:900;letter-spacing:-.03em}
+.vsf .fight .nm em{display:block;font-style:normal;font-size:12px;font-weight:700;opacity:.85;margin-top:2px}
+.vsf .fight .hi .nm,.vsf .fight .win .nm{max-width:70%}
+.vsf .fight .dim .nm{bottom:16px;max-width:none}.vsf .fight .dim .nm em{display:none}
+.vsf .fight .dim .nm b{font-size:12px;writing-mode:vertical-rl;letter-spacing:2px;opacity:.85}
+.vsf .fight .l.dim .nm{left:8px}.vsf .fight .r.dim .nm{right:8px;top:16px;bottom:auto}
+.vsf .fight .lose .nm{opacity:0}
+.vsf .fight .pct{display:block;font-family:Anton,'Black Han Sans',sans-serif;font-size:40px;color:#D4FF3A;text-shadow:0 3px 0 #000}
+.vsf .vsb{position:absolute;left:50%;bottom:-6px;transform:translateX(-50%);z-index:3;pointer-events:none;font-family:Anton,'Black Han Sans',sans-serif;font-size:140px;line-height:1;color:transparent;-webkit-text-stroke:2px #D4FF3A;letter-spacing:6px;opacity:.9;transition:opacity .2s}
+.vsf .fight:has(.hi) .vsb,.vsf .fight:has(.win) .vsb,.vsf .fight:has(.lose) .vsb{opacity:0}
+.vsf .wl{position:absolute;inset:0;z-index:3;pointer-events:none;background:#D4FF3A;filter:drop-shadow(0 0 8px #D4FF3A);opacity:0;clip-path:polygon(57.6% 0,58.4% 0,42.4% 100%,41.6% 100%)}
+.vsf .fight:has(.l.hi) .wl{opacity:1;clip-path:polygon(82.2% 0,83.2% 0,75.2% 100%,74.2% 100%);animation:vfWl .6s cubic-bezier(.7,0,.25,1) both}
+.vsf .fight:has(.r.hi) .wl{opacity:1;clip-path:polygon(16.8% 0,17.8% 0,25.8% 100%,24.8% 100%);animation:vfWr .6s cubic-bezier(.7,0,.25,1) both}
+@keyframes vfWl{from{clip-path:polygon(57.6% 0,58.4% 0,42.4% 100%,41.6% 100%)}to{clip-path:polygon(82.2% 0,83.2% 0,75.2% 100%,74.2% 100%)}}
+@keyframes vfWr{from{clip-path:polygon(57.6% 0,58.4% 0,42.4% 100%,41.6% 100%)}to{clip-path:polygon(16.8% 0,17.8% 0,25.8% 100%,24.8% 100%)}}
+.vsf .ask2{position:absolute;top:78%;left:40%;transform:translate(-50%,-50%);z-index:4;padding:10px 14px;border-radius:12px;background:rgba(10,10,10,.72);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid rgba(212,255,58,.55);white-space:nowrap}
+.vsf .r .ask2{left:60%}.vsf .ask2 b{font-size:14px;font-weight:900;color:#D4FF3A}
+.vsf .cast2{position:absolute;top:20%;left:42%;z-index:4;transform:translate(-50%,-50%) rotate(-8deg);font-family:Anton,'Black Han Sans',sans-serif;font-size:44px;color:#0A0A0A;background:#D4FF3A;padding:0 14px;animation:vfSt .45s cubic-bezier(.2,1.6,.4,1) both}
+.vsf .r .cast2{left:58%}
+@keyframes vfSt{0%{transform:translate(-50%,-50%) scale(2.4) rotate(-20deg);opacity:0}100%{transform:translate(-50%,-50%) scale(1) rotate(-8deg);opacity:1}}
+.vsf-ft{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 14px 4px;font-size:12px;font-weight:800;color:#ddd}
+.vsf-ft .stk{white-space:nowrap}.vsf-ft .stk b{font-family:Anton,'Black Han Sans',sans-serif;font-size:22px;color:#D4FF3A}
+.vsf-links{display:flex;gap:14px;padding:4px 14px 14px;min-height:20px}
+.vsf-links button{border:0;background:none;color:#8A8A8A;font-size:12px;text-decoration:underline;padding:4px 0;cursor:pointer}
+.vsf-empty{display:flex;flex-direction:column;gap:6px;padding:28px 18px}.vsf-empty b{font-size:16px}.vsf-empty span{font-size:13px;color:#9A9A9A}
+.vsf .fight .ph.bgc{filter:blur(18px) brightness(.7);transform:scale(1.15)}
+.vsf .fight .ph.al{background-color:transparent}
+.vsf .ask2{top:90%}
+
 </style>
 </head>
 <body>
@@ -2899,8 +2959,8 @@ async function loadOrig1(need,ctx){need.forEach(n=>ORIG[n]=null);
  try{const r=await fetch(SB_URL+'/functions/v1/orig',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+ANON,apikey:ANON},body:JSON.stringify({names:need,ctx:ctx||[]})});if(!r.ok)return false;const d=await r.json();let ch=false;
   for(const n in d){const x=d[n]||{};if(x.o){ORIG[n]=x.o;ch=true}if(x.p&&!IMG['p:'+n]){IMG['p:'+n]=x.p;ch=true}}return ch}catch(e){return false}}
 /* 배우 표기 이름(actor_meta.disp): 본명이 영어면 "영어명 (한글명)", 한국어면 "한국어 (영어명)", 중국어 등은 "원어 (영어명)" */
-var NM={};
-function loadNM(){try{fetch(SB_URL+'/rest/v1/actor_meta?select=name,disp&ok=eq.true',{headers:{apikey:ANON,Authorization:'Bearer '+ANON}}).then(r=>r.ok?r.json():[]).then(a=>{(a||[]).forEach(x=>{if(x.disp)NM[x.name]=x.disp});if(a&&a.length&&typeof render==='function')try{render()}catch(e){}}).catch(()=>{})}catch(e){}}
+var NM={},AMF={};
+function loadNM(){try{fetch(SB_URL+'/rest/v1/actor_meta?select=name,disp,photo,face&ok=eq.true',{headers:{apikey:ANON,Authorization:'Bearer '+ANON}}).then(r=>r.ok?r.json():[]).then(a=>{(a||[]).forEach(x=>{if(x.disp)NM[x.name]=x.disp;AMF[x.name]={p:x.photo,f:x.face}});if(a&&a.length&&typeof render==='function')try{render()}catch(e){}}).catch(()=>{})}catch(e){}}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(loadNM,0));else setTimeout(loadNM,0);
 /* 화면용: 괄호 속 이름은 한 덩어리로 다음 줄에 내려가되, 칸보다 길면 그 안에서 단어 단위로 줄바꿈 */
 function dispHTML(n){const d=dispName(n),m=d.match(/^(.*?)\s*(\([^()]*\))$/);return m?`${esc(m[1])} <span class="nmp">${esc(m[2])}</span>`:esc(d)}
@@ -3226,6 +3286,57 @@ function vsHereRender(){const box=$('#vsHere');if(!box||!D)return;const t=topic(
   if(open&&!D.myVote[r.id])continue;const v1=cs.find(c=>VSR[c.candidate_id].rk===1);if(!v1)continue;const all=D.cands[r.id]||[],rank=1+all.filter(x=>x.votes>v1.votes).length;if(rank>1)sur.push({r,c:v1,rank})}
  box.innerHTML=`<div class="vsh"><div><b>⚡ VS 한판</b><span>${sur.length?sur.slice(0,2).map(x=>`${esc(x.r.ch.replace(/\s*\(.*\)$/,''))} 역 의외의 강자 <em>${dispHTML(x.c.name)}</em>: 득표 ${x.rank}위, VS 1위`).join('<br>'):'둘씩 붙여 보면 득표로는 안 보이는 순위가 나와요. 공식 표에는 반영되지 않아요'}</span></div>${open?'<button class="b sm" data-act="vsHere">이 작품으로 VS 한판</button>':''}</div>`}
 const _vsLoadTopic=loadTopic;loadTopic=async function(){const r=await _vsLoadTopic.apply(this,arguments);vsHereRender();vsLoadRatings();return r};
+
+/* ================= VS 한판 확정 디자인(11/24) =================
+   두 얼굴을 사선으로 나눠 겹치고(눈 위치를 맞춘 정렬), 평소엔 흑백. 탭하면 고른 쪽이 중심선에서 상대 쪽으로 밀어내며
+   나머지 반쪽 얼굴을 드러냄(상대는 가장자리에 흑백으로 남아 바꿔 탭 가능). 같은 쪽을 한 번 더 탭하면 확정.
+   다음 대결은 vs_pair가 고름: 한 배역 연달아 2판(작품에서 들어오면 3판)까지, 정보가 필요한 조합 먼저, 수집 끝난 조합과 이미 고른 조합은 빼고 */
+var VSF_ROLE=null,VSF_RUN=0,VSF_INK='',VSF_EMPTY=false,VSF_FROMT=false;
+function vsfAvoid(){return VSF_ROLE&&VSF_RUN>=(VSF_FROMT?3:2)?[VSF_ROLE]:[]}
+const _vsfNew=newDuel;
+newDuel=async function(first){if(duelLoading)return;duelLoading=true;try{
+ if(await vsTrySpecial(first))return;
+ const t=topic(),pf=(curView()==='topic'||curView()==='page')&&t?t.id:(VSF_FROMT&&DUEL&&DUEL.tid)||null;
+ const p=await rpc('vs_pair',{s:SID||'',prefer:pf,avoid:vsfAvoid()}).catch(()=>null);
+ if(!p||!p.a||!p.b){DUEL=null;VSF_EMPTY=true;return}
+ VSF_EMPTY=false;if(p.rid===VSF_ROLE)VSF_RUN++;else{VSF_ROLE=p.rid;VSF_RUN=1}
+ await duelImgs([p.a.name,p.b.name]);
+ DUEL=Object.assign({vsf:true,hi:null,res:null,t0:performance.now()},p);track&&track('duel_start',{t:p.tid,r:p.rid})
+}finally{duelLoading=false}};
+const _vsfRender=renderDuel;
+renderDuel=function(){const box=$('#duel');if(!box)return;
+ if(DUEL&&DUEL.vsf)return vsfRender(box);
+ if(!DUEL&&VSF_EMPTY&&!duelLoading){box.innerHTML='<div class="vsf vsf-empty"><b>지금 열린 대결을 모두 골랐어요</b><span>새 판이 열리거나 후보가 늘면 다시 대결이 생겨요</span></div>';return}
+ return _vsfRender()};
+function vsfAl(n,W,H){const a=AMF[n];if(!a||!a.f||!a.p)return '';const f=a.f,iw=500,ih=750,pad=40,k=(f[2]+f[3])/2;if(k<.09)return '';
+ const s=(H*.215)/(k*ih),bw=iw*s,ex=W/2,ey=H*.41,x=ex+pad-f[0]*iw*s,y=ey+pad-f[1]*ih*s;
+ return `top:-${pad}px;left:-${pad}px;right:-${pad}px;bottom:-${pad}px;background-image:url('https://image.tmdb.org/t/p/w500${esc(a.p)}');background-size:${Math.round(bw)}px auto;background-position:${Math.round(x)}px ${Math.round(y)}px;transform-origin:${Math.round(ex+pad)}px ${Math.round(ey+pad)}px;transform:rotate(${-f[5]}deg)`}
+function vsfPh(n,W,H){const al=vsfAl(n,W,H),a0=AMF[n];if(al)return `<span class="ph bgc" style="background-image:url('https://image.tmdb.org/t/p/w185${esc(a0.p)}')"></span><span class="ph al" style="${al}"></span>`;const a=AMF[n],u=a&&a.p?'https://image.tmdb.org/t/p/w500'+a.p:IMG['p:'+n];return `<span class="ph"${u?` style="background-image:url('${esc(u)}')"`:''}></span>`}
+function vsfNm(n){const d=dispName(n),m=d.match(/^(.*?)\s*\(([^()]*)\)$/);return m?`<b>${esc(m[1])}</b><em>${esc(m[2])}</em>`:`<b>${esc(d)}</b>`}
+function vsfRender(box){const d=DUEL,W=box.clientWidth||360,H=Math.max(400,Math.min(innerHeight-250,760)),R=d.res,h=d.hi,ver=verLabel(d.cat);
+ const cls=k=>R?(R.k===k?'win':'lose'):h?(h===k?'hi':'dim'):'idle';
+ const ik=d.pk+':'+d.t0,intro=!h&&!R&&VSF_INK!==ik;if(intro)VSF_INK=ik;
+ const pct=k=>Math.round((k==='a'?R.pa:1-R.pa)*100);
+ const half=(k,c,pos)=>`<button class="${pos} ${cls(k)}" data-act="vsf" data-v="${k}" aria-label="${esc(dispName(c.name))} 고르기">${vsfPh(c.name,W,H)}<span class="hl"></span><span class="nm">${vsfNm(c.name)}${R&&R.k===k&&R.n>1?`<span class="pct">${pct(k)}%</span>`:''}</span>${h===k&&!R?'<span class="ask2"><b>한 번 더 탭하면 확정</b></span>':''}${R&&R.k===k?'<span class="cast2">CAST!</span>':''}</button>`;
+ box.innerHTML=`<div class="vsf"><div class="vsf-hd"><a href="#${esc(d.tid)}">${esc(d.title)}${ver?' '+esc(ver):''}</a><b>${esc(String(d.ch).replace(/\s*\(.*\)$/,''))} 역은 누구?</b></div>
+<div class="fight${intro?' intro':''}" style="height:${H}px">${half('a',d.a,'l')}${half('b',d.b,'r')}<span class="vsb">VS</span><span class="wl"></span></div>
+<div class="vsf-ft"><span>${R?(R.n>1?`광장 ${R.n}명의 선택이에요. 공식 표와는 별개예요`:R.n?'이 대결의 첫 선택이에요. 공식 표와는 별개예요':'다음 대결로 넘어가요'):h?'다른 쪽을 누르면 바꾸고, 바깥을 누르면 취소':'더 어울리는 쪽을 탭'}</span><span class="stk">연속 <b>${STREAK}</b>판</span></div>
+<div class="vsf-links">${R?'':'<button data-act="vsfBad">둘 다 별로</button><button data-act="vsfSkip">다른 대결</button>'}</div></div>`}
+function vsfNext(d,ms){setTimeout(()=>{if(DUEL===d){DUEL=null;newDuel(false).then(()=>renderDuel())}},ms)}
+async function vsfCast(d,k){const w=k==='a'?d.a:d.b,l=k==='a'?d.b:d.a,guest=!USER||!PROF,ms=performance.now()-d.t0;
+ d.res={k,pa:k==='a'?1:0,n:0};STREAK++;renderDuel();
+ const lp=vsLog('role',{tid:d.tid,rid:d.rid,w:w.candidate_id,l:l.candidate_id,ms,pk:d.pk,m:{v:'vsf',n:d.n}});
+ if(guest){GUEST++;try{localStorage.setItem('guestDuels',GUEST)}catch(e){}}else rpc('duel_vote',{rid:d.rid,x:d.a.candidate_id,y:d.b.candidate_id,win:w.candidate_id}).then(()=>loadProfile().then(renderWho)).catch(()=>null);
+ try{const r=await lp;if(r&&+r.tot>0&&DUEL===d){const s=+r.same/(+r.tot);d.res.pa=k==='a'?s:1-s;d.res.n=+r.tot;renderDuel()}}catch(e){}
+ track&&track('duel_pick',{t:d.tid,r:d.rid,ms});vsfNext(d,1700)}
+document.addEventListener('click',e=>{const d=DUEL;if(!d||!d.vsf)return;const b=e.target.closest('[data-act="vsf"],[data-act="vsfBad"],[data-act="vsfSkip"]');
+ if(!b){if(d.hi&&!d.res&&e.target.closest('#duel')){d.hi=null;renderDuel()}return}
+ e.preventDefault();if(d.res)return;const a=b.dataset.act;
+ if(a==='vsfSkip'){track&&track('duel_skip',{t:d.tid,r:d.rid});DUEL=null;newDuel(false).then(()=>renderDuel());return}
+ if(a==='vsfBad'){d.res={bad:true};vsLog('role',{tid:d.tid,rid:d.rid,bad:true,ms:performance.now()-d.t0,pk:d.pk,m:{v:'vsf',a:d.a.candidate_id,b:d.b.candidate_id}});renderDuel();vsfNext(d,500);return}
+ const k=b.dataset.v;if(d.hi!==k){d.hi=k;renderDuel();return}vsfCast(d,k)});
+/* 작품 페이지의 '이 작품으로 VS 한판'으로 들어오면 그 작품 대결을 3판까지 이어서 */
+document.addEventListener('click',e=>{if(e.target.closest('[data-act="vsHere"]')){VSF_FROMT=true;VSF_ROLE=null;VSF_RUN=0}},true);
 
 }
 </script>

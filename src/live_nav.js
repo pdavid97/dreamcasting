@@ -53,8 +53,8 @@ async function loadOrig1(need,ctx){need.forEach(n=>ORIG[n]=null);
  try{const r=await fetch(SB_URL+'/functions/v1/orig',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+ANON,apikey:ANON},body:JSON.stringify({names:need,ctx:ctx||[]})});if(!r.ok)return false;const d=await r.json();let ch=false;
   for(const n in d){const x=d[n]||{};if(x.o){ORIG[n]=x.o;ch=true}if(x.p&&!IMG['p:'+n]){IMG['p:'+n]=x.p;ch=true}}return ch}catch(e){return false}}
 /* 배우 표기 이름(actor_meta.disp): 본명이 영어면 "영어명 (한글명)", 한국어면 "한국어 (영어명)", 중국어 등은 "원어 (영어명)" */
-var NM={};
-function loadNM(){try{fetch(SB_URL+'/rest/v1/actor_meta?select=name,disp&ok=eq.true',{headers:{apikey:ANON,Authorization:'Bearer '+ANON}}).then(r=>r.ok?r.json():[]).then(a=>{(a||[]).forEach(x=>{if(x.disp)NM[x.name]=x.disp});if(a&&a.length&&typeof render==='function')try{render()}catch(e){}}).catch(()=>{})}catch(e){}}
+var NM={},AMF={};
+function loadNM(){try{fetch(SB_URL+'/rest/v1/actor_meta?select=name,disp,photo,face&ok=eq.true',{headers:{apikey:ANON,Authorization:'Bearer '+ANON}}).then(r=>r.ok?r.json():[]).then(a=>{(a||[]).forEach(x=>{if(x.disp)NM[x.name]=x.disp;AMF[x.name]={p:x.photo,f:x.face}});if(a&&a.length&&typeof render==='function')try{render()}catch(e){}}).catch(()=>{})}catch(e){}}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(loadNM,0));else setTimeout(loadNM,0);
 /* 화면용: 괄호 속 이름은 한 덩어리로 다음 줄에 내려가되, 칸보다 길면 그 안에서 단어 단위로 줄바꿈 */
 function dispHTML(n){const d=dispName(n),m=d.match(/^(.*?)\s*(\([^()]*\))$/);return m?`${esc(m[1])} <span class="nmp">${esc(m[2])}</span>`:esc(d)}
