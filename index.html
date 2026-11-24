@@ -1202,6 +1202,30 @@ a.dl-ol{color:inherit;text-decoration:none;border-bottom:1px dashed currentColor
 .wkx-fav .av{flex:none;width:58px;height:58px;border-radius:50%;background:#ddd center 20%/cover;box-shadow:0 0 0 3px var(--hot)}
 .wkx-fav small{font-size:11px;color:var(--mute)}.wkx-fav b{display:block;font-size:17px}.wkx-fav p{margin:2px 0 0;font-size:12px;color:var(--mute)}
 .wkx-next{display:flex;align-items:center;gap:6px;margin-top:10px;padding:12px;border-radius:14px;background:color-mix(in srgb,var(--hot) 18%,var(--card));color:var(--ink);text-decoration:none;font-size:13px}.wkx-next i{margin-left:auto;font-style:normal}
+/* 작품 페이지 탭 */
+.ttabs{position:sticky;top:0;z-index:20;display:grid;grid-template-columns:repeat(5,1fr);gap:2px;margin:12px -4px 10px;padding:6px 4px;background:var(--bg,#fafafa);border-bottom:1px solid var(--line)}
+.ttabs button{position:relative;display:flex;flex-direction:column;align-items:center;gap:2px;border:0;background:none;color:var(--mute);font:inherit;font-size:12px;font-weight:600;padding:6px 0;border-radius:10px;cursor:pointer}
+.ttabs button span{font-size:18px}.ttabs button.on{color:var(--ink);background:color-mix(in srgb,var(--acc) 14%,transparent)}
+.ttabs button i{position:absolute;top:2px;right:14%;font-style:normal;font-size:10px;font-weight:800;color:var(--hot)}
+.tpane{display:none}.tpane.on{display:block;animation:dpgIn .2s}
+.tpane[data-k="team"] #sideTop{margin-top:18px}
+/* 하나로 합친 토론 */
+.tf-form{border:1px solid var(--line);border-radius:14px;padding:10px;background:var(--card)}
+.tf-form textarea{width:100%;border:0;resize:vertical;font:inherit;font-size:14px;background:transparent;color:var(--ink);outline:none}
+.tf-row{display:flex;gap:8px;align-items:center;margin-top:6px}.tf-row select{flex:1;font:inherit;font-size:12px;padding:6px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink)}
+.tf-chips{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin:12px 0 6px}
+.tf-chips button{flex:none;border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit;font-size:12px;padding:6px 10px;border-radius:16px;cursor:pointer}
+.tf-chips button.on{background:var(--ink);color:var(--card);border-color:var(--ink)}
+.tf-sort{display:flex;gap:10px;align-items:center;font-size:12px;margin-bottom:6px}.tf-sort button{border:0;background:none;color:var(--mute);font:inherit;padding:0;cursor:pointer}.tf-sort button.on{color:var(--ink);font-weight:700}.tf-sort span{margin-left:auto;color:var(--mute)}
+.tf{padding:12px 0;border-top:1px solid var(--line)}.tf.re{margin-left:18px;padding:8px 0 8px 10px;border-top:0;border-left:2px solid var(--line)}
+.tf-h{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:12px}.tf-h small{color:var(--mute)}
+.tf-h .tg{font-size:11px;padding:2px 8px;border-radius:10px;font-weight:600}.tf-h .tg.r{background:color-mix(in srgb,var(--acc) 16%,transparent)}.tf-h .tg.c{background:color-mix(in srgb,var(--hot) 22%,transparent)}
+.tf p{margin:6px 0;font-size:14px;line-height:1.5;white-space:pre-wrap;word-break:break-word}
+.tf-a{display:flex;gap:12px;align-items:center}.tf-a button{border:0;background:none;color:var(--mute);font:inherit;font-size:12px;padding:2px 0;cursor:pointer}
+.tf-a .lk.on{color:var(--red,#e5484d);font-weight:700}.tf-a .meh{margin-left:auto;font-size:11px}
+.tf-rf{display:flex;gap:6px;margin-top:6px}.tf-rf input{flex:1;font:inherit;font-size:13px;padding:6px 8px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink)}
+.talk .tall{display:block;margin-top:8px;font-size:12px;color:var(--acc);text-decoration:none}
+.lk.on{color:var(--red,#e5484d)}
 
 </style>
 </head>
@@ -1337,18 +1361,18 @@ async function loadTopic(){
  const {data:roles}=await sb.from('roles').select('*').eq('topic_id',tid).order('pos');
  const rids=(roles||[]).map(r=>r.id);
  const q=[rpc('topic_tally',{tid}),rpc('can_see',{tid}).then(v=>{SEEN_T[tid]=!!v}).catch(()=>{}),rpc('topic_sync',{tid}),rpc('topic_sheet_names',{tid}),
-  sb.from('v_comments').select('*').in('role_id',rids.length?rids:[-1]).order('created_at',{ascending:false}).limit(300),
+  sb.from('v_thread').select('*').eq('topic_id',tid).order('created_at',{ascending:false}).limit(500),
   sb.from('v_sheets').select('*').eq('topic_id',tid).order('likes',{ascending:false}).limit(40),
   sb.from('v_dpicks').select('*').in('role_id',rids.length?rids:[-1]),
   sb.from('tally_daily').select('*').in('role_id',rids.length?rids:[-1]).order('day'),
   sb.from('sync_daily').select('*').in('role_id',rids.length?rids:[-1]).order('day')];
- if(USER){q.push(sb.from('votes').select('role_id,candidate_id,weight').in('role_id',rids.length?rids:[-1]),sb.from('sync_votes').select('role_id,score').in('role_id',rids.length?rids:[-1]),sb.from('comment_likes').select('comment_id').eq('user_id',USER.id),sb.from('sheet_likes').select('sheet_id').eq('user_id',USER.id))}
+ if(USER){q.push(sb.from('votes').select('role_id,candidate_id,weight').in('role_id',rids.length?rids:[-1]),sb.from('sync_votes').select('role_id,score').in('role_id',rids.length?rids:[-1]),sb.from('thread_votes').select('comment_id,v').eq('user_id',USER.id),sb.from('sheet_likes').select('sheet_id').eq('user_id',USER.id))}
  const r0=await Promise.all(q);const r=[r0[0],...r0.slice(2)];
  const tally=r[0]||[],sync=r[1]||[],names=r[2]||[];
- const nd={tid,seen:!!SEEN_T[tid],roles:roles||[],cands:{},sync:{},comments:r[3].data||[],sheets:r[4].data||[],dpicks:r[5].data||[],tdaily:r[6].data||[],sdaily:r[7].data||[],names,myVote:{},mySync:{},cliked:new Set(),sliked:new Set()};
+ const nd={tid,seen:!!SEEN_T[tid],roles:roles||[],cands:{},sync:{},comments:(r[3].data||[]).map(x=>({...x,pick:x.cand_id,likes:x.up})),sheets:r[4].data||[],dpicks:r[5].data||[],tdaily:r[6].data||[],sdaily:r[7].data||[],names,myVote:{},mySync:{},cliked:new Set(),sliked:new Set()};
  for(const c of tally)(nd.cands[c.role_id]=nd.cands[c.role_id]||[]).push(c);
  for(const s of sync)nd.sync[s.role_id]=s;
- if(USER){for(const v of r[8].data||[])nd.myVote[v.role_id]=v;for(const v of r[9].data||[])nd.mySync[v.role_id]=v.score;for(const v of r[10].data||[])nd.cliked.add(v.comment_id);for(const v of r[11].data||[])nd.sliked.add(v.sheet_id)}
+ if(USER){for(const v of r[8].data||[])nd.myVote[v.role_id]=v;for(const v of r[9].data||[])nd.mySync[v.role_id]=v.score;for(const v of r[10].data||[])if(v.v===1)nd.cliked.add(v.comment_id);for(const v of r[11].data||[])nd.sliked.add(v.sheet_id)}
  if(SEL===tid)D=nd;
 }
 async function loadSide(){const [f,l]=await Promise.all([sb.from('feed').select('*').order('id',{ascending:false}).limit(30),sb.from('v_leaders').select('*')]);FEED=f.data||[];LEAD=l.data||[]}
@@ -1466,11 +1490,11 @@ function drawChart(){const svg=$('#chart'),W=svg.clientWidth,H=svg.clientHeight;
  if(!ord.length){svg.innerHTML=`<text x="${W/2}" y="${H/2}" text-anchor="middle">후보가 올라오면 득표 현황이 그려져요</text>`;return}
  ord.forEach((c,i)=>{const y=10+i*(bh+8),w=(W-lw-70)*(c.votes/Math.max(...ord.map(x=>x.votes),1));o+=`<text x="${lw-8}" y="${y+bh/2+5}" text-anchor="end" style="fill:var(--ink);font-weight:700">${esc(c.name.slice(0,9))}</text><rect x="${lw}" y="${y}" width="${Math.max(2,w)}" height="${bh}" style="fill:var(--s${Math.min(i,3)})"/><text x="${lw+Math.max(2,w)+8}" y="${y+bh/2+5}">${Math.round(c.votes/tot*100)}%, ${fmt(c.votes)}표</text>`});
  svg.innerHTML=o}
-function talkHTML(r){const cms=D.comments.filter(c=>c.role_id===r.id),best=cms.length?cms.reduce((a,c)=>c.likes>a.likes?c:a):null,show=best&&best.likes>=3?[best,...cms.filter(c=>c!==best).slice(0,7)]:cms.slice(0,8),cn=id=>(D.cands[r.id]||[]).find(c=>c.candidate_id===id);
- const li=c=>`<li class="${c===best&&best.likes>=3?'best':''}">${c===best&&best.likes>=3?'<span class="bl">베스트</span>':''}<small>${esc(c.nickname)}, ${new Date(c.created_at).toLocaleDateString('ko-KR')}</small>${c.pick&&cn(c.pick)?`<span class="pick">${esc(cn(c.pick).name)} 지지</span>`:''}${esc(c.body)}<button class="lk" data-act="likec" data-id="${c.id}" ${D.cliked.has(c.id)||(USER&&c.user_id===USER.id)?'disabled':''}>공감 ${c.likes}</button></li>`;
+function talkHTML(r){const cms=D.comments.filter(c=>c.role_id===r.id&&!c.parent_id),best=cms.length?cms.reduce((a,c)=>c.likes>a.likes?c:a):null,show=best&&best.likes>=3?[best,...cms.filter(c=>c!==best).slice(0,7)]:cms.slice(0,8),cn=id=>(D.cands[r.id]||[]).find(c=>c.candidate_id===id);
+ const li=c=>`<li class="${c===best&&best.likes>=3?'best':''}">${c===best&&best.likes>=3?'<span class="bl">베스트</span>':''}<small>${esc(c.nickname)}, ${new Date(c.created_at).toLocaleDateString('ko-KR')}</small>${c.pick&&cn(c.pick)?`<span class="pick">${esc(cn(c.pick).name)} 지지</span>`:''}${esc(c.body)}<button class="lk${D.cliked.has(c.id)?' on':''}" data-act="likec" data-id="${c.id}" ${c.mine?'disabled':''}>♥ ${c.likes}</button></li>`;
  const cs=D.cands[r.id]||[];
  return `<details class="talk"><summary>토론 ${cms.length}개${best&&best.likes>=3?`, 베스트 공감 ${best.likes}`:''}</summary><ul class="cm">${show.map(li).join('')||'<li class="empty3">첫 의견을 남겨 주세요</li>'}</ul>
- <div class="talkf"><select id="tp${r.id}" aria-label="지지 후보">${isSync(r)?'<option value="">감상</option>':'<option value="">자유 의견</option>'+cs.map(c=>`<option value="${c.candidate_id}">${esc(c.name)} 지지</option>`).join('')}</select><input type="text" id="tx${r.id}" placeholder="의견을 남겨 주세요" maxlength="280" aria-label="토론 의견"><button class="b sm" data-act="talk" data-rid="${r.id}">등록</button></div></details>`}
+ <div class="talkf"><select id="tp${r.id}" aria-label="지지 후보">${isSync(r)?'<option value="">감상</option>':'<option value="">자유 의견</option>'+cs.map(c=>`<option value="${c.candidate_id}">${esc(c.name)} 지지</option>`).join('')}</select><input type="text" id="tx${r.id}" placeholder="의견을 남겨 주세요" maxlength="280" aria-label="토론 의견"><button class="b sm" data-act="talk" data-rid="${r.id}">등록</button></div><a class="tall" href="#" data-act="ttab" data-k="talk" data-f="r${r.id}">이 배역 토론 모두 보기, 다른 배역과 팀 이야기는 토론 탭에서</a></details>`}
 function roleHTML(r,i){const t=topic(),open=isOpen(t),g=PROF?grade(PROF.points):0;
  const head=`<div class="top"><h3 class="cn">${isSync(r)?avatar(r.actor):''}<span>${esc(r.ch)}${isSync(r)?` <span style="font-family:'Noto Sans KR';font-size:17px;font-weight:700">${esc(r.actor)}</span>`:''}</span></h3><span class="sub">${r.age_hint?`배역 나이 ${esc(r.age_hint)} `:''}${r.orig?`원작 ${actorLink(r.orig)}${ageTxt(r.orig)?` (지금 ${ageTxt(r.orig)})`:''} `:''}${t.cat==='wn'?`<span class="st ${r.stage}">${SNAME[r.stage]}</span>`:''}</span></div>${r.descr?`<p class="sub">${esc(r.descr)}</p>`:''}`;
  if(isSync(r)){const s=D.sync[r.id]||{avg:0,n:0},mine=D.mySync[r.id];
@@ -1489,7 +1513,7 @@ function renderRoles(){const box=$('#roles'),open=[...box.querySelectorAll('deta
  box.querySelectorAll('details.talk').forEach((d,i)=>{if(open[i])d.open=true});for(const id in keep){const e=document.getElementById(id);if(e)e.value=keep[id]}}
 const pickName=(r,p)=>{if(!p)return'';if(p.n)return p.n;const c=(D.cands[r.id]||[]).find(x=>x.candidate_id===p.c);return c?c.name:''};
 function sheetHTML(s){const dream=D.roles.filter(r=>!isSync(r));const hit=dream.filter(r=>{const cs=D.cands[r.id]||[],l=cs.reduce((a,c)=>!a||c.votes>a.votes?c:a,null),p=s.picks[r.id];return l&&p&&p.c===l.candidate_id&&l.votes>0}).length;const mine=USER&&s.user_id===USER.id;
- return `<div class="sheet${mine?' mine':''}"><div class="who"><span>${esc(s.nickname)}의 ${esc(topic().title)}</span><span class="num">공감 ${fmt(s.likes)}</span></div><dl>${D.roles.map(r=>s.picks[r.id]?`<dt>${esc(r.ch)}</dt><dd>${esc(pickLabel(r,s.picks[r.id]))}${(()=>{const n=pickName(r,s.picks[r.id]),a=ageTxt(n,s.picks[r.id].y);return a?` <small class="dl">${a}</small>`:''})()}${s.picks[r.id].n?' <span class="picker">직접 적음</span>':''}</dd>`:'').join('')}</dl>${s.reason?`<p class="reason">"${esc(s.reason)}"</p>`:''}${chemHTML(sheetNames(s),'card')}<div class="ft"><span>민심 1위와 일치 ${hit}/${dream.length}</span><span style="display:flex;gap:6px">${mine?'':`<button class="b sm" data-act="likes" data-sid="${s.id}" ${D.sliked.has(s.id)?'disabled':''}>공감</button>`}<button class="b sm" data-act="poster" data-sid="${s.id}">포스터</button><button class="b sm" data-act="share" data-sid="${s.id}">공유</button></span></div></div>`}
+ return `<div class="sheet${mine?' mine':''}"><div class="who"><span>${esc(s.nickname)}의 ${esc(topic().title)}</span></div><dl>${D.roles.map(r=>s.picks[r.id]?`<dt>${esc(r.ch)}</dt><dd>${esc(pickLabel(r,s.picks[r.id]))}${(()=>{const n=pickName(r,s.picks[r.id]),a=ageTxt(n,s.picks[r.id].y);return a?` <small class="dl">${a}</small>`:''})()}${s.picks[r.id].n?' <span class="picker">직접 적음</span>':''}</dd>`:'').join('')}</dl>${s.reason?`<p class="reason">"${esc(s.reason)}"</p>`:''}${chemHTML(sheetNames(s),'card')}<div class="ft"><span>민심 1위와 일치 ${hit}/${dream.length}</span><span style="display:flex;gap:6px">${mine?'':`<button class="b sm" data-act="likes" data-sid="${s.id}">♥ 이 팀에 공감</button>`}<button class="b sm" data-act="poster" data-sid="${s.id}">포스터</button><button class="b sm" data-act="share" data-sid="${s.id}">공유</button></span></div></div>`}
 const ERA={};
 async function eraWorks(nm){if(ERA[nm])return ERA[nm];const pp=await sb.from('people').select('id').eq('name',nm).not('credits_at','is',null).order('pop',{ascending:false,nullsFirst:false}).limit(1);const pid=pp.data&&pp.data[0]&&pp.data[0].id;if(!pid)return(ERA[nm]=[]);const {data}=await sb.from('credit').select('character,anthology,work(id,title,year)').eq('person_id',pid).eq('anthology',false).limit(400);const seen=new Set();const out=(data||[]).filter(x=>x.work&&x.work.year&&x.work.year<NOW_Y&&x.work.year>=1950).map(x=>({wi:x.work.id,t:x.work.title,y:x.work.year,ch:/[가-힣]/.test(x.character||'')?x.character.replace(/\s*\(.*\)$/,''):''})).filter(x=>{const k=x.t+x.y;if(seen.has(k))return false;seen.add(k);return true}).sort((a,b)=>b.y-a.y);return(ERA[nm]=out)}
 async function eraLoad(rid,keepVal){const sel=$('#sy'+rid),sp=$('#sp'+rid);if(!sel||!sp)return;const r=D&&D.roles.find(x=>String(x.id)===String(rid));if(!r)return;const nm=sp.value==='__n'?(($('#sn'+rid)||{value:''}).value||'').trim():((D.cands[r.id]||[]).find(c=>String(c.candidate_id)===sp.value)||{}).name;const want=keepVal!=null?keepVal:(sel.value||sel.dataset.pre||'');sel.dataset.pre='';if(!nm){sel.innerHTML='<option value="">지금의 모습</option>';return}const ws=await eraWorks(nm);if((sp.value==='__n'?(($('#sn'+rid)||{value:''}).value||'').trim():((D.cands[r.id]||[]).find(c=>String(c.candidate_id)===sp.value)||{}).name)!==nm)return;
@@ -1504,7 +1528,7 @@ function renderSide(){const box=$('#sideTop'),dream=D.roles.filter(r=>!isSync(r)
  const pre=r=>{const p=mine&&mine.picks[r.id];if(p)return p;const v=D.myVote[r.id];return v?{c:v.candidate_id}:null};
  const builder=`<details class="sheetd"><summary><b>내 팀 꾸미기</b><small>선택. 배역별 표로 내 팀은 이미 만들어져요. 여기서는 어느 작품 속 모습으로 할지, 후보에 없는 배우로 드림 픽을 할지, 한 줄 이유를 더해요</small></summary><div class="sheet"><p class="sub" style="margin:4px 0 4px">배역마다 후보를 고르거나, 마음에 드는 후보가 없으면 배우 이름을 직접 적어요. 배우를 고른 뒤 "어느 작품 속 모습으로"를 고르면 그 시절 모습으로 시간여행 캐스팅을 할 수 있어요. 투표와 별개예요.</p><div class="sb">${dream.map(r=>{const p=pre(r),cs=D.cands[r.id]||[];const sel=p?(p.n?'__n':String(p.c)):'';return `<label>${esc(r.ch)}<div class="pair"><select id="sp${r.id}" data-act-change="sp" aria-label="${esc(r.ch)} 배우 선택"><option value="">선택하세요</option>${cs.map(c=>`<option value="${c.candidate_id}" ${sel===String(c.candidate_id)?'selected':''}>${esc(c.name)}</option>`).join('')}<option value="__n" ${sel==='__n'?'selected':''}>직접 적기</option></select><input type="text" id="sn${r.id}" maxlength="20" placeholder="배우 이름 직접 적기" value="${p&&p.n?esc(p.n):''}" ${sel==='__n'?'':'hidden'}>${isOpt(r)?'':`<select id="sy${r.id}" aria-label="${esc(r.ch)} 어느 작품 속 모습으로" title="시간여행 캐스팅: 그 배우의 특정 작품 속 모습으로" data-pre="${p&&p.y?esc(p.y+'|'+(p.wi||'')+'|'+(p.w||'')):''}"><option value="">지금의 모습</option></select>`}</div><small class="dl" id="sa${r.id}">${r.age_hint?`배역 나이 ${esc(r.age_hint)}`:''}</small></label>`}).join('')}<label>내가 이렇게 캐스팅한 이유 (선택, 300자)<textarea id="sReason" maxlength="300" rows="3" placeholder="예: 두 사람은 전작에서 이미 호흡이 검증됐고, 원작의 나이대와도 맞아요" style="width:100%;font:15px/1.5 'Noto Sans KR',sans-serif;padding:8px;border:1px solid var(--mute);background:var(--bg);color:var(--ink)">${mine?esc(mine.reason||''):''}</textarea></label></div><div id="chemBuild"></div><button class="b sm buy" data-act="sheet" style="margin-top:10px">${mine?'꾸민 팀 저장':'꾸민 팀 게시하기 +30P'}</button></div></details>`;
  const nf=D.names.slice(0,8);
- box.innerHTML=`<div class="sh"><h2>꾸민 팀 자랑</h2><span class="sub">작품 속 모습, 드림 픽, 한 줄 이유를 더한 팀들, 공감 순</span></div>${builder}${nf.length?`<p class="newface"><b>시트에서 나온 새 얼굴</b><br>${nf.map(n=>{const r=D.roles.find(x=>x.id===n.role_id);return `<span>${esc(r?r.ch:'')} ${esc(n.name)} ${n.cnt}</span>`}).join('')}</p>`:''}${mine?sheetHTML(mine):''}${others.map(sheetHTML).join('')||'<p class="empty3">아직 게시된 시트가 없어요. 첫 시트의 주인공이 되어 보세요.</p>'}${shareText?`<textarea class="shared" readonly aria-label="공유 문구">${esc(shareText)}</textarea>`:''}`;
+ box.innerHTML=`<div class="sh"><h2>꾸민 팀 자랑</h2><span class="sub">작품 속 모습, 드림 픽, 한 줄 이유를 더한 팀들. 공감은 같은 팀 공감으로 모여요</span></div>${builder}${nf.length?`<p class="newface"><b>시트에서 나온 새 얼굴</b><br>${nf.map(n=>{const r=D.roles.find(x=>x.id===n.role_id);return `<span>${esc(r?r.ch:'')} ${esc(n.name)} ${n.cnt}</span>`}).join('')}</p>`:''}${mine?sheetHTML(mine):''}${others.map(sheetHTML).join('')||'<p class="empty3">아직 게시된 시트가 없어요. 첫 시트의 주인공이 되어 보세요.</p>'}${shareText?`<textarea class="shared" readonly aria-label="공유 문구">${esc(shareText)}</textarea>`:''}`;
  renderChemBuild.pending=true;dream.forEach(r=>eraLoad(r.id,keep['sy'+r.id]));for(const id in keep){const e=document.getElementById(id);if(e&&id==='sReason'){e.value=keep[id]}else if(e&&id.startsWith('sn')){e.value=keep[id]}else if(e&&id.startsWith('sp')){e.value=keep[id];const n=document.getElementById('sn'+id.slice(2));if(n)n.hidden=keep[id]!=='__n'}}renderChemBuild()}
 function renderFeed(){$('#feed').innerHTML=FEED.map(f=>`<li class="${f.kind==='hot'?'hot':''}"><small class="num">${new Date(f.created_at).toLocaleString('ko-KR',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'})}</small>${esc(f.body)}</li>`).join('')||'<li class="empty3">광장이 막 열렸어요. 첫 소식의 주인공이 되어 보세요.</li>';
  const txt=FEED.slice(0,8).map(f=>f.body).join('     ■     ')||'드림캐스팅 광장이 열렸어요. 구글로 로그인하고 첫 표를 던져 보세요';if($('#chy').textContent!==txt)$('#chy').textContent=txt}
@@ -1529,10 +1553,10 @@ function renderPoster(){const box=$('#poster');const s=POSTER&&POSTER.tid===SEL&
  box.innerHTML=`<div class="pwrap"><div class="pfig">${posterSVG(s)}</div><div><h3 style="font-size:22px">가상 캐스팅 포스터</h3><p class="sub" style="margin:6px 0 10px">${esc(s.nickname)}의 시트로 만든 팬메이드 포스터예요. 실존 배우의 얼굴은 쓰지 않고 실루엣과 크레딧으로 구성해요.</p><div class="qty" role="group" aria-label="포스터 분위기">${Object.entries(PST).map(([k,v])=>`<button class="chip" data-act="pstyle" data-v="${k}" aria-pressed="${k===PSTYLE}">${v.n}</button>`).join('')}</div><div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap"><button class="b sm buy" data-act="share" data-sid="${s.id}">공유 문구 복사</button><button class="b sm" data-act="pclose">닫기</button></div>
  ${USER&&s.user_id===USER.id?`<div class="pup"><b>배경 이미지</b><p class="dl">직접 만든 이미지를 올리거나 AI로 얼굴 없는 실루엣 배경을 만들 수 있어요. 실존 인물 얼굴을 합성한 이미지, 남의 사진, 공식 포스터는 올리지 말아 주세요. 신고 3건이면 숨겨져요.</p><div class="row2"><label class="b sm">이미지 올리기<input type="file" accept="image/*" data-act-file="poster" data-sid="${s.id}" hidden></label><button class="b sm" data-act="paigen" data-sid="${s.id}">AI 배경 만들기</button>${s.poster_url?`<button class="b sm" data-act="pclear" data-sid="${s.id}">배경 지우기</button>`:''}</div></div>`:(s.poster_url&&USER?`<button class="lk" data-act="preport" data-sid="${s.id}">이 포스터 신고</button>`:'')}
  </div></div>`}
-function render(){renderWho();renderTabs();renderShelf();renderPerks();renderRank();renderFeed();renderFanBoard();renderTabbar();if(HOMEV)renderHome();if(!D||D.tid!==SEL)return;{const ns=[];D.roles.forEach(r=>{if(r.orig)ns.push(r.orig);if(r.actor)ns.push(r.actor);(D.cands[r.id]||[]).forEach(c=>ns.push(c.name))});D.sheets.forEach(x=>Object.values(x.picks||{}).forEach(p=>{if(p.n)ns.push(p.n)}));loadAges(ns)}renderHead();renderWork();renderStats();renderWatch();renderDuel();renderPoster();drawChart();renderRoles();renderSide();renderOps();$('#roles').classList.toggle('unseen',!D.seen);document.querySelector('.fig')&&document.querySelector('.fig').classList.toggle('unseen',!D.seen);if(TALK.tid!==D.tid){TALK={tid:D.tid,combos:[],open:null,thread:[],myv:{}};if(D.seen)loadTalk(D.tid);else renderTalk()}}
+function render(){renderTFeed();renderWho();renderTabs();renderShelf();renderPerks();renderRank();renderFeed();renderFanBoard();renderTabbar();if(HOMEV)renderHome();if(!D||D.tid!==SEL)return;{const ns=[];D.roles.forEach(r=>{if(r.orig)ns.push(r.orig);if(r.actor)ns.push(r.actor);(D.cands[r.id]||[]).forEach(c=>ns.push(c.name))});D.sheets.forEach(x=>Object.values(x.picks||{}).forEach(p=>{if(p.n)ns.push(p.n)}));loadAges(ns)}renderHead();renderWork();renderStats();renderWatch();renderDuel();renderPoster();drawChart();renderRoles();renderSide();renderOps();$('#roles').classList.toggle('unseen',!D.seen);document.querySelector('.fig')&&document.querySelector('.fig').classList.toggle('unseen',!D.seen);if(TALK.tid!==D.tid){TALK={tid:D.tid,combos:[],open:null,thread:[],myv:{}};if(D.seen)loadTalk(D.tid);else renderTalk()}}
 
 /* ---------- events ---------- */
-async function selectTopic(id){VIEWX=null;closePage();showHome(false);showDeck(false);SEL=id;CAT=topic().cat;SROLE=0;if(DUEL&&DUEL.done)DUEL=null;POSTER=null;shareText='';D=null;try{history.replaceState(null,'','#'+id)}catch(e){}render();$('#tTitle').textContent=topic().title;await loadTopic();render();loadImages()}
+async function selectTopic(id){VIEWX=null;closePage();showHome(false);showDeck(false);SEL=id;CAT=topic().cat;SROLE=0;if(DUEL&&DUEL.done)DUEL=null;POSTER=null;shareText='';D=null;try{history.replaceState(null,'','#'+id)}catch(e){}setTTab(TTAB_NEXT||'vote');TTAB_NEXT=null;TF.f='all';render();$('#tTitle').textContent=topic().title;await loadTopic();render();loadImages()}
 document.addEventListener('click',async e=>{
  const b=e.target.closest('[data-act]');if(!b)return;const a=b.dataset.act,rid=+b.dataset.rid,cid=+b.dataset.cid;
  if(a==='role'){if(e.target.closest('button,input,select,summary,details,a'))return;SROLE=+b.dataset.i;renderRoles();drawChart();return}
@@ -1550,9 +1574,9 @@ document.addEventListener('click',async e=>{
  if(a==='vote'){if(needLogin())return;const r=D.roles.find(x=>x.id===rid),c=(D.cands[rid]||[]).find(x=>x.candidate_id===cid);const ok=await act('cast_vote_src',{rid,cid,src:'board'},'');if(ok!==undefined||D.myVote[rid])showUndo(rid,`${r.ch} 역에 ${c.name} 한 표`);return}
  if(a==='svote'){if(needLogin())return;await act('sync_vote',{rid,sc:+$('#vt'+rid).value},'싱크로율 투표 완료');return}
  if(a==='add'){if(needLogin())return;const n=$('#ad'+rid).value.trim();if(!n)return toast('배우 이름을 입력하세요');await act('add_candidate',{rid,nm:n},`${n} 후보 등록 완료`);return}
- if(a==='talk'){if(needLogin())return;const tx=$('#tx'+rid).value.trim();if(!tx)return toast('의견을 입력하세요');const pv=$('#tp'+rid).value;await act('post_comment',{rid,pk:pv?+pv:null,txt:tx},'의견을 남겼어요');return}
- if(a==='likec'){if(needLogin())return;await act('like_comment',{cid:+b.dataset.id},'공감했어요');return}
- if(a==='likes'){if(needLogin())return;await act('like_sheet',{sid:+b.dataset.sid},'공감했어요');return}
+ if(a==='talk'){if(needLogin())return;const tx=$('#tx'+rid).value.trim();if(!tx)return toast('의견을 입력하세요');const pv=$('#tp'+rid).value;await act('post_talk',{tid:SEL,ck:null,rid,cid:pv?+pv:null,parent:null,txt:tx},'토론 탭에도 올라갔어요');return}
+ if(a==='likec'){if(needLogin())return;await act('vote_thread',{cid:+b.dataset.id,val:1},D&&D.cliked.has(+b.dataset.id)?'공감을 취소했어요':'공감했어요');return}
+ if(a==='likes'){if(needLogin())return;await act('like_sheet_team',{sid:+b.dataset.sid},'이 팀에 공감했어요');try{loadTalk(SEL)}catch(e){}return}
  if(a==='sheet'){if(needLogin())return;const p={};for(const r of D.roles.filter(x=>!isSync(x))){const v=$('#sp'+r.id).value;if(!v)return toast(`${r.ch} 역을 골라 주세요`);if(v==='__n'){const n=$('#sn'+r.id).value.trim();if(!n)return toast(`${r.ch} 역 배우 이름을 적어 주세요`);p[r.id]={n}}else p[r.id]={c:+v};const ev=(($('#sy'+r.id)||{value:''}).value||'').split('|');if(+ev[0]){p[r.id].y=+ev[0];if(ev[1])p[r.id].wi=+ev[1];if(ev[2])p[r.id].w=ev[2]}}await act('post_sheet',{tid:SEL,p,why:($('#sReason')||{value:''}).value.trim()},'캐스팅 시트를 게시했어요');return}
  if(a==='note'){if(needLogin())return;const k=b.dataset.k,body=$('#nb'+k).value.trim(),url=$('#nu'+k).value.trim();if(!/^https?:\/\/\S{4,}$/.test(url))return toast('근거가 되는 기사나 인터뷰 링크를 꼭 붙여 주세요');try{await rpc('add_chem_note',{x:b.dataset.a,y:b.dataset.b,txt:body,link:url});toast('케미 제보를 올렸어요 +15P');delete NOTES[pairKey(b.dataset.a,b.dataset.b)];CHEM={};await loadProfile();renderWho();renderSide()}catch(err){toast(errMsg(err))}return}
  if(a==='dpick'){if(needLogin())return;await act('director_pick',{rid,cid},'디렉터스 픽을 바꿨어요');return}
@@ -1563,7 +1587,7 @@ document.addEventListener('click',async e=>{
  if(a==='propose'){if(needLogin())return;const rs=[...document.querySelectorAll('#pRoles .prow')].map(r=>({ch:r.querySelector('.pc').value.trim(),orig:r.querySelector('.po').value.trim(),age:r.querySelector('.pa').value.trim(),kind:r.querySelector('.pk').value})).filter(r=>r.ch);const ct=$('#pCat').value,MED=[$('#pSrc').value,$('#pDst').value];if(!rs.length)return toast('배역을 하나 이상 적어 주세요');const tid=await act('propose_topic3',{ttl:$('#pTitle').value.trim(),ct,inf:$('#pInfo').value.trim(),rs,src:MED[0],dst:MED[1]},'주제를 올렸어요. 첫 후보를 올려 보세요');if(tid){['pTitle','pInfo'].forEach(id=>$('#'+id).value='');propRows([]);$('#propBox').open=false;await refresh(true);selectTopic(tid)}return}
  if(a==='want'){if(needLogin())return;try{const on=await rpc('want_topic',{tid:SEL});on?WANTS.add(SEL):WANTS.delete(SEL);toast(on?'보고 싶어요를 눌렀어요. 이런 수요가 쌓이면 제작사에 좋은 신호가 돼요':'취소했어요');await refresh(true);loadMatrix()}catch(err){toast(errMsg(err))}return}
  if(a==='back'){location.hash='';closePage();return}
- if(a==='hlike'){if(needLogin())return;try{await rpc('like_sheet',{sid:+b.dataset.sid});toast('공감했어요');loadHome(true)}catch(err){toast(errMsg(err))}return}
+ if(a==='hlike'){if(needLogin())return;try{await rpc('like_sheet_team',{sid:+b.dataset.sid});toast('공감했어요');loadHome(true)}catch(err){toast(errMsg(err))}return}
  if(a==='hshare'){const p=HOME.posts.find(x=>x.s.id===+b.dataset.sid);if(!p)return;const txt=`[드림캐스팅 광장] ${p.s.nickname} 님의 '${p.t.title}' 캐스팅\n`+p.cast.map(c=>`${c.ch}: ${c.name}${c.w?` (《${c.w}》 속 모습)`:c.y?` (${c.y}년)`:''}`).join('\n')+(p.s.reason?`\n캐스팅 이유: ${p.s.reason}`:'')+`\n너의 캐스팅은? ${location.origin}${location.pathname}#${p.t.id}`;try{await navigator.clipboard.writeText(txt);toast('공유 문구를 복사했어요')}catch(err){toast('복사하지 못했어요')}return}
  if(a==='readall'){try{await rpc('read_notices',{});await loadNotices();renderWho()}catch(err){}return}
  if(a==='asearch'){const n=($('#aSearch')||{value:''}).value.trim();if(n)location.hash='a/'+encodeURIComponent(n);return}
@@ -2101,13 +2125,13 @@ document.addEventListener('click',async e=>{const b=e.target.closest('[data-act]
  if(a==='dk-nexttopic'){const t=curTopic();track('topic_skip',{t:t&&t.id});if(t&&!t.done)markPass(t.id);nextTopic();return}
  if(a==='dk-restart'){DI=0;DR=0;await loadDeck();const t=curTopic();if(t)DR=firstOpenRole(t);renderDeck();return}
  if(a==='sheet-close'){$('#loginSheet').classList.remove('on');return}
- if(a==='talk-open'){openThread(b.dataset.k);return}
+ if(a==='talk-open'){setTTab('talk','c'+b.dataset.k);$('#tTabs').scrollIntoView({behavior:'smooth',block:'start'});return}
  if(a==='team-like'){if(needLogin())return;const c=TALK.combos.find(x=>x.ckey===b.dataset.k);if(!c)return;if(c.mine){toast('내 팀에는 공감 대신 이미 한 표가 들어가 있어요');return}try{const on=await rpc('like_team',{tid:TALK.tid,ck:c.ckey});c.liked=on;c.likes=(c.likes||0)+(on?1:-1);track('team_like',{t:TALK.tid,m:{on}});renderTalk()}catch(e){toast(errMsg(e))}return}
  if(a==='tvote'){if(needLogin())return;try{const r=await rpc('vote_thread',{cid:+b.dataset.id,val:+b.dataset.v});const x=TALK.thread.find(y=>y.id===+b.dataset.id);if(x){x.up=r.up;x.down=r.down;x.hidden=r.hidden;const mv=TALK.myv[x.id]||0;TALK.myv[x.id]=mv===+b.dataset.v?0:+b.dataset.v}renderTalk()}catch(err){toast(errMsg(err))}return}
  if(a==='treply'){const f=$('#tr'+b.dataset.id);if(f){f.hidden=!f.hidden;if(!f.hidden)f.querySelector('input').focus()}return}
  if(a==='tpost'){if(needLogin())return;const parent=b.dataset.parent?+b.dataset.parent:null;const inp=parent?$('#tr'+parent).querySelector('input'):$('#tNew');const txt=inp.value.trim();if(!txt)return toast('내용을 적어 주세요');
   try{await rpc('post_thread',{tid:TALK.tid,ck:TALK.open,parent,txt});track('thread_post',{t:TALK.tid,m:{reply:!!parent}});inp.value='';const k=TALK.open;TALK.open=null;await openThread(k);const c=TALK.combos.find(x=>x.ckey===k);if(c)c.comments++;renderTalk()}catch(err){toast(errMsg(err))}return}
- if(a==='tdel'){try{await rpc('delete_thread',{cid:+b.dataset.id});TALK.thread=TALK.thread.filter(x=>x.id!==+b.dataset.id);renderTalk()}catch(err){toast(errMsg(err))}return}
+ if(a==='tdel'){try{await rpc('delete_thread',{cid:+b.dataset.id});toast('삭제했어요');await loadTopic();renderTFeed();loadTalk(SEL)}catch(err){toast(errMsg(err))}return}
 });
 
 /* ===== 7일 롤링 라운드: 매일 새 판이 열리고, 7일 뒤 마감과 결과 발표 ===== */
@@ -2600,6 +2624,62 @@ document.addEventListener('click',e=>{const b=e.target.closest('[data-act="peek-
 /* 온보딩에서 고른 배우를 로그인 뒤 팬 채널에 등록(고유 번호 people.id 기준, 이미 들어간 채널은 그대로) */
 async function onbFollow(){const o=onbGet();if(!o||o.followed||!(o.pids||[]).length||!USER)return;try{const n=await rpc('follow_many',{pids:o.pids});onbSet({...o,followed:true});if(n)toast(`고른 배우 ${n}명의 팬 채널에 들어왔어요`)}catch(e){}}
 async function onbAfterLogin(){if(!USER||!PROF)return;try{const o=onbGet();if(o&&!o.saved&&(o.cats||[]).length&&!(PROF.tastes&&(PROF.tastes.cats||[]).length)){await rpc('set_tastes',{t:{cats:o.cats,genres:(PROF.tastes||{}).genres||[],makers:(PROF.tastes||{}).makers||[]},b:PROF.bio||''});onbSet({...o,saved:true})}}catch(e){}onbFollow()}
+
+/* ================= 작품 페이지 탭: 투표, VS, 팀, 토론, 정보 ================= */
+var TTABS=[['vote','🗳️','투표'],['vs','⚡','VS'],['team','👥','팀'],['talk','💬','토론'],['info','🎬','정보']];
+var TTAB='vote',TTAB_NEXT=null,TF={f:'all',sort:'hot'};
+(function setupTopicTabs(){const tv=$('#topicView');if(!tv||$('#tTabs'))return;const th=tv.querySelector('.th');
+ const nav=document.createElement('nav');nav.id='tTabs';nav.className='ttabs';nav.setAttribute('aria-label','작품 메뉴');
+ nav.innerHTML=TTABS.map(([k,ic,l])=>`<button data-act="ttab" data-k="${k}" class="${k===TTAB?'on':''}"><span aria-hidden="true">${ic}</span>${l}<i id="tt_${k}"></i></button>`).join('');
+ th.after(nav);
+ const pane=k=>{const d=document.createElement('div');d.className='tpane';d.dataset.k=k;return d};
+ const P=Object.fromEntries(TTABS.map(([k])=>[k,pane(k)]));let at=nav;for(const k of ['vote','vs','team','talk','info']){at.after(P[k]);at=P[k]}
+ const mv=(k,el)=>{if(el)P[k].appendChild(el)};
+ mv('vote',$('#cTitle')&&$('#cTitle').parentElement);mv('vote',$('#chart')&&$('#chart').parentElement);
+ const rh=[...tv.querySelectorAll('.sh h2')].find(h=>h.textContent.trim()==='배역 보드');mv('vote',rh&&rh.parentElement);mv('vote',$('#roles'));
+ mv('vs',$('#duel'));mv('team',$('#talkBox'));mv('team',$('#sideTop'));
+ const fd=document.createElement('section');fd.id='tFeed';fd.className='tfeed';P.talk.appendChild(fd);
+ for(const id of ['tWork','tStats','tWatch','poster'])mv('info',$('#'+id));
+ setTTab('vote')})();
+function setTTab(k,f){TTAB=k;if(f!==undefined)TF.f=f;document.querySelectorAll('#tTabs button').forEach(b=>b.classList.toggle('on',b.dataset.k===k));
+ document.querySelectorAll('.tpane').forEach(p=>p.classList.toggle('on',p.dataset.k===k));if(k==='talk')renderTFeed();
+ if(k==='vs'&&!$('#duel').innerHTML.trim()){try{newDuel(true)}catch(e){}}}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-act="ttab"]');if(!b)return;e.preventDefault();setTTab(b.dataset.k,b.dataset.f);
+ const nav=$('#tTabs');if(nav&&b.closest('.tpane'))nav.scrollIntoView({behavior:'smooth',block:'start'});try{track('topic_tab',{t:SEL,m:{k:b.dataset.k}})}catch(err){}});
+addEventListener('hashchange',()=>{const h=decodeURIComponent(location.hash.slice(1));if(h.endsWith('/talk'))TTAB_NEXT='team';else if(h.endsWith('/feed'))TTAB_NEXT='talk'});
+
+/* ===== 하나로 합친 토론: 작품 전체 글, 팀 글, 배역 글이 한 목록에 ===== */
+function tfTag(c){const cb=(TALK.combos||[]).find(x=>x.ckey===c.ckey);
+ if(c.role_id)return `<span class="tg r">${esc((c.role_ch||'').replace(/\s*\(.*\)$/,''))} 역${c.cand_name?`, ${esc(c.cand_name)} 지지`:''}</span>`;
+ if(c.ckey)return `<span class="tg c">👥 ${cb?esc(Object.values(cb.picks||{}).slice(0,3).join(', ')):'캐스팅 팀'}${cb&&Object.keys(cb.picks||{}).length>3?' 외':''}</span>`;return ''}
+function renderTFeed(){const box=$('#tFeed');if(!box||!D)return;const all=D.comments||[];const cnt=all.filter(c=>!c.parent_id).length,tt=$('#tt_talk');if(tt)tt.textContent=cnt?cnt:'';
+ if(TTAB!=='talk')return;
+ const roles=(D.roles||[]).filter(r=>!isSync(r)),myC=(TALK.combos||[]).find(c=>c.mine);
+ const chips=[['all','전체'],['gen','작품 이야기'],...(myC?[['c'+myC.ckey,'내 팀']]:[]),...roles.map(r=>['r'+r.id,(r.ch||'').replace(/\s*\(.*\)$/,'')])];
+ if(TF.f.startsWith('c')&&!chips.some(x=>x[0]===TF.f))chips.push([TF.f,'이 팀']);
+ const ok=c=>TF.f==='all'||(TF.f==='gen'&&!c.role_id&&!c.ckey)||(TF.f[0]==='r'&&c.role_id===+TF.f.slice(1))||(TF.f[0]==='c'&&c.ckey===TF.f.slice(1));
+ const top=all.filter(c=>!c.parent_id&&ok(c)).sort(TF.sort==='hot'?(a,b)=>b.up-a.up||new Date(b.created_at)-new Date(a.created_at):(a,b)=>new Date(b.created_at)-new Date(a.created_at));
+ const kids=id=>all.filter(x=>x.parent_id===id).sort((a,b)=>new Date(a.created_at)-new Date(b.created_at));
+ const item=(c,re)=>{const liked=D.cliked.has(c.id);return `<div class="tf${re?' re':''}"><div class="tf-h"><b>${esc(c.nickname||'')}</b><small>${new Date(c.created_at).toLocaleDateString('ko-KR')}</small>${re?'':tfTag(c)}</div>
+  ${c.hidden?`<details class="folded"><summary>별로예요가 많아 접힌 글이에요</summary>${esc(c.body)}</details>`:`<p>${esc(c.body)}</p>`}
+  <div class="tf-a"><button class="lk${liked?' on':''}" data-act="likec" data-id="${c.id}" ${c.mine?'disabled':''} aria-label="공감">♥ ${fmt(c.up)}</button>${re?'':`<button data-act="tf-re" data-id="${c.id}">답글${kids(c.id).length?` ${kids(c.id).length}`:''}</button>`}${c.mine?`<button data-act="tdel" data-id="${c.id}">삭제</button>`:`<button class="meh" data-act="tf-meh" data-id="${c.id}">별로예요</button>`}</div>
+  ${re?'':`<div class="tf-rf" id="tfr${c.id}" hidden><input type="text" maxlength="500" placeholder="답글 쓰기" aria-label="답글"><button class="b sm" data-act="tf-post" data-parent="${c.id}">등록</button></div>`}</div>`};
+ const tagOpts=`<option value="">작품 전체 이야기</option>${myC?`<option value="c${myC.ckey}">내 캐스팅 팀 이야기</option>`:''}${roles.map(r=>`<option value="r${r.id}">${esc((r.ch||'').replace(/\s*\(.*\)$/,''))} 역 이야기</option>`).join('')}`;
+ box.innerHTML=`<div class="sh"><h2>토론</h2><span class="sub">배역 카드 의견과 팀 이야기가 여기 모두 모여요</span></div>
+ <div class="tf-form"><textarea id="tfNew" maxlength="500" rows="2" placeholder="${USER?'이 캐스팅에 대한 생각. 근거를 들면 공감을 더 받아요':'로그인하면 글을 쓸 수 있어요'}"></textarea><div class="tf-row"><select id="tfTag" aria-label="글 주제">${tagOpts}</select><button class="b sm buy" data-act="tf-post">글 쓰기</button></div></div>
+ <div class="tf-chips" role="tablist">${chips.map(([k,l])=>`<button class="${TF.f===k?'on':''}" data-act="tf-f" data-k="${k}">${esc(l)}</button>`).join('')}</div>
+ <div class="tf-sort"><button class="${TF.sort==='hot'?'on':''}" data-act="tf-s" data-k="hot">공감순</button><button class="${TF.sort==='new'?'on':''}" data-act="tf-s" data-k="new">최신순</button><span>${top.length}개</span></div>
+ ${top.map(c=>item(c)+kids(c.id).map(k=>item(k,true)).join('')).join('')||'<p class="empty3">아직 글이 없어요. 첫 의견을 남겨 주세요</p>'}
+ <p class="dl">공감이 많은 글이 위로 올라가요. 별로예요가 5개 이상이면서 공감의 두 배를 넘으면 접혀요.</p>`;
+ if(TF.f[0]==='r'||TF.f[0]==='c'){const sel=$('#tfTag');if(sel&&[...sel.options].some(o=>o.value===TF.f))sel.value=TF.f}}
+async function tfPost(parent){if(needLogin())return;const inp=parent?document.querySelector(`#tfr${parent} input`):$('#tfNew');const tx=(inp&&inp.value||'').trim();if(!tx)return toast('내용을 적어 주세요');
+ const tag=parent?'':($('#tfTag')||{}).value||'';try{await rpc('post_talk',{tid:SEL,ck:tag[0]==='c'?tag.slice(1):null,rid:tag[0]==='r'?+tag.slice(1):null,cid:null,parent:parent||null,txt:tx});toast('올렸어요');await loadTopic();renderTFeed();try{loadTalk(SEL)}catch(e){}}catch(err){toast(errMsg(err))}}
+document.addEventListener('click',async e=>{const b=e.target.closest('[data-act^="tf-"]');if(!b)return;const a=b.dataset.act;
+ if(a==='tf-f'){TF.f=b.dataset.k;renderTFeed();return}
+ if(a==='tf-s'){TF.sort=b.dataset.k;renderTFeed();return}
+ if(a==='tf-re'){const f=$('#tfr'+b.dataset.id);if(f){f.hidden=!f.hidden;if(!f.hidden)f.querySelector('input').focus()}return}
+ if(a==='tf-post'){b.disabled=true;await tfPost(b.dataset.parent?+b.dataset.parent:null);b.disabled=false;return}
+ if(a==='tf-meh'){if(needLogin())return;try{await rpc('vote_thread',{cid:+b.dataset.id,val:-1});toast('의견을 반영했어요');await loadTopic();renderTFeed()}catch(err){toast(errMsg(err))}return}});
 
 }
 </script>

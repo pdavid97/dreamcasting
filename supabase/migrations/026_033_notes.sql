@@ -30,3 +30,6 @@
 -- 044 my_week(): 최근 7일과 그 전 7일 비교(표, 작품, 배우, 새 얼굴, 포인트, 적중, 최애, 일별 표, 7일 안에 발표될 내 판)
 -- 045 buzz 분할 실행: topic_activity(days) 집계 함수, topics.buzz_raw. cron dc-buzz-collect-0..5(6개씩) 후 dc-buzz-score(18:40 UTC)
 -- 046 vote_deck: 날짜와 사용자로 정해지는 하루 단위 가중치(0~12) 추가해 매일 순서가 바뀜, lim 24 요청 후 클라이언트에서 넘긴 작품(3일) 뒤로
+-- 047 unified_talk: thread_comments.role_id, cand_id 추가(작품 전체 글은 ckey 0x32), v_thread 재생성(cand_name, role_ch), post_talk(tid,ck,rid,cid,parent,txt)
+--   배역 카드 의견과 팀 토론을 한 목록으로. 기존 comments/post_comment는 더 쓰지 않음(데이터 0건)
+-- 048 sheet_ckey(sid), like_sheet_team(sid): 꾸민 시트 공감을 그 시트가 속한 캐스팅 팀 공감(team_likes)으로 기록. sheet_likes는 더 쓰지 않음(0건)

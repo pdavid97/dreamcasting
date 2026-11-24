@@ -264,3 +264,27 @@ a.dl-ol{color:inherit;text-decoration:none;border-bottom:1px dashed currentColor
 .wkx-fav .av{flex:none;width:58px;height:58px;border-radius:50%;background:#ddd center 20%/cover;box-shadow:0 0 0 3px var(--hot)}
 .wkx-fav small{font-size:11px;color:var(--mute)}.wkx-fav b{display:block;font-size:17px}.wkx-fav p{margin:2px 0 0;font-size:12px;color:var(--mute)}
 .wkx-next{display:flex;align-items:center;gap:6px;margin-top:10px;padding:12px;border-radius:14px;background:color-mix(in srgb,var(--hot) 18%,var(--card));color:var(--ink);text-decoration:none;font-size:13px}.wkx-next i{margin-left:auto;font-style:normal}
+/* 작품 페이지 탭 */
+.ttabs{position:sticky;top:0;z-index:20;display:grid;grid-template-columns:repeat(5,1fr);gap:2px;margin:12px -4px 10px;padding:6px 4px;background:var(--bg,#fafafa);border-bottom:1px solid var(--line)}
+.ttabs button{position:relative;display:flex;flex-direction:column;align-items:center;gap:2px;border:0;background:none;color:var(--mute);font:inherit;font-size:12px;font-weight:600;padding:6px 0;border-radius:10px;cursor:pointer}
+.ttabs button span{font-size:18px}.ttabs button.on{color:var(--ink);background:color-mix(in srgb,var(--acc) 14%,transparent)}
+.ttabs button i{position:absolute;top:2px;right:14%;font-style:normal;font-size:10px;font-weight:800;color:var(--hot)}
+.tpane{display:none}.tpane.on{display:block;animation:dpgIn .2s}
+.tpane[data-k="team"] #sideTop{margin-top:18px}
+/* 하나로 합친 토론 */
+.tf-form{border:1px solid var(--line);border-radius:14px;padding:10px;background:var(--card)}
+.tf-form textarea{width:100%;border:0;resize:vertical;font:inherit;font-size:14px;background:transparent;color:var(--ink);outline:none}
+.tf-row{display:flex;gap:8px;align-items:center;margin-top:6px}.tf-row select{flex:1;font:inherit;font-size:12px;padding:6px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink)}
+.tf-chips{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin:12px 0 6px}
+.tf-chips button{flex:none;border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit;font-size:12px;padding:6px 10px;border-radius:16px;cursor:pointer}
+.tf-chips button.on{background:var(--ink);color:var(--card);border-color:var(--ink)}
+.tf-sort{display:flex;gap:10px;align-items:center;font-size:12px;margin-bottom:6px}.tf-sort button{border:0;background:none;color:var(--mute);font:inherit;padding:0;cursor:pointer}.tf-sort button.on{color:var(--ink);font-weight:700}.tf-sort span{margin-left:auto;color:var(--mute)}
+.tf{padding:12px 0;border-top:1px solid var(--line)}.tf.re{margin-left:18px;padding:8px 0 8px 10px;border-top:0;border-left:2px solid var(--line)}
+.tf-h{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:12px}.tf-h small{color:var(--mute)}
+.tf-h .tg{font-size:11px;padding:2px 8px;border-radius:10px;font-weight:600}.tf-h .tg.r{background:color-mix(in srgb,var(--acc) 16%,transparent)}.tf-h .tg.c{background:color-mix(in srgb,var(--hot) 22%,transparent)}
+.tf p{margin:6px 0;font-size:14px;line-height:1.5;white-space:pre-wrap;word-break:break-word}
+.tf-a{display:flex;gap:12px;align-items:center}.tf-a button{border:0;background:none;color:var(--mute);font:inherit;font-size:12px;padding:2px 0;cursor:pointer}
+.tf-a .lk.on{color:var(--red,#e5484d);font-weight:700}.tf-a .meh{margin-left:auto;font-size:11px}
+.tf-rf{display:flex;gap:6px;margin-top:6px}.tf-rf input{flex:1;font:inherit;font-size:13px;padding:6px 8px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink)}
+.talk .tall{display:block;margin-top:8px;font-size:12px;color:var(--acc);text-decoration:none}
+.lk.on{color:var(--red,#e5484d)}

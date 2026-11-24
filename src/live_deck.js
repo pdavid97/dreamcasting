@@ -186,13 +186,13 @@ document.addEventListener('click',async e=>{const b=e.target.closest('[data-act]
  if(a==='dk-nexttopic'){const t=curTopic();track('topic_skip',{t:t&&t.id});if(t&&!t.done)markPass(t.id);nextTopic();return}
  if(a==='dk-restart'){DI=0;DR=0;await loadDeck();const t=curTopic();if(t)DR=firstOpenRole(t);renderDeck();return}
  if(a==='sheet-close'){$('#loginSheet').classList.remove('on');return}
- if(a==='talk-open'){openThread(b.dataset.k);return}
+ if(a==='talk-open'){setTTab('talk','c'+b.dataset.k);$('#tTabs').scrollIntoView({behavior:'smooth',block:'start'});return}
  if(a==='team-like'){if(needLogin())return;const c=TALK.combos.find(x=>x.ckey===b.dataset.k);if(!c)return;if(c.mine){toast('내 팀에는 공감 대신 이미 한 표가 들어가 있어요');return}try{const on=await rpc('like_team',{tid:TALK.tid,ck:c.ckey});c.liked=on;c.likes=(c.likes||0)+(on?1:-1);track('team_like',{t:TALK.tid,m:{on}});renderTalk()}catch(e){toast(errMsg(e))}return}
  if(a==='tvote'){if(needLogin())return;try{const r=await rpc('vote_thread',{cid:+b.dataset.id,val:+b.dataset.v});const x=TALK.thread.find(y=>y.id===+b.dataset.id);if(x){x.up=r.up;x.down=r.down;x.hidden=r.hidden;const mv=TALK.myv[x.id]||0;TALK.myv[x.id]=mv===+b.dataset.v?0:+b.dataset.v}renderTalk()}catch(err){toast(errMsg(err))}return}
  if(a==='treply'){const f=$('#tr'+b.dataset.id);if(f){f.hidden=!f.hidden;if(!f.hidden)f.querySelector('input').focus()}return}
  if(a==='tpost'){if(needLogin())return;const parent=b.dataset.parent?+b.dataset.parent:null;const inp=parent?$('#tr'+parent).querySelector('input'):$('#tNew');const txt=inp.value.trim();if(!txt)return toast('내용을 적어 주세요');
   try{await rpc('post_thread',{tid:TALK.tid,ck:TALK.open,parent,txt});track('thread_post',{t:TALK.tid,m:{reply:!!parent}});inp.value='';const k=TALK.open;TALK.open=null;await openThread(k);const c=TALK.combos.find(x=>x.ckey===k);if(c)c.comments++;renderTalk()}catch(err){toast(errMsg(err))}return}
- if(a==='tdel'){try{await rpc('delete_thread',{cid:+b.dataset.id});TALK.thread=TALK.thread.filter(x=>x.id!==+b.dataset.id);renderTalk()}catch(err){toast(errMsg(err))}return}
+ if(a==='tdel'){try{await rpc('delete_thread',{cid:+b.dataset.id});toast('삭제했어요');await loadTopic();renderTFeed();loadTalk(SEL)}catch(err){toast(errMsg(err))}return}
 });
 
 /* ===== 7일 롤링 라운드: 매일 새 판이 열리고, 7일 뒤 마감과 결과 발표 ===== */
