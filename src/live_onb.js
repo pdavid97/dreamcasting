@@ -21,7 +21,7 @@ function renderOnb(){const ov=$('#onb');if(!ov)return;const s=ONB.step,dots=`<di
    <button class="b buy big" data-act="onb-next">캐스팅 시작하기</button><button class="lk" data-act="onb-skip">그냥 둘러볼게요</button></div></div>`;return}
  if(s===1){const fs=onbFaces();
   ov.innerHTML=`<div class="onb-in onb-taste">${dots}<h2>좋아하는 배우를 골라 주세요</h2><p class="sub">3명이면 딱 좋아요. 이 배우가 후보인 작품부터 보여 드려요.</p>
-   <div class="onb-faces">${fs.map(n=>{const on=ONB.actors.includes(n);return `<button class="fc${on?' on':''}" data-act="onb-actor" data-n="${esc(n)}" aria-pressed="${on}"><span style="background-image:url('${esc(IMG['p:'+n])}')"></span><b>${esc(dispName(n))}</b>${on?'<i>✓</i>':''}</button>`}).join('')||'<p class="sub">후보를 불러오는 중이에요</p>'}</div>
+   <div class="onb-faces">${fs.map(n=>{const on=ONB.actors.includes(n);return `<button class="fc${on?' on':''}" data-act="onb-actor" data-n="${esc(n)}" aria-pressed="${on}"><span style="background-image:url('${esc(IMG['p:'+n])}')"></span><b>${dispHTML(n)}</b>${on?'<i>✓</i>':''}</button>`}).join('')||'<p class="sub">후보를 불러오는 중이에요</p>'}</div>
    <h3>어떤 판이 끌려요?</h3><div class="onb-cats">${ONB_CATS.map(([k,l,ic])=>`<button class="ct${ONB.cats.includes(k)?' on':''}" data-act="onb-cat" data-k="${k}"><span>${ic}</span>${l}</button>`).join('')}</div>
    <div class="onb-foot"><button class="b buy big" data-act="onb-next"${ONB.actors.length||ONB.cats.length?'':' disabled'}>${ONB.actors.length?`${ONB.actors.length}명 골랐어요, 다음`:'다음'}</button><button class="lk" data-act="onb-next">건너뛰기</button></div></div>`;
   if(!fs.length)setTimeout(()=>{if(ONB.step===1)renderOnb()},800);return}
@@ -44,10 +44,10 @@ const ONB_T0=Date.now();setTimeout(function wait(){if(location.hash==='#welcome'
 async function guestPick(t,r,cid){const a=pend().filter(p=>p.rid!==r.id);a.push({tid:t.id,rid:r.id,cid,at:Date.now()});setPend(a);track('guest_vote',{t:t.id,r:r.id,c:cid,m:{n:a.length}});
  const pk=await rpc('role_peek',{rid:r.id,cid}).catch(()=>null);const me=(r.cands.find(c=>c.id===cid)||{}).name||'';showPeek(r,me,pk,a.length)}
 function showPeek(r,me,pk,n){const old=$('#dkPeek');if(old)old.remove();const tot=pk?+pk.total:0,top=pk&&pk.top&&pk.top[0],pct=x=>tot?Math.round(x/tot*100):0,same=top&&top.name===me,u=IMG['p:'+me];
- const msg=!tot?'아직 아무도 고르지 않은 배역이에요. 내 표가 첫 표!':same?`지금 광장 1위도 <b>${esc(dispName(me))}</b>예요. 민심과 같은 눈!`:`지금 광장 1위는 <b>${esc(dispName(top.name))}</b> ${pct(top.v)}%. 내 픽이 뒤집을 수 있을까요?`;
+ const msg=!tot?'아직 아무도 고르지 않은 배역이에요. 내 표가 첫 표!':same?`지금 광장 1위도 <b>${dispHTML(me)}</b>예요. 민심과 같은 눈!`:`지금 광장 1위는 <b>${dispHTML(top.name)}</b> ${pct(top.v)}%. 내 픽이 뒤집을 수 있을까요?`;
  const el=document.createElement('div');el.id='dkPeek';el.className='peek';el.innerHTML=`<div class="peek-in"><small>${esc(r.ch)} 역, 체험 투표 ${n}/3</small>
-  <div class="peek-me"><span class="av"${u?` style="background-image:url('${esc(u)}')"`:''}></span><div><small>내 픽</small><b>${esc(dispName(me))}</b></div></div>
-  <p>${msg}</p>${tot?`<div class="peek-bars">${(pk.top||[]).map(x=>`<div class="${x.name===me?'me':''}"><span>${esc(dispName(x.name))}</span><i style="--p:${pct(x.v)}%"></i><b>${pct(x.v)}%</b></div>`).join('')}</div><small class="sub">지금까지 ${fmt(tot)}표</small>`:''}
+  <div class="peek-me"><span class="av"${u?` style="background-image:url('${esc(u)}')"`:''}></span><div><small>내 픽</small><b>${dispHTML(me)}</b></div></div>
+  <p>${msg}</p>${tot?`<div class="peek-bars">${(pk.top||[]).map(x=>`<div class="${x.name===me?'me':''}"><span>${dispHTML(x.name)}</span><i style="--p:${pct(x.v)}%"></i><b>${pct(x.v)}%</b></div>`).join('')}</div><small class="sub">지금까지 ${fmt(tot)}표</small>`:''}
   <div class="peek-dots">${[1,2,3].map(i=>`<i class="${i<=n?'on':''}"></i>`).join('')}</div>
   ${n>=3?`<button class="b buy big" data-act="peek-save">3표 저장하고 결과 받기</button><button class="lk" data-act="peek-x">나중에</button>`:`<button class="b buy big" data-act="peek-x">다음 배역 ${3-n}표 남음</button>`}</div>`;
  document.body.appendChild(el)}

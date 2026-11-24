@@ -577,3 +577,4 @@ body:not([data-view=vs]) #topicView>#duel{display:none}
 
 /* 이름이 길어 줄이 바뀌어도 한 단어 안에서는 끊지 않음 */
 body{word-break:keep-all;overflow-wrap:break-word}
+.nmp{display:inline-block;max-width:100%}

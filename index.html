@@ -1515,6 +1515,7 @@ body:not([data-view=vs]) #topicView>#duel{display:none}
 
 /* 이름이 길어 줄이 바뀌어도 한 단어 안에서는 끊지 않음 */
 body{word-break:keep-all;overflow-wrap:break-word}
+.nmp{display:inline-block;max-width:100%}
 
 </style>
 </head>
@@ -1750,9 +1751,9 @@ function renderDuel(){const box=$('#duel');if(!box)return;if(DUEL&&DUEL.kind){vs
  if(DUEL.done){const c=DUEL.a,w=DUEL.wins[c.candidate_id]||0;
   const L=DUEL.log||[],n=DUEL.total+1,bads=L.filter(x=>x.bad).length,direct=L.filter(x=>x.w===c.name).length,beaten=Math.max(0,n-1-direct-bads);
   const path=`<ol class="dpath">${L.map((x,k)=>(x.bad?`<li class="bad"><span>${k+1}판</span><b>둘 다 별로</b><em></em><s>${esc(x.l)}</s></li>`:`<li class="${x.w===c.name?'me':''}"><span>${k+1}판</span><b>${esc(x.w)}</b><em>승</em><s>${esc(x.l)}</s></li>`)).join('')}</ol>`;
-  box.innerHTML=`<div class="duel">${head}<div class="vs dchamp"><button class="side-a" disabled>${face(c)}<b>${esc(dispName(c.name))}</b><span class="res">후보 ${n}명 중 내 최종 픽</span></button></div>
+  box.innerHTML=`<div class="duel">${head}<div class="vs dchamp"><button class="side-a" disabled>${face(c)}<b>${dispHTML(c.name)}</b><span class="res">후보 ${n}명 중 내 최종 픽</span></button></div>
   <p class="dsum">${bads?`도전자 ${bads}명은 둘 다 별로라고 넘겼어요. `:''}${direct===n-1?`모든 도전자 ${n-1}명을 혼자 다 이겼어요. 압도적인 최종 픽.`:`직접 이긴 배우 ${direct}명${beaten?`, 그리고 앞서 왕좌를 지키던 배우를 꺾어서 그 배우가 이긴 ${beaten}명보다도 앞섰어요`:''}. 마지막까지 남은 한 명이 최종 픽이에요.`}</p>${path}<div class="dft"><span>${esc(DUEL.title)} ${esc(DUEL.ch)} 역 토너먼트 완료. 공식 표는 따로 던져야 반영돼요.</span><span style="display:flex;gap:6px;align-items:center">${STREAK?`<span class="num">연속 ${STREAK}판</span>`:''}${DUEL.cast==='done'?'<span class="chip hot">정식 한 표 완료</span>':DUEL.cast==='already'?'<span class="chip">이 배역엔 이미 정식 투표했어요</span>':'<button class="chip hot" data-act="duelCast">'+(DUEL.cast==='guest'?'로그인하고 이 배우에게 공식 투표':'이 배우로 공식 투표할까요?')+'</button>'}<a class="chip" href="#${esc(DUEL.tid)}">작품 보러 가기</a><button class="chip" data-act="duelNext">다음 토너먼트</button></span></div></div>`;return}
- const side=(s,c)=>`<button class="side-${s}" data-act="duel" data-v="${s}">${face(c)}<b>${esc(dispName(c.name))}</b><span class="res num">${R?Math.round((s==='a'?R.pa:R.pb)*100)+'%':(s==='a'&&DUEL.round>1?`${DUEL.wins[c.candidate_id]||0}연승 중`:'')}</span></button>`;
+ const side=(s,c)=>`<button class="side-${s}" data-act="duel" data-v="${s}">${face(c)}<b>${dispHTML(c.name)}</b><span class="res num">${R?Math.round((s==='a'?R.pa:R.pb)*100)+'%':(s==='a'&&DUEL.round>1?`${DUEL.wins[c.candidate_id]||0}연승 중`:'')}</span></button>`;
  box.innerHTML=`<div class="duel">${head}<div class="vs">${side('a',DUEL.a)}<div class="vsmid">VS<small class="dround">${DUEL.round}/${DUEL.total}</small></div>${side('b',DUEL.b)}</div><div class="dft"><span>${R?(R.guest?(GUEST>=3?`광장 ${R.n||1}명의 선택이에요. 로그인하면 포인트도 쌓여요`:`광장 ${R.n||1}명의 선택이에요. 고른 배우가 남아 다음 도전자와 붙어요`):`광장 ${R.n||1}명의 선택이에요. 고른 배우가 남아 다음 도전자와 붙어요`):'고른 배우는 남고, 새 도전자가 올라와요. 끝까지 남는 배우가 내 픽이에요'}</span><span style="display:flex;gap:6px;align-items:center">${STREAK?`<span class="num">연속 ${STREAK}판</span>`:''}${R&&R.guest&&GUEST>=3&&!USER?'<button class="lg g" data-act="google" style="min-height:36px"><span class="gdot"></span>로그인</button>':''}${R?'':'<button class="chip" data-act="duelBad">둘 다 별로</button>'}<button class="chip" data-act="duelNext">다른 배역</button></span></div></div>`}
 function duelAdvance(){if(!DUEL)return;const winner=DUEL.lastWin;DUEL.res=null;
  if(!DUEL.queue.length){DUEL.a=winner;DUEL.done=true;DUEL.cast=(USER&&PROF)?null:'guest';DUEL_SKIP.push(DUEL.rid);duelSaveSkip();track&&track('duel_champion',{t:DUEL.tid,r:DUEL.rid,c:winner.candidate_id,m:{wins:DUEL.wins[winner.candidate_id]||0,of:DUEL.total}});renderDuel();return}
@@ -1791,7 +1792,7 @@ function roleHTML(r,i){const t=topic(),open=isOpen(t),g=PROF?grade(PROF.points):
   <ol class="tl">${(r.events||[]).map(e=>`<li>${esc(e.d)} ${esc(e.t)}</li>`).join('')}</ol></div><div></div></div>${talkHTML(r)}</article>`}
  const mv=D.myVote[r.id],blind=open&&!mv&&!isOpt(r),cs=blind?[...(D.cands[r.id]||[])].sort((a,b)=>a.candidate_id-b.candidate_id):[...(D.cands[r.id]||[])].sort((a,b)=>b.votes-a.votes),LIM=blind?6:5,EXP=EXPC.has(r.id),tot=total(r)||1,lead=blind?null:cs.reduce((a,c)=>!a||c.votes>a.votes?c:a,null),dps=D.dpicks.filter(d=>d.role_id===r.id);
  let nHid=0;const rows=cs.map((c,k)=>{const pct=c.votes/tot,dp=dps.filter(d=>d.candidate_id===c.candidate_id).map(d=>d.nickname),mine=mv&&mv.candidate_id===c.candidate_id;
-  const rank=1+cs.filter(x=>x.votes>c.votes).length,hid=!EXP&&k>=LIM&&!mine;if(hid)nHid++;return `<div class="cand1${lead&&c.candidate_id===lead.candidate_id&&c.votes>0?' lead':''}${hid?' more':''}">${c.votes>0&&!blind?`<span class="rkb">${rank}위</span>`:''}<div class="nm cn">${isOpt(r)?'':`<a class="avl" href="#a/${encodeURIComponent(c.name)}" aria-hidden="true" tabindex="-1">${avatar(c.name)}</a>`}<span><b>${isOpt(r)?esc(c.name):actorLink(c.name,esc(dispName(c.name))+'<i class="go" aria-hidden="true">›</i>')}</b><small>${!isOpt(r)&&ageTxt(c.name)?ageTxt(c.name)+', ':''}${c.proposer?`제안 ${esc(c.proposer)}`:'첫 후보'}${dp.length?`, 디렉터스 픽 ${esc(dp.join(', '))}`:''}${mine?`, 내 표${mv.weight>1?' x2':''}`:''}${isOpt(r)||blind?'':vsTag(c)}</small></span></div>${blind?`<div class="vb blind"><span><i></i></span><b>투표하면 공개</b></div>`:`<div class="vb2"><b>${(pct*100).toFixed(0)}%</b> ${fmt(c.votes)}표</div>`}<div class="acts">${open?(mv?(mine?'<button class="b sm mine" disabled>내 표</button>':''):`<button class="b sm" data-act="vote" data-rid="${r.id}" data-cid="${c.candidate_id}">한 표</button>`):''}${g>=3?`<button class="b sm" data-act="dpick" data-rid="${r.id}" data-cid="${c.candidate_id}">디렉터스 픽</button>`:''}</div></div>`}).join('');
+  const rank=1+cs.filter(x=>x.votes>c.votes).length,hid=!EXP&&k>=LIM&&!mine;if(hid)nHid++;return `<div class="cand1${lead&&c.candidate_id===lead.candidate_id&&c.votes>0?' lead':''}${hid?' more':''}">${c.votes>0&&!blind?`<span class="rkb">${rank}위</span>`:''}<div class="nm cn">${isOpt(r)?'':`<a class="avl" href="#a/${encodeURIComponent(c.name)}" aria-hidden="true" tabindex="-1">${avatar(c.name)}</a>`}<span><b>${isOpt(r)?esc(c.name):actorLink(c.name,dispHTML(c.name)+'<i class="go" aria-hidden="true">›</i>')}</b><small>${!isOpt(r)&&ageTxt(c.name)?ageTxt(c.name)+', ':''}${c.proposer?`제안 ${esc(c.proposer)}`:'첫 후보'}${dp.length?`, 디렉터스 픽 ${esc(dp.join(', '))}`:''}${mine?`, 내 표${mv.weight>1?' x2':''}`:''}${isOpt(r)||blind?'':vsTag(c)}</small></span></div>${blind?`<div class="vb blind"><span><i></i></span><b>투표하면 공개</b></div>`:`<div class="vb2"><b>${(pct*100).toFixed(0)}%</b> ${fmt(c.votes)}표</div>`}<div class="acts">${open?(mv?(mine?'<button class="b sm mine" disabled>내 표</button>':''):`<button class="b sm" data-act="vote" data-rid="${r.id}" data-cid="${c.candidate_id}">한 표</button>`):''}${g>=3?`<button class="b sm" data-act="dpick" data-rid="${r.id}" data-cid="${c.candidate_id}">디렉터스 픽</button>`:''}</div></div>`}).join('');
  return `<article class="role${i===SROLE?' sel':''}" data-act="role" data-i="${i}">${head}${blind&&cs.length?`<p class="dl blindmsg">내 표를 던지면 득표율과 순위가 열려요. 남의 표에 흔들리지 말고 먼저 골라 보세요.</p>`:''}${!open?`<div class="closed">투표 마감. 최종 결과${lead&&lead.votes?`: ${esc(lead.name)} ${Math.round(lead.votes/tot*100)}%`:''}</div>`:mv?`<p class="dl" style="margin:6px 0">이 배역에는 투표를 마쳤어요. 마음에 드는 후보가 없었다면 캐스팅 시트에 원하는 배우를 직접 적어 보세요.</p>`:''}${r.stage==='rumor'?'<div class="banner">실사화가 발표됐어요. 공식 캐스팅이 나오면 맞힌 사람에게 포인트가 가요.</div>':''}
  ${!blind&&!isOpt(r)&&cs.some(c=>c.votes)?rolePie(r,cs,tot,mv):''}${rows?`<div class="cgrid${isOpt(r)?' opt':''}">${rows}</div>${nHid?`<button class="morec" data-act="moreCands" data-rid="${r.id}">후보 ${nHid}명 더 보기</button>`:EXP&&cs.length>LIM?`<button class="morec" data-act="moreCands" data-rid="${r.id}">접기</button>`:''}`:'<p class="empty3">아직 후보가 없어요. 첫 후보를 올려 주세요.</p>'}
  ${open?`<div class="row2"><input type="text" id="ad${r.id}" placeholder="후보에 없는 배우 올리기" maxlength="20" aria-label="새 후보 배우 이름"><button class="b sm" data-act="add" data-rid="${r.id}">후보 등록</button></div>`:''}${talkHTML(r)}</article>`}
@@ -1925,7 +1926,7 @@ async function loadAges(names){const need=[...new Set(names)].filter(n=>n&&!(n i
 const ageAt=(name,y)=>{const b=AGE[name];if(!b)return null;const by=+b.slice(0,4),bm=+b.slice(5,7)||1;if(!by)return null;if(y&&y<NOW_Y)return y-by;const n=new Date();return n.getFullYear()-by-((n.getMonth()+1)<bm?1:0)};
 const ageTxt=(name,y)=>{const a=ageAt(name,y);return a==null?'':(y&&y<NOW_Y?`${y}년 당시 ${a}세`:`만 ${a}세`)};
 const pickLabel=(r,p)=>{const n=pickName(r,p);return n&&p&&p.w?`${n} (《${p.w}》 속 모습)`:n&&p&&p.y?`${n} (${p.y}년)`:n};
-const actorLink=(name,inner)=>`<a class="alink" href="#a/${encodeURIComponent(name)}" title="${esc(name)} 배우 페이지">${inner||esc(dispName(name))}</a>`;
+const actorLink=(name,inner)=>`<a class="alink" href="#a/${encodeURIComponent(name)}" title="${esc(name)} 배우 페이지">${inner||dispHTML(name)}</a>`;
 
 /* ---------- 작품 정보 ---------- */
 let WORK={},workBusy=new Set();
@@ -2331,7 +2332,7 @@ function dialHTML(t,r,cands,picked,tot){const ou=r.orig?IMG['p:'+r.orig]:null,N=
   <button class="dl-c dl-add" data-i="${cands.length}" data-rid="${r.id}" data-tid="${esc(t.id)}" data-add="1" data-name="내 후보 추가" role="option" aria-label="원하는 후보 직접 추가"><span class="ph">+</span><i class="dl-tap">탭해서 추가</i></button>
   <div class="dl-mid">
    ${r.orig?`<a class="dl-orig" href="#a/${encodeURIComponent(r.orig)}" aria-label="원작 ${esc(r.orig)} 배우 페이지"${ou?` style="background-image:url('${esc(ou)}')"`:''}>${ou?'':esc(r.orig[0])}</a>`:'<span class="dl-orig">?</span>'}
-   ${r.orig?`<a class="dl-ol" href="#a/${encodeURIComponent(r.orig)}">원작 ${esc(dispName(r.orig))}</a>`:'<small class="dl-ol">원작 배우 없음</small>'}
+   ${r.orig?`<a class="dl-ol" href="#a/${encodeURIComponent(r.orig)}">원작 ${dispHTML(r.orig)}</a>`:'<small class="dl-ol">원작 배우 없음</small>'}
   </div>
  </div>
  <div class="dl-pick" aria-live="polite"><div class="dl-pn"><span class="dl-badge" id="dlPick" hidden></span><a id="dlName" class="dl-nm"></a><small id="dlMeta"></small></div><p class="dl-rc" id="dlRecent"></p><div class="dl-why" id="dlWhy"></div></div>`}
@@ -2444,7 +2445,7 @@ function openResult(tid,season){const r=(RB.results||[]).find(x=>x.tid===tid&&St
   <header${r.poster?` style="--bg:url('${esc(r.poster)}')"`:''}><small>${r.season>1?`시즌 ${r.season} `:''}최종 결과, ${fmt(r.voters||0)}명 참여</small><h3>${esc(r.title)}</h3>
   ${mine.length?`<p class="sc"><b>${hit}</b><span>/ ${mine.length} 적중</span>${r.pts?`<em>+${r.pts}P</em>`:''}</p>`:''}</header>
   <ol>${r.roles.map(x=>{const pct=x.total?Math.round(x.v/x.total*100):0,ok=x.mine&&x.mine===x.win,u=x.win&&IMG['p:'+x.win];return `<li class="${ok?'ok':x.mine?'no':''}"><span class="av"${u?` style="background-image:url('${esc(u)}')"`:''}>${u?'':esc((x.win||'?')[0])}</span>
-   <div><small>${esc(x.ch)}</small><b>${x.win?`<a href="#a/${encodeURIComponent(x.win)}">${esc(dispName(x.win))}</a>`:'투표 없음'}</b><i style="--p:${pct}%"></i><span>${pct}%${x.mine?(ok?' 🎯 내 픽 적중':`, 내 픽 ${esc(dispName(x.mine))}`):''}</span></div></li>`}).join('')}</ol>
+   <div><small>${esc(x.ch)}</small><b>${x.win?`<a href="#a/${encodeURIComponent(x.win)}">${dispHTML(x.win)}</a>`:'투표 없음'}</b><i style="--p:${pct}%"></i><span>${pct}%${x.mine?(ok?' 🎯 내 픽 적중':`, 내 픽 ${dispHTML(x.mine)}`):''}</span></div></li>`}).join('')}</ol>
   <p class="nx">언더독 보너스: 내가 골랐을 때 1위가 아니던 배우가 최종 1위면 +10P를 더 드려요. 이 작품은 이틀 뒤 새 시즌으로 다시 열려요.</p>
   <a class="b buy" href="#${esc(tid)}" data-act="rres-x">작품 페이지에서 자세히</a></div>`;
  document.body.appendChild(ov);ov.addEventListener('click',e=>{if(e.target===ov||e.target.closest('[data-act="rres-x"]'))ov.remove()})}
@@ -2589,7 +2590,7 @@ function pairGraph(arr){const ps=igCnt2(arr).slice(0,12);const ns=[...new Set(ps
  return `<svg class="ig-svg" viewBox="0 0 ${W} 300" role="img" aria-label="커플 관계도">${edges}${nodes}</svg>`}
 /* 매치업: 배역 한 줄마다 원작 배우 → 내 픽 */
 function matchFlow(arr){const av=n=>{const u=IMG['p:'+n];return `<span class="av"${u?` style="background-image:url('${esc(u)}')"`:''}>${u?'':esc((n||'?')[0])}</span>`};
- return `<div class="ig-mt">${arr.slice(0,10).map(x=>`<div class="mt"><small class="w">${esc(x.t||'')}${x.ch?` <b>${esc(x.ch)}</b>`:''}</small><a class="p o" href="#a/${encodeURIComponent(x.o)}">${av(x.o)}<span>${esc(dispName(x.o))}</span></a><i aria-hidden="true">→</i><a class="p m" href="#a/${encodeURIComponent(x.p)}">${av(x.p)}<span>${esc(dispName(x.p))}</span></a></div>`).join('')}${arr.length>10?`<p class="ig-more">외 ${arr.length-10}개 배역</p>`:''}</div>`}
+ return `<div class="ig-mt">${arr.slice(0,10).map(x=>`<div class="mt"><small class="w">${esc(x.t||'')}${x.ch?` <b>${esc(x.ch)}</b>`:''}</small><a class="p o" href="#a/${encodeURIComponent(x.o)}">${av(x.o)}<span>${dispHTML(x.o)}</span></a><i aria-hidden="true">→</i><a class="p m" href="#a/${encodeURIComponent(x.p)}">${av(x.p)}<span>${dispHTML(x.p)}</span></a></div>`).join('')}${arr.length>10?`<p class="ig-more">외 ${arr.length-10}개 배역</p>`:''}</div>`}
 function matchLine(arr){if(!arr.length)return '';const m=igCnt(arr.map(x=>x.o+'|'+x.p));const [k,c]=m[0];const [o,p]=k.split('|');
  const same=arr.filter(x=>x.o===x.p).length;
  return c>1?`<b>${esc(o)}</b> 자리에 <b>${esc(jj(p,'을','를'))}</b> ${c}번 앉혔어요. 공식 후계자 지정?`:`원작 배우가 있는 배역 <b>${arr.length}개</b>에 투표했어요. 배역마다 원작 배우 자리에 누구를 앉혔는지 모아 봤어요.${same?` 그중 ${same}개는 원작 배우를 다시 골랐네요.`:''}`}
@@ -2736,7 +2737,7 @@ async function loadWeek(){const box=$('#weekbox');if(!box)return;box.innerHTML='
  <div class="wkx-hero"><small>이번 주 던진 표</small><b class="num" data-cnt="${w.n}">${w.n}</b>${dl(w.n,w.n_prev,'표')}
   <div class="wkx-days">${w.days.map(x=>{const d=new Date(x.d+'T00:00:00');return `<div class="wd" title="${d.getMonth()+1}/${d.getDate()} ${x.n}표"><div class="wb"><div class="wf" style="height:${Math.max(4,Math.round(x.n/mx*100))}%"></div></div><div class="wl">${dn[d.getDay()]}${x.n?` ${x.n}`:''}</div></div>`}).join('')}</div></div>
  <div class="wkx-tiles"><div><b>${w.works}</b><small>작품</small></div><div><b>${w.actors}</b><small>고른 배우</small><em>새 얼굴 ${w.new_actors}</em></div><div><b>+${fmt(w.pts)}</b><small>얻은 포인트</small>${dl(w.pts,w.pts_prev,'P')}</div><div><b>${w.hits}</b><small>적중 판</small><em>${w.hitp?`+${w.hitp}P`:`결과 ${w.results}건`}</em></div></div>
- ${w.fav?`<a class="wkx-fav" href="#a/${encodeURIComponent(w.fav.name)}"><span class="av"${fu?` style="background-image:url('${esc(fu)}')"`:''}></span><div><small>이번 주 최애</small><b>${esc(dispName(w.fav.name))}</b><p>${favTxt}</p></div></a>`:`<p class="sub">${favTxt}</p>`}
+ ${w.fav?`<a class="wkx-fav" href="#a/${encodeURIComponent(w.fav.name)}"><span class="av"${fu?` style="background-image:url('${esc(fu)}')"`:''}></span><div><small>이번 주 최애</small><b>${dispHTML(w.fav.name)}</b><p>${favTxt}</p></div></a>`:`<p class="sub">${favTxt}</p>`}
  ${w.closing?`<a class="wkx-next" href="#">⏳ 내가 투표한 판 중 <b>${w.closing}개</b>가 7일 안에 결과 발표돼요<i>→</i></a>`:''}`}
 /* ===== 주간 결산 스토리: 9:16 카드를 탭해서 넘기고 마지막 장에서 공유 ===== */
 async function openWeekStory(){if(!USER){openLoginSheet&&openLoginSheet();return}let w=null;try{w=await rpc('my_week',{})}catch(e){}if(!w){toast('결산을 불러오지 못했어요');return}
@@ -2745,7 +2746,7 @@ async function openWeekStory(){if(!USER){openLoginSheet&&openLoginSheet();return
  const slides=[
   {bg:'radial-gradient(120% 80% at 20% 10%,#FF4F7B 0%,#6A1F8C 55%,#1A0F2E 100%)',h:`<span class="ws-tag">이번 주 결산</span><h1>나의 한 주<br>캐스팅</h1><p>최근 7일 동안 광장에서 남긴 기록이에요</p><small class="ws-tip">화면을 탭해서 넘겨요</small>`},
   {bg:'radial-gradient(120% 80% at 80% 10%,#7B5CFF 0%,#2B1D6B 55%,#0F0B22 100%)',h:`<p class="ws-k">던진 표</p><b class="ws-big">${w.n}</b><p>${d>0?`지난주보다 ${d}표 더 던졌어요`:d<0?`지난주보다 ${-d}표 적어요`:'지난주와 같은 페이스'}</p><p>${w.works}개 작품, ${w.actors}명의 배우, 그중 새 얼굴 ${w.new_actors}명</p>`},
-  {bg:'radial-gradient(120% 80% at 50% 30%,#FF8A3D 0%,#B0244F 55%,#2A0B1A 100%)',h:w.fav?`<p class="ws-k">이번 주 최애</p><span class="ws-av"${fu?` style="background-image:url('${esc(fu)}')"`:''}></span><b class="ws-nm">${esc(dispName(w.fav.name))}</b><p>${w.fav_prev&&w.fav_prev.name===w.fav.name?'2주 연속 최애 자리를 지켰어요':w.fav_prev?`지난주 최애 ${esc(w.fav_prev.name)}에서 갈아탔어요`:`${w.fav.k}번 이 배우를 불렀어요`}</p>`:`<p class="ws-k">이번 주 최애</p><h1>아직<br>비어 있어요</h1><p>한 표만 던져도 채워져요</p>`},
+  {bg:'radial-gradient(120% 80% at 50% 30%,#FF8A3D 0%,#B0244F 55%,#2A0B1A 100%)',h:w.fav?`<p class="ws-k">이번 주 최애</p><span class="ws-av"${fu?` style="background-image:url('${esc(fu)}')"`:''}></span><b class="ws-nm">${dispHTML(w.fav.name)}</b><p>${w.fav_prev&&w.fav_prev.name===w.fav.name?'2주 연속 최애 자리를 지켰어요':w.fav_prev?`지난주 최애 ${esc(w.fav_prev.name)}에서 갈아탔어요`:`${w.fav.k}번 이 배우를 불렀어요`}</p>`:`<p class="ws-k">이번 주 최애</p><h1>아직<br>비어 있어요</h1><p>한 표만 던져도 채워져요</p>`},
   {bg:'radial-gradient(120% 80% at 30% 20%,#00C2A8 0%,#14507A 55%,#0A1424 100%)',h:`<p class="ws-k">적중과 포인트</p><b class="ws-big">${w.hits}</b><p>개 판에서 1위를 맞혔어요${w.hitp?`, +${w.hitp}P`:''}</p><span class="ws-pts">+${fmt(w.pts)}P</span><p>${w.closing?`7일 안에 내 판 ${w.closing}개의 결과가 나와요`:''}</p><button class="ws-share" data-act="ws-share">결산 공유하기</button>`}
  ];
  let i=0;const el=document.createElement('div');el.className='wstory';document.body.appendChild(el);
@@ -2901,7 +2902,9 @@ async function loadOrig1(need,ctx){need.forEach(n=>ORIG[n]=null);
 var NM={};
 function loadNM(){try{fetch(SB_URL+'/rest/v1/actor_meta?select=name,disp&ok=eq.true',{headers:{apikey:ANON,Authorization:'Bearer '+ANON}}).then(r=>r.ok?r.json():[]).then(a=>{(a||[]).forEach(x=>{if(x.disp)NM[x.name]=x.disp});if(a&&a.length&&typeof render==='function')try{render()}catch(e){}}).catch(()=>{})}catch(e){}}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(loadNM,0));else setTimeout(loadNM,0);
-function dispName(n){if(n&&NM[n])return NM[n].replace(/\(([^)]*)\)$/,(m,x)=>'('+x.replace(/ /g,'\u00a0')+')');const o=n&&ORIG[n];return o&&o!==n?`${o} (${n})`:(n||'')}
+/* 화면용: 괄호 속 이름은 한 덩어리로 다음 줄에 내려가되, 칸보다 길면 그 안에서 단어 단위로 줄바꿈 */
+function dispHTML(n){const d=dispName(n),m=d.match(/^(.*?)\s*(\([^()]*\))$/);return m?`${esc(m[1])} <span class="nmp">${esc(m[2])}</span>`:esc(d)}
+function dispName(n){if(n&&NM[n])return NM[n];const o=n&&ORIG[n];return o&&o!==n?`${o} (${n})`:(n||'')}
 /* 문장 속 《작품명》을 눌러 바로 찾기 */
 function workLinks(h){return String(h).replace(/《([^《》]{1,40})》/g,(m,t)=>`<a class="wlink" href="#search" data-act="q" data-q="${t}">《${t}》</a>`)}
 function goSearch(q){location.hash='explore';setTimeout(()=>{const i=$('#gq'),f=$('#gs');if(!i||!f)return;i.value=q;if(f.requestSubmit)f.requestSubmit();else f.dispatchEvent(new Event('submit',{cancelable:true}))},80)}
@@ -2972,7 +2975,7 @@ function renderOnb(){const ov=$('#onb');if(!ov)return;const s=ONB.step,dots=`<di
    <button class="b buy big" data-act="onb-next">캐스팅 시작하기</button><button class="lk" data-act="onb-skip">그냥 둘러볼게요</button></div></div>`;return}
  if(s===1){const fs=onbFaces();
   ov.innerHTML=`<div class="onb-in onb-taste">${dots}<h2>좋아하는 배우를 골라 주세요</h2><p class="sub">3명이면 딱 좋아요. 이 배우가 후보인 작품부터 보여 드려요.</p>
-   <div class="onb-faces">${fs.map(n=>{const on=ONB.actors.includes(n);return `<button class="fc${on?' on':''}" data-act="onb-actor" data-n="${esc(n)}" aria-pressed="${on}"><span style="background-image:url('${esc(IMG['p:'+n])}')"></span><b>${esc(dispName(n))}</b>${on?'<i>✓</i>':''}</button>`}).join('')||'<p class="sub">후보를 불러오는 중이에요</p>'}</div>
+   <div class="onb-faces">${fs.map(n=>{const on=ONB.actors.includes(n);return `<button class="fc${on?' on':''}" data-act="onb-actor" data-n="${esc(n)}" aria-pressed="${on}"><span style="background-image:url('${esc(IMG['p:'+n])}')"></span><b>${dispHTML(n)}</b>${on?'<i>✓</i>':''}</button>`}).join('')||'<p class="sub">후보를 불러오는 중이에요</p>'}</div>
    <h3>어떤 판이 끌려요?</h3><div class="onb-cats">${ONB_CATS.map(([k,l,ic])=>`<button class="ct${ONB.cats.includes(k)?' on':''}" data-act="onb-cat" data-k="${k}"><span>${ic}</span>${l}</button>`).join('')}</div>
    <div class="onb-foot"><button class="b buy big" data-act="onb-next"${ONB.actors.length||ONB.cats.length?'':' disabled'}>${ONB.actors.length?`${ONB.actors.length}명 골랐어요, 다음`:'다음'}</button><button class="lk" data-act="onb-next">건너뛰기</button></div></div>`;
   if(!fs.length)setTimeout(()=>{if(ONB.step===1)renderOnb()},800);return}
@@ -2995,10 +2998,10 @@ const ONB_T0=Date.now();setTimeout(function wait(){if(location.hash==='#welcome'
 async function guestPick(t,r,cid){const a=pend().filter(p=>p.rid!==r.id);a.push({tid:t.id,rid:r.id,cid,at:Date.now()});setPend(a);track('guest_vote',{t:t.id,r:r.id,c:cid,m:{n:a.length}});
  const pk=await rpc('role_peek',{rid:r.id,cid}).catch(()=>null);const me=(r.cands.find(c=>c.id===cid)||{}).name||'';showPeek(r,me,pk,a.length)}
 function showPeek(r,me,pk,n){const old=$('#dkPeek');if(old)old.remove();const tot=pk?+pk.total:0,top=pk&&pk.top&&pk.top[0],pct=x=>tot?Math.round(x/tot*100):0,same=top&&top.name===me,u=IMG['p:'+me];
- const msg=!tot?'아직 아무도 고르지 않은 배역이에요. 내 표가 첫 표!':same?`지금 광장 1위도 <b>${esc(dispName(me))}</b>예요. 민심과 같은 눈!`:`지금 광장 1위는 <b>${esc(dispName(top.name))}</b> ${pct(top.v)}%. 내 픽이 뒤집을 수 있을까요?`;
+ const msg=!tot?'아직 아무도 고르지 않은 배역이에요. 내 표가 첫 표!':same?`지금 광장 1위도 <b>${dispHTML(me)}</b>예요. 민심과 같은 눈!`:`지금 광장 1위는 <b>${dispHTML(top.name)}</b> ${pct(top.v)}%. 내 픽이 뒤집을 수 있을까요?`;
  const el=document.createElement('div');el.id='dkPeek';el.className='peek';el.innerHTML=`<div class="peek-in"><small>${esc(r.ch)} 역, 체험 투표 ${n}/3</small>
-  <div class="peek-me"><span class="av"${u?` style="background-image:url('${esc(u)}')"`:''}></span><div><small>내 픽</small><b>${esc(dispName(me))}</b></div></div>
-  <p>${msg}</p>${tot?`<div class="peek-bars">${(pk.top||[]).map(x=>`<div class="${x.name===me?'me':''}"><span>${esc(dispName(x.name))}</span><i style="--p:${pct(x.v)}%"></i><b>${pct(x.v)}%</b></div>`).join('')}</div><small class="sub">지금까지 ${fmt(tot)}표</small>`:''}
+  <div class="peek-me"><span class="av"${u?` style="background-image:url('${esc(u)}')"`:''}></span><div><small>내 픽</small><b>${dispHTML(me)}</b></div></div>
+  <p>${msg}</p>${tot?`<div class="peek-bars">${(pk.top||[]).map(x=>`<div class="${x.name===me?'me':''}"><span>${dispHTML(x.name)}</span><i style="--p:${pct(x.v)}%"></i><b>${pct(x.v)}%</b></div>`).join('')}</div><small class="sub">지금까지 ${fmt(tot)}표</small>`:''}
   <div class="peek-dots">${[1,2,3].map(i=>`<i class="${i<=n?'on':''}"></i>`).join('')}</div>
   ${n>=3?`<button class="b buy big" data-act="peek-save">3표 저장하고 결과 받기</button><button class="lk" data-act="peek-x">나중에</button>`:`<button class="b buy big" data-act="peek-x">다음 배역 ${3-n}표 남음</button>`}</div>`;
  document.body.appendChild(el)}
@@ -3195,8 +3198,8 @@ function vsRenderSpecial(box){const d=DUEL,R=d.res,ver=verLabel(d.cat),[L,Rt]=vs
   :`<div class="dq"><b>원작 대 새 얼굴: ${esc(d.ch)} 역, 누가 더 어울려요?</b><span>${where}, 원작은 ${esc(d.orig)}</span></div>`;
  const res=s=>{if(!R)return '';if(R.bad)return '';const mine=R.pick===s.key,p=R.tot?Math.round((mine?R.same:R.tot-R.same)/R.tot*100):0;return `<span class="res num">${p}%${mine?'<small>내 선택</small>':''}</span>`};
  const side=(cls,s)=>d.kind==='chem'
-  ?`<button class="${cls} vsx-c${R&&R.pick===s.key?' on':''}" data-act="vsPick" data-v="${s.key}"${R?' disabled':''}><span class="fc2">${vsFace(s.m.name)}${vsFace(s.f.name)}</span><b class="cn2"><span>${esc(dispName(s.m.name))}</span><i>×</i><span>${esc(dispName(s.f.name))}</span></b>${res(s)}</button>`
-  :`<button class="${cls}${R&&R.pick===s.key?' on':''}" data-act="vsPick" data-v="${s.key}"${R?' disabled':''}><small class="vsx-lab">${s.lab}</small>${vsFace(s.n)}<b>${esc(dispName(s.n))}</b>${res(s)}</button>`;
+  ?`<button class="${cls} vsx-c${R&&R.pick===s.key?' on':''}" data-act="vsPick" data-v="${s.key}"${R?' disabled':''}><span class="fc2">${vsFace(s.m.name)}${vsFace(s.f.name)}</span><b class="cn2"><span>${dispHTML(s.m.name)}</span><i>×</i><span>${dispHTML(s.f.name)}</span></b>${res(s)}</button>`
+  :`<button class="${cls}${R&&R.pick===s.key?' on':''}" data-act="vsPick" data-v="${s.key}"${R?' disabled':''}><small class="vsx-lab">${s.lab}</small>${vsFace(s.n)}<b>${dispHTML(s.n)}</b>${res(s)}</button>`;
  const msg=R?(R.bad?'둘 다 별로라고 남겼어요. 후보를 바꿀 때 참고할게요':`광장에서 ${R.tot}명이 이 대결을 골랐어요. 공식 표와는 별개로 VS 기록에 쌓여요`):(d.kind==='chem'?'두 사람 조합만 보고 골라 주세요. 커플 리포트에 반영돼요':'원작 그대로가 좋은지, 새 얼굴이 좋은지 골라 주세요');
  box.innerHTML=`<div class="duel vsx">${head}<div class="vs">${side('side-a',L)}<div class="vsmid">VS<small class="dround">${d.kind==='chem'?'케미':'원작'}</small></div>${side('side-b',Rt)}</div><div class="dft"><span>${msg}</span><span style="display:flex;gap:6px;align-items:center">${STREAK?`<span class="num">연속 ${STREAK}판</span>`:''}${R?'':'<button class="chip" data-act="vsBad">둘 다 별로</button>'}<button class="chip" data-act="vsNext">${R?'다음 대결':'건너뛰기'}</button></span></div></div>`}
 
@@ -3221,7 +3224,7 @@ async function vsLoadRatings(){const tid=SEL;if(!tid)return;const rows=await rpc
 function vsHereRender(){const box=$('#vsHere');if(!box||!D)return;const t=topic(),open=t&&isOpen(t);
  const sur=[];for(const r of (D.roles||[])){const cs=(D.cands[r.id]||[]).filter(c=>VSR[c.candidate_id]);if(cs.length<2)continue;
   if(open&&!D.myVote[r.id])continue;const v1=cs.find(c=>VSR[c.candidate_id].rk===1);if(!v1)continue;const all=D.cands[r.id]||[],rank=1+all.filter(x=>x.votes>v1.votes).length;if(rank>1)sur.push({r,c:v1,rank})}
- box.innerHTML=`<div class="vsh"><div><b>⚡ VS 한판</b><span>${sur.length?sur.slice(0,2).map(x=>`${esc(x.r.ch.replace(/\s*\(.*\)$/,''))} 역 의외의 강자 <em>${esc(dispName(x.c.name))}</em>: 득표 ${x.rank}위, VS 1위`).join('<br>'):'둘씩 붙여 보면 득표로는 안 보이는 순위가 나와요. 공식 표에는 반영되지 않아요'}</span></div>${open?'<button class="b sm" data-act="vsHere">이 작품으로 VS 한판</button>':''}</div>`}
+ box.innerHTML=`<div class="vsh"><div><b>⚡ VS 한판</b><span>${sur.length?sur.slice(0,2).map(x=>`${esc(x.r.ch.replace(/\s*\(.*\)$/,''))} 역 의외의 강자 <em>${dispHTML(x.c.name)}</em>: 득표 ${x.rank}위, VS 1위`).join('<br>'):'둘씩 붙여 보면 득표로는 안 보이는 순위가 나와요. 공식 표에는 반영되지 않아요'}</span></div>${open?'<button class="b sm" data-act="vsHere">이 작품으로 VS 한판</button>':''}</div>`}
 const _vsLoadTopic=loadTopic;loadTopic=async function(){const r=await _vsLoadTopic.apply(this,arguments);vsHereRender();vsLoadRatings();return r};
 
 }

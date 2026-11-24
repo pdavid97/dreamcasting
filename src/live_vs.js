@@ -25,8 +25,8 @@ function vsRenderSpecial(box){const d=DUEL,R=d.res,ver=verLabel(d.cat),[L,Rt]=vs
   :`<div class="dq"><b>원작 대 새 얼굴: ${esc(d.ch)} 역, 누가 더 어울려요?</b><span>${where}, 원작은 ${esc(d.orig)}</span></div>`;
  const res=s=>{if(!R)return '';if(R.bad)return '';const mine=R.pick===s.key,p=R.tot?Math.round((mine?R.same:R.tot-R.same)/R.tot*100):0;return `<span class="res num">${p}%${mine?'<small>내 선택</small>':''}</span>`};
  const side=(cls,s)=>d.kind==='chem'
-  ?`<button class="${cls} vsx-c${R&&R.pick===s.key?' on':''}" data-act="vsPick" data-v="${s.key}"${R?' disabled':''}><span class="fc2">${vsFace(s.m.name)}${vsFace(s.f.name)}</span><b class="cn2"><span>${esc(dispName(s.m.name))}</span><i>×</i><span>${esc(dispName(s.f.name))}</span></b>${res(s)}</button>`
-  :`<button class="${cls}${R&&R.pick===s.key?' on':''}" data-act="vsPick" data-v="${s.key}"${R?' disabled':''}><small class="vsx-lab">${s.lab}</small>${vsFace(s.n)}<b>${esc(dispName(s.n))}</b>${res(s)}</button>`;
+  ?`<button class="${cls} vsx-c${R&&R.pick===s.key?' on':''}" data-act="vsPick" data-v="${s.key}"${R?' disabled':''}><span class="fc2">${vsFace(s.m.name)}${vsFace(s.f.name)}</span><b class="cn2"><span>${dispHTML(s.m.name)}</span><i>×</i><span>${dispHTML(s.f.name)}</span></b>${res(s)}</button>`
+  :`<button class="${cls}${R&&R.pick===s.key?' on':''}" data-act="vsPick" data-v="${s.key}"${R?' disabled':''}><small class="vsx-lab">${s.lab}</small>${vsFace(s.n)}<b>${dispHTML(s.n)}</b>${res(s)}</button>`;
  const msg=R?(R.bad?'둘 다 별로라고 남겼어요. 후보를 바꿀 때 참고할게요':`광장에서 ${R.tot}명이 이 대결을 골랐어요. 공식 표와는 별개로 VS 기록에 쌓여요`):(d.kind==='chem'?'두 사람 조합만 보고 골라 주세요. 커플 리포트에 반영돼요':'원작 그대로가 좋은지, 새 얼굴이 좋은지 골라 주세요');
  box.innerHTML=`<div class="duel vsx">${head}<div class="vs">${side('side-a',L)}<div class="vsmid">VS<small class="dround">${d.kind==='chem'?'케미':'원작'}</small></div>${side('side-b',Rt)}</div><div class="dft"><span>${msg}</span><span style="display:flex;gap:6px;align-items:center">${STREAK?`<span class="num">연속 ${STREAK}판</span>`:''}${R?'':'<button class="chip" data-act="vsBad">둘 다 별로</button>'}<button class="chip" data-act="vsNext">${R?'다음 대결':'건너뛰기'}</button></span></div></div>`}
 
@@ -51,5 +51,5 @@ async function vsLoadRatings(){const tid=SEL;if(!tid)return;const rows=await rpc
 function vsHereRender(){const box=$('#vsHere');if(!box||!D)return;const t=topic(),open=t&&isOpen(t);
  const sur=[];for(const r of (D.roles||[])){const cs=(D.cands[r.id]||[]).filter(c=>VSR[c.candidate_id]);if(cs.length<2)continue;
   if(open&&!D.myVote[r.id])continue;const v1=cs.find(c=>VSR[c.candidate_id].rk===1);if(!v1)continue;const all=D.cands[r.id]||[],rank=1+all.filter(x=>x.votes>v1.votes).length;if(rank>1)sur.push({r,c:v1,rank})}
- box.innerHTML=`<div class="vsh"><div><b>⚡ VS 한판</b><span>${sur.length?sur.slice(0,2).map(x=>`${esc(x.r.ch.replace(/\s*\(.*\)$/,''))} 역 의외의 강자 <em>${esc(dispName(x.c.name))}</em>: 득표 ${x.rank}위, VS 1위`).join('<br>'):'둘씩 붙여 보면 득표로는 안 보이는 순위가 나와요. 공식 표에는 반영되지 않아요'}</span></div>${open?'<button class="b sm" data-act="vsHere">이 작품으로 VS 한판</button>':''}</div>`}
+ box.innerHTML=`<div class="vsh"><div><b>⚡ VS 한판</b><span>${sur.length?sur.slice(0,2).map(x=>`${esc(x.r.ch.replace(/\s*\(.*\)$/,''))} 역 의외의 강자 <em>${dispHTML(x.c.name)}</em>: 득표 ${x.rank}위, VS 1위`).join('<br>'):'둘씩 붙여 보면 득표로는 안 보이는 순위가 나와요. 공식 표에는 반영되지 않아요'}</span></div>${open?'<button class="b sm" data-act="vsHere">이 작품으로 VS 한판</button>':''}</div>`}
 const _vsLoadTopic=loadTopic;loadTopic=async function(){const r=await _vsLoadTopic.apply(this,arguments);vsHereRender();vsLoadRatings();return r};

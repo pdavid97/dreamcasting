@@ -101,7 +101,7 @@ function dialHTML(t,r,cands,picked,tot){const ou=r.orig?IMG['p:'+r.orig]:null,N=
   <button class="dl-c dl-add" data-i="${cands.length}" data-rid="${r.id}" data-tid="${esc(t.id)}" data-add="1" data-name="내 후보 추가" role="option" aria-label="원하는 후보 직접 추가"><span class="ph">+</span><i class="dl-tap">탭해서 추가</i></button>
   <div class="dl-mid">
    ${r.orig?`<a class="dl-orig" href="#a/${encodeURIComponent(r.orig)}" aria-label="원작 ${esc(r.orig)} 배우 페이지"${ou?` style="background-image:url('${esc(ou)}')"`:''}>${ou?'':esc(r.orig[0])}</a>`:'<span class="dl-orig">?</span>'}
-   ${r.orig?`<a class="dl-ol" href="#a/${encodeURIComponent(r.orig)}">원작 ${esc(dispName(r.orig))}</a>`:'<small class="dl-ol">원작 배우 없음</small>'}
+   ${r.orig?`<a class="dl-ol" href="#a/${encodeURIComponent(r.orig)}">원작 ${dispHTML(r.orig)}</a>`:'<small class="dl-ol">원작 배우 없음</small>'}
   </div>
  </div>
  <div class="dl-pick" aria-live="polite"><div class="dl-pn"><span class="dl-badge" id="dlPick" hidden></span><a id="dlName" class="dl-nm"></a><small id="dlMeta"></small></div><p class="dl-rc" id="dlRecent"></p><div class="dl-why" id="dlWhy"></div></div>`}
@@ -214,7 +214,7 @@ function openResult(tid,season){const r=(RB.results||[]).find(x=>x.tid===tid&&St
   <header${r.poster?` style="--bg:url('${esc(r.poster)}')"`:''}><small>${r.season>1?`시즌 ${r.season} `:''}최종 결과, ${fmt(r.voters||0)}명 참여</small><h3>${esc(r.title)}</h3>
   ${mine.length?`<p class="sc"><b>${hit}</b><span>/ ${mine.length} 적중</span>${r.pts?`<em>+${r.pts}P</em>`:''}</p>`:''}</header>
   <ol>${r.roles.map(x=>{const pct=x.total?Math.round(x.v/x.total*100):0,ok=x.mine&&x.mine===x.win,u=x.win&&IMG['p:'+x.win];return `<li class="${ok?'ok':x.mine?'no':''}"><span class="av"${u?` style="background-image:url('${esc(u)}')"`:''}>${u?'':esc((x.win||'?')[0])}</span>
-   <div><small>${esc(x.ch)}</small><b>${x.win?`<a href="#a/${encodeURIComponent(x.win)}">${esc(dispName(x.win))}</a>`:'투표 없음'}</b><i style="--p:${pct}%"></i><span>${pct}%${x.mine?(ok?' 🎯 내 픽 적중':`, 내 픽 ${esc(dispName(x.mine))}`):''}</span></div></li>`}).join('')}</ol>
+   <div><small>${esc(x.ch)}</small><b>${x.win?`<a href="#a/${encodeURIComponent(x.win)}">${dispHTML(x.win)}</a>`:'투표 없음'}</b><i style="--p:${pct}%"></i><span>${pct}%${x.mine?(ok?' 🎯 내 픽 적중':`, 내 픽 ${dispHTML(x.mine)}`):''}</span></div></li>`}).join('')}</ol>
   <p class="nx">언더독 보너스: 내가 골랐을 때 1위가 아니던 배우가 최종 1위면 +10P를 더 드려요. 이 작품은 이틀 뒤 새 시즌으로 다시 열려요.</p>
   <a class="b buy" href="#${esc(tid)}" data-act="rres-x">작품 페이지에서 자세히</a></div>`;
  document.body.appendChild(ov);ov.addEventListener('click',e=>{if(e.target===ov||e.target.closest('[data-act="rres-x"]'))ov.remove()})}

@@ -56,7 +56,9 @@ async function loadOrig1(need,ctx){need.forEach(n=>ORIG[n]=null);
 var NM={};
 function loadNM(){try{fetch(SB_URL+'/rest/v1/actor_meta?select=name,disp&ok=eq.true',{headers:{apikey:ANON,Authorization:'Bearer '+ANON}}).then(r=>r.ok?r.json():[]).then(a=>{(a||[]).forEach(x=>{if(x.disp)NM[x.name]=x.disp});if(a&&a.length&&typeof render==='function')try{render()}catch(e){}}).catch(()=>{})}catch(e){}}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(loadNM,0));else setTimeout(loadNM,0);
-function dispName(n){if(n&&NM[n])return NM[n].replace(/\(([^)]*)\)$/,(m,x)=>'('+x.replace(/ /g,'\u00a0')+')');const o=n&&ORIG[n];return o&&o!==n?`${o} (${n})`:(n||'')}
+/* 화면용: 괄호 속 이름은 한 덩어리로 다음 줄에 내려가되, 칸보다 길면 그 안에서 단어 단위로 줄바꿈 */
+function dispHTML(n){const d=dispName(n),m=d.match(/^(.*?)\s*(\([^()]*\))$/);return m?`${esc(m[1])} <span class="nmp">${esc(m[2])}</span>`:esc(d)}
+function dispName(n){if(n&&NM[n])return NM[n];const o=n&&ORIG[n];return o&&o!==n?`${o} (${n})`:(n||'')}
 /* 문장 속 《작품명》을 눌러 바로 찾기 */
 function workLinks(h){return String(h).replace(/《([^《》]{1,40})》/g,(m,t)=>`<a class="wlink" href="#search" data-act="q" data-q="${t}">《${t}》</a>`)}
 function goSearch(q){location.hash='explore';setTimeout(()=>{const i=$('#gq'),f=$('#gs');if(!i||!f)return;i.value=q;if(f.requestSubmit)f.requestSubmit();else f.dispatchEvent(new Event('submit',{cancelable:true}))},80)}
