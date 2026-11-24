@@ -590,9 +590,9 @@ function cWorks(){const L=[...DK].sort((a,b)=>new Date(a.closes_at)-new Date(b.c
  const prog=t=>{const n=(t.roles||[]).length,m=(t.roles||[]).filter(r=>r.mine).length;return n?Math.round(m/n*100):0};
  return `<div class="scr C cP cW">${rail()}<div class="ttl"><div><small>지금 열린 판 ${DK.length}개</small><h1>어떤 작품을 <em>캐스팅</em>할까요</h1></div></div>
 <div class="chips">${['전체','웹소설 실사판','리메이크','할리우드판','중국판','한국판'].map((x,i)=>`<button class="${i?'':'on'}">${x}</button>`).join('')}</div>
-<div class="sec"><b>마감 임박</b><span>옆으로 넘겨 보기</span></div>
+<div class="sec"><b>마감 임박</b></div>
 <div class="hot">${hot.map(t=>`<a href="#"><span class="ph2" style="${phS(tPoster(t))}"></span><span class="dd">${ddOf(t)}</span><span class="cap"><small>${esc(ver[t.cat]||'')}, 배역 ${(t.roles||[]).length}개</small><b>${esc(t.title)}</b>${faces(t)}</span></a>`).join('')}</div>
-<div class="sec"><b>모든 판</b><span>막대는 내가 투표한 배역 비율</span></div>
+<div class="sec"><b>모든 판</b></div>
 <div class="grid">${rest.map(t=>`<a href="#"><span class="ph2" style="${phS(tPoster(t))}"></span><span class="dd soft">${ddOf(t)}</span><span class="cap"><b>${esc(t.title)}</b><small>${esc(ver[t.cat]||'')}</small><span class="bar"><i style="width:${prog(t)}%"></i></span></span></a>`).join('')}</div>
 ${tmdb}${nav()}</div>`}
 function cRank(){const agg={};DK.forEach(t=>(t.roles||[]).forEach(r=>(r.cands||[]).forEach(c=>{const a=agg[c.name]||(agg[c.name]={name:c.name,v:0,roles:0});a.v+=+c.votes||0;a.roles++})));
