@@ -417,3 +417,20 @@ body[data-view=rank] .rknav{display:flex!important;grid-template-columns:none!im
 .ws-prev,.ws-next{position:absolute;top:70px;bottom:120px;z-index:2;border:0;background:transparent;cursor:pointer}.ws-prev{left:0;width:30%}.ws-next{right:0;width:70%}
 .wkx-story{display:block;width:100%;margin:0 0 10px;padding:12px;border-radius:14px;border:0;background:linear-gradient(90deg,#FF4F7B,#7B5CFF);color:#fff;font:900 14px 'Noto Sans KR',sans-serif;cursor:pointer}
 body:not([data-view=rank]) .rknav{display:none!important}
+/* 슬롯 릴 */
+.reel-src{position:absolute!important;width:1px!important;height:1px!important;opacity:0!important;pointer-events:none!important}
+.sheet .pair{display:grid!important;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px;align-items:start}
+.sheet .pair input[type=text]{grid-column:1/-1}
+.reel{position:relative;border-radius:16px;padding:22px 0;background:linear-gradient(180deg,#2A1F3D,#15131C 30%,#15131C 70%,#2A1F3D);border:2px solid #3A3645;box-shadow:inset 0 0 0 3px #0B0A10,0 6px 18px rgba(0,0,0,.4)}
+.rl-win{height:174px;overflow-y:auto;scroll-snap-type:y mandatory;scrollbar-width:none;outline:none;perspective:400px;-webkit-mask-image:linear-gradient(180deg,transparent,#000 30%,#000 70%,transparent);mask-image:linear-gradient(180deg,transparent,#000 30%,#000 70%,transparent)}
+.rl-win::-webkit-scrollbar{display:none}
+.rl-pad{height:58px}
+.rl-it{height:58px;scroll-snap-align:center;display:flex;align-items:center;gap:8px;padding:0 10px;box-sizing:border-box;cursor:pointer;opacity:.45;transform:scale(.88);transition:opacity .15s,transform .15s}
+.rl-it.on{opacity:1;transform:scale(1)}
+.rl-ph{flex:none;width:42px;height:42px;border-radius:50%;background:#2D2440 center 20%/cover;display:grid;place-items:center;font-size:12px;font-weight:900;color:var(--mute)}
+.rl-it.ps .rl-ph{width:32px;height:46px;border-radius:5px;font-size:10px}
+.rl-tx{font-size:13px;line-height:1.25;color:var(--ink);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.rl-it.on .rl-tx{font-weight:800}
+.rl-frame{position:absolute;left:4px;right:4px;top:calc(50% - 29px);height:58px;border-radius:12px;border:2px solid var(--gold);box-shadow:0 0 16px rgba(255,201,74,.35);pointer-events:none}
+.rl-b{position:absolute;left:50%;transform:translateX(-50%);width:44px;height:20px;border:0;background:none;color:var(--gold);font-size:12px;cursor:pointer;padding:0}
+.rl-b.up{top:1px}.rl-b.dn{bottom:1px}

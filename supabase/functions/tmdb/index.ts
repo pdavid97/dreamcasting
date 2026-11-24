@@ -3,7 +3,8 @@
 // 비밀값(Supabase 대시보드 > Edge Functions > Secrets):
 //   TMDB_TOKEN  David가 직접 넣음. TMDB API Key(v3) 또는 API Read Access Token(v4) 중 하나
 // 요청: POST { names: ["배우 이름", ...], titles: ["작품 제목", ...] }  (합쳐서 최대 40개)
-// 응답: { p: { "배우 이름": "https://image.tmdb.org/...jpg" | "" }, w: { "작품 제목": "..." | "" } }
+// 응답: { p: { "배우 이름": "https://image.tmdb.org/...jpg" | "" }, w: { "작품 제목": "..." | "" }, k: { "tv:123": "..." } }
+// works: ["tv:123", "movie:456"] 를 주면 TMDB 번호로 정확한 포스터를 돌려줌(제목 검색보다 정확)
 // 결과는 tmdb_cache 테이블에 30일 보관해 TMDB 호출을 줄임
 const ORIGINS = [/^https:\/\/pdavid97\.github\.io$/, /^http:\/\/localhost(:\d+)?$/, /^http:\/\/127\.0\.0\.1(:\d+)?$/, /^null$/];
 const SB = Deno.env.get("SUPABASE_URL")!, SR = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
@@ -57,17 +58,30 @@ Deno.serve(async (req) => {
   if (req.method !== "POST") return j({ error: "method" }, 405, h);
   const token = Deno.env.get("TMDB_TOKEN") || "";
   if (!token) return j({ error: "no TMDB_TOKEN" }, 503, h);
-  let b: { names?: unknown; titles?: unknown };
+  let b: { names?: unknown; titles?: unknown; works?: unknown };
   try { b = await req.json(); } catch { return j({ error: "json" }, 400, h); }
   const clean = (a: unknown) => (Array.isArray(a) ? a : []).filter((x) => typeof x === "string" && x.trim() && x.length <= 40).map((x) => (x as string).trim());
   const names = [...new Set(clean(b.names))], titles = [...new Set(clean(b.titles))];
   if (names.length + titles.length > 40) return j({ error: "too many" }, 400, h);
-  const keys = [...names.map((n) => "p:" + n), ...titles.map((t) => "w:" + t)];
+  const works = [...new Set((Array.isArray(b.works) ? b.works : []).filter((x) => typeof x === "string" && /^(tv|movie):\d{1,9}$/.test(x as string)))] as string[];
+  if (works.length > 40) return j({ error: "too many" }, 400, h);
+  const keys = [...names.map((n) => "p:" + n), ...titles.map((t) => "w:" + t), ...works.map((w) => "k:" + w)];
   const hit = await cacheGet(keys);
-  const out = { p: {} as Record<string, string>, w: {} as Record<string, string> }, fresh: { k: string; url: string }[] = [];
+  const out = { p: {} as Record<string, string>, w: {} as Record<string, string>, k: {} as Record<string, string> }, fresh: { k: string; url: string }[] = [];
   try {
     await Promise.all(keys.map(async (k) => {
       let url = hit.get(k);
+      if (url === undefined && k.startsWith("k:")) {
+        const [m, id] = k.slice(2).split(":");
+        const u = new URL(`https://api.themoviedb.org/3/${m}/${id}`); u.searchParams.set("language", "ko-KR");
+        const hh: Record<string, string> = { accept: "application/json" };
+        if (token.length > 60) hh.Authorization = "Bearer " + token; else u.searchParams.set("api_key", token);
+        const r = await fetch(u, { headers: hh });
+        if (r.status === 401) throw new Error("TMDB 401");
+        const d = r.ok ? await r.json() : null;
+        url = d && d.poster_path ? `https://image.tmdb.org/t/p/w185${d.poster_path}` : "";
+        fresh.push({ k, url });
+      }
       if (url === undefined) {
         const isP = k.startsWith("p:"), q = k.slice(2);
         const d = await tmdb(isP ? "/search/person" : "/search/multi", q, token);
@@ -77,7 +91,7 @@ Deno.serve(async (req) => {
           fresh.push({ k, url });
         } else url = "";
       }
-      (k.startsWith("p:") ? out.p : out.w)[k.slice(2)] = url;
+      (k.startsWith("p:") ? out.p : k.startsWith("k:") ? out.k : out.w)[k.slice(2)] = url;
     }));
   } catch (e) {
     return j({ error: String(e) }, String(e).includes("401") ? 502 : 500, h);

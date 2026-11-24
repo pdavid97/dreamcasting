@@ -26,7 +26,7 @@ def mobile_only(c):
     return ''.join(out)
 css=mobile_only(css)
 body=(root/'src/live_body.html').read_text()
-js=(root/'src/live_ext.js').read_text()+'\n'+(root/'src/live_v2.js').read_text()+'\n'+(root/'src/live_deck.js').read_text()+'\n'+(root/'src/live_insight.js').read_text()+'\n'+(root/'src/live_cinema.js').read_text()+'\n'+(root/'src/live_nav.js').read_text()+'\n'+(root/'src/live_fan.js').read_text()+'\n'+(root/'src/live_onb.js').read_text()+'\n'+(root/'src/live_topic.js').read_text()+'\n'+(root/'src/live_shelves.js').read_text()
+js=(root/'src/live_ext.js').read_text()+'\n'+(root/'src/live_v2.js').read_text()+'\n'+(root/'src/live_deck.js').read_text()+'\n'+(root/'src/live_insight.js').read_text()+'\n'+(root/'src/live_cinema.js').read_text()+'\n'+(root/'src/live_nav.js').read_text()+'\n'+(root/'src/live_fan.js').read_text()+'\n'+(root/'src/live_onb.js').read_text()+'\n'+(root/'src/live_topic.js').read_text()+'\n'+(root/'src/live_shelves.js').read_text()+'\n'+(root/'src/live_reel.js').read_text()
 k=body.rindex('}\n</script>')
 body=body[:k]+js+'\n'+body[k:]
 (root/'index.html').write_text(head+'<style>\n'+css+'\n</style>\n</head>\n<body>\n'+body+'\n</body>\n</html>\n')
