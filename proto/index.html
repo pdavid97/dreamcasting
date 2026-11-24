@@ -409,6 +409,65 @@ body.clean .sw{display:none}
 body{word-break:keep-all;overflow-wrap:break-word}
 .vsl6 .fight .nm .sub2{display:block;font-style:normal;font-size:13px;font-weight:700;opacity:.8;margin-top:2px}
 .vsl6 .fight .dim .nm .sub2{display:none}
+
+/* ===== C안 작품, 랭킹, 나 시안 ===== */
+.cP{padding-bottom:90px;min-height:100vh}
+.cP .ph2{display:block;background:#1A1A1A center 20%/cover no-repeat}
+.cP .ttl{display:flex;justify-content:space-between;align-items:flex-end;padding:14px 16px 0}
+.cP .ttl h1{margin:0;font-size:28px;font-weight:900;letter-spacing:-.05em}.cP .ttl h1 em{font-style:normal;color:#D4FF3A}
+.cP .ttl small{font-size:11px;color:#8A8A8A;font-weight:700}
+.cP .chips{display:flex;gap:6px;overflow-x:auto;padding:12px 16px 2px;scrollbar-width:none}.cP .chips::-webkit-scrollbar{display:none}
+.cP .chips button{flex:none;border:1px solid #2A2A2A;background:#141414;color:#BDBDBD;font-size:12px;font-weight:800;padding:7px 12px;border-radius:999px}
+.cP .chips button.on{background:#D4FF3A;color:#0A0A0A;border-color:#D4FF3A}
+.cP .sec{display:flex;justify-content:space-between;align-items:baseline;padding:18px 16px 8px}
+.cP .sec b{font-size:15px;font-weight:900}.cP .sec span{font-size:11px;color:#777}
+/* 작품: 마감 임박 큰 포스터 가로 스크롤 + 2열 포스터 그리드 */
+.cW .hot{display:flex;gap:10px;overflow-x:auto;padding:0 16px 4px;scroll-snap-type:x mandatory;scrollbar-width:none}.cW .hot::-webkit-scrollbar{display:none}
+.cW .hot a{flex:none;width:62%;scroll-snap-align:start;position:relative;border-radius:16px;overflow:hidden;aspect-ratio:2/3;text-decoration:none;color:#fff}
+.cW .hot a .ph2{position:absolute;inset:0}.cW .hot a::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent 45%,rgba(0,0,0,.92))}
+.cW .dd{position:absolute;left:10px;top:10px;z-index:2;font-family:Anton,sans-serif;font-size:22px;color:#0A0A0A;background:#D4FF3A;padding:0 8px;border-radius:4px}
+.cW .dd.soft{background:rgba(10,10,10,.7);color:#D4FF3A;border:1px solid rgba(212,255,58,.5)}
+.cW .hot .cap{position:absolute;left:12px;right:12px;bottom:12px;z-index:2}
+.cW .hot .cap small{display:block;font-size:11px;color:#BDBDBD;font-weight:700}.cW .hot .cap b{display:block;font-size:20px;font-weight:900;letter-spacing:-.03em;margin-top:2px}
+.cW .faces{display:flex;margin-top:8px}.cW .faces i{width:26px;height:26px;border-radius:50%;border:2px solid #0A0A0A;margin-right:-8px;background:#333 center/cover}
+.cW .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 16px}
+.cW .grid a{position:relative;border-radius:14px;overflow:hidden;aspect-ratio:2/3;text-decoration:none;color:#fff;background:#141414}
+.cW .grid a .ph2{position:absolute;inset:0}.cW .grid a::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent 55%,rgba(0,0,0,.9))}
+.cW .grid .cap{position:absolute;left:10px;right:10px;bottom:10px;z-index:2}.cW .grid .cap b{display:block;font-size:14px;font-weight:900}.cW .grid .cap small{font-size:10px;color:#BDBDBD}
+.cW .bar{height:3px;border-radius:2px;background:rgba(255,255,255,.18);margin-top:6px;overflow:hidden}.cW .bar i{display:block;height:100%;background:#D4FF3A}
+.cW .grid .dd{font-size:15px;top:8px;left:8px}
+/* 랭킹: 시상대 + 목록 */
+.cR .seg{display:flex;margin:12px 16px 0;background:#141414;border:1px solid #222;border-radius:12px;padding:3px}
+.cR .seg button{flex:1;border:0;background:none;color:#8A8A8A;font-size:12px;font-weight:800;padding:8px 0;border-radius:9px}.cR .seg button.on{background:#D4FF3A;color:#0A0A0A}
+.cR .pod{display:grid;grid-template-columns:1fr 1.25fr 1fr;align-items:end;gap:8px;padding:18px 16px 4px}
+.cR .pod a{position:relative;text-decoration:none;color:#fff;text-align:center}
+.cR .pod .ph2{border-radius:14px;aspect-ratio:3/4;box-shadow:0 10px 26px rgba(0,0,0,.6)}
+.cR .pod .p1 .ph2{box-shadow:0 0 0 2px #D4FF3A,0 0 26px rgba(212,255,58,.45),0 14px 30px rgba(0,0,0,.6)}
+.cR .pod .rk{position:absolute;left:50%;top:-14px;transform:translateX(-50%);font-family:Anton,sans-serif;font-size:30px;color:#D4FF3A;text-shadow:0 3px 0 #000;line-height:1}
+.cR .pod .p1 .rk{font-size:40px;top:-20px}
+.cR .pod b{display:block;font-size:13px;font-weight:900;margin-top:8px;line-height:1.2}.cR .pod small{display:block;font-size:10px;color:#9A9A9A}
+.cR .pod .sc{display:block;font-family:Anton,sans-serif;font-size:20px;color:#D4FF3A;margin-top:2px}
+.cR .list{padding:8px 16px 0}
+.cR .row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid #1C1C1C;text-decoration:none;color:#fff}
+.cR .row .n{width:24px;font-family:Anton,sans-serif;font-size:20px;color:#8A8A8A;text-align:center}
+.cR .row .ph2{width:44px;height:44px;border-radius:50%}
+.cR .row div{flex:1;min-width:0}.cR .row b{display:block;font-size:14px;font-weight:800}.cR .row small{font-size:11px;color:#8A8A8A}
+.cR .row .sc{font-family:Anton,sans-serif;font-size:20px;color:#fff}.cR .row .up{font-size:11px;font-weight:800;color:#D4FF3A;margin-left:4px}.cR .row .dn{font-size:11px;font-weight:800;color:#FF6B8B;margin-left:4px}
+/* 나: 프로필, 숫자 타일, 내 캐스팅 팀, 적중 기록 */
+.cM .pf{display:flex;align-items:center;gap:14px;padding:18px 16px 0}
+.cM .av{width:64px;height:64px;border-radius:50%;background:#D4FF3A;color:#0A0A0A;display:grid;place-items:center;font-size:28px;font-weight:900}
+.cM .pf b{display:block;font-size:22px;font-weight:900;letter-spacing:-.03em}.cM .pf small{font-size:12px;color:#8A8A8A}
+.cM .lv{display:inline-block;margin-top:4px;font-size:10px;font-weight:800;color:#0A0A0A;background:#D4FF3A;border-radius:6px;padding:2px 6px}
+.cM .tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:16px 16px 0}
+.cM .tile{background:#141414;border:1px solid #222;border-radius:14px;padding:12px}
+.cM .tile b{display:block;font-family:Anton,sans-serif;font-size:30px;color:#D4FF3A;line-height:1}.cM .tile small{font-size:11px;color:#9A9A9A;font-weight:700}
+.cM .team{display:flex;gap:10px;overflow-x:auto;padding:0 16px 4px;scrollbar-width:none}.cM .team::-webkit-scrollbar{display:none}
+.cM .team a{flex:none;width:118px;text-decoration:none;color:#fff}
+.cM .team .ph2{border-radius:14px;aspect-ratio:3/4}.cM .team small{display:block;font-size:10px;color:#D4FF3A;font-weight:800;margin-top:6px}.cM .team b{display:block;font-size:13px;font-weight:900;line-height:1.2}
+.cM .hit{display:flex;align-items:center;gap:10px;margin:0 16px 8px;padding:11px 12px;border-radius:12px;background:#141414;border:1px solid #222}
+.cM .hit .tg{flex:none;font-size:10px;font-weight:800;border-radius:6px;padding:3px 6px}.cM .hit .tg.ok{background:#D4FF3A;color:#0A0A0A}.cM .hit .tg.no{background:#2A2A2A;color:#9A9A9A}
+.cM .hit p{flex:1;min-width:0;margin:0;font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.cM .hit b{flex:none;font-family:Anton,sans-serif;font-size:16px;color:#D4FF3A}
+.cM .demo{margin:10px 16px 0;font-size:10px;color:#666}
 </style>
 </head>
 <body>
@@ -428,7 +487,7 @@ const Q=new URLSearchParams(location.search);let VSL=Q.get('vsl')||'0',FX=Q.get(
 if(Q.get('clean'))document.body.classList.add('clean');
 const S={sel:0,voted:false,vs:null,confirm:false,vsHi:null};let STK=3;const FACE={"3qZ09UE7lN6AtorfXFRYpEtSY93.jpg": [0.4709, 0.4601, 0.168, 0.1632, 0.2875, -4.78], "pXm8GWTm9eIA8pUGOjvmYjlxamu.jpg": [0.4787, 0.312, 0.1727, 0.1636, 0.2998, -1.22], "v6WBJbm02mfzLhs8zeUzFRDtoly.jpg": [0.4954, 0.3833, 0.1393, 0.1462, 0.2542, -0.59], "9zec61HuFJgiUEzPSt0NfPIj0Xv.jpg": [0.5132, 0.4057, 0.1702, 0.156, 0.3006, 1.53], "lyUyVARQKhGxaxy0FbPJCQRpiaW.jpg": [0.5169, 0.3402, 0.1675, 0.1499, 0.2904, 3.34], "atdAs4pFGjUQ4m2W8kJYly7N6cC.jpg": [0.4873, 0.4347, 0.1671, 0.1543, 0.2942, -3.37]};/* 눈 중심 x, y, 눈에서 입까지, 두 눈 사이, 눈에서 턱까지 (사진 높이 대비), 눈 기울기(도). 얼굴 위치만 찾은 값 */
 const ALIGN=Q.get('align')!=='0';
-let T=null,R=null,C=[],P={},DEMO=false,TOP=null,RI=0,SID='proto'+Math.random().toString(36).slice(2,10);
+let DK=[],AMA={},T=null,R=null,C=[],P={},DEMO=false,TOP=null,RI=0,SID='proto'+Math.random().toString(36).slice(2,10);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const big=u=>u?u.replace('/w185/','/w500/'):'';
 const img=n=>P[n]?`background-image:url('${big(P[n])}')`:'';
@@ -436,12 +495,13 @@ let AM={};const nm2=n=>{const d=nm(n),m=d.match(/^(.*?)\s*\((.*)\)$/);return m?[
 const bat=w=>{const c=String(w).trim().slice(-1).charCodeAt(0);return c>=0xAC00&&c<=0xD7A3?(c-0xAC00)%28:0};const ro=w=>w+(bat(w)&&bat(w)!==8?'으로':'로');
 async function load(){
  const d=await fetch(SB+'/rest/v1/rpc/vote_deck',{method:'POST',headers:H,body:JSON.stringify({lim:24})}).then(r=>r.json());
- T=d.find(x=>x.id===TID)||d.find(x=>x.poster)||d[0];R=T.roles[0];
+ DK=d;T=d.find(x=>x.id===TID)||d.find(x=>x.poster)||d[0];R=T.roles[0];
  C=[...R.cands].sort((a,b)=>(b.votes||0)-(a.votes||0)).slice(0,6);
  if(Q.get('pair')){const [x,y]=Q.get('pair').split(',').map(Number);const a=C[x],b=C[y];C=[a,b,...C.filter(c=>c!==a&&c!==b)]}
  if(!C.some(c=>+c.votes>0)){DEMO=true;const v=[38,24,15,11,7,5];C.forEach((c,i)=>c.votes=v[i]||1)}
  const r=await fetch(SB+'/functions/v1/tmdb',{method:'POST',headers:H,body:JSON.stringify({names:C.map(c=>c.name),titles:[]})}).then(r=>r.json()).catch(()=>({p:{}}));P=r.p||{};
  try{const a=await fetch(SB+'/rest/v1/actor_meta?select=name,disp,photo,face&name=in.('+C.map(c=>'"'+c.name.replace(/"/g,'')+'"').map(encodeURIComponent).join(',')+')',{headers:H}).then(r=>r.json());(a||[]).forEach(x=>{AM[x.name]=x;if(x.photo&&x.face)FACE[x.photo.replace('/','')]=x.face})}catch(e){}
+ try{const a2=await fetch(SB+'/rest/v1/actor_meta?select=name,disp,photo&ok=eq.true',{headers:H}).then(r=>r.json());(a2||[]).forEach(x=>{AMA[x.name]=x;if(!AM[x.name])AM[x.name]=x})}catch(e){}
  try{const q=await fetch(SB+'/rest/v1/v_thread?topic_id=eq.'+encodeURIComponent(T.id)+'&order=up.desc&limit=1&select=body,up,nickname,role_id,cand_name',{headers:H}).then(r=>r.json());TOP=Array.isArray(q)&&q[0]||null}catch(e){}
  render();setInterval(()=>{RI++;const r=document.querySelector('.C .rail');if(r)r.outerHTML=rail()},3600);}
 const tot=()=>C.reduce((a,c)=>a+(+c.votes||0),0)||1;
@@ -457,7 +517,7 @@ document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b){
  if(b.dataset.vs){const k=b.dataset.vs;if(DIR==='c'){if(S.vs)return;if(S.vsHi===k){S.vs=k;S.vsHi=null;STK++;navigator.vibrate&&navigator.vibrate([12,40,24]);render();setTimeout(()=>{if(SCR==='vs'&&S.vs){S.vs=null;C.push(C.splice(1,1)[0]);render()}},1700)}else{S.vsHi=k;navigator.vibrate&&navigator.vibrate(8);render()}return}if(!S.vs){S.vs=k;navigator.vibrate&&navigator.vibrate(12);render()}return}
  if(b.dataset.act==='again'){S.vs=null;C.push(C.splice(1,1)[0]);render();return}
 });
-function render(){sw();const f={a:{home:aHome,vote:aVote,vs:aVS},b:{home:bHome,vote:bVote,vs:bVS},c:{home:cHome,vote:cVote,vs:cVS}}[DIR][SCR];
+function render(){sw();const f={a:{home:aHome,vote:aVote,vs:aVS},b:{home:bHome,vote:bVote,vs:bVS},c:{home:cHome,vote:cVote,vs:cVS,works:cWorks,rank:cRank,me:cMe}}[DIR][SCR];
  document.getElementById('app').innerHTML=f();document.body.style.background={a:'#08080A',b:'#F2EEE6',c:'#0A0A0A'}[DIR];
  requestAnimationFrame(()=>document.querySelectorAll('[data-w]').forEach(e=>e.style.width=e.dataset.w))}
 const credit=`<div class="credit">후보 목록은 토론을 위한 예시예요. 배우 사진과 작품 정보: TMDB. This product uses the TMDB API but is not endorsed or certified by TMDB.</div>`;
@@ -507,8 +567,8 @@ function railItems(){const it=[];const n=(T.news||[])[0];
  it.push({tg:'VS',tx:`${R.ch} 역 1:1 대결이 열려 있어요`,href:'#',vs:1});return it}
 function rail(){const it=railItems(),x=it[RI%it.length];return `<a class="rail" href="${esc(x.href)}" ${x.ext?'target="_blank" rel="noopener"':'target="_top"'} ${x.vs?'data-go="vs"':''}><span class="dot"></span><span class="tg">${x.tg}</span><span class="tx">${esc(x.tx)}</span><span class="ar">›</span></a>`}
 const IC={home:'<path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>',works:'<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>',vs:'<path d="M13 2L4 14h7l-1 8 9-12h-7z"/>',rank:'<path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0zM7 6H4a3 3 0 0 0 3 3M17 6h3a3 3 0 0 1-3 3"/>',me:'<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>'};
-function nav(){const on={home:'home',vote:'works',vs:'vs'}[SCR];const L=[['home','광장','home'],['works','작품',APP+'#'+T.id],['vs','VS 한판','vs'],['rank','랭킹',APP+'#rank'],['me','나',APP+'#me']];
- return `<nav class="nav" aria-label="하단 메뉴">${L.map(([k,lab,h])=>h==='home'||h==='vs'?`<button data-s="${h==='home'?'home':'vs'}" class="${on===k?'on':''}"><svg viewBox="0 0 24 24" aria-hidden="true">${IC[k]}</svg>${lab}</button>`:`<a href="${esc(h)}" target="_top" class="${on===k?'on':''}"><svg viewBox="0 0 24 24" aria-hidden="true">${IC[k]}</svg>${lab}</a>`).join('')}</nav>`}
+function nav(){const on={home:'home',vote:'home',vs:'vs',works:'works',rank:'rank',me:'me'}[SCR];const L=[['home','광장','home'],['works','작품','works'],['vs','VS 한판','vs'],['rank','랭킹','rank'],['me','나','me']];
+ return `<nav class="nav" aria-label="하단 메뉴">${L.map(([k,lab,h])=>/^(home|vs|works|rank|me)$/.test(h)?`<button data-s="${h}" class="${on===k?'on':''}"><svg viewBox="0 0 24 24" aria-hidden="true">${IC[k]}</svg>${lab}</button>`:`<a href="${esc(h)}" target="_top" class="${on===k?'on':''}"><svg viewBox="0 0 24 24" aria-hidden="true">${IC[k]}</svg>${lab}</a>`).join('')}</nav>`}
 function quote(){if(!TOP)return '';return `<a class="quote" href="${APP}#${esc(T.id)}" target="_top"><span class="lb">공감 1위</span><p>${esc(TOP.body)}</p><b class="hrt">♥ ${TOP.up}</b></a>`}
 const tmdb='<div class="tmdb">사진과 작품 정보: TMDB. This product uses the TMDB API but is not endorsed or certified by TMDB.</div>';
 function cHead(sub,h1){return `${rail()}<div class="hd"><div><small>${sub}</small><h1>${h1}</h1></div><div class="clk">${closeTxt()}<br><small>마감까지</small></div></div>`}
@@ -520,6 +580,40 @@ function cHome(){const ch=Math.max(250,Math.min(470,innerHeight-292)),cw=Math.ro
  return `<div class="scr C cH" style="--ch:${ch}px;--cw:${cw}px">${rail()}<div class="hd2"><div><small>${esc(T.title)} ${esc(ver[T.cat]||'')}</small><h1>${esc(R.ch)} 역은 <em>누구?</em></h1></div><div class="clk">${closeTxt()}<small>마감까지</small></div></div>
 <div class="arc" id="arc">${cards}</div><p class="hint2" id="hint2">${hintTxt()}</p>
 <div class="dock">${quote()}${tmdb}</div>${nav()}</div>`}
+/* ===== C안 작품, 랭킹, 나 시안 ===== */
+const phU=n=>{const a=AMA[n]||AM[n];return a&&a.photo?'https://image.tmdb.org/t/p/w342'+a.photo:''};
+const phS=u=>u?`background-image:url('${esc(u)}')`:'';
+const ddOf=t=>{const ms=new Date(t.closes_at)-Date.now(),d=Math.ceil(ms/864e5);return ms<=0?'마감':d<=1?'D-0':'D-'+(d-1)};
+const tPoster=t=>t.poster?String(t.poster).replace('/w185/','/w500/').replace('/w342/','/w500/'):'';
+function cWorks(){const L=[...DK].sort((a,b)=>new Date(a.closes_at)-new Date(b.closes_at)),hot=L.slice(0,5),rest=L.slice(5);
+ const faces=t=>{const cs=(t.roles||[]).flatMap(r=>r.cands||[]).sort((a,b)=>(b.votes||0)-(a.votes||0)).slice(0,4);return `<span class="faces">${cs.map(c=>`<i style="${phS(phU(c.name))}"></i>`).join('')}</span>`};
+ const prog=t=>{const n=(t.roles||[]).length,m=(t.roles||[]).filter(r=>r.mine).length;return n?Math.round(m/n*100):0};
+ return `<div class="scr C cP cW">${rail()}<div class="ttl"><div><small>지금 열린 판 ${DK.length}개</small><h1>어떤 작품을 <em>캐스팅</em>할까요</h1></div></div>
+<div class="chips">${['전체','웹소설 실사판','리메이크','할리우드판','중국판','한국판'].map((x,i)=>`<button class="${i?'':'on'}">${x}</button>`).join('')}</div>
+<div class="sec"><b>마감 임박</b><span>옆으로 넘겨 보기</span></div>
+<div class="hot">${hot.map(t=>`<a href="#"><span class="ph2" style="${phS(tPoster(t))}"></span><span class="dd">${ddOf(t)}</span><span class="cap"><small>${esc(ver[t.cat]||'')}, 배역 ${(t.roles||[]).length}개</small><b>${esc(t.title)}</b>${faces(t)}</span></a>`).join('')}</div>
+<div class="sec"><b>모든 판</b><span>막대는 내가 투표한 배역 비율</span></div>
+<div class="grid">${rest.map(t=>`<a href="#"><span class="ph2" style="${phS(tPoster(t))}"></span><span class="dd soft">${ddOf(t)}</span><span class="cap"><b>${esc(t.title)}</b><small>${esc(ver[t.cat]||'')}</small><span class="bar"><i style="width:${prog(t)}%"></i></span></span></a>`).join('')}</div>
+${tmdb}${nav()}</div>`}
+function cRank(){const agg={};DK.forEach(t=>(t.roles||[]).forEach(r=>(r.cands||[]).forEach(c=>{const a=agg[c.name]||(agg[c.name]={name:c.name,v:0,roles:0});a.v+=+c.votes||0;a.roles++})));
+ const L=Object.values(agg).filter(a=>phU(a.name)).sort((a,b)=>b.v-a.v||b.roles-a.roles).slice(0,12),top=[L[1],L[0],L[2]].filter(Boolean),demo=!L.some(a=>a.v>0);
+ const dn=n=>{const x=nm2(n);return `${esc(x[0])}${x[1]?`<small>${esc(x[1])}</small>`:''}`};
+ const mv=i=>[2,0,-1,1,0,3,-2,0,1,0,-1,2][i]||0;
+ return `<div class="scr C cP cR">${rail()}<div class="ttl"><div><small>이번 주, 표와 팬과 VS를 합친 점수</small><h1>배우 <em>화력</em></h1></div></div>
+<div class="seg"><button class="on">배우 화력</button><button>메타 지수</button><button>안목 랭킹</button></div>
+<div class="pod">${top.map(a=>{const i=L.indexOf(a);return `<a href="#" class="${i===0?'p1':''}"><span class="rk">${i+1}</span><span class="ph2" style="${phS(phU(a.name))}"></span><b>${dn(a.name)}</b><span class="sc">${a.v}</span></a>`}).join('')}</div>
+<div class="list">${L.slice(3).map((a,k)=>{const i=k+3,m=mv(i);return `<a class="row" href="#"><span class="n">${i+1}</span><span class="ph2" style="${phS(phU(a.name))}"></span><div><b>${esc(nm2(a.name)[0])}</b><small>후보 배역 ${a.roles}개</small></div><span class="sc">${a.v}</span>${m>0?`<span class="up">▲${m}</span>`:m<0?`<span class="dn">▼${-m}</span>`:''}</a>`}).join('')}</div>
+<p class="cM demo" style="padding:0 16px">점수는 지금 열린 판의 득표 합계${demo?'(아직 표가 없어 예시 순서)':''}. 순위 변동 화살표는 예시 값이에요.</p>
+${tmdb}${nav()}</div>`}
+function cMe(){const picks=DK.slice(0,5).map(t=>{const r=(t.roles||[])[0],c=r&&[...(r.cands||[])].sort((a,b)=>(b.votes||0)-(a.votes||0))[0];return c&&{t,r,c}}).filter(Boolean);
+ return `<div class="scr C cP cM">${rail()}<div class="pf"><span class="av">캐</span><div><b>캐스팅감독 다윗</b><small>가입 12일째</small><br><span class="lv">안목 레벨 3</span></div></div>
+<div class="tiles"><div class="tile"><b>48</b><small>던진 표</small></div><div class="tile"><b>62%</b><small>1위 적중률</small></div><div class="tile"><b>17</b><small>VS 최고 연속</small></div></div>
+<div class="sec"><b>내 캐스팅 팀</b><span>작품별 내 픽</span></div>
+<div class="team">${picks.map(x=>`<a href="#"><span class="ph2" style="${phS(phU(x.c.name))}"></span><small>${esc(x.t.title)}</small><b>${esc(nm2(x.c.name)[0])}</b></a>`).join('')}</div>
+<div class="sec"><b>결과 발표</b><span>맞히면 10P, 언더독이면 +10P</span></div>
+${picks.slice(0,3).map((x,i)=>`<div class="hit"><span class="tg ${i===1?'no':'ok'}">${i===1?'아쉽':'적중'}</span><p>${esc(x.t.title)} ${esc(String(x.r.ch).replace(/\s*\(.*\)$/,''))} 역, ${esc(nm2(x.c.name)[0])}</p>${i===1?'':`<b>+${i?20:10}P</b>`}</div>`).join('')}
+<p class="demo">프로필 숫자와 적중 기록은 디자인 확인용 예시 값이에요. 실제 앱에서는 내 기록으로 채워져요.</p>
+${tmdb}${nav()}</div>`}
 /* 카드 전환은 다시 그리지 않고 위치만 바꿔 부드럽게 */
 function arcUpdate(){const arc=document.getElementById('arc');if(!arc)return render();
  arc.classList.toggle('picked',S.voted);

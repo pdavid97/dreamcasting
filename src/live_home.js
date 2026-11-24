@@ -21,9 +21,9 @@ async function hcLoadQuote(tid){if(tid in HCQ)return;HCQ[tid]=null;try{const {da
 function hcQuote(t){const q=HCQ[t.id];return q?`<a class="hc-quote" href="#${esc(t.id)}"><span class="lb">공감 1위</span><p>${esc(q.body)}</p><b class="hrt">♥ ${q.up}</b></a>`:''}
 function renderDeckC(box,t,r){const cs=hcCands(r),n=cs.length,tot=r.cands.reduce((a,c)=>a+(c.votes||0),0),key=t.id+'|'+r.id;
  if(HC.key!==key){HC.key=key;HC.confirm=false;HC.voted=false;const p=pend().find(x=>x.rid===r.id),picked=r.mine||(p&&p.cid);HC.sel=Math.max(0,cs.findIndex(c=>c.id===picked))}
- const ch=Math.max(240,Math.min(460,innerHeight-330)),cw=Math.round(Math.min(ch*.66,(box.clientWidth||innerWidth)*.6)),ver=verLabel(t.cat)||'';
+ const ch=Math.max(230,Math.min(440,innerHeight-475)),cw=Math.round(Math.min(ch*.66,(box.clientWidth||innerWidth)*.6)),ver=verLabel(t.cat)||'';
  const cards=cs.map((c,i)=>{const tf=hcTf(i,n),u=hcImg(c.name);return `<button class="card${tf.on?' on':''}" data-hc="${i}" aria-label="${esc(dispName(c.name))}" style="transform:${tf.tf};z-index:${tf.z}"><span class="ph"${u?` style="background-image:url('${esc(u)}')"`:''}>${u?'':esc(c.name[0])}</span><span class="no">${String(i+1).padStart(2,'0')}</span><span class="nm"><b>${dispHTML(c.name)}</b><small>${esc(hcSub(c,r,tot))}</small></span></button>`}).join('');
- box.innerHTML=`<div class="hc" style="--ch:${ch}px;--cw:${cw}px">${hcRail(t,r)}
+ const hx=storyRings();box.innerHTML=`<div class="hc" style="--ch:${ch}px;--cw:${cw}px"><div class="hc-hex" id="hcHex"><div class="hc-hexin">${hx}${hx.replace('<nav class="srow hexrow"','<nav aria-hidden="true" class="srow hexrow"')}</div></div>${hcRail(t,r)}
 <div class="hc-hd"><div><button class="hc-wk" data-act="works">작품 ${DI+1}/${DECK.length} <i>▾</i></button><small>${esc(t.title)}${ver?' '+esc(ver):''}${t.season>1?`, 시즌 ${t.season}`:''}</small><h1>${esc(String(r.ch).replace(/\s*\(.*\)$/,''))} 역은 <em>누구?</em></h1></div><div class="clk">${hcClose(t)}<small>마감까지</small><span class="steps">${t.roles.map((x,i)=>`<i class="${i<DR?'ok':i===DR?'on':''}"></i>`).join('')}</span></div></div>
 <div class="hc-arc${HC.voted?' picked':''}" id="hcArc">${cards}${HC.voted?'<div class="cast">CAST!</div>':''}</div>
 <p class="hc-hint" id="hcHint">${hcHint(r,cs)}</p>
@@ -56,3 +56,7 @@ document.addEventListener('click',e=>{if(!$('#hcArc'))return;const c=e.target.cl
  if(c){e.preventDefault();if(HC.swiped&&Date.now()-HC.swiped<300)return;hcTap(+c.dataset.hc);return}
  if(HC.confirm&&e.target.closest('.hc')&&!e.target.closest('a,button')){HC.confirm=false;hcUpdate()}});
 document.addEventListener('keydown',e=>{if(!$('#hcArc')||/INPUT|TEXTAREA/.test(document.activeElement&&document.activeElement.tagName))return;if(e.key==='ArrowRight')hcMove(1);else if(e.key==='ArrowLeft')hcMove(-1);else if(e.key==='Enter')hcTap(HC.sel)});
+
+/* 육각 타일 줄은 왼쪽에서 오른쪽으로 계속 흐름. 손가락을 대면 멈췄다가 떼면 다시 흐름 */
+document.addEventListener('pointerdown',e=>{const h=e.target.closest('#hcHex');if(h)h.classList.add('hold')});
+document.addEventListener('pointerup',()=>{const h=$('#hcHex');if(h)setTimeout(()=>h.classList.remove('hold'),1200)});

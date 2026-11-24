@@ -682,3 +682,12 @@ body{word-break:keep-all;overflow-wrap:break-word}
 .hc-links{display:flex;justify-content:center;gap:16px;padding:10px 16px 12px}
 .hc-links a,.hc-links button{border:0;background:none;color:#8A8A8A;font-size:12px;text-decoration:underline;padding:2px 0;cursor:pointer}
 .hc-rail{margin-right:46px}
+
+/* 광장 상단 육각 타일: 끊김 없이 왼쪽에서 오른쪽으로 흐르는 띠 */
+.hc-hex{overflow:hidden;padding-top:6px;-webkit-mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent);mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent)}
+.hc-hexin{display:flex;width:max-content;animation:hcFlow 60s linear infinite}
+.hc-hex.hold .hc-hexin,.hc-hex:hover .hc-hexin{animation-play-state:paused}
+.hc-hexin .hexrow{overflow:visible;margin:0;padding:4px 6px 0 6px;flex:none}
+.hc-hexin .hexrow .sr:last-child{margin-right:calc(var(--hw)/-2 + 3px)}
+@keyframes hcFlow{from{transform:translateX(-50%)}to{transform:translateX(0)}}
+@media (prefers-reduced-motion:reduce){.hc-hexin{animation:none}.hc-hex{overflow-x:auto}}
