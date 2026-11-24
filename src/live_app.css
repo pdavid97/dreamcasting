@@ -461,3 +461,5 @@ body:not([data-view=rank]) .rknav{display:none!important}
 .sl-acts{display:flex;gap:8px}
 .sl-rand{flex:none;height:52px;padding:0 16px;border-radius:26px;border:0;background:var(--pink);color:#0B0A10;font:900 14px 'Noto Sans KR',sans-serif;cursor:pointer}
 .sl-go{flex:1;height:52px;border-radius:26px;border:0;background:var(--gold);color:#0B0A10;font:900 15px 'Noto Sans KR',sans-serif;cursor:pointer}
+.tm .av.era{border-radius:10px;background-position:center;box-shadow:0 0 0 2px var(--gold)}
+.tm .tera{font-style:normal;font-size:10px;color:var(--gold);line-height:1.2;text-align:center;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
