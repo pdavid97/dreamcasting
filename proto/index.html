@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>드림캐스팅 디자인 방향 3안</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Noto+Serif+KR:wght@500;700;900&family=Archivo+Black&display=swap">
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{font-family:Pretendard,-apple-system,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+button{font:inherit;color:inherit;cursor:pointer}
+img{display:block}
+.scr{min-height:100vh;position:relative;overflow:hidden}
+.ph{display:block;background:#222 center/cover no-repeat}
+.credit{font-size:10px;opacity:.55;padding:10px 18px 14px;line-height:1.4}
+.load{display:grid;place-items:center;min-height:100vh;color:#999;font-size:14px}
+/* 전환 칩 (검수용) */
+.sw{position:fixed;right:8px;bottom:8px;z-index:99;display:flex;gap:4px;background:rgba(0,0,0,.6);backdrop-filter:blur(8px);padding:4px;border-radius:10px}
+.sw button{border:0;background:transparent;color:#fff;font-size:11px;padding:6px 8px;border-radius:7px}
+.sw button.on{background:#fff;color:#000}
+body.clean .sw{display:none}
+
+/* ============ A. 시네마 다크 ============ */
+.A{background:#08080A;color:#F4F2EE}
+.A .amb{position:absolute;inset:-10%;background-size:cover;background-position:center;filter:blur(60px) saturate(1.3);opacity:.45;transform:scale(1.2)}
+.A .amb::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(8,8,10,.2),#08080A 70%)}
+.A .top{position:relative;z-index:2;display:flex;justify-content:space-between;align-items:center;padding:14px 18px 6px}
+.A .brand{font-weight:800;letter-spacing:-.02em;font-size:17px;display:flex;align-items:center;gap:7px}
+.A .brand i{width:14px;height:16px;clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%);background:#E8B84A}
+.A .meta{font-size:12px;color:rgba(244,242,238,.6)}
+.A .map{position:relative;z-index:2;display:flex;gap:6px;padding:4px 18px 10px;overflow:hidden}
+.A .map span{flex:none;width:30px;height:34px;clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%);background:rgba(255,255,255,.08);position:relative}
+.A .map span.c{background:#D9534A}.A .map span.on{background:#E8B84A}
+.A .hero{position:relative;z-index:1;margin:0 14px;height:56vh;min-height:380px;border-radius:26px;overflow:hidden}
+.A .hero .ph{position:absolute;inset:0;background-position:center 18%;transition:opacity .35s}
+.A .hero::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0) 45%,rgba(8,8,10,.85))}
+.A .glass{position:absolute;left:12px;right:12px;bottom:12px;z-index:2;padding:16px 16px 14px;border-radius:20px;background:rgba(20,20,24,.42);backdrop-filter:blur(20px) saturate(1.4);-webkit-backdrop-filter:blur(20px) saturate(1.4);border:1px solid rgba(255,255,255,.12)}
+.A .kick{font-size:12px;color:rgba(244,242,238,.7);display:flex;gap:8px;align-items:center}
+.A .kick b{color:#D9534A;font-weight:700}
+.A h1{margin:4px 0 2px;font-size:30px;line-height:1.1;font-weight:800;letter-spacing:-.03em}
+.A .who{font-size:15px;color:rgba(244,242,238,.85)}
+.A .num{font-family:Anton,sans-serif;letter-spacing:.01em}
+.A .strip{position:relative;z-index:2;display:flex;gap:10px;padding:14px 18px 0;overflow-x:auto;scrollbar-width:none}
+.A .strip button{flex:none;width:58px;border:0;background:none;padding:0;display:flex;flex-direction:column;gap:5px;align-items:center;font-size:11px;color:rgba(244,242,238,.65)}
+.A .strip .ph{width:58px;height:58px;border-radius:16px;border:2px solid transparent;filter:grayscale(.35)}
+.A .strip button.on{color:#F4F2EE;font-weight:700}.A .strip button.on .ph{border-color:#E8B84A;filter:none}
+.A .cta{position:relative;z-index:2;margin:16px 18px 0;display:flex;gap:10px}
+.A .cta .go{flex:1;border:0;border-radius:16px;padding:17px 0;background:#E8B84A;color:#1A1405;font-weight:800;font-size:16px}
+.A .cta .pass{width:58px;border:1px solid rgba(255,255,255,.14);border-radius:16px;background:rgba(255,255,255,.04)}
+.A .stamp{position:absolute;z-index:3;right:22px;top:20px;width:92px;height:106px;clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%);background:#E8B84A;color:#1A1405;display:grid;place-items:center;font-family:Anton,sans-serif;font-size:24px;letter-spacing:.04em;transform:rotate(-8deg);animation:stA .5s cubic-bezier(.2,1.5,.4,1) both}
+@keyframes stA{0%{transform:scale(2.4) rotate(-20deg);opacity:0}100%{transform:scale(1) rotate(-8deg);opacity:1}}
+.A .res{position:relative;z-index:2;padding:6px 18px 0}
+.A .res h2{margin:6px 0 14px;font-size:24px;font-weight:800;letter-spacing:-.03em}
+.A .row{display:grid;grid-template-columns:48px 1fr auto;gap:12px;align-items:center;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.07)}
+.A .row .ph{width:48px;height:48px;border-radius:14px}
+.A .row b{font-size:15px;font-weight:700}.A .row small{display:block;font-size:12px;color:rgba(244,242,238,.55);margin-top:2px}
+.A .row .bar{height:3px;border-radius:2px;background:rgba(255,255,255,.08);margin-top:7px;overflow:hidden}.A .row .bar i{display:block;height:100%;background:#E8B84A;transition:width .8s cubic-bezier(.2,.8,.2,1)}
+.A .row .pct{font-family:Anton,sans-serif;font-size:26px}
+.A .row.me .pct{color:#E8B84A}
+.A .vs{position:relative;z-index:1;height:calc(100vh - 150px);min-height:560px;margin:0 14px;border-radius:26px;overflow:hidden;display:flex;flex-direction:column}
+.A .vs button{position:relative;flex:1;border:0;padding:0;overflow:hidden;transition:flex .45s cubic-bezier(.2,.8,.2,1)}
+.A .vs button .ph{position:absolute;inset:0;background-position:center 20%;transition:filter .4s}
+.A .vs button .lab{position:absolute;left:14px;bottom:14px;right:14px;display:flex;justify-content:space-between;align-items:flex-end;padding:12px 14px;border-radius:16px;background:rgba(20,20,24,.4);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.12);text-align:left}
+.A .vs button .lab b{font-size:18px;font-weight:800}.A .vs button .lab small{display:block;font-size:12px;opacity:.7}
+.A .vs button.win{flex:1.5}.A .vs button.lose .ph{filter:grayscale(1) brightness(.5)}
+.A .vs .mid{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:3;width:56px;height:64px;clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%);background:#08080A;display:grid;place-items:center;font-family:Anton,sans-serif;font-size:18px;color:#E8B84A;pointer-events:none;transition:top .45s cubic-bezier(.2,.8,.2,1)}
+
+/* ============ B. 에디토리얼 매거진 ============ */
+.B{background:#F2EEE6;color:#151412}
+.B .mast{display:flex;justify-content:space-between;align-items:baseline;padding:16px 18px 10px;border-bottom:2px solid #151412;margin:0 0 0}
+.B .mast b{font-family:'Noto Serif KR',serif;font-weight:900;font-size:21px;letter-spacing:-.03em}
+.B .mast small{font-size:11px;letter-spacing:.08em;text-transform:uppercase}
+.B .sec{display:flex;justify-content:space-between;padding:8px 18px;font-size:11px;letter-spacing:.06em;border-bottom:1px solid rgba(21,20,18,.2)}
+.B .sec b{color:#C8331E}
+.B .head{padding:16px 18px 8px}
+.B .head small{font-size:12px;color:#6A655C}
+.B .head h1{font-family:'Noto Serif KR',serif;font-weight:900;font-size:34px;line-height:1.12;letter-spacing:-.04em;margin:6px 0 8px}
+.B .head p{margin:0;font-size:14px;line-height:1.6;color:#3E3A33}
+.B .grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px 10px;padding:10px 18px 0}
+.B .grid button{border:0;background:none;padding:0;text-align:left}
+.B .grid .ph{aspect-ratio:3/4;filter:grayscale(1) contrast(1.05);transition:filter .3s}
+.B .grid button.on .ph{filter:none;outline:3px solid #C8331E;outline-offset:2px}
+.B .grid small{display:block;font-size:10px;color:#6A655C;margin-top:6px;letter-spacing:.04em}
+.B .grid b{font-size:14px;font-weight:700}
+.B .cta{padding:18px 18px 0;display:flex;gap:10px;align-items:center}
+.B .cta .go{flex:1;border:0;background:#151412;color:#F2EEE6;padding:16px 0;font-size:15px;font-weight:700;border-radius:2px}
+.B .cta small{font-size:11px;color:#6A655C;width:90px;line-height:1.4}
+.B .pull{margin:18px 18px 0;padding:14px 0 0;border-top:1px solid rgba(21,20,18,.25);font-family:'Noto Serif KR',serif;font-size:17px;line-height:1.55}
+.B .pull small{display:block;font-family:Pretendard,sans-serif;font-size:11px;color:#6A655C;margin-top:6px}
+.B .rank{padding:4px 18px 0}
+.B .rank .row{display:grid;grid-template-columns:34px 56px 1fr auto;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid rgba(21,20,18,.18)}
+.B .rank .n{font-family:'Noto Serif KR',serif;font-weight:900;font-size:24px}
+.B .rank .ph{width:56px;height:70px;filter:grayscale(1)}
+.B .rank .row.me .ph{filter:none}
+.B .rank b{font-size:16px}.B .rank small{display:block;font-size:12px;color:#6A655C;margin-top:3px}
+.B .rank .pct{font-family:'Noto Serif KR',serif;font-weight:700;font-size:22px}
+.B .rank .row.me .pct{color:#C8331E}
+.B .stampB{display:inline-block;margin:10px 18px 0;padding:6px 10px;border:2px solid #C8331E;color:#C8331E;font-weight:800;font-size:12px;letter-spacing:.12em;transform:rotate(-3deg)}
+.B .vs{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px 18px 0}
+.B .vs button{border:0;background:none;padding:0;text-align:left}
+.B .vs .ph{aspect-ratio:3/4.2;filter:grayscale(1);transition:filter .3s}
+.B .vs button.win .ph{filter:none}.B .vs button.lose{opacity:.45}
+.B .vs b{display:block;font-family:'Noto Serif KR',serif;font-weight:900;font-size:20px;margin-top:8px}
+.B .vs small{font-size:12px;color:#6A655C}
+.B .vs .pct{font-family:'Noto Serif KR',serif;font-size:30px;font-weight:900;color:#C8331E}
+.B .vsq{padding:8px 18px 0;font-family:'Noto Serif KR',serif;font-size:28px;font-weight:900;line-height:1.15;letter-spacing:-.04em}
+
+/* ============ C. 팝 아레나 ============ */
+.C{background:#0A0A0A;color:#fff}
+.C .tick{display:flex;gap:18px;white-space:nowrap;overflow:hidden;background:#D4FF3A;color:#0A0A0A;font-family:'Archivo Black',sans-serif;font-size:11px;letter-spacing:.08em;padding:7px 0}
+.C .tick span{animation:tk 18s linear infinite;flex:none}
+@keyframes tk{to{transform:translateX(-100%)}}
+.C .top{display:flex;justify-content:space-between;align-items:center;padding:12px 16px}
+.C .top b{font-family:'Archivo Black',sans-serif;font-size:15px;letter-spacing:.02em}
+.C .live{font-size:11px;font-weight:800;display:flex;align-items:center;gap:6px}.C .live i{width:8px;height:8px;border-radius:50%;background:#FF3B3B;animation:bl 1s infinite}
+@keyframes bl{50%{opacity:.2}}
+.C .title{padding:4px 16px 0}
+.C .title small{font-size:12px;color:#9A9A9A;font-weight:700;letter-spacing:.04em}
+.C .title h1{margin:2px 0 0;font-size:44px;line-height:.98;font-weight:900;letter-spacing:-.05em}
+.C .title h1 em{font-style:normal;color:#D4FF3A}
+.C .clock{display:flex;gap:6px;align-items:baseline;padding:8px 16px 0;font-family:Anton,sans-serif;font-size:30px;color:#D4FF3A}
+.C .clock small{font-family:Pretendard,sans-serif;font-size:11px;color:#9A9A9A;font-weight:700}
+.C .deck{position:relative;height:330px;margin:10px 0 0}
+.C .card{position:absolute;top:10px;width:200px;height:290px;border:0;padding:0;border-radius:14px;overflow:hidden;transition:transform .45s cubic-bezier(.2,1.3,.4,1),z-index 0s;box-shadow:0 18px 40px rgba(0,0,0,.6)}
+.C .card .ph{position:absolute;inset:0;background-position:center 20%}
+.C .card::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent 50%,rgba(0,0,0,.85))}
+.C .card .no{position:absolute;left:10px;top:8px;z-index:2;font-family:Anton,sans-serif;font-size:34px;color:#D4FF3A;text-shadow:0 2px 0 #000}
+.C .card .nm{position:absolute;left:12px;bottom:12px;z-index:2;font-weight:900;font-size:20px;letter-spacing:-.03em;text-align:left}
+.C .card.on{outline:4px solid #D4FF3A;outline-offset:-4px}
+.C .cta{padding:6px 16px 0}
+.C .cta .go{width:100%;border:0;padding:18px 0;background:#D4FF3A;color:#0A0A0A;font-family:'Archivo Black',sans-serif;font-size:16px;letter-spacing:.02em;border-radius:12px;transform:skewX(-6deg)}
+.C .cta .go span{display:inline-block;transform:skewX(6deg)}
+.C .boom{position:absolute;inset:0;z-index:5;display:grid;place-items:center;pointer-events:none}
+.C .boom b{font-family:Anton,sans-serif;font-size:84px;color:#D4FF3A;transform:rotate(-8deg);text-shadow:0 6px 0 #000;animation:bm .5s cubic-bezier(.2,1.6,.4,1) both}
+@keyframes bm{0%{transform:scale(3) rotate(-20deg);opacity:0}100%{transform:scale(1) rotate(-8deg);opacity:1}}
+.C .board{padding:8px 16px 0}
+.C .board .row{display:grid;grid-template-columns:40px 44px 1fr 64px;gap:10px;align-items:center;margin-bottom:6px;background:#161616;border-radius:10px;padding:8px 10px;position:relative;overflow:hidden}
+.C .board .row .fill{position:absolute;left:0;top:0;bottom:0;background:rgba(212,255,58,.12);transition:width .9s cubic-bezier(.2,.8,.2,1)}
+.C .board .row.me{outline:2px solid #D4FF3A}
+.C .board .n{position:relative;font-family:Anton,sans-serif;font-size:26px;color:#D4FF3A}
+.C .board .ph{position:relative;width:44px;height:44px;border-radius:8px}
+.C .board b{position:relative;font-size:15px;font-weight:900}.C .board small{position:relative;display:block;font-size:11px;color:#9A9A9A}
+.C .board .pct{position:relative;font-family:Anton,sans-serif;font-size:28px;text-align:right}
+.C .fight{position:relative;height:calc(100vh - 230px);min-height:520px;margin:6px 0 0}
+.C .fight button{position:absolute;border:0;padding:0;overflow:hidden;transition:transform .4s cubic-bezier(.2,1.3,.4,1),filter .4s}
+.C .fight .l{left:0;top:0;width:100%;height:58%;clip-path:polygon(0 0,100% 0,100% 72%,0 100%)}
+.C .fight .r{left:0;bottom:0;width:100%;height:58%;clip-path:polygon(0 28%,100% 0,100% 100%,0 100%)}
+.C .fight .ph{position:absolute;inset:0;background-position:center 22%}
+.C .fight .l .nm{position:absolute;left:16px;top:16px}.C .fight .r .nm{position:absolute;right:16px;bottom:18px;text-align:right}
+.C .fight .nm b{display:block;font-size:28px;font-weight:900;letter-spacing:-.04em;text-shadow:0 2px 8px rgba(0,0,0,.6)}
+.C .fight .nm span{font-family:Anton,sans-serif;font-size:40px;color:#D4FF3A;text-shadow:0 3px 0 #000}
+.C .fight button.lose{filter:grayscale(1) brightness(.45)}
+.C .fight .vsb{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) rotate(-12deg);z-index:3;font-family:Anton,sans-serif;font-size:54px;color:#0A0A0A;background:#D4FF3A;padding:2px 14px;pointer-events:none}
+.C .streak{display:flex;justify-content:space-between;align-items:center;padding:10px 16px 0;font-size:12px;font-weight:800}
+.C .streak b{font-family:Anton,sans-serif;font-size:22px;color:#D4FF3A}
+</style>
+</head>
+<body>
+<div id="app"><div class="load">불러오는 중</div></div>
+<div class="sw" id="sw"></div>
+<script>
+const SB='https://dnzcvbidppzaogtmwamc.supabase.co',ANON='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRuemN2YmlkcHB6YW9ndG13YW1jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTUyODgwNzgsImV4cCI6MjExMDg2NDA3OH0.yiKbCh3iuH8_GFpx-ezzbauZNOkffOe5cuIGKUQGBIE';
+const H={'Content-Type':'application/json',apikey:ANON,Authorization:'Bearer '+ANON};
+const Q=new URLSearchParams(location.search);let DIR=(Q.get('d')||'a').toLowerCase(),SCR=Q.get('s')||'home',TID=Q.get('t')||'cloy';
+if(Q.get('clean'))document.body.classList.add('clean');
+const S={sel:0,voted:false,vs:null};let T=null,R=null,C=[],P={},DEMO=false;
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const big=u=>u?u.replace('/w185/','/w500/'):'';
+const img=n=>P[n]?`background-image:url('${big(P[n])}')`:'';
+const nm=n=>String(n).replace(/\s*\(.*\)$/,'');
+const bat=w=>{const c=String(w).trim().slice(-1).charCodeAt(0);return c>=0xAC00&&c<=0xD7A3?(c-0xAC00)%28:0};const ro=w=>w+(bat(w)&&bat(w)!==8?'으로':'로');
+async function load(){
+ const d=await fetch(SB+'/rest/v1/rpc/vote_deck',{method:'POST',headers:H,body:JSON.stringify({lim:24})}).then(r=>r.json());
+ T=d.find(x=>x.id===TID)||d.find(x=>x.poster)||d[0];R=T.roles[0];
+ C=[...R.cands].sort((a,b)=>(b.votes||0)-(a.votes||0)).slice(0,6);
+ if(!C.some(c=>+c.votes>0)){DEMO=true;const v=[38,24,15,11,7,5];C.forEach((c,i)=>c.votes=v[i]||1)}
+ const r=await fetch(SB+'/functions/v1/tmdb',{method:'POST',headers:H,body:JSON.stringify({names:C.map(c=>c.name),titles:[]})}).then(r=>r.json()).catch(()=>({p:{}}));P=r.p||{};
+ render();}
+const tot=()=>C.reduce((a,c)=>a+(+c.votes||0),0)||1;
+const pct=c=>Math.round((+c.votes||0)/tot()*100);
+const closeTxt=()=>{const ms=new Date(T.closes_at)-Date.now();if(ms<=0)return '마감';const h=Math.floor(ms/36e5),d=Math.floor(h/24);return d>=1?`D-${d}`:`${String(h).padStart(2,'0')}:${String(Math.floor(ms/6e4)%60).padStart(2,'0')}`};
+const ver={k2us:'할리우드판',k2cn:'중국판',us2k:'한국판',k2:'리메이크',wn:'실사판'};
+function sw(){const el=document.getElementById('sw');el.innerHTML=['a','b','c'].map(k=>`<button data-d="${k}" class="${DIR===k?'on':''}">${k.toUpperCase()}</button>`).join('')+['home','vote','vs'].map(k=>`<button data-s="${k}" class="${SCR===k?'on':''}">${{home:'광장',vote:'결과',vs:'VS'}[k]}</button>`).join('')}
+document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
+ if(b.dataset.d){DIR=b.dataset.d;S.voted=false;S.vs=null;render();return}
+ if(b.dataset.s){SCR=b.dataset.s;S.voted=false;S.vs=null;render();return}
+ if(b.dataset.pick!=null){S.sel=+b.dataset.pick;S.voted=false;render();return}
+ if(b.dataset.act==='vote'){S.voted=true;navigator.vibrate&&navigator.vibrate(18);render();if(SCR==='home')setTimeout(()=>{SCR='vote';render()},1100);return}
+ if(b.dataset.vs){if(!S.vs){S.vs=b.dataset.vs;navigator.vibrate&&navigator.vibrate(12);render()}return}
+ if(b.dataset.act==='again'){S.vs=null;C.push(C.splice(1,1)[0]);render();return}
+});
+function render(){sw();const f={a:{home:aHome,vote:aVote,vs:aVS},b:{home:bHome,vote:bVote,vs:bVS},c:{home:cHome,vote:cVote,vs:cVS}}[DIR][SCR];
+ document.getElementById('app').innerHTML=f();document.body.style.background={a:'#08080A',b:'#F2EEE6',c:'#0A0A0A'}[DIR];
+ requestAnimationFrame(()=>document.querySelectorAll('[data-w]').forEach(e=>e.style.width=e.dataset.w))}
+const credit=`<div class="credit">후보 목록은 토론을 위한 예시예요. 배우 사진과 작품 정보: TMDB. This product uses the TMDB API but is not endorsed or certified by TMDB.</div>`;
+
+/* ---------- A ---------- */
+function aTop(){return `<div class="amb" style="background-image:url('${esc(T.poster||big(P[C[0].name]))}')"></div>
+<div class="top"><span class="brand"><i></i>드림캐스팅</span><span class="meta">${esc(T.title)} ${esc(ver[T.cat]||'')}</span></div>
+<div class="map">${Array.from({length:12},(_,i)=>`<span class="${i===0?'on':i<3?'c':''}"></span>`).join('')}</div>`}
+function aHome(){const c=C[S.sel];return `<div class="scr A">${aTop()}
+<div class="hero"><div class="ph" style="${img(c.name)}"></div>${S.voted?'<div class="stamp">CAST</div>':''}
+<div class="glass"><div class="kick">${esc(T.title)} ${esc(ver[T.cat]||'')}<b>${closeTxt()==='마감'?'마감':'마감 '+closeTxt()}</b></div><h1>${esc(R.ch)} 역은 누구?</h1><div class="who">${esc(nm(c.name))}${c.age?`, 만 ${c.age}세`:''}</div></div></div>
+<div class="strip">${C.map((x,i)=>`<button data-pick="${i}" class="${i===S.sel?'on':''}"><span class="ph" style="${img(x.name)}"></span>${esc(nm(x.name))}</button>`).join('')}</div>
+<div class="cta"><button class="pass" aria-label="이 배역 넘기기">✕</button><button class="go" data-act="vote">${S.voted?'캐스팅 완료':esc(ro(nm(c.name)))+' 캐스팅'}</button></div>${credit}</div>`}
+function aVote(){const me=C[S.sel];return `<div class="scr A">${aTop()}<div class="res"><div class="meta">${esc(R.ch)} 역, ${DEMO?'예시 값':'광장 '+tot()+'표'}</div><h2>민심은 이렇게 기울었어요</h2>
+${C.map((c,i)=>`<div class="row ${c===me?'me':''}"><span class="ph" style="${img(c.name)}"></span><div><b>${esc(nm(c.name))}</b><small>${i===0?'1위':(i+1)+'위'}${c===me?', 내 픽':''}</small><div class="bar"><i data-w="${pct(c)}%" style="width:0"></i></div></div><span class="pct">${pct(c)}<small style="font-family:Pretendard;font-size:13px;display:inline">%</small></span></div>`).join('')}
+</div>${credit}</div>`}
+function aVS(){const a=C[0],b=C[1],w=S.vs,pa=Math.round((+a.votes||1)/((+a.votes||1)+(+b.votes||1))*100);return `<div class="scr A">${aTop()}
+<div class="vs"><button data-vs="a" class="${w?w==='a'?'win':'lose':''}"><span class="ph" style="${img(a.name)}"></span><span class="lab"><span><b>${esc(nm(a.name))}</b><small>${esc(R.ch)} 역</small></span><span class="num" style="font-size:34px">${w?pa+'%':''}</span></span></button>
+<button data-vs="b" class="${w?w==='b'?'win':'lose':''}"><span class="ph" style="${img(b.name)}"></span><span class="lab"><span><b>${esc(nm(b.name))}</b><small>${esc(R.ch)} 역</small></span><span class="num" style="font-size:34px">${w?(100-pa)+'%':''}</span></span></button>
+<span class="mid" style="top:${w==='a'?'60%':w==='b'?'40%':'50%'}">VS</span></div>
+<div class="cta"><button class="pass" data-act="again" aria-label="다음 대결">↻</button><button class="go" data-act="again">${w?'다음 대결':'더 어울리는 쪽을 눌러요'}</button></div>${credit}</div>`}
+
+/* ---------- B ---------- */
+const today=new Date().toLocaleDateString('ko-KR',{year:'numeric',month:'2-digit',day:'2-digit'}).replace(/\s/g,'');
+function bTop(){return `<div class="mast"><b>드림캐스팅</b><small>No.${new Date().getDate()} ${today}</small></div><div class="sec"><span>광장 / 오늘의 배역</span><b>${closeTxt()==='마감'?'마감':'마감 '+closeTxt()}</b></div>`}
+function bHome(){const c=C[S.sel];return `<div class="scr B">${bTop()}
+<div class="head"><small>${esc(T.title)} ${esc(ver[T.cat]||'')}</small><h1>${esc(R.ch)} 역,<br>누구에게 맡길까</h1><p>${esc(R.descr||'원작의 얼굴을 다시 찾는 시간. 사진을 눌러 고르고 한 표를 던져 주세요.')}</p></div>
+<div class="grid">${C.map((x,i)=>`<button data-pick="${i}" class="${i===S.sel?'on':''}"><span class="ph" style="${img(x.name)}"></span><small>${String(i+1).padStart(2,'0')}</small><b>${esc(nm(x.name))}</b></button>`).join('')}</div>
+<div class="cta"><button class="go" data-act="vote">${S.voted?'한 표를 실었어요':esc(nm(c.name))+'에게 한 표'}</button><small>투표하면 광장의 순위가 공개돼요</small></div>
+${S.voted?'<span class="stampB">CASTING VOTE</span>':''}
+<div class="pull">"원작의 무게를 버틸 얼굴이 먼저다."<small>토론 탭에서 가장 공감을 받은 한 줄 (예시)</small></div>${credit}</div>`}
+function bVote(){const me=C[S.sel];return `<div class="scr B">${bTop()}<div class="head"><small>${esc(T.title)} ${esc(ver[T.cat]||'')}, ${DEMO?'예시 값':'광장 '+tot()+'표'}</small><h1>${esc(R.ch)} 역<br>민심 순위</h1></div>
+<div class="rank">${C.map((c,i)=>`<div class="row ${c===me?'me':''}"><span class="n">${i+1}</span><span class="ph" style="${img(c.name)}"></span><div><b>${esc(nm(c.name))}</b><small>${c===me?'내 픽':'&nbsp;'}</small></div><span class="pct">${pct(c)}%</span></div>`).join('')}</div>${credit}</div>`}
+function bVS(){const a=C[0],b=C[1],w=S.vs,pa=Math.round((+a.votes||1)/((+a.votes||1)+(+b.votes||1))*100);return `<div class="scr B">${bTop()}
+<div class="vsq">${esc(R.ch)} 역,<br>둘 중 하나라면</div>
+<div class="vs"><button data-vs="a" class="${w?w==='a'?'win':'lose':''}"><span class="ph" style="${img(a.name)}"></span><b>${esc(nm(a.name))}</b>${w?`<span class="pct">${pa}%</span>`:'<small>이쪽</small>'}</button>
+<button data-vs="b" class="${w?w==='b'?'win':'lose':''}"><span class="ph" style="${img(b.name)}"></span><b>${esc(nm(b.name))}</b>${w?`<span class="pct">${100-pa}%</span>`:'<small>이쪽</small>'}</button></div>
+<div class="cta"><button class="go" data-act="again">${w?'다음 대결':'사진을 눌러 골라요'}</button></div>${credit}</div>`}
+
+/* ---------- C ---------- */
+function cTop(){return `<div class="tick"><span>CASTING ARENA LIVE &nbsp; ${esc(T.title)} &nbsp; ${esc(R.ch)} 역 투표 진행 중 &nbsp; ${DEMO?'':'광장 '+tot()+'표 &nbsp;'} VS 레이팅 매일 갱신 &nbsp;</span><span>CASTING ARENA LIVE &nbsp; ${esc(T.title)} &nbsp; ${esc(R.ch)} 역 투표 진행 중 &nbsp; ${DEMO?'':'광장 '+tot()+'표 &nbsp;'} VS 레이팅 매일 갱신 &nbsp;</span></div>
+<div class="top"><b>DREAMCASTING</b><span class="live"><i></i>LIVE</span></div>`}
+function cHome(){const n=C.length,sel=S.sel;return `<div class="scr C">${cTop()}
+<div class="title"><small>${esc(T.title)} ${esc(ver[T.cat]||'')}</small><h1>${esc(R.ch)} 역<br><em>누가 가져가나</em></h1></div>
+<div class="clock">${closeTxt()}<small>남음</small></div>
+<div class="deck">${C.map((x,i)=>{const k=(i-sel+n)%n,off=k>n/2?k-n:k,x0=95+off*92,rot=off*7,z=10-Math.abs(off);return `<button class="card ${i===sel?'on':''}" data-pick="${i}" style="left:${x0}px;transform:rotate(${rot}deg) scale(${i===sel?1.04:.9});z-index:${z}"><span class="ph" style="${img(x.name)}"></span><span class="no">${String(i+1).padStart(2,'0')}</span><span class="nm">${esc(nm(x.name))}</span></button>`}).join('')}
+${S.voted?'<div class="boom"><b>CAST!</b></div>':''}</div>
+<div class="cta"><button class="go" data-act="vote"><span>${S.voted?'투표 완료':esc(nm(C[sel].name))+'에게 한 표'}</span></button></div>${credit}</div>`}
+function cVote(){const me=C[S.sel];return `<div class="scr C">${cTop()}<div class="title"><small>${esc(R.ch)} 역 실시간 스코어${DEMO?' (예시 값)':''}</small><h1>민심 <em>보드</em></h1></div>
+<div class="board" style="margin-top:12px">${C.map((c,i)=>`<div class="row ${c===me?'me':''}"><span class="fill" data-w="${pct(c)}%" style="width:0"></span><span class="n">${i+1}</span><span class="ph" style="${img(c.name)}"></span><div><b>${esc(nm(c.name))}</b><small>${c===me?'MY PICK':i===0?'LEADER':'&nbsp;'}</small></div><span class="pct">${pct(c)}%</span></div>`).join('')}</div>${credit}</div>`}
+function cVS(){const a=C[0],b=C[1],w=S.vs,pa=Math.round((+a.votes||1)/((+a.votes||1)+(+b.votes||1))*100);return `<div class="scr C">${cTop()}
+<div class="fight"><button class="l ${w?w==='a'?'win':'lose':''}" data-vs="a"><span class="ph" style="${img(a.name)}"></span><span class="nm"><b>${esc(nm(a.name))}</b>${w?`<span>${pa}%</span>`:''}</span></button>
+<button class="r ${w?w==='b'?'win':'lose':''}" data-vs="b"><span class="ph" style="${img(b.name)}"></span><span class="nm"><b>${esc(nm(b.name))}</b>${w?`<span>${100-pa}%</span>`:''}</span></button><span class="vsb">VS</span></div>
+<div class="streak"><span>${esc(R.ch)} 역 대결</span><span>연속 <b>${w?4:3}</b> 판</span></div>
+<div class="cta"><button class="go" data-act="again"><span>${w?'NEXT ROUND':'눌러서 골라요'}</span></button></div>${credit}</div>`}
+load().catch(e=>{document.getElementById('app').innerHTML='<div class="load">불러오지 못했어요</div>';console.error(e)});
+</script>
+</body>
+</html>

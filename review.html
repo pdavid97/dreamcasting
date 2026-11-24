@@ -29,6 +29,8 @@ label{display:flex;gap:6px;align-items:center;color:#bbb}
   <select id="dev"></select>
   <label><input type="checkbox" id="chrome" checked> 브라우저 주소창 포함</label>
   <label><input type="checkbox" id="pair"> 두 기기 나란히</label>
+  <label><input type="checkbox" id="cmp"> 디자인 3안 비교</label>
+  <select id="cs" aria-label="비교할 화면"><option value="home">광장</option><option value="vote">투표 결과</option><option value="vs">VS 한판</option></select>
   <input id="hash" placeholder="#ssn, #vs, #rank, #me" aria-label="열 화면 주소">
   <button id="go">열기</button>
   <button id="reload">새로고침</button>
@@ -49,17 +51,17 @@ const $=s=>document.querySelector(s),sel=$('#dev');
 sel.innerHTML=DEV.map(d=>`<option value="${d.k}">${d.n} (${d.w}x${d.h})</option>`).join('');
 const P=new URLSearchParams(location.search);sel.value=P.get('d')||'ip15';$('#hash').value=P.get('h')||location.hash||'';
 function src(){return 'index.html?v='+Date.now()+($('#hash').value.trim()?(($('#hash').value.trim()[0]==='#'?'':'#')+$('#hash').value.trim()):'')}
-function phone(d){const c=$('#chrome').checked,ih=c?d.h-d.top-d.bot:d.h-d.top;
+function phone(d,srcOv,cap){const c=$('#chrome').checked,ih=c?d.h-d.top-d.bot:d.h-d.top;
  return `<div class="dev"><div class="frame" data-h="${d.h+24}"><div class="screen" style="width:${d.w}px;height:${d.h}px">
  <div class="status" style="height:${d.top}px"><span>9:41</span><span>●●● ▮</span></div>${d.top>40?'<div class="notch"></div>':''}
- <iframe title="${d.n}" src="${src()}" style="width:${d.w}px;height:${ih}px;margin-top:${d.top}px"></iframe>
+ <iframe title="${d.n}" src="${srcOv||src()}" style="width:${d.w}px;height:${ih}px;margin-top:${d.top}px"></iframe>
  ${c?`<div class="safari" style="height:${d.bot}px"><div class="url">pdavid97.github.io</div><div class="home"></div></div>`:''}
- </div></div><small>${d.n}, 보이는 영역 ${d.w}x${ih}</small></div>`}
-function render(){const d=DEV.find(x=>x.k===sel.value),list=$('#pair').checked?[d,DEV.find(x=>x.k===(d.k==='ipse'?'ip15':'ipse'))]:[d];
+ </div></div><small>${cap||d.n+', 보이는 영역 '+d.w+'x'+ih}</small></div>`}
+function render(){const d=DEV.find(x=>x.k===sel.value);if($('#cmp').checked){const v=Date.now();$('#stage').innerHTML=['a','b','c'].map(k=>phone(d,`proto/index.html?d=${k}&s=${$('#cs').value}&clean=1&v=${v}`,{a:'A. 시네마 다크',b:'B. 에디토리얼 매거진',c:'C. 팝 아레나'}[k])).join('');fit();history.replaceState(null,'','?d='+sel.value+'&cmp=1&s='+$('#cs').value);return}const list=$('#pair').checked?[d,DEV.find(x=>x.k===(d.k==='ipse'?'ip15':'ipse'))]:[d];
  $('#stage').innerHTML=list.map(phone).join('');fit();
  history.replaceState(null,'','?d='+sel.value+($('#hash').value?'&h='+encodeURIComponent($('#hash').value):''))}
 function fit(){const avail=$('#stage').clientHeight-60,fr=[...document.querySelectorAll('.frame')],s=Math.min(1,avail/Math.max(...fr.map(f=>+f.dataset.h)));fr.forEach(f=>{f.style.transform=`scale(${s})`;f.parentElement.style.height=(+f.dataset.h*s+30)+'px';f.parentElement.style.width=(f.offsetWidth*s)+'px'})}
-sel.onchange=render;$('#chrome').onchange=render;$('#pair').onchange=render;$('#go').onclick=render;$('#hash').onkeydown=e=>{if(e.key==='Enter')render()};
+sel.onchange=render;$('#cmp').onchange=render;$('#cs').onchange=render;if(P.get('cmp'))$('#cmp').checked=true;if(P.get('s'))$('#cs').value=P.get('s');$('#chrome').onchange=render;$('#pair').onchange=render;$('#go').onclick=render;$('#hash').onkeydown=e=>{if(e.key==='Enter')render()};
 $('#reload').onclick=()=>document.querySelectorAll('iframe').forEach(f=>f.contentWindow.location.reload());
 $('#onb').onclick=()=>{try{localStorage.removeItem('dc_onb');sessionStorage.removeItem('cnsAsk')}catch(e){}$('#hash').value='';render()};
 addEventListener('resize',fit);render();
