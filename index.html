@@ -1629,6 +1629,14 @@ body{word-break:keep-all;overflow-wrap:break-word}
 .hc-hexin .hexrow .sr:last-child{margin-right:calc(var(--hw)/-2 + 3px)}
 @keyframes hcFlow{from{transform:translateX(-50%)}to{transform:translateX(0)}}
 @media (prefers-reduced-motion:reduce){.hc-hexin{animation:none}.hc-hex{overflow-x:auto}}
+/* 육각 타일: 얼굴이 가리지 않게 글자는 아래쪽 띠로, D-day는 위 꼭짓점에 작게 */
+.hexrow{--hw:64px;--hh:74px}
+.hexrow .sr .in{position:relative;justify-content:flex-end;padding:0}
+.hexrow .sr .in[style]{background-size:cover;background-position:center 18%}
+.hexrow .sr .in[style]::before{background:linear-gradient(180deg,transparent 55%,rgba(11,10,16,.85) 82%)!important}
+.hexrow .sr .in[style] b{position:absolute;top:9px;left:50%;transform:translateX(-50%);margin:0;font-size:8.5px;padding:0 4px;background:rgba(11,10,16,.7);z-index:1;white-space:nowrap}
+.hexrow .sr .in[style] em{margin:0 0 13px;font-size:8.5px;max-width:44px;-webkit-line-clamp:1}
+.hc-arc .card .ask{top:auto;bottom:74px;transform:none}
 
 </style>
 </head>
