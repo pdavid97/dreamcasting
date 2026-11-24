@@ -1686,6 +1686,13 @@ body{word-break:keep-all;overflow-wrap:break-word}
 .hexrow .sr.p2::after{content:'✓';position:absolute;left:50%;top:44%;transform:translate(-50%,-50%);z-index:3;font-size:18px;font-weight:900;color:#D4FF3A;text-shadow:0 2px 6px #000}
 .hexrow .sr{position:relative}
 
+.hc-rel{margin:14px 14px 0;display:flex;flex-direction:column;gap:8px}.hc-rel:empty{display:none}
+.hc-rel .hd{font-size:13px;font-weight:900;color:#fff}
+.hc-rel .rl{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:14px;background:#141414;border:1px solid #2A2A2A;text-decoration:none;color:#fff}
+.hc-rel .rl .ph{flex:none;width:40px;height:56px;border-radius:8px;background:#222 center/cover}
+.hc-rel .rl .tx{flex:1;min-width:0}.hc-rel .rl b{display:block;font-size:14px;font-weight:900}.hc-rel .rl small{display:block;font-size:12px;color:#9A9A9A;margin-top:3px}.hc-rel .rl em{font-style:normal;color:#D4FF3A}
+.hc-rel .rl i{flex:none;font-style:normal;font-size:22px;color:#D4FF3A}
+
 </style>
 </head>
 <body>
@@ -3551,11 +3558,25 @@ ${ty?`<div class="mp-type"><span class="tg">${esc(ty.tag)}</span><p>${esc(ty.say
  const same=s.tot>0&&s.rank===1,u=hcImg(s.mine.name);return `<div class="mr${same?' same':''}"><span class="ph"${u?` style="background-image:url('${esc(u)}')"`:''}></span><div class="tx"><span class="ch">${esc(SLOT[r.slot]||'')} ${esc(String(r.ch).replace(/\s*\(.*\)$/,''))}${r.orig?`<em>원작 ${esc(r.orig)}</em>`:''}</span><b>${dispHTML(s.mine.name)}</b><small>${!s.tot?'아직 광장 표가 없어요':same?'광장 1위와 같은 선택':`광장 1위 ${esc(dispName(s.top.name).replace(/\s*\(.*\)$/,''))} ${Math.round(s.topShare*100)}%`}</small></div><span class="pc"><b>${s.tot?Math.round(s.share*100)+'%':'첫 표'}</b><small>${s.tot?`${s.rank}위 / ${s.n}명`:''}</small></span></div>`}).join('')}</div>
 ${ll.length?`<div class="mp-links"><b>원작과의 연결고리</b>${ll.map(x=>`<p>${x}</p>`).join('')}</div>`:''}
 <div class="mp-n">${S.some(s=>s.tot)?`배역별 총 ${S.map(s=>s.tot).join(', ')}표 기준`:''}</div>
-<div class="hc-links"><a href="#${esc(t.id)}/talk">결과와 토론방</a><button data-act="dk-nexttopic">다음 작품</button></div></div>`}
+<div class="hc-rel" id="hcRel">${hcRelLocal(t,S)}</div><div class="hc-links"><a href="#${esc(t.id)}/talk">결과와 토론방</a><button data-act="dk-nexttopic">다음 작품</button></div></div>`;hcRelServer(t)}
 const _hcRender2=renderDeck;
 renderDeck=function(){const box=$('#deck'),t=DECKV&&curTopic();if(box&&t&&DECK.length&&DR>=t.roles.length){cardLeave();return renderDoneC(box,t)}return _hcRender2()};
 
 if(/[?&]test=1/.test(location.search))window.__hcT=f=>f({DECK,setDI:v=>DI=v,setDR:v=>DR=v,renderDeck:()=>renderDeck()});
+
+/* 이어서 고르기: 리포트 끝에서 다음에 할 일을 이유와 함께 2~3개 추천해 계속 이어지게 */
+function hcRelItem(di,x,why,ch){const d=DECK[di],v=verLabel(d.cat),u=d.vposter||d.poster;return `<a class="rl" href="#" data-act="dk-goto" data-i="${di}"><span class="ph"${u?` style="background-image:url('${esc(u)}')"`:''}></span><span class="tx"><b>《${esc(d.title)}》${v?' '+esc(v):''} ${esc(String(ch).replace(/\s*\(.*\)$/,''))} 역</b><small>${why}</small></span><i>›</i></a>`}
+function hcRelLocal(t,S){const out=[],used=new Set([t.id]),pd=pend();
+ const open=(d,r)=>!r.mine&&!pd.some(p=>p.rid===r.id);
+ for(const s of S){if(out.length>=2)break;const nm=s.mine.name;
+  for(let i=0;i<DECK.length&&out.length<2;i++){const d=DECK[i];if(used.has(d.id))continue;const r=(d.roles||[]).find(r=>open(d,r)&&(r.cands||[]).some(c=>c.name===nm));
+   if(r){used.add(d.id);out.push(hcRelItem(i,d,`내 픽 <em>${esc(dispName(nm).replace(/\s*\(.*\)$/,''))}</em>, 여기서도 후보예요`,r.ch))}}}
+ const i2=DECK.findIndex(d=>!used.has(d.id)&&new Date(d.closes_at)-Date.now()<864e5&&new Date(d.closes_at)>Date.now()&&(d.roles||[]).every(r=>open(d,r)));
+ if(i2>=0&&out.length<3){used.add(DECK[i2].id);out.push(hcRelItem(i2,DECK[i2],'오늘 마감, 아직 한 표도 안 던졌어요',DECK[i2].roles[0].ch))}
+ HC.relUsed=used;return out.length?`<b class="hd">이어서 고르기</b>${out.join('')}`:''}
+async function hcRelServer(t){const x=await rpc('duel_next',{skip:[],prefer:t.id}).catch(()=>null);const box=$('#hcRel');if(!x||!x.why||!box||(HC.relUsed&&HC.relUsed.has(x.tid)))return;
+ const di=DECK.findIndex(d=>d.id===x.tid);if(di<0)return;const why=esc(x.why.replace(/(\S+)이\(가\)/,(m,n)=>jj(n,'이','가')));
+ if(!box.querySelector('.hd'))box.insertAdjacentHTML('afterbegin','<b class="hd">이어서 고르기</b>');box.querySelector('.hd').insertAdjacentHTML('afterend',hcRelItem(di,DECK[di],why,x.ch))}
 
 }
 </script>

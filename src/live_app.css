@@ -747,3 +747,10 @@ body{word-break:keep-all;overflow-wrap:break-word}
 .hexrow .sr.p1{filter:saturate(.55) brightness(.8)}
 .hexrow .sr.p2::after{content:'✓';position:absolute;left:50%;top:44%;transform:translate(-50%,-50%);z-index:3;font-size:18px;font-weight:900;color:#D4FF3A;text-shadow:0 2px 6px #000}
 .hexrow .sr{position:relative}
+
+.hc-rel{margin:14px 14px 0;display:flex;flex-direction:column;gap:8px}.hc-rel:empty{display:none}
+.hc-rel .hd{font-size:13px;font-weight:900;color:#fff}
+.hc-rel .rl{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:14px;background:#141414;border:1px solid #2A2A2A;text-decoration:none;color:#fff}
+.hc-rel .rl .ph{flex:none;width:40px;height:56px;border-radius:8px;background:#222 center/cover}
+.hc-rel .rl .tx{flex:1;min-width:0}.hc-rel .rl b{display:block;font-size:14px;font-weight:900}.hc-rel .rl small{display:block;font-size:12px;color:#9A9A9A;margin-top:3px}.hc-rel .rl em{font-style:normal;color:#D4FF3A}
+.hc-rel .rl i{flex:none;font-style:normal;font-size:22px;color:#D4FF3A}
