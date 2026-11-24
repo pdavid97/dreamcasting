@@ -361,6 +361,23 @@ body.clean .sw{display:none}
 .vsl6 .fight .dim .nm b{font-size:13px;writing-mode:vertical-rl;letter-spacing:2px}
 .vsl6 .fight .l.dim .nm{left:10px;bottom:16px}.vsl6 .fight .r.dim .nm{right:10px;top:16px}
 .vsl6 .fight .l.hi .ask2{left:36%}.vsl6 .fight .r.hi .ask2{left:64%}
+
+/* VS 배지 위치 시안 (vsb=a|b|c|d) */
+.vbA .vsb{top:0!important;left:58%!important;font-size:28px!important}
+.vbA .fight.intro .vsb,.vbB .fight.intro .vsb,.vbC .fight.intro .vsb{animation:inV 2s both}
+.vbB .vsb{top:100%!important;left:42%!important;font-size:30px!important}
+.vbB .fight .r .nm{top:auto!important;bottom:16px!important;right:14px!important;text-align:right}
+.vbB .fight .l .nm,.vbB .fight .r .nm{bottom:18px!important}
+.vbB .fight .nm b{font-size:19px}
+.vbB .fight .l.hi .nm,.vbB .fight .r.hi .nm{bottom:18px!important}
+.vbC .fight::before{content:"";position:absolute;inset:0;z-index:3;pointer-events:none;background:#D4FF3A;clip-path:polygon(57.6% 0,58.4% 0,42.4% 100%,41.6% 100%);filter:drop-shadow(0 0 6px #D4FF3A);transition:opacity .3s}
+.vbC .fight:has(.hi)::before,.vbC .fight:has(.win)::before{opacity:0}
+.vbC .fight.intro::before{animation:inN 2s both}
+.vbC .vsb{top:7%!important;left:56.9%!important;font-size:20px!important;padding:0 7px!important;box-shadow:0 0 14px rgba(212,255,58,.7)}
+.vbD .vsb{top:auto!important;bottom:-6px;left:50%!important;transform:translate(-50%,0)!important;background:none!important;color:transparent!important;-webkit-text-stroke:2px #D4FF3A;font-size:150px!important;line-height:1;padding:0!important;opacity:.9;letter-spacing:6px}
+.vbD .fight.intro .vsb{animation:inN 2s both}
+.vbD .fight .r .nm{top:auto!important;bottom:150px!important}.vbD .fight .l .nm{bottom:150px!important}
+.vbD .fight .r.dim .nm,.vbD .fight .l.dim .nm{bottom:16px!important}
 </style>
 </head>
 <body>
@@ -496,7 +513,7 @@ function cVS(){const a=C[0],b=C[1],w=S.vs,h=S.vsHi,pa=Math.round((+a.votes||1)/(
  const half=(k,c,p,pos)=>`<button class="${pos} ${cls(k)}" data-vs="${k}" aria-label="${esc(nm(c.name))} 고르기"><span class="ph${alSt(c,pos)?' al':''}" style="${img(c.name)};${alSt(c,pos)}"></span><span class="hl"></span><span class="nm"><b>${esc(nm(c.name))}</b>${w?`<span>${p}%</span>`:''}</span>${h===k?'<span class="ask2"><b>한 번 더 탭하면 확정</b></span>':''}${w===k?'<span class="cast2">CAST!</span>':''}</button>`;
  const fh=Math.max(440,innerHeight-210),iw=Math.round(fh*1.1*2/3),W=innerWidth;
  const pk=a.name+'|'+b.name,intro=/in/.test(FX)&&!h&&!w&&INK!==pk;if(intro)INK=pk;
- return `<div class="scr C vsC vsl${VSL}${/duo/.test(FX)?' duo':''}" style="--fh:${fh}px;--iw:${iw}px;--xl:${Math.round(W*.3-iw/2)}px;--xr:${Math.round(W*.7-iw/2)}px">${rail()}
+ return `<div class="scr C vsC vsl${VSL}${/duo/.test(FX)?' duo':''}${Q.get('vsb')?' vb'+Q.get('vsb').toUpperCase():''}" style="--fh:${fh}px;--iw:${iw}px;--xl:${Math.round(W*.3-iw/2)}px;--xr:${Math.round(W*.7-iw/2)}px">${rail()}
 <div class="fight${intro?' intro':''}">${half('a',a,pa,'l')}${half('b',b,100-pa,'r')}<span class="vsb">VS</span></div>
 <div class="streak"><span>${w?'다음 대결로 넘어가요':h?'다른 쪽을 누르면 바꾸고, 바깥을 누르면 취소':'더 어울리는 쪽을 탭'}</span><span>연속 <b>${STK}</b> 판</span></div>${tmdb}${nav()}</div>`}
 /* 아크 덱 스와이프 */
