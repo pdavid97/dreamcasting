@@ -504,6 +504,28 @@ body{word-break:keep-all;overflow-wrap:break-word}
 .m2-menu a{display:flex;align-items:center;gap:12px;padding:14px;border-bottom:1px solid #1E1E1E;text-decoration:none;color:#fff;font-size:14px;font-weight:700}.m2-menu a:last-child{border-bottom:0}
 .m2-menu svg{width:20px;height:20px;color:#D4FF3A}.m2-menu span{flex:1}.m2-menu i{font-style:normal;color:#666}
 .cM2 .cM .team{padding:0 16px}.m2-demo{margin:10px 16px 0;font-size:10px;color:#666}
+
+/* 취향 버블 물리 */
+.m2-taste{position:relative;height:250px;margin:0 16px;padding:0;border-radius:18px;background:radial-gradient(120% 90% at 50% 40%,#151a0a,#0A0A0A 70%);overflow:hidden;display:block}
+.m2-taste .tb{position:absolute;left:0;top:0;will-change:transform;cursor:grab;touch-action:none}
+/* 내 캐스팅 팀: 작품별 카드, 배역 픽 사진이 차례로 바뀜 */
+.m2-team{display:flex;gap:10px;overflow-x:auto;padding:0 16px 4px;scrollbar-width:none}.m2-team::-webkit-scrollbar{display:none}
+.m2-team .tm{position:relative;flex:none;width:132px;aspect-ratio:3/4.4;border-radius:14px;overflow:hidden;text-decoration:none;color:#fff;background:#141414}
+.m2-team .ph2{position:absolute;inset:0}
+.m2-team .tm::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent 50%,rgba(0,0,0,.9));pointer-events:none}
+.m2-team .fr{opacity:0;transition:opacity .7s ease,transform 2.6s ease}
+.m2-team .ph2.fr{transform:scale(1.06)}.m2-team .ph2.fr.on{transform:scale(1)}
+.m2-team b.fr{transform:translateY(6px)}.m2-team b.fr.on{transform:none}
+.m2-team .fr.on{opacity:1}.m2-team .dots i.fr{opacity:.35}.m2-team .dots i.fr.on{opacity:1;background:#D4FF3A}
+.m2-team .cap{position:absolute;left:10px;right:10px;bottom:16px;z-index:2}
+.m2-team .cap small{display:block;font-size:10px;font-weight:800;color:#D4FF3A}
+.m2-team .cap b{position:absolute;left:0;right:0;top:16px;font-size:14px;font-weight:900;line-height:1.15}.m2-team .cap b em{display:block;font-style:normal;font-size:10px;color:#BDBDBD;font-weight:700}
+.m2-team .cap{height:52px;bottom:14px}
+.m2-team .dots{position:absolute;left:10px;bottom:7px;z-index:2;display:flex;gap:3px}.m2-team .dots i{width:10px;height:3px;border-radius:2px;background:#fff}
+/* 업적 로고 */
+.m2-badges .bd i{display:grid;place-items:center}
+.m2-badges .bd svg{width:26px;height:26px;color:#555;stroke-width:1.6}
+.m2-badges .bd.on svg{color:#0A0A0A;stroke-width:1.9}
 </style>
 </head>
 <body>
@@ -553,7 +575,22 @@ document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b){
  if(b.dataset.vs){const k=b.dataset.vs;if(DIR==='c'){if(S.vs)return;if(S.vsHi===k){S.vs=k;S.vsHi=null;STK++;navigator.vibrate&&navigator.vibrate([12,40,24]);render();setTimeout(()=>{if(SCR==='vs'&&S.vs){S.vs=null;C.push(C.splice(1,1)[0]);render()}},1700)}else{S.vsHi=k;navigator.vibrate&&navigator.vibrate(8);render()}return}if(!S.vs){S.vs=k;navigator.vibrate&&navigator.vibrate(12);render()}return}
  if(b.dataset.act==='again'){S.vs=null;C.push(C.splice(1,1)[0]);render();return}
 });
-function render(){sw();const f={a:{home:aHome,vote:aVote,vs:aVS},b:{home:bHome,vote:bVote,vs:bVS},c:{home:cHome,vote:cVote,vs:cVS,works:cWorks,rank:cRank,me:cMe}}[DIR][SCR];
+let BUB=null;
+function bubbles(){cancelAnimationFrame(BUB);const box=document.getElementById('taste');if(!box)return;const W=box.clientWidth,H=box.clientHeight;
+ const B=[...box.querySelectorAll('.tb')].map((el,i)=>{const r=el.offsetWidth/2;return {el,r,x:r+Math.random()*(W-2*r),y:r+Math.random()*(H-2*r),vx:(Math.random()-.5)*.6,vy:(Math.random()-.5)*.6,m:r*r}});
+ let drag=null;box.onpointerdown=e=>{const t=e.target.closest('.tb');if(!t)return;drag=B.find(b=>b.el===t);box.setPointerCapture(e.pointerId)};
+ box.onpointermove=e=>{if(!drag)return;const R=box.getBoundingClientRect(),nx=e.clientX-R.left,ny=e.clientY-R.top;drag.vx=(nx-drag.x)*.3;drag.vy=(ny-drag.y)*.3;drag.x=nx;drag.y=ny};box.onpointerup=()=>drag=null;
+ const step=()=>{for(const b of B){if(b!==drag){b.vx+=(Math.random()-.5)*.04;b.vy+=(Math.random()-.5)*.04-(b.y-H/2)*.0004;b.vx-=(b.x-W/2)*.0003;b.vx*=.992;b.vy*=.992;b.x+=b.vx;b.y+=b.vy}
+   if(b.x<b.r){b.x=b.r;b.vx=Math.abs(b.vx)*.7}if(b.x>W-b.r){b.x=W-b.r;b.vx=-Math.abs(b.vx)*.7}if(b.y<b.r){b.y=b.r;b.vy=Math.abs(b.vy)*.7}if(b.y>H-b.r){b.y=H-b.r;b.vy=-Math.abs(b.vy)*.7}}
+  for(let i=0;i<B.length;i++)for(let j=i+1;j<B.length;j++){const a=B[i],c=B[j],dx=c.x-a.x,dy=c.y-a.y,d=Math.hypot(dx,dy)||1,o=a.r+c.r+2-d;
+   if(o>0){const nx=dx/d,ny=dy/d,ma=a===drag?1e9:a.m,mc=c===drag?1e9:c.m,ta=mc/(ma+mc),tc=ma/(ma+mc);a.x-=nx*o*ta;a.y-=ny*o*ta;c.x+=nx*o*tc;c.y+=ny*o*tc;
+    const rv=(c.vx-a.vx)*nx+(c.vy-a.vy)*ny;if(rv<0){const k=-1.6*rv/(1/a.m+1/c.m);if(a!==drag){a.vx-=k/a.m*nx;a.vy-=k/a.m*ny}if(c!==drag){c.vx+=k/c.m*nx;c.vy+=k/c.m*ny}}}}
+  for(const b of B)b.el.style.transform=`translate(${b.x-b.r}px,${b.y-b.r}px)`;BUB=requestAnimationFrame(step)};step()}
+let TMR=null;
+function teamRot(){clearInterval(TMR);const cards=[...document.querySelectorAll('.m2-team .tm')];if(!cards.length)return;let k=0;
+ const set=()=>{cards.forEach((c,ci)=>{const n=c.querySelectorAll('.ph2.fr').length,i=Math.floor((k+ci)/1)%n;['.ph2.fr','b.fr','.dots i.fr'].forEach(q=>c.querySelectorAll(q).forEach((e,j)=>e.classList.toggle('on',j===i)))})};
+ set();TMR=setInterval(()=>{k++;set()},2600)}
+function render(){sw();setTimeout(()=>{bubbles();teamRot()},0);const f={a:{home:aHome,vote:aVote,vs:aVS},b:{home:bHome,vote:bVote,vs:bVS},c:{home:cHome,vote:cVote,vs:cVS,works:cWorks,rank:cRank,me:cMe}}[DIR][SCR];
  document.getElementById('app').innerHTML=f();document.body.style.background={a:'#08080A',b:'#F2EEE6',c:'#0A0A0A'}[DIR];
  requestAnimationFrame(()=>document.querySelectorAll('[data-w]').forEach(e=>e.style.width=e.dataset.w))}
 const credit=`<div class="credit">후보 목록은 토론을 위한 예시예요. 배우 사진과 작품 정보: TMDB. This product uses the TMDB API but is not endorsed or certified by TMDB.</div>`;
@@ -641,14 +678,14 @@ function cRank(){const agg={};DK.forEach(t=>(t.roles||[]).forEach(r=>(r.cands||[
 <div class="list">${L.slice(3).map((a,k)=>{const i=k+3,m=mv(i);return `<a class="row" href="#"><span class="n">${i+1}</span><span class="ph2" style="${phS(phU(a.name))}"></span><div><b>${esc(nm2(a.name)[0])}</b><small>후보 배역 ${a.roles}개</small></div><span class="sc">${a.v}</span>${m>0?`<span class="up">▲${m}</span>`:m<0?`<span class="dn">▼${-m}</span>`:''}</a>`}).join('')}</div>
 <p class="cM demo" style="padding:0 16px">점수는 지금 열린 판의 득표 합계${demo?'(아직 표가 없어 예시 순서)':''}. 순위 변동 화살표는 예시 값이에요.</p>
 ${tmdb}${nav()}</div>`}
-function cMe(){const picks=DK.slice(0,6).map(t=>{const r=(t.roles||[])[0],c=r&&[...(r.cands||[])].sort((a,b)=>(b.votes||0)-(a.votes||0))[0];return c&&{t,r,c}}).filter(Boolean);
+function cMe(){const teams=DK.slice(0,6).map(t=>({t,cs:(t.roles||[]).map(r=>{const c=[...(r.cands||[])].sort((a,b)=>(b.votes||0)-(a.votes||0))[0];return c&&phU(c.name)?{r,c}:null}).filter(Boolean)})).filter(x=>x.cs.length);const picks=DK.slice(0,6).map(t=>{const r=(t.roles||[])[0],c=r&&[...(r.cands||[])].sort((a,b)=>(b.votes||0)-(a.votes||0))[0];return c&&{t,r,c}}).filter(Boolean);
  const ic={vote:'<path d="M4 13h16v7H4zM8 13V5h8v8M10 9h4"/>',heart:'<path d="M12 20s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.5-7 10-7 10z"/>',film:'<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M7 5v14M17 5v14M3 9h4M3 15h4M17 9h4M17 15h4"/>',bolt:'<path d="M13 2L4 14h7l-1 8 9-12h-7z"/>',chart:'<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>',tv:'<rect x="3" y="6" width="18" height="12" rx="2"/><path d="M8 21h8M12 18v3"/>',list:'<path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>',fan:'<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>',bell:'<path d="M6 16V11a6 6 0 0 1 12 0v5l2 2H4zM10 21h4"/>',gear:'<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1"/>',book:'<path d="M4 4h7a3 3 0 0 1 3 3v13a2 2 0 0 0-2-2H4zM20 4h-5a3 3 0 0 0-3 3"/>',globe:'<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.5 3 14 0 18M12 3c-3 3.5-3 14 0 18"/>',heart2:'<path d="M12 20s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.5-7 10-7 10z"/>',mask:'<path d="M4 5h16v6a8 8 0 0 1-16 0zM8 10h.01M16 10h.01M9 14c2 1.5 4 1.5 6 0"/>',sword:'<path d="M14 4h6v6L9 21l-6-6zM5 13l6 6"/>',search:'<circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/>'};
  const sv=(k,cl)=>`<svg viewBox="0 0 24 24" class="${cl||''}" aria-hidden="true">${ic[k]}</svg>`;
  const pts=503,next=1000,pc=pts/next,R=52,C2=2*Math.PI*R;
  const parts=[['투표',220,'#D4FF3A'],['적중',150,'#7CF0D8'],['VS',83,'#FFB547'],['공감',50,'#FF6B8B']];
  const week=[12,30,8,46,22,64,38],wmax=Math.max(...week);
  const taste=[['book','웹소설 실사화',.92],['film','할리우드판',.7],['globe','해외 명작 한국판',.48],['heart2','로맨스',.85],['search','미스터리',.55],['mask','코미디',.3],['sword','액션',.4]];
- const badges=[['첫 캐스팅',1],['적중 5연속',1],['VS 100판',1],['숨은 진주',1],['토론왕',0],['시즌 MVP',0]];
+ const badges=[['첫 캐스팅',1,'<rect x="5" y="10" width="14" height="9" rx="1"/><path d="M5 10l2-4 12 0-2 4M9 6l-1 4M13 6l-1 4M17 6l-1 4"/>'],['적중 5연속',1,'<circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="3.5"/><circle cx="12" cy="12" r=".8" fill="currentColor"/><path d="M17 7l3-3M18 4h2v2"/>'],['VS 100판',1,'<path d="M12.5 4L7 12.5h4.5L11 20l6-8.5h-4.5z"/><path d="M4 18h3M17 18h3"/>'],['숨은 진주',1,'<path d="M7 5h10l3 5-8 10-8-10z"/><path d="M4 10h16M10 5l-1 5 3 10 3-10-1-5"/>'],['토론왕',0,'<path d="M5 9h14v8h-6l-4 3v-3H5z"/><path d="M8 3l2 3 2-3 2 3 2-3v4H8z"/>'],['시즌 MVP',0,'<path d="M8 4h8v5a4 4 0 0 1-8 0zM8 6H5a3 3 0 0 0 3 4M16 6h3a3 3 0 0 1-3 4M12 13v4M9 20h6"/><path d="M12 6l.7 1.4 1.5.2-1.1 1 .3 1.5-1.4-.7-1.4.7.3-1.5-1.1-1 1.5-.2z" fill="currentColor"/>']];
  return `<div class="scr C cP cM2">
 <div class="m2-top"><span class="m2-brand">MY CAST</span><span class="m2-ic">${sv('bell')}<i>4</i></span><span class="m2-ic">${sv('gear')}</span></div>
 <div class="m2-hero"><div class="ring"><svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="${R}" class="bg"/><circle cx="60" cy="60" r="${R}" class="fg" style="stroke-dasharray:${C2};stroke-dashoffset:${C2*(1-pc)}"/></svg><span class="av">테</span></div>
@@ -661,11 +698,11 @@ function cMe(){const picks=DK.slice(0,6).map(t=>{const r=(t.roles||[])[0],c=r&&[
  <div class="st">${sv('film','si')}<b>17</b><small>드림캐스팅</small></div></div>
 <a class="m2-week" href="#"><div><small>이번 주 결산</small><b>+220P <em>지난주보다 34% 늘었어요</em></b></div><div class="bars">${week.map((v,i)=>`<i style="height:${Math.round(v/wmax*100)}%" class="${i===5?'hi':''}"></i>`).join('')}</div></a>
 <div class="sec"><b>내 취향</b></div>
-<div class="m2-taste">${taste.map(([k,l,w])=>`<span class="tb" style="--w:${w}">${sv(k)}<small>${l}</small></span>`).join('')}</div>
+<div class="m2-taste" id="taste">${taste.map(([k,l,w])=>`<span class="tb" data-w="${w}" style="--w:${w}">${sv(k)}<small>${l}</small></span>`).join('')}</div>
 <div class="sec"><b>업적</b><span>${badges.filter(b=>b[1]).length} / ${badges.length}</span></div>
-<div class="m2-badges">${badges.map(([l,on])=>`<span class="bd ${on?'on':''}"><i></i><small>${l}</small></span>`).join('')}</div>
+<div class="m2-badges">${badges.map(([l,on,g])=>`<span class="bd ${on?'on':''}"><i><svg viewBox="0 0 24 24" aria-hidden="true">${g}</svg></i><small>${l}</small></span>`).join('')}</div>
 <div class="sec"><b>내 캐스팅 팀</b></div>
-<div class="cM"><div class="team">${picks.map(x=>`<a href="#"><span class="ph2" style="${phS(phU(x.c.name))}"></span><small>${esc(x.t.title)}</small><b>${esc(nm2(x.c.name)[0])}</b></a>`).join('')}</div></div>
+<div class="m2-team">${teams.map((x,ti)=>`<a href="#" class="tm" style="--d:${ti*.7}s">${x.cs.map((c,i)=>`<span class="ph2 fr" style="${phS(phU(c.c.name))};--n:${x.cs.length};--i:${i}"></span>`).join('')}<span class="cap"><small>${esc(x.t.title)}</small>${x.cs.map((c,i)=>`<b class="fr" style="--n:${x.cs.length};--i:${i}"><em>${esc(String(c.r.ch).replace(/\s*\(.*\)$/,''))} 역</em>${esc(nm2(c.c.name)[0])}</b>`).join('')}</span><span class="dots">${x.cs.map((c,i)=>`<i class="fr" style="--n:${x.cs.length};--i:${i}"></i>`).join('')}</span></a>`).join('')}</div>
 <div class="m2-menu">${[['chart','리포트'],['tv','내 AV룸'],['list','투표 기록'],['fan','시트, 팬 채널']].map(([k,l])=>`<a href="#">${sv(k)}<span>${l}</span><i>›</i></a>`).join('')}</div>
 <p class="m2-demo">숫자와 그래프는 디자인 확인용 예시 값이에요.</p>
 ${tmdb}${nav()}</div>`}
