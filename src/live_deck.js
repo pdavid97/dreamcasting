@@ -147,14 +147,18 @@ function renderTalk(){const box=$('#talkBox');if(!box||!D)return;const t=topic()
  if(!seen){box.innerHTML=`<div class="talk0"><b>캐스팅 팀 순위는 투표한 사람에게 열려요</b><p class="sub">배역 하나라도 투표하면 득표율, 내 팀과 광장 민심 팀, 팀 공감 순위를 볼 수 있어요. 토론은 토론 탭에서 누구나 읽을 수 있어요.</p><a class="b buy" href="#">카드로 투표하기</a></div>`;return}
  const cs=TALK.combos,RS=(D.roles||[]).filter(r=>!isSync(r)&&!isOpt(r));
  const mySh=USER&&(D.sheets||[]).find(x=>x.user_id===USER.id);
- const myTeam=RS.map(r=>{const v=D.myVote[r.id],c=v&&(D.cands[r.id]||[]).find(x=>x.candidate_id===v.candidate_id),pk=mySh&&mySh.picks&&mySh.picks[r.id];const era=c&&pk&&pk.y&&String(pk.c)===String(c.candidate_id)?{...pk,_nm:c.name}:null;return {r,name:c?c.name:null,era}});eraPosters(myTeam.map(x=>x.era).filter(Boolean));
+ const myTeam=RS.map(r=>{const v=D.myVote[r.id],c=v&&(D.cands[r.id]||[]).find(x=>x.candidate_id===v.candidate_id),pk=mySh&&mySh.picks&&mySh.picks[r.id];
+  /* 꾸민 팀을 저장했으면 그 배우와 시절이 내 팀의 최종 모습. 투표와 다르면 내 표를 함께 보여 줌 */
+  const pc=pk&&pk.c&&(D.cands[r.id]||[]).find(x=>String(x.candidate_id)===String(pk.c)),pn=pk?(pk.n||(pc&&pc.name)||null):null,name=pn||(c?c.name:null);
+  const era=name&&pk&&pk.y?{...pk,_nm:name}:null;return {r,name,era,vote:pn&&c&&c.name!==pn?c.name:null}});
+ {renderTalk.tried=renderTalk.tried||new Set();const miss=myTeam.map(x=>x.name).filter(n=>n&&!(('p:'+n) in IMG)&&!renderTalk.tried.has(n));miss.forEach(n=>renderTalk.tried.add(n));if(miss.length&&typeof loadNames==='function')loadNames(miss).then(()=>renderTalk()).catch(()=>{})}eraPosters(myTeam.map(x=>x.era).filter(Boolean));
  const done=myTeam.filter(x=>x.name).length,lead=RS.map(r=>{const c=(D.cands[r.id]||[]).reduce((a,x)=>!a||x.votes>a.votes?x:a,null);return {r,name:c&&c.votes?c.name:null}});
  const same=myTeam.every((x,i)=>x.name&&x.name===lead[i].name);
  crowdTeams.my=myTeam.map(x=>x.name);
- const teamRow=(L,gap)=>`<div class="team">${L.map((x,i)=>`<a class="tm${x.name?'':' empty'}" ${x.name?`href="#a/${encodeURIComponent(x.name)}"`:gap?`href="javascript:void 0" data-act="team-gap" data-i="${D.roles.indexOf(x.r)}" data-rid="${x.r.id}"`:''}>${(()=>{const ep=x.era&&eraPosterOf(x.era);const u=ep||(x.name&&IMG['p:'+x.name]);return `<span class="av${ep?' era':''}"${u?` style="background-image:url('${esc(u)}')"`:''}>${x.name?'':'?'}</span>`})()}<small>${esc(SLOT[x.r.slot]||x.r.ch)}</small><b>${x.name?esc(x.name):gap?'고르기':'미정'}</b>${x.era?`<em class="tera">${esc(x.era.w?'《'+x.era.w+'》':x.era.y+'년')} ${x.era.w?x.era.y:''}</em>`:''}</a>`).join('')}</div>`;
+ const teamRow=(L,gap)=>`<div class="team">${L.map((x,i)=>`<a class="tm${x.name?'':' empty'}" ${x.name?`href="#a/${encodeURIComponent(x.name)}"`:gap?`href="javascript:void 0" data-act="team-gap" data-i="${D.roles.indexOf(x.r)}" data-rid="${x.r.id}"`:''}>${(()=>{const ep=x.era&&eraPosterOf(x.era);const u=ep||(x.name&&IMG['p:'+x.name]);return `<span class="av${ep?' era':''}"${u?` style="background-image:url('${esc(u)}')"`:''}>${x.name?'':'?'}</span>`})()}<small>${esc(SLOT[x.r.slot]||x.r.ch)}</small><b>${x.name?esc(x.name):gap?'고르기':'미정'}</b>${x.vote?`<em class="tvote">내 표: ${esc(x.vote)}</em>`:''}${x.era?`<em class="tera">${esc(x.era.w?'《'+x.era.w+'》':x.era.y+'년')} ${x.era.w?x.era.y:''}</em>`:''}</a>`).join('')}</div>`;
  box.innerHTML=`<div class="sh"><h2>캐스팅 팀</h2><span class="sub">배역별 표가 모여 만들어진 팀, 그리고 팀에 대한 공감</span></div>
  <div class="teams2">
-  <article class="tcard mine"><div class="th2"><b>내 캐스팅 팀</b><span>${done===RS.length?'완성':`${RS.length-done}개 배역 남음`}</span></div>${teamRow(myTeam,true)}
+  <article class="tcard mine"><div class="th2"><b>내 캐스팅 팀</b>${mySh?'<small class="tsrc">꾸민 팀 기준</small>':''}<span>${done===RS.length?'완성':`${RS.length-done}개 배역 남음`}</span></div>${teamRow(myTeam,true)}
    ${done===RS.length?(same?'<p class="tnote">광장 민심 팀과 똑같아요. 민심을 정확히 읽었네요.</p>':`<p class="tnote">광장 민심 팀과 ${myTeam.filter((x,i)=>x.name!==lead[i].name).length}자리가 달라요.</p>`):'<p class="tnote">남은 배역도 고르면 내 팀이 공감 순위에 올라가요.</p>'}</article>
   <article class="tcard lteam"><div class="th2"><b>광장 민심 팀 TOP 3</b><span>배역별 득표로 만든 조합</span></div>${crowdTeams(RS).map((T,k)=>`<div class="ct3${k?'':' first'}"><div class="ct3h"><em>${k+1}위</em><span>득표 점수 ${T.score}%</span>${T.same?'<b>내 팀과 같아요</b>':''}</div>${teamRow(T.list)}</div>`).join('')||teamRow(lead)}</article>
  </div>
@@ -263,6 +267,7 @@ async function eraPosters(list){const need=list.filter(p=>{const k=eraKey(p);ret
   if(r.ok){const d=await r.json();for(const tk in d.k||{})if(byTk[tk])ERAP[byTk[tk]]=d.k[tk];for(const t in d.w||{})ERAP['w:'+t]=d.w[t]}
   /* 그 배우가 태그된 그 작품 사진(TMDB tagged images)이 있으면 포스터 대신 사용 */
   const tkOf=p=>{if(p.wi){for(const tk in byTk)if(byTk[tk]==='wi:'+p.wi)return tk}for(const n in ERA){const w=(ERA[n]||[]).find(x=>x.t&&p.w&&x.t.slice(0,60)===p.w&&String(x.y)===String(p.y));if(w&&w.tk)return w.tk}return ''};
+  try{await Promise.all([...new Set(need.map(p=>p._nm).filter(Boolean))].map(n=>eraWorks(n)))}catch(e){}
   await Promise.all(need.map(async p=>{const tk=tkOf(p);if(!tk||!p._nm)return;const u=await taggedShot(p._nm,tk);if(u)ERAT[eraKey(p)+'|'+p._nm]=u}));
   if(typeof renderTalk==='function')renderTalk()}catch(e){}}
 
