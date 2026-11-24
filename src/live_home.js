@@ -60,3 +60,50 @@ document.addEventListener('keydown',e=>{if(!$('#hcArc')||/INPUT|TEXTAREA/.test(d
 /* 육각 타일 줄은 왼쪽에서 오른쪽으로 계속 흐름. 손가락을 대면 멈췄다가 떼면 다시 흐름 */
 document.addEventListener('pointerdown',e=>{const h=e.target.closest('#hcHex');if(h)h.classList.add('hold')});
 document.addEventListener('pointerup',()=>{const h=$('#hcHex');if(h)setTimeout(()=>h.classList.remove('hold'),1200)});
+
+/* ================= 내 캐스팅 완성 리포트(11/24) =================
+   1) 원작 포스터처럼 내 픽 배우들을 한 장에 나란히(사진을 나란히 놓을 뿐, 얼굴 합성 없음)
+   2) 배역마다 내 픽 득표율, 광장 1위와 득표율
+   3) 내 픽과 광장 결과를 비교해 캐스팅 성향 평가(hcType)
+   4) 원작 배우와 내 픽 사이 연결고리: 함께 출연한 작품, 나이 차이(cast_links). 소속사는 데이터가 생기면 추가 */
+var HCL={};
+function hcRoleStat(r){const tot=r.cands.reduce((a,c)=>a+(c.votes||0),0),srt=[...r.cands].sort((a,b)=>(b.votes||0)-(a.votes||0)),top=srt[0],mine=r.cands.find(c=>c.id===r.mine);
+ if(!mine)return null;const rank=1+r.cands.filter(c=>(c.votes||0)>(mine.votes||0)).length;
+ return {r,mine,top,tot,rank,share:tot?(mine.votes||0)/tot:0,topShare:tot?(top.votes||0)/tot:0,n:r.cands.length}}
+/* 성향 평가: 1위와 겹친 비율, 내 픽 평균 득표율, 원작과의 연결고리와 나이 차이로 유형과 한 줄 평을 정함 */
+function hcType(S0,links){if(!S0.length)return null;const S=S0.filter(s=>s.tot>=3),k=S.length;if(!k)return {tag:'선발대 감독',say:'이 판에 거의 처음 표를 던졌어요. 광장 표가 쌓이면 내 픽이 대중픽인지 소신픽인지 드러나요.',badges:[],m1:0,k:0};const m1=S.filter(s=>s.rank===1).length,avg=S.reduce((a,s)=>a+s.share,0)/k,low=S.filter(s=>s.share<.1).length;
+ const solo=S.filter(s=>s.rank!==1).map(s=>String(s.r.ch).replace(/\s*\(.*\)$/,''));
+ let t;
+ if(m1===k)t={tag:'광장 대표 감독',say:k>1?`고른 ${k}개 배역 모두 광장 1위와 같아요. 대중의 마음을 정확히 읽는 흥행 감각이에요.`:'광장 1위와 같은 선택이에요. 대중의 마음을 정확히 읽었어요.'};
+ else if(m1===0&&avg<.12)t={tag:'실험실 감독',say:'광장이 거의 고르지 않은 얼굴로만 채웠어요. 아무도 생각 못 한 조합을 밀어붙이는 실험파예요.'};
+ else if(m1===0)t={tag:'소신파 감독',say:'1위와 한 번도 겹치지 않았어요. 남의 표보다 내 눈을 믿는 타입이에요.'};
+ else if(m1/k>=.5)t={tag:'밸런스 감독',say:`큰 줄기는 광장과 같고, ${solo.slice(0,2).join(', ')} 역만 내 소신대로 골랐어요.`};
+ else t={tag:'반전 기획자',say:`광장과 같은 건 ${m1}개뿐이에요. ${solo.slice(0,2).join(', ')} 역에서 판을 뒤집을 카드를 쥐고 있어요.`};
+ const badges=[];if(low&&m1)badges.push(`숨은 진주 ${low}명`);
+ const L=S.map(s=>links.find(x=>x.cid===s.mine.id)).filter(Boolean);
+ const L0=S0.map(s=>links.find(x=>x.cid===s.mine.id)).filter(Boolean),co=L0.filter(x=>(x.works||[]).length).length;if(co)badges.push(`원작 연결고리 ${co}개`);
+ const gaps=L0.filter(x=>x.ob&&x.cb).map(x=>x.cb-x.ob);
+ if(gaps.length){const g=Math.round(gaps.reduce((a,b)=>a+b,0)/gaps.length);if(g>=8)badges.push(`세대교체, 원작보다 평균 ${g}살 젊게`);else if(g<=-8)badges.push(`관록 캐스팅, 원작보다 평균 ${-g}살 위`);else if(Math.abs(g)<=3)badges.push('원작과 나이대 거의 같음')}
+ return Object.assign(t,{badges,m1,k})}
+function hcLinkLines(S,links){const out=[];for(const s of S){const x=links.find(y=>y.cid===s.mine.id);if(!x||!s.r.orig)continue;const nm=dispName(s.mine.name).replace(/\s*\(.*\)$/,''),on=String(s.r.orig);
+ const ws=x.works||[];if(ws.length){const w=ws[0],same=w.t===curTopic()?.title;out.push(same?`${esc(nm)}, 원작 《${esc(w.t)}》에 ${esc(on)}와 함께 출연했어요`:`${esc(nm)}와 원작 ${esc(on)}, 《${esc(w.t)}》${w.y?`(${w.y})`:''}에서 함께 출연`)}
+ else if(x.ob&&x.cb){const g=x.cb-x.ob;if(Math.abs(g)>=1)out.push(`${esc(nm)}, 원작 ${esc(on)}보다 ${Math.abs(g)}살 ${g>0?'어려요':'많아요'}`)}}
+ return out.slice(0,4)}
+async function renderDoneC(box,t){track('result_view',{t:t.id});
+ const S=t.roles.map(hcRoleStat).filter(Boolean),ver=verLabel(t.cat)||'';
+ if(!(t.id in HCL)){HCL[t.id]=null;rpc('cast_links',{tid:t.id}).then(x=>{HCL[t.id]=x||[];const c=curTopic();if(c&&c.id===t.id&&DR>=c.roles.length)renderDeck()}).catch(()=>{HCL[t.id]=[]})}
+ const links=HCL[t.id]||[],ty=hcType(S,links),ll=hcLinkLines(S,links),hx=storyRings();
+ const strips=S.map((s,i)=>{const u=hcImg(s.mine.name);return `<span class="mp-s" style="--i:${i};${u?`background-image:url('${esc(u)}')`:''}"></span>`}).join('');
+ box.innerHTML=`<div class="hc hcd"><div class="hc-hex" id="hcHex"><div class="hc-hexin">${hx}${hx.replace('<nav class="srow hexrow"','<nav aria-hidden="true" class="srow hexrow"')}</div></div>
+<div class="mp2"><div class="mp-o"${t.vposter||t.poster?` style="background-image:url('${esc(t.vposter||t.poster)}')"`:''}><span class="lb">원작</span></div><div class="mp-m"><div class="mp-row" style="--n:${Math.max(1,S.length)}">${strips||'<span class="mp-empty">아직 고른 배역이 없어요</span>'}</div><span class="lb on">내 캐스팅</span></div></div>
+<div class="mp-tt"><b>${esc(t.title)}</b><span>${ver?esc(ver)+', ':''}${S.map(s=>esc(dispName(s.mine.name).replace(/\s*\(.*\)$/,''))).join(', ')}</span></div>
+${ty?`<div class="mp-type"><span class="tg">${esc(ty.tag)}</span><p>${esc(ty.say)}</p>${ty.badges.length?`<div class="bd">${ty.badges.map(b=>`<i>${esc(b)}</i>`).join('')}</div>`:''}</div>`:''}
+<div class="mp-roles">${t.roles.map(r=>{const s=S.find(x=>x.r===r);if(!s)return `<div class="mr skip"><span class="ch">${esc(String(r.ch).replace(/\s*\(.*\)$/,''))}</span><span class="pk">건너뜀</span></div>`;
+ const same=s.tot>0&&s.rank===1,u=hcImg(s.mine.name);return `<div class="mr${same?' same':''}"><span class="ph"${u?` style="background-image:url('${esc(u)}')"`:''}></span><div class="tx"><span class="ch">${esc(SLOT[r.slot]||'')} ${esc(String(r.ch).replace(/\s*\(.*\)$/,''))}${r.orig?`<em>원작 ${esc(r.orig)}</em>`:''}</span><b>${dispHTML(s.mine.name)}</b><small>${!s.tot?'아직 광장 표가 없어요':same?'광장 1위와 같은 선택':`광장 1위 ${esc(dispName(s.top.name).replace(/\s*\(.*\)$/,''))} ${Math.round(s.topShare*100)}%`}</small></div><span class="pc"><b>${s.tot?Math.round(s.share*100)+'%':'첫 표'}</b><small>${s.tot?`${s.rank}위 / ${s.n}명`:''}</small></span></div>`}).join('')}</div>
+${ll.length?`<div class="mp-links"><b>원작과의 연결고리</b>${ll.map(x=>`<p>${x}</p>`).join('')}</div>`:''}
+<div class="mp-n">${S.some(s=>s.tot)?`배역별 총 ${S.map(s=>s.tot).join(', ')}표 기준`:''}</div>
+<div class="hc-links"><a href="#${esc(t.id)}/talk">결과와 토론방</a><button data-act="dk-nexttopic">다음 작품</button></div></div>`}
+const _hcRender2=renderDeck;
+renderDeck=function(){const box=$('#deck'),t=DECKV&&curTopic();if(box&&t&&DECK.length&&DR>=t.roles.length){cardLeave();return renderDoneC(box,t)}return _hcRender2()};
+
+if(/[?&]test=1/.test(location.search))window.__hcT=f=>f({DECK,setDI:v=>DI=v,setDR:v=>DR=v,renderDeck:()=>renderDeck()});
