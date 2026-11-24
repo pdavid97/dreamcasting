@@ -1455,6 +1455,11 @@ body:not([data-view=vs]) #topicView>#duel{display:none}
 .cgrid .cand1.more{display:none!important}
 .morec{display:block;width:100%;margin:8px 0 4px;padding:11px;border:1px dashed var(--line);border-radius:var(--r);background:transparent;color:var(--gold);font:600 14px 'Noto Sans KR',sans-serif}
 
+/* 온보딩 첫 화면: 포스터 벽이 위로 잘리지 않게, 문구는 화면 아래에 붙게 */
+.onb-hook{min-height:100%;display:flex;flex-direction:column}
+.onb-wall{flex:1 1 auto;height:auto;min-height:46vh;max-height:62vh;transform:rotate(-4deg) scale(1.08);transform-origin:center top;margin-top:max(18px,env(safe-area-inset-top))}
+.onb-copy{margin-top:-16vh;padding-bottom:max(20px,env(safe-area-inset-bottom))}
+
 </style>
 </head>
 <body>

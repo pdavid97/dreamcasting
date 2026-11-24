@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>드림캐스팅 폰 화면 검수</title>
+<meta name="robots" content="noindex">
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#1b1b1f;color:#eee;font:14px/1.4 -apple-system,'Noto Sans KR',sans-serif;height:100vh;display:flex;flex-direction:column;overflow:hidden}
+.bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:10px 14px;background:#111;border-bottom:1px solid #2a2a2f}
+.bar b{font-size:15px;margin-right:6px}
+select,input,button{background:#24242a;color:#eee;border:1px solid #3a3a42;border-radius:8px;padding:7px 10px;font:inherit}
+button{cursor:pointer}button:hover{border-color:#ffc94a}
+input#hash{width:180px}
+label{display:flex;gap:6px;align-items:center;color:#bbb}
+.stage{flex:1;display:flex;gap:28px;justify-content:center;align-items:flex-start;padding:18px;overflow:auto}
+.dev{display:flex;flex-direction:column;align-items:center;gap:8px;flex:none}
+.dev small{color:#999}
+.frame{background:#000;border-radius:46px;padding:12px;box-shadow:0 0 0 2px #3a3a42,0 20px 60px rgba(0,0,0,.6);transform-origin:top center}
+.screen{position:relative;overflow:hidden;border-radius:34px;background:#0B0A10}
+.screen iframe{border:0;display:block;background:#0B0A10}
+.status{position:absolute;left:0;right:0;top:0;display:flex;justify-content:space-between;align-items:center;padding:0 26px;font-weight:600;font-size:14px;color:#fff;z-index:2;pointer-events:none;background:rgba(11,10,16,.92)}
+.notch{position:absolute;top:10px;left:50%;transform:translateX(-50%);width:110px;height:30px;border-radius:20px;background:#000;z-index:3;pointer-events:none}
+.safari{position:absolute;left:0;right:0;bottom:0;display:flex;flex-direction:column;align-items:center;gap:6px;padding:8px 14px 0;background:rgba(36,36,40,.96);z-index:2;pointer-events:none}
+.safari .url{width:100%;height:36px;border-radius:12px;background:#3a3a40;display:flex;align-items:center;justify-content:center;color:#ddd;font-size:13px}
+.safari .home{width:130px;height:5px;border-radius:3px;background:#ddd;margin-top:auto;margin-bottom:8px}
+.hint{color:#888;font-size:12px}
+</style></head><body>
+<div class="bar">
+  <b>폰 화면 검수</b>
+  <select id="dev"></select>
+  <label><input type="checkbox" id="chrome" checked> 브라우저 주소창 포함</label>
+  <label><input type="checkbox" id="pair"> 두 기기 나란히</label>
+  <input id="hash" placeholder="#ssn, #vs, #rank, #me" aria-label="열 화면 주소">
+  <button id="go">열기</button>
+  <button id="reload">새로고침</button>
+  <button id="onb">온보딩 다시 보기</button>
+  <span class="hint">실제 폰과 같은 폭으로 사이트를 띄워요. 창이 작으면 비율을 유지한 채 줄여서 보여 줘요.</span>
+</div>
+<div class="stage" id="stage"></div>
+<script>
+// 화면 크기(CSS px): 기기 전체, Safari에서 실제로 보이는 영역(상태바 + 하단 주소창 제외)
+const DEV=[
+ {k:'ip15',n:'iPhone 15 / 16',w:393,h:852,top:59,bot:83},
+ {k:'ip15pm',n:'iPhone 15 / 16 Pro Max',w:430,h:932,top:59,bot:83},
+ {k:'ipse',n:'iPhone SE',w:375,h:667,top:20,bot:75},
+ {k:'gs24',n:'Galaxy S24',w:360,h:780,top:32,bot:56},
+ {k:'pix8',n:'Pixel 8',w:412,h:915,top:32,bot:56}
+];
+const $=s=>document.querySelector(s),sel=$('#dev');
+sel.innerHTML=DEV.map(d=>`<option value="${d.k}">${d.n} (${d.w}x${d.h})</option>`).join('');
+const P=new URLSearchParams(location.search);sel.value=P.get('d')||'ip15';$('#hash').value=P.get('h')||location.hash||'';
+function src(){return 'index.html'+($('#hash').value.trim()?(($('#hash').value.trim()[0]==='#'?'':'#')+$('#hash').value.trim()):'')}
+function phone(d){const c=$('#chrome').checked,ih=c?d.h-d.top-d.bot:d.h-d.top;
+ return `<div class="dev"><div class="frame" data-h="${d.h+24}"><div class="screen" style="width:${d.w}px;height:${d.h}px">
+ <div class="status" style="height:${d.top}px"><span>9:41</span><span>●●● ▮</span></div>${d.top>40?'<div class="notch"></div>':''}
+ <iframe title="${d.n}" src="${src()}" style="width:${d.w}px;height:${ih}px;margin-top:${d.top}px"></iframe>
+ ${c?`<div class="safari" style="height:${d.bot}px"><div class="url">pdavid97.github.io</div><div class="home"></div></div>`:''}
+ </div></div><small>${d.n}, 보이는 영역 ${d.w}x${ih}</small></div>`}
+function render(){const d=DEV.find(x=>x.k===sel.value),list=$('#pair').checked?[d,DEV.find(x=>x.k===(d.k==='ipse'?'ip15':'ipse'))]:[d];
+ $('#stage').innerHTML=list.map(phone).join('');fit();
+ history.replaceState(null,'','?d='+sel.value+($('#hash').value?'&h='+encodeURIComponent($('#hash').value):''))}
+function fit(){const avail=$('#stage').clientHeight-60,fr=[...document.querySelectorAll('.frame')],s=Math.min(1,avail/Math.max(...fr.map(f=>+f.dataset.h)));fr.forEach(f=>{f.style.transform=`scale(${s})`;f.parentElement.style.height=(+f.dataset.h*s+30)+'px';f.parentElement.style.width=(f.offsetWidth*s)+'px'})}
+sel.onchange=render;$('#chrome').onchange=render;$('#pair').onchange=render;$('#go').onclick=render;$('#hash').onkeydown=e=>{if(e.key==='Enter')render()};
+$('#reload').onclick=()=>document.querySelectorAll('iframe').forEach(f=>f.contentWindow.location.reload());
+$('#onb').onclick=()=>{try{localStorage.removeItem('dc_onb');sessionStorage.removeItem('cnsAsk')}catch(e){}$('#hash').value='';render()};
+addEventListener('resize',fit);render();
+</script>
+</body></html>
