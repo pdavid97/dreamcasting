@@ -208,7 +208,7 @@ function roundBanner(){const rs=(RB.results||[]).filter(r=>Date.now()-new Date(r
  if(!rs.length){const c=RB.closing||[];return c.length?`<p class="rbn-line">⏰ 오늘 자정 마감: ${c.map(x=>`<a href="#${esc(x.tid)}">${esc(x.title)}</a>`).join(', ')}</p>`:''}
  return `<section class="rbn" aria-label="결과 발표"><div class="rbn-h"><b>📣 결과 발표</b><small>7일 투표가 끝난 판이에요</small></div><div class="rbn-row">${rs.map(r=>{const mine=(r.roles||[]).filter(x=>x.mine),hit=mine.filter(x=>x.mine===x.win).length;
   return `<button class="rbn-c" data-act="rres" data-t="${esc(r.tid)}" data-s="${r.season}"${r.poster?` style="--bg:url('${esc(r.poster)}')"`:''}><small>${r.season>1?`시즌 ${r.season}`:'결과'}</small><b>${esc(r.title)}</b><span>${mine.length?(hit?`🎯 ${hit}/${mine.length} 적중${r.pts?`, +${r.pts}P`:''}`:`내 픽 ${mine.length}개, 적중 없음`):'결과 보기'}</span></button>`}).join('')}</div></section>`}
-function openResult(tid,season){const r=(RB.results||[]).find(x=>x.tid===tid&&String(x.season)===String(season));if(!r)return;
+function openResult(tid,season){try{const a=JSON.parse(localStorage.getItem('dcResSeen')||'[]');if(!a.includes(tid+':'+season)){a.push(tid+':'+season);localStorage.setItem('dcResSeen',JSON.stringify(a.slice(-60)))}}catch(e){}const r=(RB.results||[]).find(x=>x.tid===tid&&String(x.season)===String(season));if(!r)return;
  const mine=r.roles.filter(x=>x.mine),hit=mine.filter(x=>x.mine===x.win).length;
  const ov=document.createElement('div');ov.className='rres-ov';ov.innerHTML=`<div class="rres" role="dialog" aria-label="${esc(r.title)} 결과"><button class="x" data-act="rres-x" aria-label="닫기">×</button>
   <header${r.poster?` style="--bg:url('${esc(r.poster)}')"`:''}><small>${r.season>1?`시즌 ${r.season} `:''}최종 결과, ${fmt(r.voters||0)}명 참여</small><h3>${esc(r.title)}</h3>
@@ -246,22 +246,22 @@ function hxSeg(a,b,c){return `<line x1="${HXP[a][0]}" y1="${HXP[a][1]}" x2="${HX
 function hexInfo(d){const ms=new Date(d.closes_at)-Date.now(),day=864e5,bz=DECK.map(x=>+x.buzz||0).sort((a,b)=>b-a),cut=bz[Math.max(0,Math.ceil(bz.length*.2)-1)]||1e9;
  const st=ms>0&&ms<day?'cls':(d.opens_at&&Date.now()-new Date(d.opens_at)<2*day)?'new':'live';
  const news=(d.news||[]).some(n=>Date.now()-new Date(n.d)<day);const hot=(+d.buzz||0)>=cut&&(+d.buzz||0)>0;
- const rs=d.roles||[],mine=rs.filter(r=>r.mine).length;
+ const rs=d.roles||[],pd=pend(),mine=rs.filter(r=>r.mine||pd.some(p=>p.rid===r.id)).length;
  const tight=rs.some(r=>{if(!r.mine)return false;const v=(r.cands||[]).map(c=>+c.votes||0).sort((a,b)=>b-a),t=v.reduce((a,b)=>a+b,0);return t>=5&&v.length>1&&(v[0]-v[1])/t<=.05});
  const pips=[hot&&'hot',news&&'news',tight&&'tight'].filter(Boolean).slice(0,2);
- return {st,pips,part:!USER||!rs.length?null:mine===0?0:mine<rs.length?1:2,left:ms}}
+ return {st,pips,part:!rs.length?null:mine===0?0:mine<rs.length?1:2,left:ms}}
 function hexSvg(pips,part){const top=[['l1','t'],['t','r1']],bot=[['r2','b'],['b','l2']];let o='';
  pips.forEach((p,k)=>o+=hxSeg(top[k][0],top[k][1],'pp '+p));
  if(part!=null){o+=hxSeg('r2','b','pt'+(part>=1?' on':''))+hxSeg('b','l2','pt'+(part>=2?' on':''))}
  return o?`<svg class="hxo" viewBox="-3 -3 64 73" aria-hidden="true">${o}</svg>`:''}
 function storyRings(){const rs=(RB.results||[]).filter(r=>Date.now()-new Date(r.at)<2*864e5),out=[];
  const ring=(cls,bg,lab,attrs,txt,svg)=>`<button class="sr ${cls}" ${attrs} style="--fd:${(out.length%5)*0.7}s"><span class="rg"><span class="in"${bg?` style="background-image:url('${esc(bg)}')"`:''}>${txt||''}<em>${esc(lab)}</em></span></span>${svg||''}</button>`;
- for(const r of rs)out.push(ring('res',r.poster,r.title,`data-act="rres" data-t="${esc(r.tid)}" data-s="${r.season}" aria-label="${esc(r.title)} 결과 발표"`,'<b>발표</b>'));
+ const seenR=(()=>{try{return JSON.parse(localStorage.getItem('dcResSeen')||'[]')}catch(e){return[]}})();for(const r of rs)out.push(ring('res'+(seenR.includes(r.tid+':'+r.season)?' p2':''),r.poster,r.title,`data-act="rres" data-t="${esc(r.tid)}" data-s="${r.season}" aria-label="${esc(r.title)} 결과 발표"`,'<b>발표</b>'));
  const pr={cls:0,new:1,live:2},items=DECK.map((d,i)=>({d,i,h:hexInfo(d)}));
- items.sort((a,b)=>pr[a.h.st]-pr[b.h.st]||(b.h.pips.length-a.h.pips.length)||(a.h.left-b.h.left));
+ items.sort((a,b)=>((a.h.part===2)-(b.h.part===2))||pr[a.h.st]-pr[b.h.st]||(b.h.pips.length-a.h.pips.length)||(a.h.left-b.h.left));
  for(const {d,i,h} of items){const dd=Math.ceil(h.left/864e5),lab=h.st==='cls'?'D-0':h.st==='new'?(d.season>1?'S'+d.season:'NEW'):'D-'+Math.max(1,dd);
   const say=[h.st==='cls'?'오늘 마감':h.st==='new'?'새 판':'진행 중',h.pips.includes('hot')&&'화제',h.pips.includes('news')&&'새 소식',h.pips.includes('tight')&&'박빙',h.part===2?'투표 완료':h.part===1?'일부 투표':h.part===0?'아직 안 함':''].filter(Boolean).join(', ');
-  out.push(ring(h.st,d.vposter||d.poster,d.title,`data-act="dk-goto" data-i="${i}" aria-label="${esc(d.title)}, ${say}"`,`<b>${lab}</b>`,hexSvg(h.pips,h.part)))}
+  out.push(ring(h.st+(h.part===2?' p2':h.part===1?' p1':''),d.vposter||d.poster,d.title,`data-act="dk-goto" data-i="${i}" aria-label="${esc(d.title)}, ${say}"`,`<b>${lab}</b>`,hexSvg(h.pips,h.part)))}
  if(USER)out.push(ring('wk',null,'주간 결산','data-act="week-story"','<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>'));
  out.push(ring('key',null,'색의 뜻','data-act="hex-key" aria-label="타일 색 설명 보기"','<b class="q">?</b>'));
  return `<nav class="srow hexrow" aria-label="오늘의 작품 지도">${out.join('')}</nav>`}

@@ -740,3 +740,10 @@ body{word-break:keep-all;overflow-wrap:break-word}
 .mp-m .mp-row::after{background:linear-gradient(180deg,transparent 75%,rgba(10,10,10,.6))}
 .hcd .mp-tt{position:static;padding:10px 16px 0;text-align:center}
 .hcd .mp-tt b{font-size:30px}
+
+/* 다 투표한 작품과 이미 본 결과는 흐리게, 일부만 투표한 작품은 살짝 흐리게: 타일 줄만 봐도 진척도가 보임 */
+.hexrow .sr.p2{filter:grayscale(1) brightness(.5)!important;animation:none!important}
+.hexrow .sr.p2 .in b{background:rgba(11,10,16,.8)}
+.hexrow .sr.p1{filter:saturate(.55) brightness(.8)}
+.hexrow .sr.p2::after{content:'✓';position:absolute;left:50%;top:44%;transform:translate(-50%,-50%);z-index:3;font-size:18px;font-weight:900;color:#D4FF3A;text-shadow:0 2px 6px #000}
+.hexrow .sr{position:relative}
