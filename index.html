@@ -1372,6 +1372,33 @@ body:not([data-view=rank]) .rknav{display:none!important}
 .rl-frame{position:absolute;left:4px;right:4px;top:calc(50% - 29px);height:58px;border-radius:12px;border:2px solid var(--gold);box-shadow:0 0 16px rgba(255,201,74,.35);pointer-events:none}
 .rl-b{position:absolute;left:50%;transform:translateX(-50%);width:44px;height:20px;border:0;background:none;color:var(--gold);font-size:12px;cursor:pointer;padding:0}
 .rl-b.up{top:1px}.rl-b.dn{bottom:1px}
+/* 내 팀 꾸미기 A안 */
+.sheet .sb>label:has(select[id^=sp]){display:none}
+.slt{display:flex;flex-direction:column;gap:10px;margin:8px 0 14px}
+.sl-roles{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none}
+.sl-roles button{flex:none;border:1px solid var(--line);background:var(--card);color:var(--mute);font:700 13px 'Noto Sans KR',sans-serif;padding:7px 12px;border-radius:16px;cursor:pointer}
+.sl-roles button.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}.sl-roles button.ok:not(.on){color:var(--gold);border-color:var(--gold)}
+.sl-steps{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.sl-steps button{height:40px;border-radius:20px;border:1px solid var(--line);background:transparent;color:var(--mute);font:700 13px 'Noto Sans KR',sans-serif;cursor:pointer}
+.sl-steps button.on{background:var(--gold);color:#0B0A10;border-color:var(--gold)}.sl-steps button:disabled{opacity:.35;cursor:default}
+.sl-box{position:relative;border-radius:24px;background:linear-gradient(180deg,#2A1F3D,#15131C 18%,#15131C 82%,#2A1F3D);border:2px solid #3A3645;overflow:hidden}
+.sl-win{height:440px;overflow-y:auto;scroll-snap-type:y mandatory;scrollbar-width:none;outline:none;display:flex;flex-direction:column;align-items:center;gap:12px;-webkit-mask-image:linear-gradient(180deg,transparent 0,#000 16%,#000 84%,transparent);mask-image:linear-gradient(180deg,transparent 0,#000 16%,#000 84%,transparent)}
+.sl-win::-webkit-scrollbar{display:none}
+.sl-pad{flex:none;height:58px}
+.sl-it{flex:none;position:relative;width:min(72%,260px);height:310px;border-radius:18px;overflow:hidden;scroll-snap-align:center;cursor:pointer;opacity:.4;transform:scale(.9);transition:opacity .15s,transform .15s,box-shadow .15s;background:#2D2440}
+.sl-it.on{opacity:1;transform:scale(1);box-shadow:0 0 0 3px var(--gold),0 0 36px rgba(255,201,74,.35)}
+.sl-img{position:absolute;inset:0;background:linear-gradient(160deg,#6B5A86,#2D2440) center 18%/cover;display:grid;place-items:center}
+.sl-it.ps .sl-img{background-position:center}
+.sl-img i{font-style:normal;font:400 54px 'Black Han Sans',sans-serif;color:rgba(255,255,255,.55)}
+.sl-cap{position:absolute;left:0;right:0;bottom:0;padding:30px 14px 12px;background:linear-gradient(180deg,rgba(11,10,16,0),rgba(11,10,16,.92));color:#fff;display:flex;flex-direction:column}
+.sl-cap b{font-size:19px;line-height:1.25}.sl-cap small{font-size:11px;color:#D9D5E3}
+.sl-pay{position:absolute;top:50%;z-index:2;width:0;height:0;border-top:10px solid transparent;border-bottom:10px solid transparent;transform:translateY(-50%);pointer-events:none}
+.sl-pay.l{left:8px;border-left:14px solid var(--gold)}.sl-pay.r{right:8px;border-right:14px solid var(--gold)}
+.sl-name{font:15px 'Noto Sans KR',sans-serif;padding:12px;border-radius:12px;border:1px solid var(--gold);background:var(--card);color:var(--ink)}
+.sl-age{margin:0;text-align:center;font-size:12px;color:var(--mute);min-height:16px}
+.sl-acts{display:flex;gap:8px}
+.sl-rand{flex:none;height:52px;padding:0 16px;border-radius:26px;border:0;background:var(--pink);color:#0B0A10;font:900 14px 'Noto Sans KR',sans-serif;cursor:pointer}
+.sl-go{flex:1;height:52px;border-radius:26px;border:0;background:var(--gold);color:#0B0A10;font:900 15px 'Noto Sans KR',sans-serif;cursor:pointer}
 
 </style>
 </head>
@@ -1675,7 +1702,7 @@ function renderSide(){const box=$('#sideTop'),dream=D.roles.filter(r=>!isSync(r)
  const builder=`<details class="sheetd"><summary><b>내 팀 꾸미기</b><small>선택. 배역별 표로 내 팀은 이미 만들어져요. 여기서는 어느 작품 속 모습으로 할지, 후보에 없는 배우로 드림 픽을 할지, 한 줄 이유를 더해요</small></summary><div class="sheet"><p class="sub" style="margin:4px 0 4px">배역마다 후보를 고르거나, 마음에 드는 후보가 없으면 배우 이름을 직접 적어요. 배우를 고른 뒤 "어느 작품 속 모습으로"를 고르면 그 시절 모습으로 시간여행 캐스팅을 할 수 있어요. 투표와 별개예요.</p><div class="sb">${dream.map(r=>{const p=pre(r),cs=D.cands[r.id]||[];const sel=p?(p.n?'__n':String(p.c)):'';return `<label>${esc(r.ch)}<div class="pair"><select id="sp${r.id}" data-act-change="sp" aria-label="${esc(r.ch)} 배우 선택"><option value="">선택하세요</option>${cs.map(c=>`<option value="${c.candidate_id}" ${sel===String(c.candidate_id)?'selected':''}>${esc(c.name)}</option>`).join('')}<option value="__n" ${sel==='__n'?'selected':''}>직접 적기</option></select><input type="text" id="sn${r.id}" maxlength="20" placeholder="배우 이름 직접 적기" value="${p&&p.n?esc(p.n):''}" ${sel==='__n'?'':'hidden'}>${isOpt(r)?'':`<select id="sy${r.id}" aria-label="${esc(r.ch)} 어느 작품 속 모습으로" title="시간여행 캐스팅: 그 배우의 특정 작품 속 모습으로" data-pre="${p&&p.y?esc(p.y+'|'+(p.wi||'')+'|'+(p.w||'')):''}"><option value="">지금의 모습</option></select>`}</div><small class="dl" id="sa${r.id}">${r.age_hint?`배역 나이 ${esc(r.age_hint)}`:''}</small></label>`}).join('')}<label>내가 이렇게 캐스팅한 이유 (선택, 300자)<textarea id="sReason" maxlength="300" rows="3" placeholder="예: 두 사람은 전작에서 이미 호흡이 검증됐고, 원작의 나이대와도 맞아요" style="width:100%;font:15px/1.5 'Noto Sans KR',sans-serif;padding:8px;border:1px solid var(--mute);background:var(--bg);color:var(--ink)">${mine?esc(mine.reason||''):''}</textarea></label></div><div id="chemBuild"></div><button class="b sm buy" data-act="sheet" style="margin-top:10px">${mine?'꾸민 팀 저장':'꾸민 팀 게시하기 +30P'}</button></div></details>`;
  const nf=D.names.slice(0,8);
  box.innerHTML=`<div class="sh"><h2>꾸민 팀 자랑</h2><span class="sub">작품 속 모습, 드림 픽, 한 줄 이유를 더한 팀들. 공감은 같은 팀 공감으로 모여요</span></div>${builder}${nf.length?`<p class="newface"><b>시트에서 나온 새 얼굴</b><br>${nf.map(n=>{const r=D.roles.find(x=>x.id===n.role_id);return `<span>${esc(r?r.ch:'')} ${esc(n.name)} ${n.cnt}</span>`}).join('')}</p>`:''}${mine?sheetHTML(mine):''}${others.map(sheetHTML).join('')||'<p class="empty3">아직 게시된 시트가 없어요. 첫 시트의 주인공이 되어 보세요.</p>'}${shareText?`<textarea class="shared" readonly aria-label="공유 문구">${esc(shareText)}</textarea>`:''}`;
- renderChemBuild.pending=true;dream.forEach(r=>eraLoad(r.id,keep['sy'+r.id]));for(const id in keep){const e=document.getElementById(id);if(e&&id==='sReason'){e.value=keep[id]}else if(e&&id.startsWith('sn')){e.value=keep[id]}else if(e&&id.startsWith('sp')){e.value=keep[id];const n=document.getElementById('sn'+id.slice(2));if(n)n.hidden=keep[id]!=='__n'}}renderChemBuild();try{reelAll(box)}catch(e){}if(wasOpen){const d=box.querySelector('details.sheetd');if(d)d.open=true;scrollTo({top:sy0})}}
+ renderChemBuild.pending=true;dream.forEach(r=>eraLoad(r.id,keep['sy'+r.id]));for(const id in keep){const e=document.getElementById(id);if(e&&id==='sReason'){e.value=keep[id]}else if(e&&id.startsWith('sn')){e.value=keep[id]}else if(e&&id.startsWith('sp')){e.value=keep[id];const n=document.getElementById('sn'+id.slice(2));if(n)n.hidden=keep[id]!=='__n'}}renderChemBuild();try{reelAll(box);slotStage(box)}catch(e){}if(wasOpen){const d=box.querySelector('details.sheetd');if(d)d.open=true;scrollTo({top:sy0})}}
 function renderFeed(){$('#feed').innerHTML=FEED.map(f=>`<li class="${f.kind==='hot'?'hot':''}"><small class="num">${new Date(f.created_at).toLocaleString('ko-KR',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'})}</small>${esc(f.body)}</li>`).join('')||'<li class="empty3">광장이 막 열렸어요. 첫 소식의 주인공이 되어 보세요.</li>';
  const txt=FEED.slice(0,8).map(f=>f.body).join('     ■     ')||'드림캐스팅 광장이 열렸어요. 구글로 로그인하고 첫 표를 던져 보세요';if($('#chy').textContent!==txt)$('#chy').textContent=txt}
 function renderPerks(){const g=PROF?grade(PROF.points):-1;$('#perks').innerHTML=GRADES.map((x,i)=>`<div class="perk${i<=g?' on':''}${i===g?' cur':''}"><b>${x[1]}${x[0]?` <small class="num">${fmt(x[0])}P</small>`:''}</b><span>${PERKS[i]}</span></div>`).join('')}
@@ -2895,7 +2922,7 @@ async function wkPosters(ws){const need=[...new Set(ws.map(w=>w.tk).filter(k=>k&
 const RH=58;
 function reelImg(sel,o){if(sel.id.startsWith('sp')){if(!o.value)return{ic:'?'};if(o.value==='__n')return{ic:'✎'};return{u:IMG['p:'+o.textContent.trim()]||'',ic:(o.textContent.trim()||'?')[0]}}
  if(sel.id.startsWith('sy')){if(!o.value)return{ic:'지금'};const [yy,wi,tt]=o.value.split('|');let tk='';for(const k in ERA){const w=(ERA[k]||[]).find(x=>wi?String(x.wi)===wi:(String(x.y)===yy&&x.t.slice(0,60)===tt));if(w){tk=w.tk;break}}return{u:tk?WKP[tk]||'':'',ic:o.value.split('|')[0],poster:1}}return{ic:''}}
-function reelify(sel){let rl=sel.nextElementSibling&&sel.nextElementSibling.classList&&sel.nextElementSibling.classList.contains('reel')?sel.nextElementSibling:null;
+function reelify(sel){if(sel.id.startsWith('sy'))new MutationObserver(()=>{const box=$('#sideTop');if(box&&$('#slotStage')&&SLT.step==='e')slotStage(box)}).observe(sel,{childList:true});return;let rl=sel.nextElementSibling&&sel.nextElementSibling.classList&&sel.nextElementSibling.classList.contains('reel')?sel.nextElementSibling:null;
  if(!rl){rl=document.createElement('div');rl.className='reel';sel.classList.add('reel-src');sel.after(rl);
   new MutationObserver(()=>drawReel(sel,rl)).observe(sel,{childList:true});
   sel.addEventListener('change',()=>{if(!rl._self)reelTo(rl,sel.selectedIndex,false);rl._self=false})}
@@ -2915,6 +2942,42 @@ function reelAll(root){(root||document).querySelectorAll('select[id^="sp"],selec
 async function filmoFallback(nm){try{if(typeof loadOrig==='function')await loadOrig([nm]);const alt=(typeof ORIG!=='undefined'&&ORIG[nm])||'';
  const r=await fetch(SB_URL+'/functions/v1/tmdb',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+ANON,apikey:ANON},body:JSON.stringify({filmo:nm,alt})});if(!r.ok)return [];const d=await r.json();
  if(d.p&&!IMG['p:'+nm])IMG['p:'+nm]=d.p;return (d.f||[]).map(x=>{if(x.tk&&x.p)WKP[x.tk]=x.p;return {wi:'',tk:x.tk,t:x.t,y:x.y,ch:x.ch}})}catch(e){return []}}
+/* ===== 내 팀 꾸미기 A안: 한 화면에 큰 릴 하나 (배우 → 시절), 시절은 랜덤 돌리기 ===== */
+var SLT={ri:0,step:'a'};
+const slBig=u=>u?u.replace('/w185/','/w342/'):'';
+function slotRoles(){return D?D.roles.filter(r=>!isSync(r)&&document.getElementById('sp'+r.id)):[]}
+function slotStage(box){const host=box.querySelector('.sheet');if(!host)return;let st=host.querySelector('#slotStage');if(!st){st=document.createElement('div');st.id='slotStage';st.className='slt';host.insertBefore(st,host.querySelector('.sb'))}
+ const rs=slotRoles();if(!rs.length){st.remove();return}if(SLT.ri>=rs.length)SLT.ri=0;const r=rs[SLT.ri],sp=$('#sp'+r.id),sy=$('#sy'+r.id);
+ if(SLT.step==='e'&&(!sy||!sp.value))SLT.step='a';const sel=SLT.step==='a'?sp:sy;
+ const picked=x=>{const s=$('#sp'+x.id);return s&&s.value};
+ const os=[...sel.options].map((o,i)=>({i,o})).filter(x=>SLT.step==='e'||x.o.value);
+ const card=({i,o})=>{const m=reelImg(sel,o),nm=o.textContent.replace(/ 속 모습$/,'');return `<div class="sl-it${m.poster?' ps':''}" data-i="${i}" role="option"><span class="sl-img"${m.u?` style="background-image:url('${esc(slBig(m.u))}')"`:''}>${m.u?'':`<i>${esc(m.ic||'')}</i>`}</span><span class="sl-cap"><b>${esc(nm)}</b>${SLT.step==='e'&&o.value?'<small>이 작품 속 모습</small>':SLT.step==='e'?'<small>지금 나이 그대로</small>':''}</span></div>`};
+ st.innerHTML=`<div class="sl-roles">${rs.map((x,k)=>`<button type="button" class="${k===SLT.ri?'on':''}${picked(x)?' ok':''}" data-act="sl-role" data-k="${k}">${picked(x)?'✓ ':''}${esc(String(x.ch||'').replace(/\s*\(.*\)$/,''))}</button>`).join('')}</div>
+ <div class="sl-steps"><button type="button" class="${SLT.step==='a'?'on':''}" data-act="sl-step" data-s="a">1. 배우</button><button type="button" class="${SLT.step==='e'?'on':''}" data-act="sl-step" data-s="e" ${sy&&sp.value&&sp.value!=='__n'?'':'disabled'}>2. 어느 시절 모습</button></div>
+ <div class="sl-box"><span class="sl-pay l" aria-hidden="true"></span><span class="sl-pay r" aria-hidden="true"></span><div class="sl-win" tabindex="0" role="listbox" aria-label="${esc(r.ch)} ${SLT.step==='a'?'배우':'시절'} 고르기"><div class="sl-pad"></div>${os.map(card).join('')}<div class="sl-pad"></div></div></div>
+ ${SLT.step==='a'&&sp.value==='__n'?`<input class="sl-name" type="text" maxlength="20" placeholder="배우 이름을 적어 주세요" value="${esc(($('#sn'+r.id)||{value:''}).value)}" data-mirror="sn${r.id}">`:''}
+ <p class="sl-age">${esc(($('#sa'+r.id)||{textContent:''}).textContent||'')}</p>
+ <div class="sl-acts">${SLT.step==='e'?'<button type="button" class="sl-rand" data-act="sl-rand">🎰 랜덤 돌리기</button>':''}<button type="button" class="sl-go" data-act="sl-go">${SLT.step==='a'?(sp.value==='__n'?'다음 배역':'이 배우로, 시절 고르기'):(SLT.ri<rs.length-1?'이 모습으로, 다음 배역':'이 모습으로, 완성')}</button></div>`;
+ const win=st.querySelector('.sl-win'),items=[...win.querySelectorAll('.sl-it')],H=()=>items[0]?items[0].offsetHeight+12:300;
+ const idxOf=k=>items.findIndex(e=>+e.dataset.i===k);
+ const mark=j=>items.forEach((e,k)=>e.classList.toggle('on',k===j));
+ let start=idxOf(sel.selectedIndex);if(start<0)start=0;requestAnimationFrame(()=>{win.scrollTop=start*H();mark(start)});
+ let t=null,last=start;win.onscroll=()=>{const j=Math.round(win.scrollTop/H());if(j!==last){last=j;mark(j);try{navigator.vibrate&&navigator.vibrate(4)}catch(e){}}clearTimeout(t);t=setTimeout(()=>apply(Math.round(win.scrollTop/H())),180)};
+ const apply=j=>{const it=items[j];if(!it)return;const k=+it.dataset.i;if(sel.selectedIndex!==k){sel.selectedIndex=k;sel._slot=true;sel.dispatchEvent(new Event('change',{bubbles:true}))}};st._apply=()=>apply(Math.round(win.scrollTop/H()));
+ items.forEach((e,k)=>e.onclick=()=>{clearTimeout(t);apply(k);last=k;mark(k);win.scrollTo({top:k*H(),behavior:'smooth'})});
+ st._spin=()=>{const n=items.length;if(n<3)return;const ks=items.map(e=>+e.dataset.i);let j=Math.round(win.scrollTop/H()),target=1+Math.floor(Math.random()*(n-1));if(target===j)target=1+(target%(n-1));const steps=22,selId=sel.id;let k=0;
+  const tick=()=>{j=k>=steps-1?target:(k>=steps-4?Math.max(1,(target-(steps-1-k)+n)%n):(j+1+Math.floor(Math.random()*3))%n);const w=$('#slotStage .sl-win');if(w){const its=w.querySelectorAll('.sl-it');w.scrollTop=j*(its[0]?its[0].offsetHeight+12:300);its.forEach((e,q)=>e.classList.toggle('on',q===j))}try{navigator.vibrate&&navigator.vibrate(3)}catch(e){}k++;
+   if(k<steps)setTimeout(tick,40+Math.pow(k/steps,3)*300);else{const s2=document.getElementById(selId);if(s2&&s2.selectedIndex!==ks[target]){s2.selectedIndex=ks[target];s2._slot=true;s2.dispatchEvent(new Event('change',{bubbles:true}))}const box=$('#sideTop');if(box)setTimeout(()=>slotStage(box),60)}};tick()}}
+
+document.addEventListener('click',e=>{const b=e.target.closest('[data-act^="sl-"]');if(!b)return;const a=b.dataset.act,rs=slotRoles(),box=$('#sideTop');
+ if(a==='sl-role'){SLT={ri:+b.dataset.k,step:'a'}}else if(a==='sl-step'){SLT.step=b.dataset.s}
+ else if(a==='sl-rand'){const st=$('#slotStage');if(st&&st._spin)st._spin();return}
+ else if(a==='sl-go'){const st0=$('#slotStage');if(st0&&st0._apply)st0._apply();const r=rs[SLT.ri],sp=r&&$('#sp'+r.id),sy=r&&$('#sy'+r.id);if(!sp||!sp.value){toast('배우를 골라 주세요');return}
+  if(SLT.step==='a'&&sy&&sp.value!=='__n')SLT.step='e';else if(SLT.ri<rs.length-1)SLT={ri:SLT.ri+1,step:'a'};else{const ta=$('#sReason');if(ta){ta.scrollIntoView({behavior:'smooth',block:'center'});ta.focus()}return}}
+ if(box)slotStage(box)});
+document.addEventListener('input',e=>{const m=e.target.dataset&&e.target.dataset.mirror;if(!m)return;const s=document.getElementById(m);if(s){s.value=e.target.value;s.dispatchEvent(new Event('change',{bubbles:true}))}});
+/* 시절 목록이 늦게 도착하면 지금 보는 릴만 다시 그림 */
+document.addEventListener('change',e=>{const t=e.target;if(!t.id||!/^s[py]\d/.test(t.id)||t._slot){if(t)t._slot=false;return}const box=$('#sideTop');if(box&&$('#slotStage'))setTimeout(()=>slotStage(box),0)});
 
 }
 </script>
