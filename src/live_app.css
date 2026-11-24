@@ -364,3 +364,30 @@ body{background:var(--bg);color:var(--ink)}
 .dk2 .dk-acts{grid-template-columns:minmax(0,1fr) auto minmax(0,1fr)}
 .dk2 .dk-btn.mid span{display:none}.dk2 .dk-btn.mid{width:48px;padding:0}
 .dk2 .dk-btn.next{background:var(--card);color:var(--ink);border-color:var(--line)}
+/* 작품 탭 선반 */
+body[data-view=explore] #tabs,body[data-view=explore] #shelf,body[data-view=explore] .chy{display:none!important}
+.exhero{display:block;position:relative;height:250px;border-radius:20px;overflow:hidden;margin:4px 0 18px;color:#fff;text-decoration:none;background:linear-gradient(180deg,rgba(11,10,16,0) 30%,#0B0A10 100%),var(--bg,linear-gradient(135deg,#4A2E5E,#1E2B4A)) center 25%/cover}
+.eh-in{position:absolute;left:16px;right:16px;bottom:16px;display:flex;flex-direction:column;gap:4px}
+.eh-in small{font-size:12px;opacity:.85}.eh-in b{font:400 34px/1.05 'Black Han Sans',sans-serif}
+.eh-cta{align-self:flex-start;margin-top:8px;background:var(--gold);color:#0B0A10;font-weight:900;font-size:14px;padding:10px 16px;border-radius:20px}
+.shrow{margin:0 0 20px}
+.shh{display:flex;align-items:baseline;gap:8px;margin-bottom:8px}.shh h2{margin:0;font-size:17px;font-weight:900}.shh small{font-size:11px;color:var(--mute)}
+.shh button{margin-left:auto;border:0;background:none;color:var(--mute);font:inherit;font-size:12px;cursor:pointer;padding:6px 0}
+.shs{display:flex;gap:10px;overflow-x:auto;scrollbar-width:none;margin:0 -16px;padding:0 16px}.shs::-webkit-scrollbar{display:none}
+.shc{flex:none;width:112px;display:flex;flex-direction:column;gap:4px;color:var(--ink);text-decoration:none}
+.shc .shp{position:relative;aspect-ratio:2/3;border-radius:10px;background:var(--panel) center/cover;display:grid;place-items:center;overflow:hidden}
+.shc .shp i{font-style:normal;font-size:12px;font-weight:700;padding:8px;text-align:center;color:var(--mute)}
+.shc .tg{position:absolute;left:6px;top:6px;font-style:normal;font-size:9px;font-weight:900;padding:2px 6px;border-radius:5px}
+.shc .tg.n,.shc .tg.c{background:var(--pink);color:#141414}.shc .tg.r{background:var(--gold);color:#0B0A10}
+.shc b{font-size:13px;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.shc small{font-size:11px;color:var(--mute);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.exadd{display:flex;flex-direction:column;gap:2px;align-items:center;padding:16px;border:1px dashed var(--line);border-radius:16px;color:var(--ink);text-decoration:none;margin:4px 0 24px}.exadd small{color:var(--mute);font-size:12px}
+.exc{display:flex;gap:10px;align-items:center;margin:4px 0 14px}.exc h2{margin:0;font-size:20px}.exc small{font-size:12px;color:var(--mute)}
+.exc .back{width:40px;height:40px;border-radius:20px;border:1px solid var(--line);background:var(--card);color:var(--ink);font-size:22px;cursor:pointer}
+.exg{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.exg .shc{width:auto}
+body[data-view=topic] #tabs,body[data-view=topic] #shelf,body[data-view=topic] .chy{display:none!important}
+#topicView .th.hero{position:relative;display:flex;flex-wrap:wrap;align-items:flex-end;gap:10px 16px;min-height:260px;margin:0 -16px;padding:90px 16px 16px;box-sizing:border-box;color:#fff;background:linear-gradient(180deg,rgba(11,10,16,.15) 0%,rgba(11,10,16,.55) 55%,var(--bg) 100%),var(--hb,linear-gradient(135deg,#4A2E5E,#1E2B4A)) center 25%/cover}
+#topicView .th.hero .tposter{display:none}
+#topicView .th.hero h1{font:400 34px/1.05 'Black Han Sans',sans-serif;color:#fff;margin:2px 0}
+#topicView .th.hero .sub{color:rgba(255,255,255,.8)}
+#topicView .th.hero .clock{margin-left:auto;text-align:right}
+#topicView .th.hero .clock b{color:var(--gold)}

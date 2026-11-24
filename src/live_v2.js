@@ -30,7 +30,7 @@ const IC={vs:'<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke
  user:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>'};
 const initial=n=>esc(String(n||'?')[0]);
 function photo(n,cls='ph'){const u=IMG['p:'+n];return `<span class="${cls}"${phStyle(u)}>${u?'':initial(n)}</span>`}
-function renderHome(){const box=$('#home');if(!box)return;
+function renderHome(){const box=$('#home');if(!box)return;if(typeof renderShelves==='function'){renderShelves();return}
  const st=FANB.slice(0,12).map(f=>`<a class="story" href="#a/${encodeURIComponent(f.name)}"><span class="ring"><i${phStyle(IMG['p:'+f.name])}>${IMG['p:'+f.name]?'':initial(f.name)}</i></span><span>${esc(f.name)}</span></a>`).join('');
  const calls=HOME.calls.map(c=>`<a class="call" href="#${esc(c.t.id)}"><div class="cv"${phStyle(tBack(c.t))}><small>D-${dleft(c.t)}</small><b>${esc(c.t.title)}<br><span style="font:700 14px 'Noto Sans KR',sans-serif">${esc(c.r.ch)} 역은 누구?</span></b></div>
   <div class="who">${c.cs.length?c.cs.map((x,i)=>`<div>${photo(x.name)}<b>${i+1}. ${esc(x.name)}</b><small style="color:var(--mute)">${c.tot?Math.round(x.votes/c.tot*100)+'%':'첫 표를 기다려요'}</small></div>`).join(''):'<p class="sub" style="grid-column:1/-1;margin:0">아직 후보가 없어요. 첫 후보를 올려 보세요</p>'}</div>
