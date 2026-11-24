@@ -32,18 +32,15 @@ function renderDeck(){const box=$('#deck');if(!box||!DECKV)return;const t=curTop
  const cands=r.cands.slice(0,10),more=r.cands.length-cands.length;
  const tot=r.cands.reduce((a,c)=>a+(c.votes||0),0);
  const news=(t.news||[])[0];
- box.innerHTML=`<div class="dk">${roundBanner()}${deckStrip()}
- <div class="dk-top"><span class="dk-count">작품 ${DI+1} / ${DECK.length}</span><span class="dk-why ${t.why}">${WHY[t.why]||''}${t.nnews?`, 7일 기사 ${t.nnews}건`:''}${t.trending?', 이번 주 인기작':''}</span></div>
+ box.innerHTML=`<div class="dk dk2">${storyRings()}
  <article class="dk-card" id="dkCard" style="${t.poster?`--bg:url('${esc(t.poster)}')`:''}">
-  <header class="dk-head"><div><small>${esc(CATS.find(c=>c.id===t.cat)?.name||'')}${t.season>1?`, 시즌 ${t.season}`:''}, ${roundLeft(t)}</small><h2><a class="dk-tl" href="#${esc(t.id)}">${esc(t.title)}</a></h2></div>
+  <header class="dk-head"><div><button class="dk-wk" data-act="works" aria-label="오늘의 작품 모두 보기">작품 ${DI+1} / ${DECK.length} <i aria-hidden="true">▾</i></button><small>${esc(verLabel(t.cat)||CATS.find(c=>c.id===t.cat)?.name||'')}${t.season>1?`, 시즌 ${t.season}`:''}, <b class="${new Date(t.closes_at)-Date.now()<864e5?'urg':''}">${roundLeft(t)}</b></small><h2><a class="dk-tl" href="#${esc(t.id)}">${esc(t.title)}</a></h2></div>
    <div class="dk-steps" aria-label="배역 진행">${t.roles.map((x,i)=>`<i class="${i<DR?'ok':i===DR?'on':''}" title="${esc(SLOT[x.slot]||'')} ${esc(x.ch)}"></i>`).join('')}</div></header>
-  <div class="dk-q"><span class="slot">${esc(SLOT[r.slot]||'배역')}</span><h3>${esc(r.ch)} 역은 누구?</h3>${r.descr?`<p>${esc(r.descr)}</p>`:''}<p class="hint">${r.age?`배역 나이 ${esc(r.age)}`:''}${dialHintOn()?`${r.age?', ':''}돌려서 고르고, 맨 위 사진을 한 번 더 탭하면 확정`:''}</p></div>
+  <div class="dk-q"><span class="slot">${esc(SLOT[r.slot]||'배역')}</span><h3>${esc(r.ch)} 역은 누구?</h3>${r.descr?`<p class="ds">${esc(r.descr)}</p>`:''}${dialHintOn()?'<p class="hint">돌려서 고르고, 맨 위 사진을 한 번 더 탭하면 확정</p>':''}</div>
   ${dialHTML(t,r,cands,picked,tot)}
-  ${more>0?`<a class="dk-more" href="#${esc(t.id)}">후보 ${more}명 더 보기</a>`:''}
-  ${news?`<a class="dk-news" href="${esc(goURL(t.id,'news','news',news.u))}" target="_blank" rel="noopener">${esc(news.t)}${news.s?` <small>${esc(news.s)}</small>`:''}</a>`:''}
+  ${more>0?`<a class="dk-more" href="#${esc(t.id)}">후보 ${more}명 더</a>`:''}
  </article>
- <div class="dk-acts"><button class="dk-btn skip" data-act="dk-skip" aria-label="이 배역만 넘기기"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg><span>${DR<t.roles.length-1?'이 배역 패스':'마지막 배역 패스'}</span></button><a class="dk-btn mid" href="#${esc(t.id)}" aria-label="작품 자세히">자세히</a><button class="dk-btn next" data-act="dk-nexttopic" aria-label="이 작품 통째로 넘기기">작품 패스 <small>${t.roles.length-DR}개 배역</small></button></div>
- ${DECK[DI+1]?`<button class="dk-nextp" data-act="dk-goto" data-i="${DI+1}"><span class="np"${DECK[DI+1].vposter||DECK[DI+1].poster?` style="background-image:url('${esc(DECK[DI+1].vposter||DECK[DI+1].poster)}')"`:''}></span><span><small>다음 작품</small><b>${esc(DECK[DI+1].title)}</b><em>${DECK[DI+1].roles.length}개 배역, ${esc(CATS.find(c=>c.id===DECK[DI+1].cat)?.name||'')}</em></span><i aria-hidden="true">›</i></button>`:''}
+ <div class="dk-acts"><button class="dk-btn skip" data-act="dk-skip" aria-label="이 배역만 넘기기"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg><span>${DR<t.roles.length-1?'이 배역 패스':'마지막 배역 패스'}</span></button><a class="dk-btn mid" href="#${esc(t.id)}" aria-label="작품 자세히"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/></svg><span>작품 보기</span></a><button class="dk-btn next" data-act="dk-nexttopic" aria-label="이 작품 통째로 넘기기"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5l8 7-8 7M13 5l8 7-8 7"/></svg><span>${DECK[DI+1]?`다음: ${esc(DECK[DI+1].title)}`:'작품 패스'}</span></button></div>
  </div>`;
  cardAt=performance.now();cardKey=t.id+'|'+r.id;bindSwipe();bindDial();stripFocus()}
 
@@ -52,7 +49,7 @@ function dialHintOn(){try{return (+localStorage.getItem('dialVotes')||0)<3}catch
 function deckStrip(){return `<nav class="dkst" id="dkst" aria-label="오늘의 작품">${DECK.map((d,i)=>{const n=d.roles.length,m=d.roles.filter(r=>r.mine).length;return `<button class="st${i===DI?' on':''}${m===n?' done':''}" data-act="dk-goto" data-i="${i}" aria-label="${esc(d.title)}${m===n?', 투표 완료':m?`, ${m}/${n} 배역 투표`:''}"><span class="sp"${d.vposter||d.poster?` style="background-image:url('${esc(d.vposter||d.poster)}')"`:''}>${m===n?'<i>✓</i>':m?`<i>${m}/${n}</i>`:''}</span>${stTag(d)}<b>${esc(d.title)}</b></button>`}).join('')}<a class="st add" href="#make"><span class="sp">+</span><b>작품 추가</b></a></nav>`}
 function stripFocus(){const st=$('#dkst'),on=st&&st.querySelector('.st.on');if(on)st.scrollLeft=Math.max(0,on.offsetLeft-st.clientWidth/2+on.clientWidth/2)}
 function renderDone(t){const box=$('#deck');track('result_view',{t:t.id});
- box.innerHTML=`<div class="dk">${roundBanner()}${deckStrip()}<div class="dk-top"><span class="dk-count">작품 ${DI+1} / ${DECK.length}</span></div>
+ box.innerHTML=`<div class="dk">${storyRings()}<div class="dk-top"><span class="dk-count">작품 ${DI+1} / ${DECK.length}</span></div>
  <article class="dk-card done" style="${t.poster?`--bg:url('${esc(t.poster)}')`:''}"><header class="dk-head"><div><small>내 캐스팅 완성</small><h2>${esc(t.title)}</h2></div></header>
  <div class="dk-res" id="dkRes">${t.roles.map(r=>{const mine=r.cands.find(c=>c.id===r.mine),tot=r.cands.reduce((a,c)=>a+(c.votes||0),0),top=[...r.cands].sort((a,b)=>(b.votes||0)-(a.votes||0))[0];
   return `<div class="rr"><span class="slot">${esc(SLOT[r.slot]||'')}</span><b>${esc(r.ch)}</b><span>${mine?`내 픽 <strong>${esc(mine.name)}</strong>${tot?` ${Math.round((mine.votes||0)/tot*100)}%`:''}`:'건너뜀, 투표하면 결과 공개'}</span>${mine&&top&&tot?`<small>1위 ${esc(top.name)} ${Math.round((top.votes||0)/tot*100)}%</small>`:''}</div>`}).join('')}</div>
@@ -67,7 +64,7 @@ function nextTopic(){cardLeave();DI++;const t=curTopic();DR=t?firstOpenRole(t):0
 async function deckPick(rid,cid){const t=curTopic(),r=curRole();if(!t||!r||r.id!==rid)return;track('cand_tap',{t:t.id,r:rid,c:cid});
  if(r.mine){toast('이 배역은 이미 투표했어요');nextRole();return}
  if(!USER||!PROF){if(pend().filter(p=>p.rid!==rid).length<3){await guestPick(t,r,cid);return}const a=pend().filter(p=>p.rid!==rid);a.push({tid:t.id,rid,cid,at:Date.now()});setPend(a);track('login_prompt',{t:t.id,r:rid,c:cid});openLoginSheet(true);renderDeck();return}
- try{await rpc('cast_vote_src',{rid,cid,src:'wheel'});r.mine=cid;t.seen=true;try{localStorage.setItem('dialVotes',(+localStorage.getItem('dialVotes')||0)+1)}catch(e){}track('vote_done',{t:t.id,r:rid,c:cid});showUndo(rid,`${r.ch} 역 한 표 반영`);
+ try{await rpc('cast_vote_src',{rid,cid,src:'wheel'});castStamp();r.mine=cid;t.seen=true;try{localStorage.setItem('dialVotes',(+localStorage.getItem('dialVotes')||0)+1)}catch(e){}track('vote_done',{t:t.id,r:rid,c:cid});showUndo(rid,`${r.ch} 역 한 표 반영`);
   const card=$('#dkCard');if(card){card.classList.add('fly-r');await new Promise(o=>setTimeout(o,220))}
   // 결과 공개를 위해 덱을 새로 받아 득표를 채움
   const fresh=await rpc('vote_deck',{lim:16}).catch(()=>null);const ft=fresh&&fresh.find(x=>x.id===t.id);if(ft){Object.assign(t,{seen:ft.seen,roles:ft.roles})}
@@ -224,7 +221,7 @@ async function relNext(t){const el=$('#dkRel');if(!el)return;const x=await rpc('
 /* 덱을 끝까지 본 뒤: 막다른 화면 대신 다음 할 일 */
 function deckEnd(box){const rs=(RB.results||[]).slice(0,3),cl=RB.closing||[];const open=(TOPICS||[]).filter(x=>isOpen(x)&&!DECK.some(d=>d.id===x.id)).slice(0,6);
  const tile=(href,ic,b,s,act)=>`<a class="de-t" href="${href}"${act||''}><span>${ic}</span><b>${b}</b><small>${s}</small></a>`;
- box.innerHTML=`<div class="dk">${roundBanner()}${deckStrip()}<div class="dk-end"><div class="de-h"><span>🎬</span><b>오늘 카드는 여기까지!</b><p>내일 0시에 새 판이 열려요. 그 전에 이건 어때요?</p></div>
+ box.innerHTML=`<div class="dk">${storyRings()}<div class="dk-end"><div class="de-h"><span>🎬</span><b>오늘 카드는 여기까지!</b><p>내일 0시에 새 판이 열려요. 그 전에 이건 어때요?</p></div>
   <div class="de-grid">${tile('#vs','⚡','VS 한판','두 명 중 한 명만, 빠르게')}${USER?tile('#me','📅','주간 결산','이번 주 내 캐스팅 돌아보기',' data-act="upg" data-k="week"'):tile('#','🗳️','표 저장하기','로그인하면 결과 알림',' data-act="dk-login"')}${tile('#make','➕','작품 제안','보고 싶은 판을 직접 열기')}${tile('#','🔁','처음부터 다시','넘긴 카드 다시 보기',' data-act="dk-restart"')}</div>
   ${cl.length?`<h3>⏰ 오늘 자정 마감</h3><div class="de-list">${cl.map(x=>`<a href="#${esc(x.tid)}">${esc(x.title)}<i>→</i></a>`).join('')}</div>`:''}
   ${open.length?`<h3>덱에 없던 작품</h3><div class="de-list">${open.map(x=>`<a href="#${esc(x.id)}">${esc(x.title)}${verLabel(x.cat)?` <small>${esc(verLabel(x.cat))}</small>`:''}<i>→</i></a>`).join('')}</div>`:''}</div></div>`;
@@ -235,3 +232,19 @@ document.addEventListener('click',e=>{if(e.target.closest('[data-act="dk-login"]
 function passMap(){try{return JSON.parse(localStorage.getItem('dk_pass')||'{}')}catch(e){return {}}}
 function markPass(tid){const m=passMap(),now=Date.now();m[tid]=now;for(const k in m)if(now-m[k]>3*864e5)delete m[k];try{localStorage.setItem('dk_pass',JSON.stringify(m))}catch(e){}}
 function passSort(deck){const m=passMap(),now=Date.now(),ok=t=>!(m[t.id]&&now-m[t.id]<3*864e5);return [...deck.filter(ok),...deck.filter(t=>!ok(t))]}
+
+/* ===== 광장 v2: 위 스토리 줄, 가운데 카드 한 장, 작품 목록은 시트 ===== */
+function storyRings(){const rs=(RB.results||[]).filter(r=>Date.now()-new Date(r.at)<2*864e5),out=[];
+ const ring=(cls,bg,lab,attrs,txt)=>`<button class="sr ${cls}" ${attrs}><span class="rg"><span class="in"${bg?` style="background-image:url('${esc(bg)}')"`:''}>${txt||''}</span></span><small>${esc(lab)}</small></button>`;
+ for(const r of rs)out.push(ring('res',r.poster,r.title,`data-act="rres" data-t="${esc(r.tid)}" data-s="${r.season}" aria-label="${esc(r.title)} 결과 발표"`,'<b>발표</b>'));
+ DECK.forEach((d,i)=>{if(isNewT(d))out.push(ring('new',d.vposter||d.poster,d.title,`data-act="dk-goto" data-i="${i}" aria-label="새 판 ${esc(d.title)}"`,`<b>${d.season>1?'S'+d.season:'NEW'}</b>`))});
+ DECK.forEach((d,i)=>{const ms=new Date(d.closes_at)-Date.now();if(ms>0&&ms<864e5&&!isNewT(d))out.push(ring('cls',d.vposter||d.poster,d.title,`data-act="dk-goto" data-i="${i}" aria-label="오늘 마감 ${esc(d.title)}"`,'<b>D-0</b>'))});
+ if(USER)out.push(ring('wk',null,'주간 결산','data-act="upg" data-k="week" data-go="me"','<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>'));
+ out.push(ring('all',null,'작품 '+DECK.length,'data-act="works" aria-label="오늘의 작품 모두 보기"','<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>'));
+ return `<nav class="srow" aria-label="오늘의 소식">${out.join('')}</nav>`}
+function openWorks(){const old=$('#worksSheet');if(old)old.remove();const el=document.createElement('div');el.id='worksSheet';el.className='wsheet';
+ el.innerHTML=`<div class="ws-in" role="dialog" aria-label="오늘의 작품"><div class="ws-h"><b>오늘의 작품 ${DECK.length}</b><button class="x" data-act="ws-x" aria-label="닫기">×</button></div><div class="ws-g">${DECK.map((d,i)=>{const n=d.roles.length,m=d.roles.filter(r=>r.mine).length;return `<button class="wc${i===DI?' on':''}" data-act="dk-goto" data-i="${i}"><span class="ps"${d.vposter||d.poster?` style="background-image:url('${esc(d.vposter||d.poster)}')"`:''}>${stTag(d)}${m?`<i>${m===n?'✓':m+'/'+n}</i>`:''}</span><b>${esc(d.title)}</b><small>${esc(verLabel(d.cat)||'')}${verLabel(d.cat)?', ':''}${roundLeft(d)}</small></button>`}).join('')}<a class="wc add" href="#make"><span class="ps">+</span><b>작품 추가</b><small>보고 싶은 판 열기</small></a></div></div>`;
+ document.body.appendChild(el);el.addEventListener('click',e=>{if(e.target===el||e.target.closest('[data-act="ws-x"],[data-act="dk-goto"],a'))el.remove()})}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-act="works"]');if(b){openWorks();return}const g=e.target.closest('[data-go="me"]');if(g)setTimeout(()=>{location.hash='me'},0)});
+function castStamp(){const c=$('#dkCard');if(!c)return;const s=document.createElement('span');s.className='cast-stamp';s.textContent='CAST!';c.appendChild(s);setTimeout(()=>s.remove(),1400)}
+document.addEventListener('click',e=>{const p=e.target.closest('.dk2 .dl-pick');if(p&&!e.target.closest('a'))p.classList.toggle('open')});
