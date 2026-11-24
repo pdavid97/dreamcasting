@@ -468,6 +468,42 @@ body{word-break:keep-all;overflow-wrap:break-word}
 .cM .hit .tg{flex:none;font-size:10px;font-weight:800;border-radius:6px;padding:3px 6px}.cM .hit .tg.ok{background:#D4FF3A;color:#0A0A0A}.cM .hit .tg.no{background:#2A2A2A;color:#9A9A9A}
 .cM .hit p{flex:1;min-width:0;margin:0;font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.cM .hit b{flex:none;font-family:Anton,sans-serif;font-size:16px;color:#D4FF3A}
 .cM .demo{margin:10px 16px 0;font-size:10px;color:#666}
+
+/* 나 페이지 v2: 링 게이지, 포인트 누적 막대, 아이콘 숫자 타일, 주간 막대, 취향 아이콘 버블, 육각 업적 */
+.cM2 svg{fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.m2-top{display:flex;align-items:center;gap:14px;padding:14px 16px 0}.m2-brand{flex:1;font-family:Anton,sans-serif;font-size:20px;letter-spacing:.06em;color:#D4FF3A}
+.m2-ic{position:relative;width:38px;height:38px;border-radius:50%;background:#141414;border:1px solid #222;display:grid;place-items:center;color:#ddd}.m2-ic svg{width:19px;height:19px}
+.m2-ic i{position:absolute;top:-3px;right:-3px;min-width:17px;height:17px;border-radius:9px;background:#FF6B8B;color:#fff;font-size:10px;font-weight:800;font-style:normal;display:grid;place-items:center}
+.m2-hero{display:flex;align-items:center;gap:16px;padding:18px 16px 0}
+.m2-hero .ring{position:relative;width:96px;height:96px;flex:none}.m2-hero .ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.m2-hero .ring .bg{stroke:#222;stroke-width:8}.m2-hero .ring .fg{stroke:#D4FF3A;stroke-width:8;filter:drop-shadow(0 0 6px rgba(212,255,58,.6));transition:stroke-dashoffset 1s}
+.m2-hero .av{position:absolute;inset:14px;border-radius:50%;background:#1E1E1E;display:grid;place-items:center;font-size:30px;font-weight:900;color:#D4FF3A}
+.m2-hero .who b{display:block;font-size:28px;font-weight:900;letter-spacing:-.04em}
+.m2-hero .tier{display:inline-block;margin-top:4px;font-size:11px;font-weight:900;color:#0A0A0A;background:#D4FF3A;border-radius:6px;padding:3px 8px}
+.m2-hero small{display:block;margin-top:6px;font-size:12px;color:#8A8A8A}.m2-hero em{font-style:normal;color:#fff;font-weight:800}
+.m2-pts{margin:16px 16px 0;padding:14px;border-radius:16px;background:#141414;border:1px solid #222}
+.m2-pts .num b{font-family:Anton,sans-serif;font-size:40px;line-height:1}.m2-pts .num small{font-family:Anton,sans-serif;font-size:18px;color:#D4FF3A;margin-left:3px}
+.m2-pts .stack{display:flex;gap:3px;height:10px;margin-top:10px}.m2-pts .stack i{border-radius:4px}
+.m2-pts .lg{display:flex;flex-wrap:wrap;gap:10px;margin-top:8px;font-size:11px;color:#BDBDBD;font-weight:700}.m2-pts .lg i{display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:4px}
+.m2-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:10px 16px 0}
+.m2-stats .st{background:#141414;border:1px solid #222;border-radius:14px;padding:12px 6px;text-align:center;position:relative}
+.m2-stats .si{width:20px;height:20px;color:#D4FF3A}.m2-stats b{display:block;font-family:Anton,sans-serif;font-size:24px;line-height:1.1;margin-top:4px}.m2-stats small{font-size:10px;color:#9A9A9A;font-weight:700}
+.m2-stats .donut svg{width:40px;height:40px;transform:rotate(-90deg)}.m2-stats .donut .bg{stroke:#2A2A2A;stroke-width:5}.m2-stats .donut .fg{stroke:#7CF0D8;stroke-width:5}
+.m2-stats .donut b{position:absolute;left:0;right:0;top:22px;font-size:13px}.m2-stats .donut small{display:block;margin-top:4px}
+.m2-week{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin:10px 16px 0;padding:14px;border-radius:16px;background:linear-gradient(135deg,#1B2408,#141414 60%);border:1px solid rgba(212,255,58,.3);text-decoration:none;color:#fff}
+.m2-week small{font-size:11px;color:#D4FF3A;font-weight:800}.m2-week b{display:block;font-family:Anton,sans-serif;font-size:26px;margin-top:2px}.m2-week em{display:block;font-family:'Noto Sans KR',sans-serif;font-style:normal;font-size:11px;color:#9A9A9A;font-weight:600}
+.m2-week .bars{display:flex;align-items:flex-end;gap:4px;height:46px}.m2-week .bars i{width:9px;border-radius:3px;background:#3A4A12}.m2-week .bars i.hi{background:#D4FF3A}
+.m2-taste{display:flex;flex-wrap:wrap;gap:10px;padding:0 16px}
+.m2-taste .tb{--s:calc(54px + var(--w)*34px);width:var(--s);height:var(--s);border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;background:radial-gradient(circle at 30% 30%,rgba(212,255,58,calc(var(--w)*.35)),#141414 70%);border:1px solid rgba(212,255,58,calc(var(--w)*.8));color:#fff}
+.m2-taste .tb svg{width:calc(16px + var(--w)*10px);height:calc(16px + var(--w)*10px);color:#D4FF3A}.m2-taste .tb small{font-size:9.5px;font-weight:800;text-align:center;line-height:1.1;max-width:80%}
+.m2-badges{display:flex;gap:10px;overflow-x:auto;padding:0 16px;scrollbar-width:none}
+.m2-badges .bd{flex:none;width:64px;text-align:center}.m2-badges .bd i{display:block;width:56px;height:64px;margin:0 auto;clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%);background:#222}
+.m2-badges .bd.on i{background:linear-gradient(160deg,#E6FF7A,#8FB21A);box-shadow:inset 0 0 0 3px #0A0A0A}
+.m2-badges .bd small{display:block;margin-top:5px;font-size:10px;font-weight:800;color:#777}.m2-badges .bd.on small{color:#fff}
+.m2-menu{margin:16px 16px 0;border-radius:16px;background:#141414;border:1px solid #222;overflow:hidden}
+.m2-menu a{display:flex;align-items:center;gap:12px;padding:14px;border-bottom:1px solid #1E1E1E;text-decoration:none;color:#fff;font-size:14px;font-weight:700}.m2-menu a:last-child{border-bottom:0}
+.m2-menu svg{width:20px;height:20px;color:#D4FF3A}.m2-menu span{flex:1}.m2-menu i{font-style:normal;color:#666}
+.cM2 .cM .team{padding:0 16px}.m2-demo{margin:10px 16px 0;font-size:10px;color:#666}
 </style>
 </head>
 <body>
@@ -605,14 +641,33 @@ function cRank(){const agg={};DK.forEach(t=>(t.roles||[]).forEach(r=>(r.cands||[
 <div class="list">${L.slice(3).map((a,k)=>{const i=k+3,m=mv(i);return `<a class="row" href="#"><span class="n">${i+1}</span><span class="ph2" style="${phS(phU(a.name))}"></span><div><b>${esc(nm2(a.name)[0])}</b><small>후보 배역 ${a.roles}개</small></div><span class="sc">${a.v}</span>${m>0?`<span class="up">▲${m}</span>`:m<0?`<span class="dn">▼${-m}</span>`:''}</a>`}).join('')}</div>
 <p class="cM demo" style="padding:0 16px">점수는 지금 열린 판의 득표 합계${demo?'(아직 표가 없어 예시 순서)':''}. 순위 변동 화살표는 예시 값이에요.</p>
 ${tmdb}${nav()}</div>`}
-function cMe(){const picks=DK.slice(0,5).map(t=>{const r=(t.roles||[])[0],c=r&&[...(r.cands||[])].sort((a,b)=>(b.votes||0)-(a.votes||0))[0];return c&&{t,r,c}}).filter(Boolean);
- return `<div class="scr C cP cM">${rail()}<div class="pf"><span class="av">캐</span><div><b>캐스팅감독 다윗</b><small>가입 12일째</small><br><span class="lv">안목 레벨 3</span></div></div>
-<div class="tiles"><div class="tile"><b>48</b><small>던진 표</small></div><div class="tile"><b>62%</b><small>1위 적중률</small></div><div class="tile"><b>17</b><small>VS 최고 연속</small></div></div>
-<div class="sec"><b>내 캐스팅 팀</b><span>작품별 내 픽</span></div>
-<div class="team">${picks.map(x=>`<a href="#"><span class="ph2" style="${phS(phU(x.c.name))}"></span><small>${esc(x.t.title)}</small><b>${esc(nm2(x.c.name)[0])}</b></a>`).join('')}</div>
-<div class="sec"><b>결과 발표</b><span>맞히면 10P, 언더독이면 +10P</span></div>
-${picks.slice(0,3).map((x,i)=>`<div class="hit"><span class="tg ${i===1?'no':'ok'}">${i===1?'아쉽':'적중'}</span><p>${esc(x.t.title)} ${esc(String(x.r.ch).replace(/\s*\(.*\)$/,''))} 역, ${esc(nm2(x.c.name)[0])}</p>${i===1?'':`<b>+${i?20:10}P</b>`}</div>`).join('')}
-<p class="demo">프로필 숫자와 적중 기록은 디자인 확인용 예시 값이에요. 실제 앱에서는 내 기록으로 채워져요.</p>
+function cMe(){const picks=DK.slice(0,6).map(t=>{const r=(t.roles||[])[0],c=r&&[...(r.cands||[])].sort((a,b)=>(b.votes||0)-(a.votes||0))[0];return c&&{t,r,c}}).filter(Boolean);
+ const ic={vote:'<path d="M4 13h16v7H4zM8 13V5h8v8M10 9h4"/>',heart:'<path d="M12 20s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.5-7 10-7 10z"/>',film:'<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M7 5v14M17 5v14M3 9h4M3 15h4M17 9h4M17 15h4"/>',bolt:'<path d="M13 2L4 14h7l-1 8 9-12h-7z"/>',chart:'<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>',tv:'<rect x="3" y="6" width="18" height="12" rx="2"/><path d="M8 21h8M12 18v3"/>',list:'<path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>',fan:'<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>',bell:'<path d="M6 16V11a6 6 0 0 1 12 0v5l2 2H4zM10 21h4"/>',gear:'<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1"/>',book:'<path d="M4 4h7a3 3 0 0 1 3 3v13a2 2 0 0 0-2-2H4zM20 4h-5a3 3 0 0 0-3 3"/>',globe:'<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.5 3 14 0 18M12 3c-3 3.5-3 14 0 18"/>',heart2:'<path d="M12 20s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.5-7 10-7 10z"/>',mask:'<path d="M4 5h16v6a8 8 0 0 1-16 0zM8 10h.01M16 10h.01M9 14c2 1.5 4 1.5 6 0"/>',sword:'<path d="M14 4h6v6L9 21l-6-6zM5 13l6 6"/>',search:'<circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/>'};
+ const sv=(k,cl)=>`<svg viewBox="0 0 24 24" class="${cl||''}" aria-hidden="true">${ic[k]}</svg>`;
+ const pts=503,next=1000,pc=pts/next,R=52,C2=2*Math.PI*R;
+ const parts=[['투표',220,'#D4FF3A'],['적중',150,'#7CF0D8'],['VS',83,'#FFB547'],['공감',50,'#FF6B8B']];
+ const week=[12,30,8,46,22,64,38],wmax=Math.max(...week);
+ const taste=[['book','웹소설 실사화',.92],['film','할리우드판',.7],['globe','해외 명작 한국판',.48],['heart2','로맨스',.85],['search','미스터리',.55],['mask','코미디',.3],['sword','액션',.4]];
+ const badges=[['첫 캐스팅',1],['적중 5연속',1],['VS 100판',1],['숨은 진주',1],['토론왕',0],['시즌 MVP',0]];
+ return `<div class="scr C cP cM2">
+<div class="m2-top"><span class="m2-brand">MY CAST</span><span class="m2-ic">${sv('bell')}<i>4</i></span><span class="m2-ic">${sv('gear')}</span></div>
+<div class="m2-hero"><div class="ring"><svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="${R}" class="bg"/><circle cx="60" cy="60" r="${R}" class="fg" style="stroke-dasharray:${C2};stroke-dashoffset:${C2*(1-pc)}"/></svg><span class="av">테</span></div>
+<div class="who"><b>test-2</b><span class="tier">캐스팅 덕후</span><small>다음 등급 <em>캐스팅 평론가</em>까지 ${next-pts}P</small></div></div>
+<div class="m2-pts"><div class="num"><b>${pts}</b><small>P</small></div><div class="stack">${parts.map(([l,v,c])=>`<i style="flex:${v};background:${c}"></i>`).join('')}</div><div class="lg">${parts.map(([l,v,c])=>`<span><i style="background:${c}"></i>${l} ${v}</span>`).join('')}</div></div>
+<div class="m2-stats">
+ <div class="st donut"><svg viewBox="0 0 42 42"><circle cx="21" cy="21" r="16" class="bg"/><circle cx="21" cy="21" r="16" class="fg" style="stroke-dasharray:${2*Math.PI*16};stroke-dashoffset:${2*Math.PI*16*(1-.62)}"/></svg><b>62%</b><small>내 촉 적중</small></div>
+ <div class="st">${sv('vote','si')}<b>38</b><small>던진 표</small></div>
+ <div class="st">${sv('heart','si')}<b>10</b><small>받은 공감</small></div>
+ <div class="st">${sv('film','si')}<b>17</b><small>드림캐스팅</small></div></div>
+<a class="m2-week" href="#"><div><small>이번 주 결산</small><b>+220P <em>지난주보다 34% 늘었어요</em></b></div><div class="bars">${week.map((v,i)=>`<i style="height:${Math.round(v/wmax*100)}%" class="${i===5?'hi':''}"></i>`).join('')}</div></a>
+<div class="sec"><b>내 취향</b></div>
+<div class="m2-taste">${taste.map(([k,l,w])=>`<span class="tb" style="--w:${w}">${sv(k)}<small>${l}</small></span>`).join('')}</div>
+<div class="sec"><b>업적</b><span>${badges.filter(b=>b[1]).length} / ${badges.length}</span></div>
+<div class="m2-badges">${badges.map(([l,on])=>`<span class="bd ${on?'on':''}"><i></i><small>${l}</small></span>`).join('')}</div>
+<div class="sec"><b>내 캐스팅 팀</b></div>
+<div class="cM"><div class="team">${picks.map(x=>`<a href="#"><span class="ph2" style="${phS(phU(x.c.name))}"></span><small>${esc(x.t.title)}</small><b>${esc(nm2(x.c.name)[0])}</b></a>`).join('')}</div></div>
+<div class="m2-menu">${[['chart','리포트'],['tv','내 AV룸'],['list','투표 기록'],['fan','시트, 팬 채널']].map(([k,l])=>`<a href="#">${sv(k)}<span>${l}</span><i>›</i></a>`).join('')}</div>
+<p class="m2-demo">숫자와 그래프는 디자인 확인용 예시 값이에요.</p>
 ${tmdb}${nav()}</div>`}
 /* 카드 전환은 다시 그리지 않고 위치만 바꿔 부드럽게 */
 function arcUpdate(){const arc=document.getElementById('arc');if(!arc)return render();
