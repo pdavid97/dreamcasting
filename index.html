@@ -1330,7 +1330,7 @@ body[data-view=topic] #tabs,body[data-view=topic] #shelf,body[data-view=topic] .
 #topicView .th.hero .clock{margin-left:auto;text-align:right}
 #topicView .th.hero .clock b{color:var(--gold)}
 /* 랭킹: 칩 한 줄, 목록은 5개까지 */
-.rknav{display:flex!important;grid-template-columns:none!important;gap:8px;overflow-x:auto;scrollbar-width:none;margin:0 -16px 14px!important;padding:4px 16px!important;position:sticky;top:0;z-index:15;background:var(--bg)}
+body[data-view=rank] .rknav{display:flex!important;grid-template-columns:none!important;gap:8px;overflow-x:auto;scrollbar-width:none;margin:0 -16px 14px!important;padding:4px 16px!important;position:sticky;top:0;z-index:15;background:var(--bg)}
 .rknav::-webkit-scrollbar{display:none}
 .rknav button{flex:none;display:flex!important;flex-direction:row!important;align-items:center;gap:6px;padding:9px 14px!important;border-radius:20px!important;border:1px solid var(--line)!important;background:var(--card)!important;color:var(--ink);min-height:0!important;aspect-ratio:auto!important}
 .rknav button span{font-size:15px!important}.rknav button b{font-size:13px!important;white-space:nowrap}
@@ -1354,6 +1354,7 @@ body[data-view=topic] #tabs,body[data-view=topic] #shelf,body[data-view=topic] .
 .ws-share{position:relative;z-index:5;margin-top:auto;height:54px;border-radius:27px;border:0;background:#fff;color:#0B0A10;font:900 16px 'Noto Sans KR',sans-serif;cursor:pointer}
 .ws-prev,.ws-next{position:absolute;top:70px;bottom:120px;z-index:2;border:0;background:transparent;cursor:pointer}.ws-prev{left:0;width:30%}.ws-next{right:0;width:70%}
 .wkx-story{display:block;width:100%;margin:0 0 10px;padding:12px;border-radius:14px;border:0;background:linear-gradient(90deg,#FF4F7B,#7B5CFF);color:#fff;font:900 14px 'Noto Sans KR',sans-serif;cursor:pointer}
+body:not([data-view=rank]) .rknav{display:none!important}
 
 </style>
 </head>
