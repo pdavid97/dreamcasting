@@ -48,7 +48,7 @@ const DEV=[
 const $=s=>document.querySelector(s),sel=$('#dev');
 sel.innerHTML=DEV.map(d=>`<option value="${d.k}">${d.n} (${d.w}x${d.h})</option>`).join('');
 const P=new URLSearchParams(location.search);sel.value=P.get('d')||'ip15';$('#hash').value=P.get('h')||location.hash||'';
-function src(){return 'index.html'+($('#hash').value.trim()?(($('#hash').value.trim()[0]==='#'?'':'#')+$('#hash').value.trim()):'')}
+function src(){return 'index.html?v='+Date.now()+($('#hash').value.trim()?(($('#hash').value.trim()[0]==='#'?'':'#')+$('#hash').value.trim()):'')}
 function phone(d){const c=$('#chrome').checked,ih=c?d.h-d.top-d.bot:d.h-d.top;
  return `<div class="dev"><div class="frame" data-h="${d.h+24}"><div class="screen" style="width:${d.w}px;height:${d.h}px">
  <div class="status" style="height:${d.top}px"><span>9:41</span><span>●●● ▮</span></div>${d.top>40?'<div class="notch"></div>':''}

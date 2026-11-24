@@ -1482,6 +1482,12 @@ body:not([data-view=vs]) #topicView>#duel{display:none}
 .hexrow .sr.wk .in,.hexrow .sr.all .in{background:#2b2836}
 @keyframes hexFloat{0%,100%{translate:0 0}50%{translate:0 -3px}}
 @media(prefers-reduced-motion:reduce){.hexrow .sr{animation:none}}
+/* 육각 타일 엠보싱: 위쪽은 빛, 아래쪽은 그늘 */
+.hexrow .sr .rg{position:relative}
+.hexrow .sr .rg::after{content:'';position:absolute;inset:0;pointer-events:none;clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%);background:linear-gradient(180deg,rgba(255,255,255,.45) 0,rgba(255,255,255,0) 22%,rgba(0,0,0,0) 72%,rgba(0,0,0,.38) 100%);mix-blend-mode:soft-light}
+.hexrow .sr .in::after{content:'';position:absolute;inset:0;z-index:2;pointer-events:none;background:radial-gradient(110% 70% at 35% 8%,rgba(255,255,255,.32),rgba(255,255,255,0) 55%),radial-gradient(120% 60% at 50% 110%,rgba(0,0,0,.45),rgba(0,0,0,0) 60%)}
+.hexrow .sr .in b,.hexrow .sr .in em,.hexrow .sr .in svg{position:relative;z-index:3}
+.hexrow .sr{filter:drop-shadow(0 2px 0 rgba(0,0,0,.55)) drop-shadow(0 5px 0 rgba(0,0,0,.25)) drop-shadow(0 10px 16px rgba(0,0,0,.3))}
 
 </style>
 </head>
