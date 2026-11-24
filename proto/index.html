@@ -308,6 +308,24 @@ body.clean .sw{display:none}
 .vsl6 .fight .nm b{font-size:22px}
 .vsl6 .fight .l .ask2{left:24%;top:72%}.vsl6 .fight .r .ask2{left:76%;top:28%}
 .vsl6 .fight .l .cast2{left:22%;top:66%}.vsl6 .fight .r .cast2{left:78%;top:30%}
+
+/* vsl6 v2: 탭하면 고른 사람 얼굴이 온전히, 다른 사람은 가장자리로 물러나 흐려짐. 평소엔 흑백 + 틈 */
+.vsl6 .fight .l,.vsl6 .fight .r{transition:clip-path .55s cubic-bezier(.22,1,.36,1),filter .45s}
+.vsl6 .fight .l{clip-path:polygon(0 0,57% 0,41% 100%,0 100%)}
+.vsl6 .fight .r{clip-path:polygon(59% 0,100% 0,100% 100%,43% 100%)}
+.vsl6 .fight button.idle{filter:grayscale(1) contrast(1.05) brightness(.9)}
+.vsl6 .fight .l.hi,.vsl6 .fight .l.win{clip-path:polygon(0 0,90% 0,84% 100%,0 100%);z-index:2}
+.vsl6 .fight .r.dim,.vsl6 .fight .r.lose{clip-path:polygon(92% 0,100% 0,100% 100%,86% 100%)}
+.vsl6 .fight .r.hi,.vsl6 .fight .r.win{clip-path:polygon(10% 0,100% 0,100% 100%,16% 100%);z-index:2}
+.vsl6 .fight .l.dim,.vsl6 .fight .l.lose{clip-path:polygon(0 0,8% 0,14% 100%,0 100%)}
+.vsl6 .fight button.dim,.vsl6 .fight button.lose{filter:grayscale(1) brightness(.35)}
+.vsl6 .fight .dim .nm,.vsl6 .fight .lose .nm,.vsl6 .fight .lose .pct{opacity:0}
+.vsl6 .fight .l.hi .ask2,.vsl6 .fight .l.win .cast2{left:44%}.vsl6 .fight .r.hi .ask2,.vsl6 .fight .r.win .cast2{left:56%}
+.vsl6 .fight .hi .ask2{top:80%!important}
+.vsl6 .fight .win .cast2{top:20%!important}
+.vsl6 .fight:has(.hi) .vsb,.vsl6 .fight:has(.win) .vsb{opacity:0;transition:opacity .2s}
+.vsl6 .fight .hl{box-shadow:inset 0 0 0 3px #D4FF3A,inset 0 0 50px rgba(212,255,58,.25)}
+.vsl6 .fight .lose .nm span{font-size:22px}
 </style>
 </head>
 <body>
