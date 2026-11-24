@@ -4,6 +4,7 @@
 //   TMDB_TOKEN  David가 직접 넣음. TMDB API Key(v3) 또는 API Read Access Token(v4) 중 하나
 // 요청: POST { names: ["배우 이름", ...], titles: ["작품 제목", ...] }  (합쳐서 최대 40개)
 // 응답: { p: { "배우 이름": "https://image.tmdb.org/...jpg" | "" }, w: { "작품 제목": "..." | "" }, k: { "tv:123": "..." } }
+// filmo: "배우 이름", alt: "원어 이름" 을 주면 그 배우의 출연작 목록(제목, 연도, 배역, 포스터)을 돌려줌. DB에 출연 기록이 없는 배우용
 // works: ["tv:123", "movie:456"] 를 주면 TMDB 번호로 정확한 포스터를 돌려줌(제목 검색보다 정확)
 // 결과는 tmdb_cache 테이블에 30일 보관해 TMDB 호출을 줄임
 const ORIGINS = [/^https:\/\/pdavid97\.github\.io$/, /^http:\/\/localhost(:\d+)?$/, /^http:\/\/127\.0\.0\.1(:\d+)?$/, /^null$/];
@@ -58,8 +59,38 @@ Deno.serve(async (req) => {
   if (req.method !== "POST") return j({ error: "method" }, 405, h);
   const token = Deno.env.get("TMDB_TOKEN") || "";
   if (!token) return j({ error: "no TMDB_TOKEN" }, 503, h);
-  let b: { names?: unknown; titles?: unknown; works?: unknown };
+  let b: { names?: unknown; titles?: unknown; works?: unknown; filmo?: unknown; alt?: unknown };
   try { b = await req.json(); } catch { return j({ error: "json" }, 400, h); }
+  if (typeof b.filmo === "string" && b.filmo.trim() && b.filmo.length <= 40) {
+    const nm = b.filmo.trim(), alt = typeof b.alt === "string" && b.alt.length <= 60 ? b.alt.trim() : "";
+    const ck = "f:" + nm, hit0 = await cacheGet([ck]);
+    if (hit0.has(ck)) { try { return j(JSON.parse(hit0.get(ck)!), 200, h); } catch { /* 다시 조회 */ } }
+    try {
+      let person: Record<string, unknown> | null = null;
+      for (const q of [alt, nm].filter(Boolean)) {
+        const d = await tmdb("/search/person", q, token);
+        person = (d?.results || []).find((r: Record<string, unknown>) => r.known_for_department === "Acting") || null;
+        if (person) break;
+      }
+      if (!person) { await cachePut([{ k: ck, url: JSON.stringify({ f: [], p: "" }) }]); return j({ f: [], p: "" }, 200, h); }
+      const u = new URL(`https://api.themoviedb.org/3/person/${person.id}/combined_credits`); u.searchParams.set("language", "ko-KR");
+      const hh: Record<string, string> = { accept: "application/json" };
+      if (token.length > 60) hh.Authorization = "Bearer " + token; else u.searchParams.set("api_key", token);
+      const r = await fetch(u, { headers: hh });
+      const cc = r.ok ? await r.json() : { cast: [] };
+      const BAD = [10767, 10763, 10764, 99, 10402];
+      const seen = new Set<string>(), Y = new Date().getFullYear();
+      const f = (cc.cast || []).filter((c: Record<string, unknown>) => !((c.genre_ids as number[]) || []).some((g) => BAD.includes(g)) && !/self|himself|herself|본인|narrator/i.test(String(c.character || "")) && (c.release_date || c.first_air_date))
+        .map((c: Record<string, unknown>) => ({ t: String(c.title || c.name || ""), y: +String(c.release_date || c.first_air_date).slice(0, 4), ch: /[가-힣]/.test(String(c.character || "")) ? String(c.character).replace(/\s*\(.*\)$/, "") : "", tk: `${c.media_type === "movie" ? "movie" : "tv"}:${c.id}`, p: c.poster_path ? `https://image.tmdb.org/t/p/w185${c.poster_path}` : "", v: +(c.vote_count as number || 0) }))
+        .filter((x: { t: string; y: number }) => x.t && x.y && x.y < Y && x.y >= 1950)
+        .sort((a: { v: number }, z: { v: number }) => z.v - a.v)
+        .filter((x: { t: string; y: number }) => { const k = x.t + x.y; if (seen.has(k)) return false; seen.add(k); return true; })
+        .slice(0, 30).sort((a: { y: number }, z: { y: number }) => z.y - a.y).map(({ v: _v, ...x }: { v: number }) => x);
+      const out = { f, p: person.profile_path ? `https://image.tmdb.org/t/p/w185${person.profile_path}` : "" };
+      await cachePut([{ k: ck, url: JSON.stringify(out) }]);
+      return j(out, 200, h);
+    } catch (e) { return j({ error: String(e) }, 500, h); }
+  }
   const clean = (a: unknown) => (Array.isArray(a) ? a : []).filter((x) => typeof x === "string" && x.trim() && x.length <= 40).map((x) => (x as string).trim());
   const names = [...new Set(clean(b.names))], titles = [...new Set(clean(b.titles))];
   if (names.length + titles.length > 40) return j({ error: "too many" }, 400, h);

@@ -4,7 +4,7 @@ async function wkPosters(ws){const need=[...new Set(ws.map(w=>w.tk).filter(k=>k&
  try{const r=await fetch(SB_URL+'/functions/v1/tmdb',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+ANON,apikey:ANON},body:JSON.stringify({works:need})});if(r.ok){const d=await r.json();Object.assign(WKP,d.k||{})}}catch(e){}}
 const RH=58;
 function reelImg(sel,o){if(sel.id.startsWith('sp')){if(!o.value)return{ic:'?'};if(o.value==='__n')return{ic:'✎'};return{u:IMG['p:'+o.textContent.trim()]||'',ic:(o.textContent.trim()||'?')[0]}}
- if(sel.id.startsWith('sy')){if(!o.value)return{ic:'지금'};const wi=o.value.split('|')[1];let tk='';for(const k in ERA){const w=(ERA[k]||[]).find(x=>String(x.wi)===wi);if(w){tk=w.tk;break}}return{u:tk?WKP[tk]||'':'',ic:o.value.split('|')[0],poster:1}}return{ic:''}}
+ if(sel.id.startsWith('sy')){if(!o.value)return{ic:'지금'};const [yy,wi,tt]=o.value.split('|');let tk='';for(const k in ERA){const w=(ERA[k]||[]).find(x=>wi?String(x.wi)===wi:(String(x.y)===yy&&x.t.slice(0,60)===tt));if(w){tk=w.tk;break}}return{u:tk?WKP[tk]||'':'',ic:o.value.split('|')[0],poster:1}}return{ic:''}}
 function reelify(sel){let rl=sel.nextElementSibling&&sel.nextElementSibling.classList&&sel.nextElementSibling.classList.contains('reel')?sel.nextElementSibling:null;
  if(!rl){rl=document.createElement('div');rl.className='reel';sel.classList.add('reel-src');sel.after(rl);
   new MutationObserver(()=>drawReel(sel,rl)).observe(sel,{childList:true});
@@ -21,3 +21,7 @@ function drawReel(sel,rl){const os=[...sel.options];const lab=sel.getAttribute('
  reelTo(rl,Math.max(0,sel.selectedIndex),false)}
 function reelTo(rl,i,smooth){const win=rl.querySelector('.rl-win');if(!win)return;const n=rl.querySelectorAll('.rl-it').length;i=Math.max(0,Math.min(n-1,i));win.scrollTo({top:i*RH,behavior:smooth?'smooth':'auto'});rl.querySelectorAll('.rl-it').forEach((e,k)=>e.classList.toggle('on',k===i))}
 function reelAll(root){(root||document).querySelectorAll('select[id^="sp"],select[id^="sy"]').forEach(reelify)}
+/* DB에 출연 기록이 없는 배우: TMDB 출연작으로 "작품 속 모습"을 채움 */
+async function filmoFallback(nm){try{if(typeof loadOrig==='function')await loadOrig([nm]);const alt=(typeof ORIG!=='undefined'&&ORIG[nm])||'';
+ const r=await fetch(SB_URL+'/functions/v1/tmdb',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+ANON,apikey:ANON},body:JSON.stringify({filmo:nm,alt})});if(!r.ok)return [];const d=await r.json();
+ if(d.p&&!IMG['p:'+nm])IMG['p:'+nm]=d.p;return (d.f||[]).map(x=>{if(x.tk&&x.p)WKP[x.tk]=x.p;return {wi:'',tk:x.tk,t:x.t,y:x.y,ch:x.ch}})}catch(e){return []}}
