@@ -5,6 +5,7 @@
 // 요청: POST { names: ["배우 이름", ...], titles: ["작품 제목", ...] }  (합쳐서 최대 40개)
 // 응답: { p: { "배우 이름": "https://image.tmdb.org/...jpg" | "" }, w: { "작품 제목": "..." | "" }, k: { "tv:123": "..." } }
 // filmo: "배우 이름", alt: "원어 이름" 을 주면 그 배우의 출연작 목록(제목, 연도, 배역, 포스터)을 돌려줌. DB에 출연 기록이 없는 배우용
+// tagged: "배우 이름", alt: "원어 이름", tk: "movie:123" 을 주면 TMDB에서 그 배우가 태그된 그 작품의 사진(스틸, 포스터)을 돌려줌
 // works: ["tv:123", "movie:456"] 를 주면 TMDB 번호로 정확한 포스터를 돌려줌(제목 검색보다 정확)
 // 결과는 tmdb_cache 테이블에 30일 보관해 TMDB 호출을 줄임
 const ORIGINS = [/^https:\/\/pdavid97\.github\.io$/, /^http:\/\/localhost(:\d+)?$/, /^http:\/\/127\.0\.0\.1(:\d+)?$/, /^null$/];
@@ -59,8 +60,40 @@ Deno.serve(async (req) => {
   if (req.method !== "POST") return j({ error: "method" }, 405, h);
   const token = Deno.env.get("TMDB_TOKEN") || "";
   if (!token) return j({ error: "no TMDB_TOKEN" }, 503, h);
-  let b: { names?: unknown; titles?: unknown; works?: unknown; filmo?: unknown; alt?: unknown };
+  let b: { names?: unknown; titles?: unknown; works?: unknown; filmo?: unknown; alt?: unknown; tagged?: unknown; tk?: unknown };
   try { b = await req.json(); } catch { return j({ error: "json" }, 400, h); }
+  if (typeof b.tagged === "string" && b.tagged.trim() && b.tagged.length <= 40 && typeof b.tk === "string" && /^(tv|movie):\d{1,9}$/.test(b.tk)) {
+    const nm = b.tagged.trim(), alt = typeof b.alt === "string" && b.alt.length <= 60 ? b.alt.trim() : "", tk = b.tk;
+    const ck = "t:" + nm + ":" + tk, hit0 = await cacheGet([ck]);
+    if (hit0.has(ck)) return j({ u: hit0.get(ck) }, 200, h);
+    try {
+      let pid: unknown = null;
+      for (const q of [alt, nm].filter(Boolean)) {
+        const d = await tmdb("/search/person", q, token);
+        const p = (d?.results || []).find((r: Record<string, unknown>) => r.known_for_department === "Acting");
+        if (p) { pid = p.id; break; }
+      }
+      let url = "";
+      if (pid) {
+        const [m, id] = tk.split(":");
+        const hh: Record<string, string> = { accept: "application/json" };
+        const u = new URL(`https://api.themoviedb.org/3/person/${pid}/tagged_images`);
+        if (token.length > 60) hh.Authorization = "Bearer " + token; else u.searchParams.set("api_key", token);
+        for (let page = 1; page <= 3 && !url; page++) {
+          u.searchParams.set("page", String(page));
+          const r = await fetch(u, { headers: hh });
+          if (!r.ok) break;
+          const d = await r.json();
+          const xs = (d.results || []).filter((x: Record<string, unknown>) => { const md = x.media as Record<string, unknown> | undefined; return md && String(md.id) === id && (x.media_type === m || (m === "tv" && x.media_type === "tv")); });
+          const best = xs.sort((a: Record<string, number>, z: Record<string, number>) => (z.vote_average || 0) - (a.vote_average || 0))[0];
+          if (best) url = `https://image.tmdb.org/t/p/w500${best.file_path}`;
+          if (!d.total_pages || page >= d.total_pages) break;
+        }
+      }
+      await cachePut([{ k: ck, url }]);
+      return j({ u: url }, 200, h);
+    } catch (e) { return j({ error: String(e) }, 500, h); }
+  }
   if (typeof b.filmo === "string" && b.filmo.trim() && b.filmo.length <= 40) {
     const nm = b.filmo.trim(), alt = typeof b.alt === "string" && b.alt.length <= 60 ? b.alt.trim() : "";
     const ck = "f:" + nm, hit0 = await cacheGet([ck]);

@@ -46,7 +46,7 @@ function slotStage(box){const host=box.querySelector('.sheet');if(!host)return;l
  const mark=j=>items.forEach((e,k)=>e.classList.toggle('on',k===j));
  let start=idxOf(sel.selectedIndex);if(start<0)start=0;requestAnimationFrame(()=>{win.scrollTop=start*H();mark(start)});
  let t=null,last=start;win.onscroll=()=>{const j=Math.round(win.scrollTop/H());if(j!==last){last=j;mark(j);try{navigator.vibrate&&navigator.vibrate(4)}catch(e){}}clearTimeout(t);t=setTimeout(()=>apply(Math.round(win.scrollTop/H())),180)};
- const apply=j=>{const it=items[j];if(!it)return;const k=+it.dataset.i;if(sel.selectedIndex!==k){sel.selectedIndex=k;sel._slot=true;sel.dispatchEvent(new Event('change',{bubbles:true}))}};st._apply=()=>apply(Math.round(win.scrollTop/H()));
+ const apply=j=>{const it=items[j];if(!it)return;const k=+it.dataset.i;if(SLT.step==='e')slotShot(r,sel,it,k);if(sel.selectedIndex!==k){sel.selectedIndex=k;sel._slot=true;sel.dispatchEvent(new Event('change',{bubbles:true}))}};st._apply=()=>apply(Math.round(win.scrollTop/H()));
  items.forEach((e,k)=>e.onclick=()=>{clearTimeout(t);apply(k);last=k;mark(k);win.scrollTo({top:k*H(),behavior:'smooth'})});
  st._spin=()=>{const n=items.length;if(n<3)return;const ks=items.map(e=>+e.dataset.i);let j=Math.round(win.scrollTop/H()),target=1+Math.floor(Math.random()*(n-1));if(target===j)target=1+(target%(n-1));const steps=22,selId=sel.id;let k=0;
   const tick=()=>{j=k>=steps-1?target:(k>=steps-4?Math.max(1,(target-(steps-1-k)+n)%n):(j+1+Math.floor(Math.random()*3))%n);const w=$('#slotStage .sl-win');if(w){const its=w.querySelectorAll('.sl-it');w.scrollTop=j*(its[0]?its[0].offsetHeight+12:300);its.forEach((e,q)=>e.classList.toggle('on',q===j))}try{navigator.vibrate&&navigator.vibrate(3)}catch(e){}k++;
@@ -61,3 +61,8 @@ document.addEventListener('click',e=>{const b=e.target.closest('[data-act^="sl-"
 document.addEventListener('input',e=>{const m=e.target.dataset&&e.target.dataset.mirror;if(!m)return;const s=document.getElementById(m);if(s){s.value=e.target.value;s.dispatchEvent(new Event('change',{bubbles:true}))}});
 /* 시절 목록이 늦게 도착하면 지금 보는 릴만 다시 그림 */
 document.addEventListener('change',e=>{const t=e.target;if(!t.id||!/^s[py]\d/.test(t.id)||t._slot){if(t)t._slot=false;return}const box=$('#sideTop');if(box&&$('#slotStage'))setTimeout(()=>slotStage(box),0)});
+
+/* 시절 카드: 가운데에 멈추면 그 배우가 태그된 그 작품 사진으로 바꿈 */
+async function slotShot(r,sel,it,k){const o=sel.options[k];if(!o||!o.value)return;const sp=$('#sp'+r.id),nm=sp&&sp.selectedOptions[0]&&sp.selectedOptions[0].textContent.trim();if(!nm||sp.value==='__n')return;
+ const [yy,wi,tt]=o.value.split('|');let tk='';for(const n in ERA){const w=(ERA[n]||[]).find(x=>wi?String(x.wi)===wi:(String(x.y)===yy&&x.t.slice(0,60)===tt));if(w&&w.tk){tk=w.tk;break}}if(!tk)return;
+ const u=await taggedShot(nm,tk);if(!u)return;const cur=document.querySelector(`#slotStage .sl-it[data-i="${k}"] .sl-img`);if(cur){cur.style.backgroundImage=`url('${u}')`;cur.parentElement.classList.add('shot')}}
