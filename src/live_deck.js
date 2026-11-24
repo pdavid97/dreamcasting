@@ -240,14 +240,39 @@ function markPass(tid){const m=passMap(),now=Date.now();m[tid]=now;for(const k i
 function passSort(deck){const m=passMap(),now=Date.now(),ok=t=>!(m[t.id]&&now-m[t.id]<3*864e5);return [...deck.filter(ok),...deck.filter(t=>!ok(t))]}
 
 /* ===== 광장 v2: 위 스토리 줄, 가운데 카드 한 장, 작품 목록은 시트 ===== */
+/* 오늘의 소식 육각 띠: 테두리 색 = 남은 시간, 위 두 변 = 화제/새 소식/박빙, 아래 두 변 = 내 참여 */
+const HXP={t:[29,0],r1:[58,16.75],r2:[58,50.25],b:[29,67],l2:[0,50.25],l1:[0,16.75]};
+function hxSeg(a,b,c){return `<line x1="${HXP[a][0]}" y1="${HXP[a][1]}" x2="${HXP[b][0]}" y2="${HXP[b][1]}" class="${c}"/>`}
+function hexInfo(d){const ms=new Date(d.closes_at)-Date.now(),day=864e5,bz=DECK.map(x=>+x.buzz||0).sort((a,b)=>b-a),cut=bz[Math.max(0,Math.ceil(bz.length*.2)-1)]||1e9;
+ const st=ms>0&&ms<day?'cls':(d.opens_at&&Date.now()-new Date(d.opens_at)<2*day)?'new':'live';
+ const news=(d.news||[]).some(n=>Date.now()-new Date(n.d)<day);const hot=(+d.buzz||0)>=cut&&(+d.buzz||0)>0;
+ const rs=d.roles||[],mine=rs.filter(r=>r.mine).length;
+ const tight=rs.some(r=>{if(!r.mine)return false;const v=(r.cands||[]).map(c=>+c.votes||0).sort((a,b)=>b-a),t=v.reduce((a,b)=>a+b,0);return t>=5&&v.length>1&&(v[0]-v[1])/t<=.05});
+ const pips=[hot&&'hot',news&&'news',tight&&'tight'].filter(Boolean).slice(0,2);
+ return {st,pips,part:!USER||!rs.length?null:mine===0?0:mine<rs.length?1:2,left:ms}}
+function hexSvg(pips,part){const top=[['l1','t'],['t','r1']],bot=[['r2','b'],['b','l2']];let o='';
+ pips.forEach((p,k)=>o+=hxSeg(top[k][0],top[k][1],'pp '+p));
+ if(part!=null){o+=hxSeg('r2','b','pt'+(part>=1?' on':''))+hxSeg('b','l2','pt'+(part>=2?' on':''))}
+ return o?`<svg class="hxo" viewBox="-3 -3 64 73" aria-hidden="true">${o}</svg>`:''}
 function storyRings(){const rs=(RB.results||[]).filter(r=>Date.now()-new Date(r.at)<2*864e5),out=[];
- const ring=(cls,bg,lab,attrs,txt)=>`<button class="sr ${cls}" ${attrs} style="--fd:${(out.length%5)*0.7}s"><span class="rg"><span class="in"${bg?` style="background-image:url('${esc(bg)}')"`:''}>${txt||''}<em>${esc(lab)}</em></span></span></button>`;
+ const ring=(cls,bg,lab,attrs,txt,svg)=>`<button class="sr ${cls}" ${attrs} style="--fd:${(out.length%5)*0.7}s"><span class="rg"><span class="in"${bg?` style="background-image:url('${esc(bg)}')"`:''}>${txt||''}<em>${esc(lab)}</em></span></span>${svg||''}</button>`;
  for(const r of rs)out.push(ring('res',r.poster,r.title,`data-act="rres" data-t="${esc(r.tid)}" data-s="${r.season}" aria-label="${esc(r.title)} 결과 발표"`,'<b>발표</b>'));
- DECK.forEach((d,i)=>{if(isNewT(d))out.push(ring('new',d.vposter||d.poster,d.title,`data-act="dk-goto" data-i="${i}" aria-label="새 판 ${esc(d.title)}"`,`<b>${d.season>1?'S'+d.season:'NEW'}</b>`))});
- DECK.forEach((d,i)=>{const ms=new Date(d.closes_at)-Date.now();if(ms>0&&ms<864e5&&!isNewT(d))out.push(ring('cls',d.vposter||d.poster,d.title,`data-act="dk-goto" data-i="${i}" aria-label="오늘 마감 ${esc(d.title)}"`,'<b>D-0</b>'))});
+ const pr={cls:0,new:1,live:2},items=DECK.map((d,i)=>({d,i,h:hexInfo(d)}));
+ items.sort((a,b)=>pr[a.h.st]-pr[b.h.st]||(b.h.pips.length-a.h.pips.length)||(a.h.left-b.h.left));
+ for(const {d,i,h} of items){const dd=Math.ceil(h.left/864e5),lab=h.st==='cls'?'D-0':h.st==='new'?(d.season>1?'S'+d.season:'NEW'):'D-'+Math.max(1,dd);
+  const say=[h.st==='cls'?'오늘 마감':h.st==='new'?'새 판':'진행 중',h.pips.includes('hot')&&'화제',h.pips.includes('news')&&'새 소식',h.pips.includes('tight')&&'박빙',h.part===2?'투표 완료':h.part===1?'일부 투표':h.part===0?'아직 안 함':''].filter(Boolean).join(', ');
+  out.push(ring(h.st,d.vposter||d.poster,d.title,`data-act="dk-goto" data-i="${i}" aria-label="${esc(d.title)}, ${say}"`,`<b>${lab}</b>`,hexSvg(h.pips,h.part)))}
  if(USER)out.push(ring('wk',null,'주간 결산','data-act="week-story"','<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>'));
- out.push(ring('all',null,'작품 '+DECK.length,'data-act="works" aria-label="오늘의 작품 모두 보기"','<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>'));
- return `<nav class="srow hexrow" aria-label="오늘의 소식">${out.join('')}</nav>`}
+ out.push(ring('key',null,'색의 뜻','data-act="hex-key" aria-label="타일 색 설명 보기"','<b class="q">?</b>'));
+ return `<nav class="srow hexrow" aria-label="오늘의 작품 지도">${out.join('')}</nav>`}
+function openHexKey(){const old=$('#hexKey');if(old)old.remove();const el=document.createElement('div');el.id='hexKey';el.className='wsheet';
+ const sw=(c,t,s)=>`<li><i class="hk ${c}"></i><span><b>${t}</b><small>${s}</small></span></li>`;
+ el.innerHTML=`<div class="ws-in hk-in" role="dialog" aria-label="타일 색의 뜻"><div class="ws-h"><b>타일 색의 뜻</b><button class="x" data-act="hk-x" aria-label="닫기">✕</button></div>
+ <h4>테두리: 남은 시간</h4><ul>${sw('cls','오늘 마감','24시간 안에 투표가 닫혀요')}${sw('res','결과 발표','최근 이틀 사이 결과가 나왔어요')}${sw('new','새 판','열린 지 이틀 안 된 판이나 새 시즌')}${sw('live','진행 중','마감까지 여유 있는 판')}</ul>
+ <h4>위쪽 빛 조각: 지금 뜨는 이야기</h4><ul>${sw('p-hot','화제','뉴스와 검색 화제 점수 상위 20%')}${sw('p-news','새 소식','하루 안에 관련 기사가 나왔어요')}${sw('p-tight','박빙','1, 2위 차이 5% 이내. 내가 투표한 배역에서만 보여요')}</ul>
+ ${USER?`<h4>아래쪽 선: 내 참여</h4><ul>${sw('pt0','비어 있음','아직 투표 안 한 작품')}${sw('pt1','반만 채움','일부 배역만 투표했어요')}${sw('pt2','다 채움','모든 배역 투표 완료')}</ul>`:''}</div>`;
+ document.body.appendChild(el);requestAnimationFrame(()=>el.classList.add('on'));el.addEventListener('click',e=>{if(e.target===el||e.target.closest('[data-act="hk-x"]')){el.classList.remove('on');setTimeout(()=>el.remove(),250)}});try{track('hex_key',{})}catch(x){}}
+document.addEventListener('click',e=>{if(e.target.closest('[data-act="hex-key"]'))openHexKey()});
 function openWorks(){const old=$('#worksSheet');if(old)old.remove();const el=document.createElement('div');el.id='worksSheet';el.className='wsheet';
  el.innerHTML=`<div class="ws-in" role="dialog" aria-label="오늘의 작품"><div class="ws-h"><b>오늘의 작품 ${DECK.length}</b><button class="x" data-act="ws-x" aria-label="닫기">×</button></div><div class="ws-g">${DECK.map((d,i)=>{const n=d.roles.length,m=d.roles.filter(r=>r.mine).length;return `<button class="wc${i===DI?' on':''}" data-act="dk-goto" data-i="${i}"><span class="ps"${d.vposter||d.poster?` style="background-image:url('${esc(d.vposter||d.poster)}')"`:''}>${stTag(d)}${m?`<i>${m===n?'✓':m+'/'+n}</i>`:''}</span><b>${esc(d.title)}</b><small>${esc(verLabel(d.cat)||'')}${verLabel(d.cat)?', ':''}${roundLeft(d)}</small></button>`}).join('')}<a class="wc add" href="#make"><span class="ps">+</span><b>작품 추가</b><small>보고 싶은 판 열기</small></a></div></div>`;
  document.body.appendChild(el);el.addEventListener('click',e=>{if(e.target===el||e.target.closest('[data-act="ws-x"],[data-act="dk-goto"],a'))el.remove()})}
