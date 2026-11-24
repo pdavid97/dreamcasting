@@ -241,13 +241,13 @@ function passSort(deck){const m=passMap(),now=Date.now(),ok=t=>!(m[t.id]&&now-m[
 
 /* ===== 광장 v2: 위 스토리 줄, 가운데 카드 한 장, 작품 목록은 시트 ===== */
 function storyRings(){const rs=(RB.results||[]).filter(r=>Date.now()-new Date(r.at)<2*864e5),out=[];
- const ring=(cls,bg,lab,attrs,txt)=>`<button class="sr ${cls}" ${attrs}><span class="rg"><span class="in"${bg?` style="background-image:url('${esc(bg)}')"`:''}>${txt||''}</span></span><small>${esc(lab)}</small></button>`;
+ const ring=(cls,bg,lab,attrs,txt)=>`<button class="sr ${cls}" ${attrs} style="--fd:${(out.length%5)*0.7}s"><span class="rg"><span class="in"${bg?` style="background-image:url('${esc(bg)}')"`:''}>${txt||''}<em>${esc(lab)}</em></span></span></button>`;
  for(const r of rs)out.push(ring('res',r.poster,r.title,`data-act="rres" data-t="${esc(r.tid)}" data-s="${r.season}" aria-label="${esc(r.title)} 결과 발표"`,'<b>발표</b>'));
  DECK.forEach((d,i)=>{if(isNewT(d))out.push(ring('new',d.vposter||d.poster,d.title,`data-act="dk-goto" data-i="${i}" aria-label="새 판 ${esc(d.title)}"`,`<b>${d.season>1?'S'+d.season:'NEW'}</b>`))});
  DECK.forEach((d,i)=>{const ms=new Date(d.closes_at)-Date.now();if(ms>0&&ms<864e5&&!isNewT(d))out.push(ring('cls',d.vposter||d.poster,d.title,`data-act="dk-goto" data-i="${i}" aria-label="오늘 마감 ${esc(d.title)}"`,'<b>D-0</b>'))});
  if(USER)out.push(ring('wk',null,'주간 결산','data-act="week-story"','<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>'));
  out.push(ring('all',null,'작품 '+DECK.length,'data-act="works" aria-label="오늘의 작품 모두 보기"','<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>'));
- return `<nav class="srow" aria-label="오늘의 소식">${out.join('')}</nav>`}
+ return `<nav class="srow hexrow" aria-label="오늘의 소식">${out.join('')}</nav>`}
 function openWorks(){const old=$('#worksSheet');if(old)old.remove();const el=document.createElement('div');el.id='worksSheet';el.className='wsheet';
  el.innerHTML=`<div class="ws-in" role="dialog" aria-label="오늘의 작품"><div class="ws-h"><b>오늘의 작품 ${DECK.length}</b><button class="x" data-act="ws-x" aria-label="닫기">×</button></div><div class="ws-g">${DECK.map((d,i)=>{const n=d.roles.length,m=d.roles.filter(r=>r.mine).length;return `<button class="wc${i===DI?' on':''}" data-act="dk-goto" data-i="${i}"><span class="ps"${d.vposter||d.poster?` style="background-image:url('${esc(d.vposter||d.poster)}')"`:''}>${stTag(d)}${m?`<i>${m===n?'✓':m+'/'+n}</i>`:''}</span><b>${esc(d.title)}</b><small>${esc(verLabel(d.cat)||'')}${verLabel(d.cat)?', ':''}${roundLeft(d)}</small></button>`}).join('')}<a class="wc add" href="#make"><span class="ps">+</span><b>작품 추가</b><small>보고 싶은 판 열기</small></a></div></div>`;
  document.body.appendChild(el);el.addEventListener('click',e=>{if(e.target===el||e.target.closest('[data-act="ws-x"],[data-act="dk-goto"],a'))el.remove()})}
