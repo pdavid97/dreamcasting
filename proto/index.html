@@ -131,7 +131,8 @@ body.clean .sw{display:none}
 .C .card .no{position:absolute;left:10px;top:8px;z-index:2;font-family:Anton,sans-serif;font-size:34px;color:#D4FF3A;text-shadow:0 2px 0 #000}
 .C .card .nm{position:absolute;left:12px;bottom:12px;z-index:2;font-weight:900;font-size:20px;letter-spacing:-.03em;text-align:left}
 .C .card.on{outline:4px solid #D4FF3A;outline-offset:-4px}
-.C .cta{padding:6px 16px 0}
+.C .cta{padding:4px 16px 0}
+.C .cta .go{padding:16px 0}
 .C .cta .go{width:100%;border:0;padding:18px 0;background:#D4FF3A;color:#0A0A0A;font-family:'Archivo Black',sans-serif;font-size:16px;letter-spacing:.02em;border-radius:12px;transform:skewX(-6deg)}
 .C .cta .go span{display:inline-block;transform:skewX(6deg)}
 .C .boom{position:absolute;inset:0;z-index:5;display:grid;place-items:center;pointer-events:none}
@@ -157,6 +158,47 @@ body.clean .sw{display:none}
 .C .fight .vsb{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) rotate(-12deg);z-index:3;font-family:Anton,sans-serif;font-size:54px;color:#0A0A0A;background:#D4FF3A;padding:2px 14px;pointer-events:none}
 .C .streak{display:flex;justify-content:space-between;align-items:center;padding:10px 16px 0;font-size:12px;font-weight:800}
 .C .streak b{font-family:Anton,sans-serif;font-size:22px;color:#D4FF3A}
+
+/* ===== C v2: 레일, 아크 덱, 공감 한 줄, 하단 탭 ===== */
+.C{padding-bottom:84px}
+.C .rail{display:flex;align-items:center;gap:10px;margin:10px 14px 0;padding:9px 12px;border-radius:14px;background:#141414;border:1px solid #222;text-decoration:none;color:#fff;min-height:40px;overflow:hidden}
+.C .rail .dot{flex:none;width:7px;height:7px;border-radius:50%;background:#D4FF3A;box-shadow:0 0 0 4px rgba(212,255,58,.15);animation:pl 2s infinite}
+@keyframes pl{50%{box-shadow:0 0 0 7px rgba(212,255,58,0)}}
+.C .rail .tg{flex:none;font-size:10px;font-weight:800;letter-spacing:.06em;color:#D4FF3A;border:1px solid rgba(212,255,58,.4);border-radius:6px;padding:2px 6px}
+.C .rail .tx{flex:1;min-width:0;font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;animation:ru .5s cubic-bezier(.2,.8,.2,1)}
+.C .rail .ar{flex:none;color:#777;font-size:14px}
+@keyframes ru{from{transform:translateY(12px);opacity:0}to{transform:none;opacity:1}}
+.C .hd{display:flex;justify-content:space-between;align-items:flex-end;padding:14px 16px 0;gap:10px}
+.C .hd small{display:block;font-size:12px;color:#8A8A8A;font-weight:700}
+.C .hd h1{margin:3px 0 0;font-size:27px;line-height:1.04;font-weight:900;letter-spacing:-.05em}
+.C .hd h1 em{font-style:normal;color:#D4FF3A}
+.C .hd .clk{flex:none;text-align:right;font-family:Anton,sans-serif;font-size:28px;color:#D4FF3A;line-height:1}
+.C .hd .clk small{font-family:Pretendard,sans-serif;font-size:10px;color:#8A8A8A}
+.C .arc{position:relative;height:296px;margin-top:6px;touch-action:pan-y;overflow:hidden}
+.C .arc .card{position:absolute;left:50%;top:30px;width:156px;height:226px;margin-left:-78px;border:0;padding:0;border-radius:16px;overflow:hidden;transform-origin:50% 640px;transition:transform .5s cubic-bezier(.2,1.1,.3,1),opacity .45s,filter .45s;box-shadow:0 16px 36px rgba(0,0,0,.65)}
+.C .arc .card .ph{position:absolute;inset:0;background-position:center 20%}
+.C .arc .card::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent 48%,rgba(0,0,0,.88))}
+.C .arc .card .no{position:absolute;left:10px;top:6px;z-index:2;font-family:Anton,sans-serif;font-size:30px;color:#D4FF3A;text-shadow:0 2px 0 #000}
+.C .arc .card .nm{position:absolute;left:12px;right:10px;bottom:12px;z-index:2;font-weight:900;font-size:18px;letter-spacing:-.03em;text-align:left}
+.C .arc .card .nm small{display:block;font-size:11px;font-weight:600;color:#BDBDBD;margin-top:2px}
+.C .arc .card.on{outline:3px solid #D4FF3A;outline-offset:-3px;box-shadow:0 22px 50px rgba(0,0,0,.7),0 0 40px rgba(212,255,58,.25)}
+.C .arc .card:not(.on){filter:brightness(.55) saturate(.8)}
+.C .arc.picked .card:not(.on){opacity:0;filter:blur(10px) brightness(.4)}
+.C .arc .hint{position:absolute;left:0;right:0;bottom:6px;text-align:center;font-size:11px;color:#777}
+.C .arc .cast{position:absolute;left:calc(50% + 34px);top:6px;z-index:30;transform:translateX(-50%) rotate(-6deg);font-family:Anton,sans-serif;font-size:30px;color:#0A0A0A;background:#D4FF3A;padding:0 14px;animation:bm2 .45s cubic-bezier(.2,1.6,.4,1) both}
+@keyframes bm2{0%{transform:translateX(-50%) scale(2.6) rotate(-16deg);opacity:0}100%{transform:translateX(-50%) scale(1) rotate(-6deg);opacity:1}}
+.C .quote{display:block;margin:10px 16px 0;padding:14px 14px 12px;border-radius:16px;background:#141414;border:1px solid #222;text-decoration:none;color:#fff}
+.C .quote .lb{display:flex;justify-content:space-between;font-size:11px;font-weight:800;color:#D4FF3A;letter-spacing:.02em}
+.C .quote .lb span{color:#777;font-weight:600}
+.C .quote p{margin:6px 0 6px;font-size:16px;line-height:1.45;font-weight:700;letter-spacing:-.02em}
+.C .quote .by{display:flex;justify-content:space-between;font-size:12px;color:#8A8A8A}
+.C .quote .by b{color:#FF6B8B}
+.C .tmdb{font-size:9px;color:#555;padding:14px 16px 0;line-height:1.4}
+.C .nav{position:fixed;left:0;right:0;bottom:0;z-index:50;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));padding:8px 6px calc(10px + env(safe-area-inset-bottom));background:rgba(10,10,10,.92);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-top:1px solid #1C1C1C}
+.C .nav a,.C .nav button{display:flex;flex-direction:column;align-items:center;gap:4px;font-size:10.5px;color:#7A7A7A;text-decoration:none;border:0;background:none;padding:2px 0;font-weight:600}
+.C .nav svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.C .nav .on{color:#D4FF3A}
+.C .nav .on::after{content:'';width:4px;height:4px;border-radius:50%;background:#D4FF3A;margin-top:-1px}
 </style>
 </head>
 <body>
@@ -167,7 +209,7 @@ const SB='https://dnzcvbidppzaogtmwamc.supabase.co',ANON='eyJhbGciOiJIUzI1NiIsIn
 const H={'Content-Type':'application/json',apikey:ANON,Authorization:'Bearer '+ANON};
 const Q=new URLSearchParams(location.search);let DIR=(Q.get('d')||'a').toLowerCase(),SCR=Q.get('s')||'home',TID=Q.get('t')||'cloy';
 if(Q.get('clean'))document.body.classList.add('clean');
-const S={sel:0,voted:false,vs:null};let T=null,R=null,C=[],P={},DEMO=false;
+const S={sel:0,voted:false,vs:null};let T=null,R=null,C=[],P={},DEMO=false,TOP=null,RI=0,SID='proto'+Math.random().toString(36).slice(2,10);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const big=u=>u?u.replace('/w185/','/w500/'):'';
 const img=n=>P[n]?`background-image:url('${big(P[n])}')`:'';
@@ -179,7 +221,8 @@ async function load(){
  C=[...R.cands].sort((a,b)=>(b.votes||0)-(a.votes||0)).slice(0,6);
  if(!C.some(c=>+c.votes>0)){DEMO=true;const v=[38,24,15,11,7,5];C.forEach((c,i)=>c.votes=v[i]||1)}
  const r=await fetch(SB+'/functions/v1/tmdb',{method:'POST',headers:H,body:JSON.stringify({names:C.map(c=>c.name),titles:[]})}).then(r=>r.json()).catch(()=>({p:{}}));P=r.p||{};
- render();}
+ try{const q=await fetch(SB+'/rest/v1/v_thread?topic_id=eq.'+encodeURIComponent(T.id)+'&order=up.desc&limit=1&select=body,up,nickname,role_id,cand_name',{headers:H}).then(r=>r.json());TOP=Array.isArray(q)&&q[0]||null}catch(e){}
+ render();setInterval(()=>{RI++;const r=document.querySelector('.C .rail');if(r)r.outerHTML=rail()},3600);}
 const tot=()=>C.reduce((a,c)=>a+(+c.votes||0),0)||1;
 const pct=c=>Math.round((+c.votes||0)/tot()*100);
 const closeTxt=()=>{const ms=new Date(T.closes_at)-Date.now();if(ms<=0)return '마감';const h=Math.floor(ms/36e5),d=Math.floor(h/24);return d>=1?`D-${d}`:`${String(h).padStart(2,'0')}:${String(Math.floor(ms/6e4)%60).padStart(2,'0')}`};
@@ -189,7 +232,7 @@ document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)r
  if(b.dataset.d){DIR=b.dataset.d;S.voted=false;S.vs=null;render();return}
  if(b.dataset.s){SCR=b.dataset.s;S.voted=false;S.vs=null;render();return}
  if(b.dataset.pick!=null){S.sel=+b.dataset.pick;S.voted=false;render();return}
- if(b.dataset.act==='vote'){S.voted=true;navigator.vibrate&&navigator.vibrate(18);render();if(SCR==='home')setTimeout(()=>{SCR='vote';render()},1100);return}
+ if(b.dataset.act==='vote'){S.voted=true;navigator.vibrate&&navigator.vibrate(18);render();if(SCR==='home')setTimeout(()=>{SCR='vote';render()},1800);return}
  if(b.dataset.vs){if(!S.vs){S.vs=b.dataset.vs;navigator.vibrate&&navigator.vibrate(12);render()}return}
  if(b.dataset.act==='again'){S.vs=null;C.push(C.splice(1,1)[0]);render();return}
 });
@@ -234,21 +277,39 @@ function bVS(){const a=C[0],b=C[1],w=S.vs,pa=Math.round((+a.votes||1)/((+a.votes
 <div class="cta"><button class="go" data-act="again">${w?'다음 대결':'사진을 눌러 골라요'}</button></div>${credit}</div>`}
 
 /* ---------- C ---------- */
-function cTop(){return `<div class="tick"><span>CASTING ARENA LIVE &nbsp; ${esc(T.title)} &nbsp; ${esc(R.ch)} 역 투표 진행 중 &nbsp; ${DEMO?'':'광장 '+tot()+'표 &nbsp;'} VS 레이팅 매일 갱신 &nbsp;</span><span>CASTING ARENA LIVE &nbsp; ${esc(T.title)} &nbsp; ${esc(R.ch)} 역 투표 진행 중 &nbsp; ${DEMO?'':'광장 '+tot()+'표 &nbsp;'} VS 레이팅 매일 갱신 &nbsp;</span></div>
-<div class="top"><b>DREAMCASTING</b><span class="live"><i></i>LIVE</span></div>`}
-function cHome(){const n=C.length,sel=S.sel;return `<div class="scr C">${cTop()}
-<div class="title"><small>${esc(T.title)} ${esc(ver[T.cat]||'')}</small><h1>${esc(R.ch)} 역<br><em>누가 가져가나</em></h1></div>
-<div class="clock">${closeTxt()}<small>남음</small></div>
-<div class="deck">${C.map((x,i)=>{const k=(i-sel+n)%n,off=k>n/2?k-n:k,x0=95+off*92,rot=off*7,z=10-Math.abs(off);return `<button class="card ${i===sel?'on':''}" data-pick="${i}" style="left:${x0}px;transform:rotate(${rot}deg) scale(${i===sel?1.04:.9});z-index:${z}"><span class="ph" style="${img(x.name)}"></span><span class="no">${String(i+1).padStart(2,'0')}</span><span class="nm">${esc(nm(x.name))}</span></button>`}).join('')}
-${S.voted?'<div class="boom"><b>CAST!</b></div>':''}</div>
-<div class="cta"><button class="go" data-act="vote"><span>${S.voted?'투표 완료':esc(nm(C[sel].name))+'에게 한 표'}</span></button></div>${credit}</div>`}
-function cVote(){const me=C[S.sel];return `<div class="scr C">${cTop()}<div class="title"><small>${esc(R.ch)} 역 실시간 스코어${DEMO?' (예시 값)':''}</small><h1>민심 <em>보드</em></h1></div>
-<div class="board" style="margin-top:12px">${C.map((c,i)=>`<div class="row ${c===me?'me':''}"><span class="fill" data-w="${pct(c)}%" style="width:0"></span><span class="n">${i+1}</span><span class="ph" style="${img(c.name)}"></span><div><b>${esc(nm(c.name))}</b><small>${c===me?'MY PICK':i===0?'LEADER':'&nbsp;'}</small></div><span class="pct">${pct(c)}%</span></div>`).join('')}</div>${credit}</div>`}
-function cVS(){const a=C[0],b=C[1],w=S.vs,pa=Math.round((+a.votes||1)/((+a.votes||1)+(+b.votes||1))*100);return `<div class="scr C">${cTop()}
-<div class="fight"><button class="l ${w?w==='a'?'win':'lose':''}" data-vs="a"><span class="ph" style="${img(a.name)}"></span><span class="nm"><b>${esc(nm(a.name))}</b>${w?`<span>${pa}%</span>`:''}</span></button>
+const APP='../index.html';
+const goNews=u=>`${SB}/functions/v1/go?t=${encodeURIComponent(T.id)}&p=news&k=news&u=${encodeURIComponent(u)}&s=${SID}&pg=proto`;
+function railItems(){const it=[];const n=(T.news||[])[0];
+ it.push({tg:'마감',tx:`${R.ch} 역 투표 ${closeTxt()==='마감'?'마감':closeTxt()+' 남음'}`,href:APP+'#'+T.id});
+ if(n)it.push({tg:'뉴스',tx:String(n.t).replace(/\s-\s[^-]+$/,''),href:goNews(n.u),ext:1});
+ if(TOP)it.push({tg:'토론',tx:`"${TOP.body}" 공감 ${TOP.up}`,href:APP+'#'+T.id});
+ it.push({tg:'VS',tx:`${R.ch} 역 1:1 대결이 열려 있어요`,href:'#',vs:1});return it}
+function rail(){const it=railItems(),x=it[RI%it.length];return `<a class="rail" href="${esc(x.href)}" ${x.ext?'target="_blank" rel="noopener"':'target="_top"'} ${x.vs?'data-go="vs"':''}><span class="dot"></span><span class="tg">${x.tg}</span><span class="tx">${esc(x.tx)}</span><span class="ar">›</span></a>`}
+const IC={home:'<path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>',works:'<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>',vs:'<path d="M13 2L4 14h7l-1 8 9-12h-7z"/>',rank:'<path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0zM7 6H4a3 3 0 0 0 3 3M17 6h3a3 3 0 0 1-3 3"/>',me:'<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>'};
+function nav(){const on={home:'home',vote:'works',vs:'vs'}[SCR];const L=[['home','광장','home'],['works','작품',APP+'#'+T.id],['vs','VS 한판','vs'],['rank','랭킹',APP+'#rank'],['me','나',APP+'#me']];
+ return `<nav class="nav" aria-label="하단 메뉴">${L.map(([k,lab,h])=>h==='home'||h==='vs'?`<button data-s="${h==='home'?'home':'vs'}" class="${on===k?'on':''}"><svg viewBox="0 0 24 24" aria-hidden="true">${IC[k]}</svg>${lab}</button>`:`<a href="${esc(h)}" target="_top" class="${on===k?'on':''}"><svg viewBox="0 0 24 24" aria-hidden="true">${IC[k]}</svg>${lab}</a>`).join('')}</nav>`}
+function quote(){if(!TOP)return '';const c=TOP.cand_name?` <span>${esc(nm(TOP.cand_name))} 지지</span>`:'';return `<a class="quote" href="${APP}#${esc(T.id)}" target="_top"><div class="lb">토론 공감 1위${c}</div><p>"${esc(TOP.body)}"</p><div class="by"><span>${esc(TOP.nickname||'')}</span><b>♥ ${TOP.up}</b></div></a>`}
+const tmdb='<div class="tmdb">사진과 작품 정보: TMDB. This product uses the TMDB API but is not endorsed or certified by TMDB.</div>';
+function cHead(sub,h1){return `${rail()}<div class="hd"><div><small>${sub}</small><h1>${h1}</h1></div><div class="clk">${closeTxt()}<br><small>마감까지</small></div></div>`}
+function cHome(){const n=C.length,sel=S.sel;
+ const cards=C.map((x,i)=>{let off=i-sel;if(off>n/2)off-=n;if(off<-n/2)off+=n;const on=i===sel;
+  const tf=on?(S.voted?'translateY(-26px) scale(1.12)':'translateY(-18px) scale(1.04)'):`rotate(${off*7.5}deg) translateY(${Math.abs(off)*2}px) scale(.94)`;
+  return `<button class="card ${on?'on':''}" data-pick="${i}" aria-label="${esc(nm(x.name))}" style="transform:${tf};z-index:${20-Math.abs(off)};transition-delay:${S.voted&&!on?Math.abs(off)*60:0}ms"><span class="ph" style="${img(x.name)}"></span><span class="no">${String(i+1).padStart(2,'0')}</span><span class="nm">${esc(nm(x.name))}</span></button>`}).join('');
+ return `<div class="scr C">${cHead(`${esc(T.title)} ${esc(ver[T.cat]||'')}`,`${esc(R.ch)} 역<br><em>누가 가져가나</em>`)}
+<div class="arc ${S.voted?'picked':''}" id="arc">${cards}${S.voted?'<div class="cast">CAST!</div>':`<div class="hint">옆으로 밀거나 카드를 눌러 넘겨요</div>`}</div>
+<div class="cta"><button class="go" data-act="vote"><span>${S.voted?'캐스팅 완료':esc(nm(C[sel].name))+'에게 한 표'}</span></button></div>
+${quote()}${tmdb}${nav()}</div>`}
+function cVote(){const me=C[S.sel];return `<div class="scr C">${cHead(`${esc(R.ch)} 역 실시간 스코어${DEMO?' (예시 값)':''}`,`민심 <em>보드</em>`)}
+<div class="board" style="margin-top:12px">${C.map((c,i)=>`<div class="row ${c===me?'me':''}"><span class="fill" data-w="${pct(c)}%" style="width:0"></span><span class="n">${i+1}</span><span class="ph" style="${img(c.name)}"></span><div><b>${esc(nm(c.name))}</b><small>${c===me?'MY PICK':i===0?'LEADER':'&nbsp;'}</small></div><span class="pct">${pct(c)}%</span></div>`).join('')}</div>${quote()}${tmdb}${nav()}</div>`}
+function cVS(){const a=C[0],b=C[1],w=S.vs,pa=Math.round((+a.votes||1)/((+a.votes||1)+(+b.votes||1))*100);return `<div class="scr C">${rail()}
+<div class="fight" style="height:calc(100vh - 250px)"><button class="l ${w?w==='a'?'win':'lose':''}" data-vs="a"><span class="ph" style="${img(a.name)}"></span><span class="nm"><b>${esc(nm(a.name))}</b>${w?`<span>${pa}%</span>`:''}</span></button>
 <button class="r ${w?w==='b'?'win':'lose':''}" data-vs="b"><span class="ph" style="${img(b.name)}"></span><span class="nm"><b>${esc(nm(b.name))}</b>${w?`<span>${100-pa}%</span>`:''}</span></button><span class="vsb">VS</span></div>
 <div class="streak"><span>${esc(R.ch)} 역 대결</span><span>연속 <b>${w?4:3}</b> 판</span></div>
-<div class="cta"><button class="go" data-act="again"><span>${w?'NEXT ROUND':'눌러서 골라요'}</span></button></div>${credit}</div>`}
+<div class="cta"><button class="go" data-act="again"><span>${w?'NEXT ROUND':'눌러서 골라요'}</span></button></div>${tmdb}${nav()}</div>`}
+/* 아크 덱 스와이프 */
+let SX=null;document.addEventListener('pointerdown',e=>{if(e.target.closest('#arc'))SX=e.clientX});
+document.addEventListener('pointerup',e=>{if(SX==null)return;const dx=e.clientX-SX;SX=null;if(Math.abs(dx)>40&&!S.voted){S.sel=(S.sel+(dx<0?1:-1)+C.length)%C.length;render()}});
+document.addEventListener('click',e=>{const g=e.target.closest('[data-go="vs"]');if(g){e.preventDefault();SCR='vs';S.vs=null;render()}},true);
 load().catch(e=>{document.getElementById('app').innerHTML='<div class="load">불러오지 못했어요</div>';console.error(e)});
 </script>
 </body>
