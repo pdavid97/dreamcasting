@@ -1,22 +1,22 @@
-/* ================= 작품 페이지 탭: 투표, VS, 팀, 토론, 정보 ================= */
-var TTABS=[['vote','🗳️','투표'],['vs','⚡','VS'],['team','👥','팀'],['talk','💬','토론'],['info','🎬','정보']];
+/* ================= 작품 페이지 탭: 투표, 팀, 토론, 정보 (VS 한판은 하단 메뉴로) ================= */
+var TTABS=[['vote','🗳️','투표'],['team','👥','팀'],['talk','💬','토론'],['info','🎬','정보']];
 var TTAB='vote',TTAB_NEXT=null,TF={f:'all',sort:'hot'};
 (function setupTopicTabs(){const tv=$('#topicView');if(!tv||$('#tTabs'))return;const th=tv.querySelector('.th');
  const nav=document.createElement('nav');nav.id='tTabs';nav.className='ttabs';nav.setAttribute('aria-label','작품 메뉴');
  nav.innerHTML=TTABS.map(([k,ic,l])=>`<button data-act="ttab" data-k="${k}" class="${k===TTAB?'on':''}"><span aria-hidden="true">${ic}</span>${l}<i id="tt_${k}"></i></button>`).join('');
  th.after(nav);
  const pane=k=>{const d=document.createElement('div');d.className='tpane';d.dataset.k=k;return d};
- const P=Object.fromEntries(TTABS.map(([k])=>[k,pane(k)]));let at=nav;for(const k of ['vote','vs','team','talk','info']){at.after(P[k]);at=P[k]}
+ const P=Object.fromEntries(TTABS.map(([k])=>[k,pane(k)]));let at=nav;for(const k of ['vote','team','talk','info']){at.after(P[k]);at=P[k]}
  const mv=(k,el)=>{if(el)P[k].appendChild(el)};
  mv('vote',$('#cTitle')&&$('#cTitle').parentElement);mv('vote',$('#chart')&&$('#chart').parentElement);
  const rh=[...tv.querySelectorAll('.sh h2')].find(h=>h.textContent.trim()==='배역 보드');mv('vote',rh&&rh.parentElement);mv('vote',$('#roles'));
- mv('vs',$('#duel'));mv('team',$('#talkBox'));mv('team',$('#sideTop'));
+ mv('team',$('#talkBox'));mv('team',$('#sideTop'));
+ const vh=document.createElement('div');vh.id='vsHere';vh.className='vshere';P.vote.appendChild(vh);
  const fd=document.createElement('section');fd.id='tFeed';fd.className='tfeed';P.talk.appendChild(fd);
  for(const id of ['tWork','tStats','tWatch','poster'])mv('info',$('#'+id));
  setTTab('vote')})();
 function setTTab(k,f){TTAB=k;if(f!==undefined)TF.f=f;document.querySelectorAll('#tTabs button').forEach(b=>b.classList.toggle('on',b.dataset.k===k));
- document.querySelectorAll('.tpane').forEach(p=>p.classList.toggle('on',p.dataset.k===k));if(k==='talk')renderTFeed();
- if(k==='vs'&&!$('#duel').innerHTML.trim()){try{newDuel(true)}catch(e){}}}
+ document.querySelectorAll('.tpane').forEach(p=>p.classList.toggle('on',p.dataset.k===k));if(k==='talk')renderTFeed();}
 document.addEventListener('click',e=>{const b=e.target.closest('[data-act="ttab"]');if(!b)return;e.preventDefault();setTTab(b.dataset.k,b.dataset.f);
  const nav=$('#tTabs');if(nav&&b.closest('.tpane'))nav.scrollIntoView({behavior:'smooth',block:'start'});try{track('topic_tab',{t:SEL,m:{k:b.dataset.k}})}catch(err){}});
 addEventListener('hashchange',()=>{const h=decodeURIComponent(location.hash.slice(1));if(h.endsWith('/talk'))TTAB_NEXT='team';else if(h.endsWith('/feed'))TTAB_NEXT='talk'});

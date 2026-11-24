@@ -482,3 +482,27 @@ body:not([data-view=rank]) .rknav{display:none!important}
 .sl-it.on .sl-cnt:not(:empty){display:block}.sl-cnt b{color:var(--gold)}
 .tm .tvote{font-style:normal;font-size:10px;color:var(--mute);text-align:center;line-height:1.2}
 .th2 .tsrc{font-size:10px;color:var(--gold);margin-left:6px;font-weight:700}
+
+/* ===== VS 한판 개편 ===== */
+body:not([data-view=vs]) #topicView>#duel{display:none}
+.vsx .face img{width:100%;height:100%;border-radius:50%;object-fit:cover}
+.vsx .vsx-c .fc2{display:flex;justify-content:center}
+.vsx .vsx-c .fc2 .face+.face{margin-left:-14px;box-shadow:0 0 0 3px var(--card)}
+.vsx .vsx-c b i{font-style:normal;color:var(--gold);margin:0 4px}
+.vsx .vsx-lab{display:block;font-size:11px;color:var(--gold);letter-spacing:.02em}
+.vsx button.on{outline:2px solid var(--gold);outline-offset:-2px}
+.dpath li.bad b{color:var(--mute)}
+.vshere{margin:14px 0 4px}
+.vsh{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 14px;background:var(--card);border:1px solid var(--line);border-radius:var(--r)}
+.vsh>div{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--mute);min-width:0}
+.vsh>div b{color:var(--ink);font-size:15px}.vsh em{font-style:normal;color:var(--gold);font-weight:700}
+.vsh .b{flex:none}
+.vsx .vsx-c .fc2 .face{width:64px;height:64px;font-size:24px;flex:none}
+.vsx .vsx-c b.cn2{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:17px;line-height:1.15;max-width:100%}
+.vsx .vsx-c b.cn2 span{overflow-wrap:anywhere}
+.vsx .vsx-c b.cn2 i{margin:0;font-size:14px}
+.vsx .res{font-size:24px;display:flex;flex-direction:column;align-items:center;line-height:1.1}
+.vsx .res small{font:600 11px Inter,sans-serif;opacity:.9}
+.vsx .face{flex:none}
+.duel .face{position:relative;overflow:hidden}
+.duel .face img{position:absolute;inset:0}
