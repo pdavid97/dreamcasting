@@ -214,6 +214,24 @@ body.clean .sw{display:none}
 .C .quote p{flex:1;min-width:0;margin:0;font-size:14px;font-weight:700;line-height:1.35;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .C .quote .hrt{flex:none;font-size:12px;color:#FF6B8B}
 .C .tmdb{font-size:8.5px;color:#444;padding:10px 16px 0}
+
+/* C v4: VS 분할 화면 두 번 탭 */
+.vsC .fight{height:calc(100vh - 210px);min-height:440px;margin-top:10px}
+.vsC .fight button{transition:filter .35s,transform .35s}
+.vsC .fight button.idle{filter:saturate(.55) brightness(.8)}
+.vsC .fight button.dim,.vsC .fight button.lose{filter:grayscale(1) brightness(.4)}
+.vsC .fight button.hi,.vsC .fight button.win{filter:none}
+.vsC .fight .hl{position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity .3s;box-shadow:inset 0 0 0 4px #D4FF3A,inset 0 0 60px rgba(212,255,58,.45)}
+.vsC .fight button.hi .hl{opacity:1;animation:hlp .8s ease-in-out infinite}
+.vsC .fight button.win .hl{opacity:1}
+@keyframes hlp{50%{box-shadow:inset 0 0 0 4px #E6FF7A,inset 0 0 90px rgba(212,255,58,.6)}}
+.vsC .ask2{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:3;padding:10px 14px;border-radius:12px;background:rgba(10,10,10,.72);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid rgba(212,255,58,.55);white-space:nowrap;animation:ru .25s ease-out}
+.vsC .ask2 b{font-size:14px;font-weight:900;color:#D4FF3A}
+.vsC .fight .l .ask2{top:38%}.vsC .fight .r .ask2{top:62%}
+.vsC .cast2{position:absolute;left:50%;top:50%;z-index:4;transform:translate(-50%,-50%) rotate(-8deg);font-family:Anton,sans-serif;font-size:46px;color:#0A0A0A;background:#D4FF3A;padding:0 14px;animation:bm3 .45s cubic-bezier(.2,1.6,.4,1) both}
+.vsC .fight .l .cast2{top:34%;left:66%}.vsC .fight .r .cast2{top:62%;left:36%}
+@keyframes bm3{0%{transform:translate(-50%,-50%) scale(2.6) rotate(-18deg);opacity:0}100%{transform:translate(-50%,-50%) scale(1) rotate(-8deg);opacity:1}}
+.vsC .streak{padding-top:12px}
 </style>
 </head>
 <body>
@@ -224,7 +242,7 @@ const SB='https://dnzcvbidppzaogtmwamc.supabase.co',ANON='eyJhbGciOiJIUzI1NiIsIn
 const H={'Content-Type':'application/json',apikey:ANON,Authorization:'Bearer '+ANON};
 const Q=new URLSearchParams(location.search);let DIR=(Q.get('d')||'a').toLowerCase(),SCR=Q.get('s')||'home',TID=Q.get('t')||'cloy';
 if(Q.get('clean'))document.body.classList.add('clean');
-const S={sel:0,voted:false,vs:null,confirm:false};let T=null,R=null,C=[],P={},DEMO=false,TOP=null,RI=0,SID='proto'+Math.random().toString(36).slice(2,10);
+const S={sel:0,voted:false,vs:null,confirm:false,vsHi:null};let STK=3;let T=null,R=null,C=[],P={},DEMO=false,TOP=null,RI=0,SID='proto'+Math.random().toString(36).slice(2,10);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const big=u=>u?u.replace('/w185/','/w500/'):'';
 const img=n=>P[n]?`background-image:url('${big(P[n])}')`:'';
@@ -243,12 +261,12 @@ const pct=c=>Math.round((+c.votes||0)/tot()*100);
 const closeTxt=()=>{const ms=new Date(T.closes_at)-Date.now();if(ms<=0)return '마감';const h=Math.floor(ms/36e5),d=Math.floor(h/24);return d>=1?`D-${d}`:`${String(h).padStart(2,'0')}:${String(Math.floor(ms/6e4)%60).padStart(2,'0')}`};
 const ver={k2us:'할리우드판',k2cn:'중국판',us2k:'한국판',k2:'리메이크',wn:'실사판'};
 function sw(){const el=document.getElementById('sw');el.innerHTML=['a','b','c'].map(k=>`<button data-d="${k}" class="${DIR===k?'on':''}">${k.toUpperCase()}</button>`).join('')+['home','vote','vs'].map(k=>`<button data-s="${k}" class="${SCR===k?'on':''}">${{home:'광장',vote:'결과',vs:'VS'}[k]}</button>`).join('')}
-document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b){if(S.confirm){S.confirm=false;render()}return}
+document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b){if(S.confirm||S.vsHi){S.confirm=false;S.vsHi=null;render()}return}
  if(b.dataset.d){DIR=b.dataset.d;S.voted=false;S.vs=null;render();return}
  if(b.dataset.s){SCR=b.dataset.s;S.voted=false;S.vs=null;render();return}
  if(b.dataset.pick!=null){const i=+b.dataset.pick;if(DIR==='c'&&SCR==='home'){if(S.voted)return;if(i===S.sel){if(!S.confirm){S.confirm=true;navigator.vibrate&&navigator.vibrate(8);render()}else{S.confirm=false;S.voted=true;navigator.vibrate&&navigator.vibrate([12,40,24]);render();setTimeout(()=>{SCR='vote';render()},1800)}return}S.confirm=false;S.sel=i;render();return}S.sel=i;S.voted=false;render();return}
  if(b.dataset.act==='vote'){S.voted=true;navigator.vibrate&&navigator.vibrate(18);render();if(SCR==='home')setTimeout(()=>{SCR='vote';render()},1800);return}
- if(b.dataset.vs){if(!S.vs){S.vs=b.dataset.vs;navigator.vibrate&&navigator.vibrate(12);render()}return}
+ if(b.dataset.vs){const k=b.dataset.vs;if(DIR==='c'){if(S.vs)return;if(S.vsHi===k){S.vs=k;S.vsHi=null;STK++;navigator.vibrate&&navigator.vibrate([12,40,24]);render();setTimeout(()=>{if(SCR==='vs'&&S.vs){S.vs=null;C.push(C.splice(1,1)[0]);render()}},1700)}else{S.vsHi=k;navigator.vibrate&&navigator.vibrate(8);render()}return}if(!S.vs){S.vs=k;navigator.vibrate&&navigator.vibrate(12);render()}return}
  if(b.dataset.act==='again'){S.vs=null;C.push(C.splice(1,1)[0]);render();return}
 });
 function render(){sw();const f={a:{home:aHome,vote:aVote,vs:aVS},b:{home:bHome,vote:bVote,vs:bVS},c:{home:cHome,vote:cVote,vs:cVS}}[DIR][SCR];
@@ -316,11 +334,12 @@ function cHome(){const n=C.length,sel=S.sel;
 ${quote()}${tmdb}${nav()}</div>`}
 function cVote(){const me=C[S.sel];return `<div class="scr C">${cHead(`${esc(R.ch)} 역 실시간 스코어${DEMO?' (예시 값)':''}`,`민심 <em>보드</em>`)}
 <div class="board" style="margin-top:12px">${C.map((c,i)=>`<div class="row ${c===me?'me':''}"><span class="fill" data-w="${pct(c)}%" style="width:0"></span><span class="n">${i+1}</span><span class="ph" style="${img(c.name)}"></span><div><b>${esc(nm(c.name))}</b><small>${c===me?'MY PICK':i===0?'LEADER':'&nbsp;'}</small></div><span class="pct">${pct(c)}%</span></div>`).join('')}</div>${quote()}${tmdb}${nav()}</div>`}
-function cVS(){const a=C[0],b=C[1],w=S.vs,pa=Math.round((+a.votes||1)/((+a.votes||1)+(+b.votes||1))*100);return `<div class="scr C">${rail()}
-<div class="fight" style="height:calc(100vh - 250px)"><button class="l ${w?w==='a'?'win':'lose':''}" data-vs="a"><span class="ph" style="${img(a.name)}"></span><span class="nm"><b>${esc(nm(a.name))}</b>${w?`<span>${pa}%</span>`:''}</span></button>
-<button class="r ${w?w==='b'?'win':'lose':''}" data-vs="b"><span class="ph" style="${img(b.name)}"></span><span class="nm"><b>${esc(nm(b.name))}</b>${w?`<span>${100-pa}%</span>`:''}</span></button><span class="vsb">VS</span></div>
-<div class="streak"><span>${esc(R.ch)} 역 대결</span><span>연속 <b>${w?4:3}</b> 판</span></div>
-<div class="cta"><button class="go" data-act="again"><span>${w?'NEXT ROUND':'눌러서 골라요'}</span></button></div>${tmdb}${nav()}</div>`}
+function cVS(){const a=C[0],b=C[1],w=S.vs,h=S.vsHi,pa=Math.round((+a.votes||1)/((+a.votes||1)+(+b.votes||1))*100);
+ const cls=k=>w?(w===k?'win':'lose'):h?(h===k?'hi':'dim'):'idle';
+ const half=(k,c,p,pos)=>`<button class="${pos} ${cls(k)}" data-vs="${k}" aria-label="${esc(nm(c.name))} 고르기"><span class="ph" style="${img(c.name)}"></span><span class="hl"></span><span class="nm"><b>${esc(nm(c.name))}</b>${w?`<span>${p}%</span>`:''}</span>${h===k?'<span class="ask2"><b>한 번 더 탭하면 확정</b></span>':''}${w===k?'<span class="cast2">CAST!</span>':''}</button>`;
+ return `<div class="scr C vsC">${rail()}
+<div class="fight">${half('a',a,pa,'l')}${half('b',b,100-pa,'r')}<span class="vsb">VS</span></div>
+<div class="streak"><span>${w?'다음 대결로 넘어가요':h?'다른 쪽을 누르면 바꾸고, 바깥을 누르면 취소':'더 어울리는 쪽을 탭'}</span><span>연속 <b>${STK}</b> 판</span></div>${tmdb}${nav()}</div>`}
 /* 아크 덱 스와이프 */
 let SX=null;document.addEventListener('pointerdown',e=>{if(e.target.closest('#arc'))SX=e.clientX});
 document.addEventListener('pointerup',e=>{if(SX==null)return;const dx=e.clientX-SX;SX=null;if(Math.abs(dx)>40&&!S.voted){S.sel=(S.sel+(dx<0?1:-1)+C.length)%C.length;render()}});
