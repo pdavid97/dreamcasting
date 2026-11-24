@@ -574,7 +574,7 @@ const tmdb='<div class="tmdb">사진과 작품 정보: TMDB. This product uses t
 function cHead(sub,h1){return `${rail()}<div class="hd"><div><small>${sub}</small><h1>${h1}</h1></div><div class="clk">${closeTxt()}<br><small>마감까지</small></div></div>`}
 function arcTf(i){const n=C.length,sel=S.sel;let off=i-sel;if(off>n/2)off-=n;if(off<-n/2)off+=n;const on=i===sel;
  return {on,off,tf:on?(S.voted?'translateY(4px) scale(1.06)':'translateY(-10px) scale(1)'):`rotate(${off*9}deg) translateY(${Math.abs(off)*3}px) scale(.9)`,z:20-Math.abs(off)}}
-function hintTxt(){return S.voted?esc(nm(C[S.sel].name))+'에게 한 표를 던졌어요':S.confirm?'한 번 더 탭하면 확정, 다른 곳을 누르면 취소':'옆으로 넘겨 고르고, 가운데 카드를 탭해 한 표'}
+function hintTxt(){return S.voted?esc(nm(C[S.sel].name))+'에게 한 표를 던졌어요':''}
 function cHome(){const ch=Math.max(250,Math.min(470,innerHeight-292)),cw=Math.round(Math.min(ch*.66,innerWidth*.6));
  const cards=C.map((x,i)=>{const t=arcTf(i);return `<button class="card ${t.on?'on':''}" data-pick="${i}" aria-label="${esc(nm(x.name))}" style="transform:${t.tf};z-index:${t.z}"><span class="ph" style="${img(x.name)}"></span><span class="no">${String(i+1).padStart(2,'0')}</span><span class="nm">${esc(nm(x.name))}</span></button>`}).join('');
  return `<div class="scr C cH" style="--ch:${ch}px;--cw:${cw}px">${rail()}<div class="hd2"><div><small>${esc(T.title)} ${esc(ver[T.cat]||'')}</small><h1>${esc(R.ch)} 역은 <em>누구?</em></h1></div><div class="clk">${closeTxt()}<small>마감까지</small></div></div>
@@ -641,7 +641,7 @@ function cVS(){const a=C[0],b=C[1],w=S.vs,h=S.vsHi,pa=Math.round((+a.votes||1)/(
  const pk=a.name+'|'+b.name,intro=/in/.test(FX)&&!h&&!w&&INK!==pk;if(intro)INK=pk;
  return `<div class="scr C vsC vsl${VSL}${/duo/.test(FX)?' duo':''}${' vb'+(Q.get('vsb')||(VSL==='6'?'d':'')).toUpperCase()}" style="--fh:${fh}px;--iw:${iw}px;--xl:${Math.round(W*.3-iw/2)}px;--xr:${Math.round(W*.7-iw/2)}px">${rail()}
 <div class="fight${intro?' intro':''}">${half('a',a,pa,'l')}${half('b',b,100-pa,'r')}<span class="vsb">VS</span><span class="wl"></span></div>
-<div class="streak"><span>${w?'다음 대결로 넘어가요':h?'다른 쪽을 누르면 바꾸고, 바깥을 누르면 취소':'더 어울리는 쪽을 탭'}</span><span>연속 <b>${STK}</b> 판</span></div>${tmdb}${nav()}</div>`}
+<div class="streak"><span></span><span>연속 <b>${STK}</b> 판</span></div>${tmdb}${nav()}</div>`}
 /* 아크 덱 스와이프 */
 let SX=null;document.addEventListener('pointerdown',e=>{if(e.target.closest('#arc'))SX=e.clientX});
 document.addEventListener('pointerup',e=>{if(SX==null)return;const dx=e.clientX-SX;SX=null;if(Math.abs(dx)>40&&!S.voted){S.confirm=false;S.sel=(S.sel+(dx<0?1:-1)+C.length)%C.length;arcUpdate()}});

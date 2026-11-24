@@ -87,7 +87,7 @@ function vsfRender(box){const d=DUEL,W=box.clientWidth||360,H=Math.max(400,Math.
  const half=(k,c,pos)=>`<button class="${pos} ${cls(k)}" data-act="vsf" data-v="${k}" aria-label="${esc(dispName(c.name))} 고르기">${vsfPh(c.name,W,H)}<span class="hl"></span><span class="nm">${vsfNm(c.name)}${R&&R.k===k&&R.n>1?`<span class="pct">${pct(k)}%</span>`:''}</span>${h===k&&!R?'<span class="ask2"><b>한 번 더 탭하면 확정</b></span>':''}${R&&R.k===k?'<span class="cast2">CAST!</span>':''}</button>`;
  box.innerHTML=`<div class="vsf"><div class="vsf-hd"><a href="#${esc(d.tid)}">${esc(d.title)}${ver?' '+esc(ver):''}</a><b>${esc(String(d.ch).replace(/\s*\(.*\)$/,''))} 역은 누구?</b></div>
 <div class="fight${intro?' intro':''}" style="height:${H}px">${half('a',d.a,'l')}${half('b',d.b,'r')}<span class="vsb">VS</span><span class="wl"></span></div>
-<div class="vsf-ft"><span>${R?(R.n>1?`광장 ${R.n}명의 선택이에요. 공식 표와는 별개예요`:R.n?'이 대결의 첫 선택이에요. 공식 표와는 별개예요':'다음 대결로 넘어가요'):h?'다른 쪽을 누르면 바꾸고, 바깥을 누르면 취소':'더 어울리는 쪽을 탭'}</span><span class="stk">연속 <b>${STREAK}</b>판</span></div>
+<div class="vsf-ft"><span>${R&&R.n>1?`광장 ${R.n}명의 선택`:''}</span><span class="stk">연속 <b>${STREAK}</b>판</span></div>
 <div class="vsf-links">${R?'':'<button data-act="vsfBad">둘 다 별로</button><button data-act="vsfSkip">다른 대결</button>'}</div></div>`}
 function vsfNext(d,ms){setTimeout(()=>{if(DUEL===d){DUEL=null;newDuel(false).then(()=>renderDuel())}},ms)}
 async function vsfCast(d,k){const w=k==='a'?d.a:d.b,l=k==='a'?d.b:d.a,guest=!USER||!PROF,ms=performance.now()-d.t0;

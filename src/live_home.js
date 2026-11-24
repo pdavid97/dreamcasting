@@ -14,7 +14,7 @@ function hcRailItems(t,r){const it=[],n=(t.news||[])[0],q=HCQ[t.id];
 function hcRail(t,r){const it=hcRailItems(t,r),x=it[HC.ri%it.length];return `<a class="hc-rail" href="${esc(x.href)}"${x.ext?' target="_blank" rel="noopener"':''}><span class="dot"></span><span class="tg">${x.tg}</span><span class="tx">${esc(x.tx)}</span><span class="ar">›</span></a>`}
 function hcTf(i,n){let off=i-HC.sel;if(off>n/2)off-=n;if(off<-n/2)off+=n;const on=i===HC.sel;
  return {on,off,tf:on?(HC.voted?'translateY(4px) scale(1.06)':'translateY(-10px) scale(1)'):`rotate(${off*9}deg) translateY(${Math.abs(off)*3}px) scale(.9)`,z:20-Math.abs(off)}}
-function hcHint(r,cs){const c=cs[HC.sel];if(HC.voted)return `${esc(dispName(c.name))}에게 한 표를 던졌어요`;if(r.mine)return '이 배역은 이미 투표했어요. 다음 배역으로 넘어가요';return HC.confirm?'한 번 더 탭하면 확정, 다른 곳을 누르면 취소':'옆으로 넘겨 고르고, 가운데 카드를 탭해 한 표'}
+function hcHint(r,cs){const c=cs[HC.sel];if(HC.voted)return `${esc(dispName(c.name))}에게 한 표를 던졌어요`;if(r.mine)return '이 배역은 이미 투표했어요. 다음 배역으로 넘어가요';return ''}
 function hcSub(c,r,tot){const parts=[];const ag=typeof ageTxt==='function'?ageTxt(c.name):'';if(ag)parts.push(ag);if(r.mine&&tot)parts.push(`득표 ${Math.round((c.votes||0)/tot*100)}%`);
  const rc=c.blurb&&c.blurb.recent?`최근작 《${c.blurb.recent.t}》`:'';if(rc)parts.push(rc);return parts.join(', ')}
 async function hcLoadQuote(tid){if(tid in HCQ)return;HCQ[tid]=null;try{const {data}=await sb.from('v_thread').select('body,up').eq('topic_id',tid).order('up',{ascending:false}).limit(1);const q=data&&data[0];if(q&&q.up>0){HCQ[tid]=q;const t=curTopic();if(t&&t.id===tid){const d=$('#hcDock');if(d)d.innerHTML=hcQuote(t)}}}catch(e){}}
