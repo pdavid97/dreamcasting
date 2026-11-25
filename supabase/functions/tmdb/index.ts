@@ -11,6 +11,7 @@
 // who: ["이름", ...] 를 주면 인물 검색 상위 3명(연기 분야 우선)의 번호, 이름, 사진, 인지도를 돌려줌(최대 20). 후보 사진 검수용
 // imgs: "tv:123" 을 주면 그 작품의 포스터와 배경 이미지 목록(경로, 크기, 언어, 평점)을 돌려줌. 단체 사진 고르기용
 // tagl: 123, tk: "tv:456" 을 주면 TMDB에서 그 인물이 태그된 그 작품 이미지 경로 목록을 돌려줌(사람이 태그한 정보, 얼굴 인식 아님). 원작 배우들이 함께 나온 단체 사진 찾기용
+// cast, kws, disc: IP 캐릭터와 실사화 데이터 보강용(아래 설명)
 // tmdb_cache의 updated_at이 먼 미래인 항목은 검수 끝난 값이라 다시 검색하지 않음
 // 결과는 tmdb_cache 테이블에 30일 보관해 TMDB 호출을 줄임
 const ORIGINS = [/^https:\/\/pdavid97\.github\.io$/, /^http:\/\/localhost(:\d+)?$/, /^http:\/\/127\.0\.0\.1(:\d+)?$/, /^null$/];
@@ -155,6 +156,46 @@ Deno.serve(async (req) => {
         if (!d.total_pages || page >= d.total_pages) break;
       }
       return j({ imgs: out }, 200, h);
+    } catch (e) { return j({ error: String(e) }, 500, h); }
+  }
+  // cast: ["movie:123","tv:456"] 를 주면 작품 정보와 출연진(배우 번호, 이름, 배역, 순서, 성별, 사진)을 돌려줌(최대 10). IP 캐릭터와 실사화 배우 데이터 보강용
+  if (Array.isArray((b as Record<string, unknown>).cast)) {
+    const ks = ((b as Record<string, unknown>).cast as unknown[]).map(String).filter((x) => /^(tv|movie):\d{1,9}$/.test(x)).slice(0, 10);
+    try {
+      const out: Record<string, unknown> = {};
+      await Promise.all(ks.map(async (k) => {
+        const [m, id] = k.split(":");
+        const u = new URL(`https://api.themoviedb.org/3/${m}/${id}`); u.searchParams.set("language", "ko-KR"); u.searchParams.set("append_to_response", m === "tv" ? "aggregate_credits" : "credits");
+        const r = await fetch(u, { headers: auth(u) });
+        if (r.status === 401) throw new Error("TMDB 401");
+        if (!r.ok) { out[k] = null; return; }
+        const d = await r.json();
+        const cr = (m === "tv" ? d.aggregate_credits?.cast : d.credits?.cast) || [];
+        out[k] = { t: d.title || d.name, te: d.original_title || d.original_name, y: String(d.release_date || d.first_air_date || "").slice(0, 4), l: d.original_language, c: d.origin_country || (d.production_countries || []).map((x: Record<string, unknown>) => x.iso_3166_1), g: (d.genres || []).map((x: Record<string, unknown>) => x.name), pop: d.popularity || 0, poster: d.poster_path || "",
+          cast: (cr as Record<string, unknown>[]).slice(0, 25).map((x) => ({ id: x.id, n: x.name, ch: x.character || ((x.roles as Record<string, unknown>[] | undefined) || []).map((y) => y.character).filter(Boolean).join(" / "), o: x.order, g: x.gender, p: x.profile_path || "" })) };
+      }));
+      return j(out, 200, h);
+    } catch (e) { return j({ error: String(e) }, 500, h); }
+  }
+  // kws: "검색어" 를 주면 TMDB 키워드 번호 목록. disc: { m: "movie"|"tv", kw: "1,2", co: "420", page: 1 } 를 주면 그 조건의 작품 목록(인기순)
+  if (typeof (b as Record<string, unknown>).kws === "string") {
+    try {
+      const u = new URL("https://api.themoviedb.org/3/search/keyword"); u.searchParams.set("query", String((b as Record<string, unknown>).kws).slice(0, 60));
+      const r = await fetch(u, { headers: auth(u) }); const d = r.ok ? await r.json() : {};
+      return j({ kw: (d.results || []).slice(0, 20) }, 200, h);
+    } catch (e) { return j({ error: String(e) }, 500, h); }
+  }
+  const dc = (b as Record<string, unknown>).disc as Record<string, unknown> | undefined;
+  if (dc && typeof dc === "object") {
+    try {
+      const m = dc.m === "tv" ? "tv" : "movie", u = new URL(`https://api.themoviedb.org/3/discover/${m}`);
+      u.searchParams.set("language", "ko-KR"); u.searchParams.set("sort_by", "popularity.desc"); u.searchParams.set("page", String(Math.min(20, Math.max(1, Number(dc.page) || 1))));
+      if (dc.kw && /^[\d,|]+$/.test(String(dc.kw))) u.searchParams.set("with_keywords", String(dc.kw));
+      if (dc.co && /^[\d,|]+$/.test(String(dc.co))) u.searchParams.set("with_companies", String(dc.co));
+      if (dc.g && /^[\d,|]+$/.test(String(dc.g))) u.searchParams.set("with_genres", String(dc.g));
+      if (dc.ng && /^[\d,|]+$/.test(String(dc.ng))) u.searchParams.set("without_genres", String(dc.ng));
+      const r = await fetch(u, { headers: auth(u) }); const d = r.ok ? await r.json() : {};
+      return j({ pages: d.total_pages || 0, res: (d.results || []).map((x: Record<string, unknown>) => ({ k: `${m}:${x.id}`, t: x.title || x.name, te: x.original_title || x.original_name, y: String(x.release_date || x.first_air_date || "").slice(0, 4), pop: x.popularity, l: x.original_language })) }, 200, h);
     } catch (e) { return j({ error: String(e) }, 500, h); }
   }
   if (Array.isArray((b as Record<string, unknown>).pids)) {
