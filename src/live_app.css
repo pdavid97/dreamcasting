@@ -662,7 +662,7 @@ body{word-break:keep-all;overflow-wrap:break-word}
 .hc-arc .card.ask-on{animation:hcGlw .7s ease-in-out infinite}
 @keyframes hcGlw{50%{box-shadow:0 0 0 2px #E6FF7A,0 0 26px rgba(212,255,58,.8),0 0 70px rgba(212,255,58,.35),0 22px 50px rgba(0,0,0,.7)}}
 .hc-arc .card:not(.on){filter:brightness(.55) saturate(.8)}
-.hc-arc.picked .card:not(.on){opacity:0;filter:blur(10px) brightness(.4)}
+.hc-arc.picked .card:not(.on):not(.fly){opacity:0}
 .hc-arc .card .ph{position:absolute;inset:0;background:#222 center 20%/cover no-repeat;display:grid;place-items:center;font-size:40px;font-weight:900;color:#555}
 .hc-arc .card::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent 50%,rgba(0,0,0,.9))}
 .hc-arc .card .no{position:absolute;left:12px;top:8px;z-index:2;font-family:Anton,'Black Han Sans',sans-serif;font-size:34px;color:#D4FF3A;text-shadow:0 2px 0 #000}
@@ -802,3 +802,10 @@ body{word-break:keep-all;overflow-wrap:break-word}
 @keyframes hcNewIn{0%{transform:translateY(-120%) rotate(-14deg) scale(.7);opacity:0}70%{opacity:1}100%{transform:translateY(-10px) scale(1);opacity:1}}
 .hc-arc .card.is-new .no::after{content:'NEW';margin-left:6px;font-size:14px;vertical-align:top;background:#D4FF3A;color:#162000;border-radius:4px;padding:1px 5px;text-shadow:none}
 .hc-bar.two{grid-template-columns:1.35fr 1fr}
+
+/* 투표하면 나머지 후보 카드가 옆으로 튕겨 날아가며 아래로 떨어짐 */
+.hc-arc .card.fly{animation:hcFly .95s cubic-bezier(.3,.1,.7,1) var(--fd,0ms) both;pointer-events:none}
+@keyframes hcFly{0%{transform:var(--t0);opacity:1}
+ 30%{transform:translate(calc(var(--dx) * .45),var(--up)) rotate(calc(var(--r) * .4)) scale(.88);opacity:1}
+ 100%{transform:translate(var(--dx),110vh) rotate(var(--r)) scale(.8);opacity:.2}}
+@media (prefers-reduced-motion:reduce){.hc-arc .card.fly{animation:none;opacity:0;transition:opacity .3s}}

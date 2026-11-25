@@ -35,7 +35,9 @@ function renderDeckC(box,t,r){const cs=hcCands(r),n=cs.length,tot=r.cands.reduce
  clearInterval(HC.timer);HC.timer=setInterval(()=>{const el=document.querySelector('.hc-rail');const t2=curTopic(),r2=curRole();if(!el||!t2||!r2||!DECKV){clearInterval(HC.timer);return}HC.ri++;el.outerHTML=hcRail(t2,r2)},3600)}
 function hcUpdate(){const arc=$('#hcArc'),t=curTopic(),r=curRole();if(!arc||!r)return;const cs=hcCands(r),n=cs.length;
  arc.classList.toggle('picked',HC.voted);
- arc.querySelectorAll('.card').forEach(el=>{const i=+el.dataset.hc,tf=hcTf(i,n);el.style.transform=tf.tf;el.style.zIndex=tf.z;el.style.transitionDelay=HC.voted&&!tf.on?Math.abs(tf.off)*60+'ms':'0ms';el.classList.toggle('on',tf.on);el.classList.toggle('ask-on',tf.on&&HC.confirm);
+ arc.querySelectorAll('.card').forEach(el=>{const i=+el.dataset.hc,tf=hcTf(i,n);
+  if(HC.voted&&!tf.on&&!el.classList.contains('fly')){const sg=tf.off<0?-1:1,k=Math.abs(tf.off);el.style.setProperty('--t0',el.style.transform||'none');el.style.setProperty('--dx',(sg*(90+k*70+Math.random()*60))+'px');el.style.setProperty('--up',(-30-k*14-Math.random()*30)+'px');el.style.setProperty('--r',(sg*(25+k*18+Math.random()*30))+'deg');el.style.setProperty('--fd',(k*70)+'ms');el.classList.add('fly')}
+  if(!HC.voted)el.classList.remove('fly');el.style.transform=tf.tf;el.style.zIndex=tf.z;el.style.transitionDelay=HC.voted&&!tf.on?Math.abs(tf.off)*60+'ms':'0ms';el.classList.toggle('on',tf.on);el.classList.toggle('ask-on',tf.on&&HC.confirm);
   const a=el.querySelector('.ask');if(tf.on&&HC.confirm&&!a)el.insertAdjacentHTML('beforeend','<span class="ask"><b>한 표 확정?</b><small>한 번 더 탭</small></span>');if((!tf.on||!HC.confirm)&&a)a.remove()});
  if(HC.voted&&!arc.querySelector('.cast'))arc.insertAdjacentHTML('beforeend','<div class="cast">CAST!</div>');
  const h=$('#hcHint');if(h)h.innerHTML=hcHint(r,cs)}

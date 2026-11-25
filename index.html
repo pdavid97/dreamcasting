@@ -1600,7 +1600,7 @@ body{word-break:keep-all;overflow-wrap:break-word}
 .hc-arc .card.ask-on{animation:hcGlw .7s ease-in-out infinite}
 @keyframes hcGlw{50%{box-shadow:0 0 0 2px #E6FF7A,0 0 26px rgba(212,255,58,.8),0 0 70px rgba(212,255,58,.35),0 22px 50px rgba(0,0,0,.7)}}
 .hc-arc .card:not(.on){filter:brightness(.55) saturate(.8)}
-.hc-arc.picked .card:not(.on){opacity:0;filter:blur(10px) brightness(.4)}
+.hc-arc.picked .card:not(.on):not(.fly){opacity:0}
 .hc-arc .card .ph{position:absolute;inset:0;background:#222 center 20%/cover no-repeat;display:grid;place-items:center;font-size:40px;font-weight:900;color:#555}
 .hc-arc .card::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent 50%,rgba(0,0,0,.9))}
 .hc-arc .card .no{position:absolute;left:12px;top:8px;z-index:2;font-family:Anton,'Black Han Sans',sans-serif;font-size:34px;color:#D4FF3A;text-shadow:0 2px 0 #000}
@@ -1740,6 +1740,13 @@ body{word-break:keep-all;overflow-wrap:break-word}
 @keyframes hcNewIn{0%{transform:translateY(-120%) rotate(-14deg) scale(.7);opacity:0}70%{opacity:1}100%{transform:translateY(-10px) scale(1);opacity:1}}
 .hc-arc .card.is-new .no::after{content:'NEW';margin-left:6px;font-size:14px;vertical-align:top;background:#D4FF3A;color:#162000;border-radius:4px;padding:1px 5px;text-shadow:none}
 .hc-bar.two{grid-template-columns:1.35fr 1fr}
+
+/* 투표하면 나머지 후보 카드가 옆으로 튕겨 날아가며 아래로 떨어짐 */
+.hc-arc .card.fly{animation:hcFly .95s cubic-bezier(.3,.1,.7,1) var(--fd,0ms) both;pointer-events:none}
+@keyframes hcFly{0%{transform:var(--t0);opacity:1}
+ 30%{transform:translate(calc(var(--dx) * .45),var(--up)) rotate(calc(var(--r) * .4)) scale(.88);opacity:1}
+ 100%{transform:translate(var(--dx),110vh) rotate(var(--r)) scale(.8);opacity:.2}}
+@media (prefers-reduced-motion:reduce){.hc-arc .card.fly{animation:none;opacity:0;transition:opacity .3s}}
 
 /* ================= C 디자인 통일 ================= */
 :root{--lime:#D4FF3A}
@@ -3989,7 +3996,9 @@ function renderDeckC(box,t,r){const cs=hcCands(r),n=cs.length,tot=r.cands.reduce
  clearInterval(HC.timer);HC.timer=setInterval(()=>{const el=document.querySelector('.hc-rail');const t2=curTopic(),r2=curRole();if(!el||!t2||!r2||!DECKV){clearInterval(HC.timer);return}HC.ri++;el.outerHTML=hcRail(t2,r2)},3600)}
 function hcUpdate(){const arc=$('#hcArc'),t=curTopic(),r=curRole();if(!arc||!r)return;const cs=hcCands(r),n=cs.length;
  arc.classList.toggle('picked',HC.voted);
- arc.querySelectorAll('.card').forEach(el=>{const i=+el.dataset.hc,tf=hcTf(i,n);el.style.transform=tf.tf;el.style.zIndex=tf.z;el.style.transitionDelay=HC.voted&&!tf.on?Math.abs(tf.off)*60+'ms':'0ms';el.classList.toggle('on',tf.on);el.classList.toggle('ask-on',tf.on&&HC.confirm);
+ arc.querySelectorAll('.card').forEach(el=>{const i=+el.dataset.hc,tf=hcTf(i,n);
+  if(HC.voted&&!tf.on&&!el.classList.contains('fly')){const sg=tf.off<0?-1:1,k=Math.abs(tf.off);el.style.setProperty('--t0',el.style.transform||'none');el.style.setProperty('--dx',(sg*(90+k*70+Math.random()*60))+'px');el.style.setProperty('--up',(-30-k*14-Math.random()*30)+'px');el.style.setProperty('--r',(sg*(25+k*18+Math.random()*30))+'deg');el.style.setProperty('--fd',(k*70)+'ms');el.classList.add('fly')}
+  if(!HC.voted)el.classList.remove('fly');el.style.transform=tf.tf;el.style.zIndex=tf.z;el.style.transitionDelay=HC.voted&&!tf.on?Math.abs(tf.off)*60+'ms':'0ms';el.classList.toggle('on',tf.on);el.classList.toggle('ask-on',tf.on&&HC.confirm);
   const a=el.querySelector('.ask');if(tf.on&&HC.confirm&&!a)el.insertAdjacentHTML('beforeend','<span class="ask"><b>한 표 확정?</b><small>한 번 더 탭</small></span>');if((!tf.on||!HC.confirm)&&a)a.remove()});
  if(HC.voted&&!arc.querySelector('.cast'))arc.insertAdjacentHTML('beforeend','<div class="cast">CAST!</div>');
  const h=$('#hcHint');if(h)h.innerHTML=hcHint(r,cs)}
