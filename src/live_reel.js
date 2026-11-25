@@ -27,7 +27,7 @@ async function filmoFallback(nm){try{if(typeof loadOrig==='function')await loadO
  if(d.p&&!IMG['p:'+nm])IMG['p:'+nm]=d.p;return (d.f||[]).map(x=>{if(x.tk&&x.p)WKP[x.tk]=x.p;return {wi:'',tk:x.tk,t:x.t,y:x.y,ch:x.ch}})}catch(e){return []}}
 /* ===== 내 팀 꾸미기: 위아래로 배우, 좌우로 그 배우의 작품 속 모습. 랜덤 돌리기는 좌우 ===== */
 var SLT={ri:0};
-const slBig=u=>u?u.replace('/w185/','/w342/'):'';
+const slBig=u=>u?hiRes(u):'';
 function slotRoles(){return D?D.roles.filter(r=>!isSync(r)&&document.getElementById('sp'+r.id)):[]}
 function eraVal(w){return `${w.y}|${w.wi||''}|${w.t.slice(0,60)}`}
 function slotStage(box){const host=box.querySelector('.sheet');if(!host)return;let st=host.querySelector('#slotStage');if(!st){st=document.createElement('div');st.id='slotStage';st.className='slt';host.insertBefore(st,host.querySelector('.sb'))}

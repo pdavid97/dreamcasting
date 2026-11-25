@@ -33,7 +33,7 @@ function c2Buzz(){if(C2BZ===null){C2BZ=[];sb.rpc('buzz_cards',{n:12}).then(({dat
 
 /* ---- 작품 상세: 배역 보드 ---- */
 var C2SEL=null;
-function c2Ph(n){return hcImg(n)||IMG['p:'+n]||''}
+function c2Ph(n){return String(hcImg(n)||IMG['p:'+n]||'').replace('/t/p/original/','/t/p/h632/')}
 function c2Nm(n){const d=dispName(n),m=d.match(/^(.*?)\s*\((.*)\)$/);return m?`<b>${esc(m[1])}</b><small>${esc(m[2])}</small>`:`<b>${esc(d)}</b>`}
 function c2RoleFace(r){const mv=D.myVote[r.id],cs=D.cands[r.id]||[];let c=mv&&cs.find(x=>x.candidate_id===mv.candidate_id);if(!c&&D.seen)c=cs.slice().sort((a,b)=>b.votes-a.votes)[0];return c?c2Ph(c.name):''}
 function c2RoleHTML(r){const t=topic(),open=isOpen(t),mv=D.myVote[r.id],blind=open&&!mv&&!isOpt(r),cs0=D.cands[r.id]||[];

@@ -77,8 +77,8 @@ renderDuel=function(){const box=$('#duel');if(!box)return;
  return _vsfRender()};
 function vsfAl(n,W,H){const a=AMF[n];if(!a||!a.f||!a.p)return '';const f=a.f,iw=500,ih=750,pad=40,k=(f[2]+f[3])/2;if(k<.09)return '';
  const s=(H*.215)/(k*ih),bw=iw*s,ex=W/2,ey=H*.41,x=ex+pad-f[0]*iw*s,y=ey+pad-f[1]*ih*s;
- return `top:-${pad}px;left:-${pad}px;right:-${pad}px;bottom:-${pad}px;background-image:url('https://image.tmdb.org/t/p/w500${esc(a.p)}');background-size:${Math.round(bw)}px auto;background-position:${Math.round(x)}px ${Math.round(y)}px;transform-origin:${Math.round(ex+pad)}px ${Math.round(ey+pad)}px;transform:rotate(${-f[5]}deg)`}
-function vsfPh(n,W,H){const al=vsfAl(n,W,H),a0=AMF[n];if(al)return `<span class="ph bgc" style="background-image:url('https://image.tmdb.org/t/p/w185${esc(a0.p)}')"></span><span class="ph al" style="${al}"></span>`;const a=AMF[n],u=a&&a.p?'https://image.tmdb.org/t/p/w500'+a.p:IMG['p:'+n];return `<span class="ph"${u?` style="background-image:url('${esc(u)}')"`:''}></span>`}
+ return `top:-${pad}px;left:-${pad}px;right:-${pad}px;bottom:-${pad}px;background-image:url('https://image.tmdb.org/t/p/original${esc(a.p)}');background-size:${Math.round(bw)}px auto;background-position:${Math.round(x)}px ${Math.round(y)}px;transform-origin:${Math.round(ex+pad)}px ${Math.round(ey+pad)}px;transform:rotate(${-f[5]}deg)`}
+function vsfPh(n,W,H){const al=vsfAl(n,W,H),a0=AMF[n];if(al)return `<span class="ph bgc" style="background-image:url('https://image.tmdb.org/t/p/w185${esc(a0.p)}')"></span><span class="ph al" style="${al}"></span>`;const a=AMF[n],u=hiRes(a&&a.p?'https://image.tmdb.org/t/p/w500'+a.p:IMG['p:'+n]);return `<span class="ph"${u?` style="background-image:url('${esc(u)}')"`:''}></span>`}
 function vsfNm(n){const d=dispName(n),m=d.match(/^(.*?)\s*\(([^()]*)\)$/);return m?`<b>${esc(m[1])}</b><em>${esc(m[2])}</em>`:`<b>${esc(d)}</b>`}
 function vsfRender(box){const d=DUEL,W=box.clientWidth||360,H=Math.max(400,Math.min(innerHeight-250,760)),R=d.res,h=d.hi,ver=verLabel(d.cat);
  const cls=k=>R?(R.k===k?'win':'lose'):h?(h===k?'hi':'dim'):'idle';

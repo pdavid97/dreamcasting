@@ -4,7 +4,9 @@
    한 번 더 탭하면 CAST 도장과 함께 나머지 카드가 흩어지고 표가 들어감. 맨 아래에 토론 공감 1위 한 줄 */
 var HC={sel:0,confirm:false,voted:false,key:'',ri:0,timer:null},HCQ={};
 function hcCands(r){return (r.cands||[]).slice(0,10)}
-function hcImg(n){const a=AMF[n];return a&&a.p?'https://image.tmdb.org/t/p/w500'+a.p:(IMG['p:'+n]||'')}
+/* 큰 사진 자리는 TMDB 원본 해상도로(작은 썸네일은 그대로 둬 데이터를 아낌) */
+function hiRes(u){return u?String(u).replace(/\/t\/p\/(?:w\d+|h\d+)\//,'/t/p/original/'):u}
+function hcImg(n){const a=AMF[n];return hiRes(a&&a.p?'https://image.tmdb.org/t/p/w500'+a.p:(IMG['p:'+n]||''))}
 function hcClose(t){const x=roundLeft(t),m=x.match(/D-\d+/);return m?m[0]:/오늘/.test(x)?'D-0':x}
 function hcRailItems(t,r){const it=[],n=(t.news||[])[0],q=HCQ[t.id];
  it.push({tg:'마감',tx:`${String(r.ch).replace(/\s*\(.*\)$/,'')} 역 투표 ${roundLeft(t)}`,href:'#'+t.id});
@@ -150,8 +152,8 @@ function hcTodoFocus(){const row=$('#tdRow'),c=row&&row.querySelector('.td.cur')
 function openHcAdd(rid){const t=curTopic(),r=curRole();if(!t||!r)return;const old=$('#hcAddSheet');if(old)old.remove();
  const el=document.createElement('div');el.id='hcAddSheet';el.className='wsheet';const ch=esc(String(r.ch).replace(/\s*\(.*\)$/,''));
  el.innerHTML=`<div class="ws-in hca" role="dialog" aria-label="${ch} 역 후보 추가"><div class="ws-h"><b>${ch} 역, 내가 미는 배우</b><button class="x" data-act="hca-x" aria-label="닫기">✕</button></div>
- <p class="hca-sub">${esc(t.title)}. 목록에 없는 배우를 올리면 내 한 표가 바로 들어가요.</p>
- <label class="hca-l">배우 이름<input id="dlNew" maxlength="20" autocomplete="off" placeholder="예: 김태리"></label>
+ <p class="hca-sub">${esc(t.title)}. 지금 후보에 없는 배우를 골라 올리면 내 한 표가 바로 들어가요.</p>
+ <label class="hca-l">배우 이름<span class="psg-w"><input id="dlNew" data-psg="1" maxlength="20" autocomplete="off" placeholder="예: 김태리" aria-autocomplete="list"></span></label>
  <label class="hca-l">한 줄 이유 (선택)<input id="dlPitch" maxlength="80" placeholder="예: 눈빛이 원작 그대로"></label>
  <button class="hca-go" data-act="hca-go" data-rid="${rid}">후보로 올리고 한 표</button>
  <a class="hca-more" href="#${esc(t.id)}" data-act="hca-x">작품 페이지에서 전체 후보 보기</a></div>`;
@@ -162,12 +164,13 @@ function openHcAdd(rid){const t=curTopic(),r=curRole();if(!t||!r)return;const ol
 document.addEventListener('click',async e=>{const b=e.target.closest('[data-act="hc-add"]');if(b){e.preventDefault();openHcAdd(+b.dataset.rid);return}
  const g=e.target.closest('[data-act="hca-go"]');if(!g)return;e.preventDefault();const sh=$('#hcAddSheet'),t=curTopic(),r=curRole(),rid=+g.dataset.rid,nm=($('#dlNew')||{value:''}).value.trim(),pitch=($('#dlPitch')||{value:''}).value.trim();
  if(!nm){toast('배우 이름을 적어 주세요');return}
+ const pidSel=await psgResolve($('#dlNew'));if(!pidSel)return;
  if(!USER||!PROF){track('login_prompt',{t:t&&t.id,r:rid,m:{add:true}});if(sh)sh.remove();openLoginSheet();return}
- g.disabled=true;try{const cid=await rpc('add_candidate',{rid,nm,pitch:pitch||null});track('cand_add',{t:t&&t.id,r:rid,c:cid,m:{pitch:!!pitch,from:'bar'}});toast(`${nm} 후보를 올리고 한 표 넣었어요`);if(r&&r.id===rid&&!r.mine)r.mine=cid;
+ g.disabled=true;try{const nm2=($('#dlNew')||{value:nm}).value.trim()||nm;const cid=await rpc('add_candidate',{rid,nm:nm2,pitch:pitch||null,pid:pidSel});track('cand_add',{t:t&&t.id,r:rid,c:cid,m:{pitch:!!pitch,from:'bar'}});toast(`${nm2} 후보를 올리고 한 표 넣었어요`);if(r&&r.id===rid&&!r.mine)r.mine=cid;
   if(sh){sh.classList.remove('on');setTimeout(()=>sh.remove(),250)}
-  const [fresh]=await Promise.all([rpc('vote_deck',{lim:16}).catch(()=>null),(typeof loadNames==='function'?loadNames([nm]).catch(()=>{}):null)]);
+  const [fresh]=await Promise.all([rpc('vote_deck',{lim:16}).catch(()=>null),(typeof loadNames==='function'?loadNames([nm2]).catch(()=>{}):null)]);
   const ft=fresh&&t&&fresh.find(x=>x.id===t.id);if(ft)Object.assign(t,{seen:ft.seen,roles:ft.roles});
-  hcAddCast(t,rid,cid,nm)}catch(err){g.disabled=false;toast(errMsg(err))}});
+  hcAddCast(t,rid,cid,nm2)}catch(err){g.disabled=false;toast(errMsg(err))}});
 /* 새 후보를 카드 더미 맨 앞에 끼워 넣고, 날아 들어오는 카드에 CAST 도장을 찍은 뒤 다음 배역으로 */
 function hcAddCast(t,rid,cid,nm){const r=curRole();if(!r||r.id!==rid||!DECKV||!$('#hcArc')){nextRole();return}
  r.cands=r.cands||[];let c=r.cands.find(x=>x.id===cid);if(!c){c={id:cid,name:nm,votes:1};}r.cands=[c,...r.cands.filter(x=>x.id!==cid)];r.mine=cid;
@@ -186,3 +189,23 @@ function hcFlutter(el,off){el.classList.add('fly');const base=el.style.transform
   fr.push({transform:`translate(${x.toFixed(1)}px,${y.toFixed(1)}px) ${base} rotate(${rz.toFixed(1)}deg) rotateY(${ry.toFixed(1)}deg) rotateX(${rx.toFixed(1)}deg)`,opacity:u<.75?1:Math.max(0,1-(u-.75)/.25),offset:u})}
  el.style.transition='none';el.style.filter='brightness(.75)';
  const an=el.animate(fr,{duration:T*1000,delay:k*55+R()*40,easing:'linear',fill:'both'});an.onfinish=()=>{el.style.visibility='hidden'}}
+
+/* 후보 이름 자동 완성: 배우 DB에 있는 사람만 고를 수 있고, 철자가 틀리면 비슷한 이름을 보여 줌 */
+const PSG={t:null,seq:0};
+function psgBox(inp){let w=inp.parentElement;if(!w.classList.contains('psg-w')){const s=document.createElement('span');s.className='psg-w';inp.replaceWith(s);s.appendChild(inp);w=s}
+ let b=w.querySelector('.psg');if(!b){b=document.createElement('div');b.className='psg';b.setAttribute('role','listbox');w.appendChild(b)}return b}
+async function psgFetch(inp){const q=inp.value.trim(),b=psgBox(inp),my=++PSG.seq;if(!q){b.innerHTML='';b.hidden=true;return []}
+ let L=[];try{L=await rpc('people_suggest',{q,lim:6})||[]}catch(e){}if(my!==PSG.seq)return L;
+ if(!L.length){b.innerHTML=`<p class="psg-none">배우 목록에 없는 이름이에요. 철자를 확인해 주세요</p>`;b.hidden=false;return L}
+ try{await loadNames(L.map(x=>x.name))}catch(e){}if(my!==PSG.seq)return L;
+ const ex=L.find(x=>x.exact);if(ex&&!inp.dataset.pid){inp.dataset.pid=ex.id;inp.dataset.pnm=ex.name}
+ b.innerHTML=(ex?'':`<p class="psg-hd">혹시 이 배우인가요?</p>`)+L.map(x=>{const u=IMG['p:'+x.name]||'';return `<button type="button" class="psg-i${+inp.dataset.pid===+x.id?' on':''}" data-psg-id="${x.id}" data-psg-nm="${esc(x.name)}" role="option"><span class="ph"${u?` style="background-image:url('${esc(u)}')"`:''}>${u?'':esc(x.name[0])}</span><span class="tx"><b>${esc(x.name)}</b><small>${x.hint?`최근작 《${esc(x.hint)}》`:esc(x.name_en&&x.name_en!==x.name?x.name_en:'')}</small></span>${+inp.dataset.pid===+x.id?'<i>선택됨</i>':''}</button>`}).join('');b.hidden=false;return L}
+document.addEventListener('input',e=>{const inp=e.target;if(!(inp.matches&&(inp.matches('[data-psg]')||/^ad\d+$/.test(inp.id))))return;
+ if(inp.dataset.pnm!==inp.value.trim()){delete inp.dataset.pid;delete inp.dataset.pnm}clearTimeout(PSG.t);PSG.t=setTimeout(()=>psgFetch(inp),180)});
+document.addEventListener('click',e=>{const it=e.target.closest('[data-psg-id]');if(!it)return;e.preventDefault();const w=it.closest('.psg-w'),inp=w&&w.querySelector('input');if(!inp)return;
+ inp.value=it.dataset.psgNm;inp.dataset.pid=it.dataset.psgId;inp.dataset.pnm=it.dataset.psgNm;const b=w.querySelector('.psg');if(b){b.innerHTML='';b.hidden=true}
+ const nx=document.getElementById('dlPitch');if(inp.id==='dlNew'&&nx)nx.focus()});
+/* 제출 직전: 고른 배우가 있으면 그 번호, 없으면 정확히 같은 이름 하나일 때만 통과. 아니면 목록을 띄우고 멈춤 */
+async function psgResolve(inp){if(!inp)return null;if(inp.dataset.pid&&inp.dataset.pnm===inp.value.trim())return +inp.dataset.pid;
+ const L=await psgFetch(inp);const ex=L.filter(x=>x.exact);if(ex.length===1){inp.dataset.pid=ex[0].id;inp.dataset.pnm=ex[0].name;inp.value=ex[0].name;return ex[0].id}
+ toast(L.length?'아래 목록에서 배우를 골라 주세요':'배우 목록에 없는 이름이에요');inp.focus();return null}

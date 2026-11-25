@@ -1743,6 +1743,18 @@ body{word-break:keep-all;overflow-wrap:break-word}
 
 .hc-arc.picked{overflow:visible;perspective:1600px}
 .hc-arc .card.fly{pointer-events:none;will-change:transform,opacity;backface-visibility:visible}
+/* 후보 이름 자동 완성 */
+.psg-w{position:relative;display:block}
+.psg{margin-top:6px;border:1px solid #2c2c2c;border-radius:12px;background:#121212;overflow:hidden}
+.psg[hidden]{display:none}
+.psg-hd,.psg-none{margin:0;padding:9px 12px;font-size:12px;color:#8A8A8A;font-weight:600}
+.psg-none{color:#ffb4a8}
+.psg-i{display:flex;align-items:center;gap:10px;width:100%;padding:8px 12px;border:0;border-top:1px solid #1e1e1e;background:none;color:#fff;text-align:left;cursor:pointer;min-height:52px}
+.psg-i:first-child{border-top:0}.psg-i:hover,.psg-i.on{background:#1b2208}
+.psg-i .ph{flex:none;width:36px;height:36px;border-radius:50%;background:#222 center 20%/cover;display:grid;place-items:center;font-size:13px;font-weight:800;color:#888}
+.psg-i .tx{flex:1;min-width:0;display:flex;flex-direction:column}.psg-i b{font-size:14px}.psg-i small{font-size:11px;color:#8A8A8A;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.psg-i i{font-style:normal;font-size:11px;font-weight:800;color:#D4FF3A}
+.psg-w input{width:100%;box-sizing:border-box}
 
 /* ================= C 디자인 통일 ================= */
 :root{--lime:#D4FF3A}
@@ -2404,7 +2416,7 @@ document.addEventListener('click',async e=>{
  if(a==='duel'){if(!DUEL||DUEL.res||DUEL.done)return;const w=b.dataset.v==='a'?DUEL.a:DUEL.b;const guest=!USER||!PROF;const dms=performance.now()-(DUEL.t0||0);{const lo2=w===DUEL.a?DUEL.b:DUEL.a,x1=Math.min(DUEL.a.candidate_id,DUEL.b.candidate_id),y1=Math.max(DUEL.a.candidate_id,DUEL.b.candidate_id);var vlp=vsLog('role',{tid:DUEL.tid,rid:DUEL.rid,w:w.candidate_id,l:lo2.candidate_id,ms:dms,pk:`role:${DUEL.rid}:${x1}:${y1}`,m:{round:DUEL.round,champ:w===DUEL.a&&DUEL.round>1}})}try{let d;if(guest){d=(await rpc('duel_stats',{rid:DUEL.rid,x:DUEL.a.candidate_id,y:DUEL.b.candidate_id}))[0];if(d.a===w.candidate_id)d.a_votes++;else d.b_votes++;d.already=false;GUEST++;try{localStorage.setItem('guestDuels',GUEST)}catch(e){}}else{d=(await rpc('duel_vote',{rid:DUEL.rid,x:DUEL.a.candidate_id,y:DUEL.b.candidate_id,win:w.candidate_id}))[0]}let tot=(d.a_votes+d.b_votes)||1,va=d.a===DUEL.a.candidate_id?d.a_votes:d.b_votes;const lr=await vlp;if(lr&&lr.tot>0){tot=+lr.tot;va=w===DUEL.a?+lr.same:tot-lr.same}const vb=tot-va;DUEL.res={pa:va/tot,pb:vb/tot,n:tot,already:d.already,guest};DUEL.lastWin=w;(DUEL.log=DUEL.log||[]).push({w:w.name,l:(w===DUEL.a?DUEL.b:DUEL.a).name});DUEL.wins[w.candidate_id]=(DUEL.wins[w.candidate_id]||0)+1;STREAK++;renderDuel();setTimeout(duelAdvance,1300);if(!guest)loadProfile().then(renderWho)}catch(err){toast(errMsg(err))}return}
  if(a==='vote'){if(needLogin())return;const r=D.roles.find(x=>x.id===rid),c=(D.cands[rid]||[]).find(x=>x.candidate_id===cid);const ok=await act('cast_vote_src',{rid,cid,src:'board'},'');if(ok!==undefined||D.myVote[rid])showUndo(rid,`${r.ch} 역에 ${c.name} 한 표`);return}
  if(a==='svote'){if(needLogin())return;await act('sync_vote',{rid,sc:+$('#vt'+rid).value},'싱크로율 투표 완료');return}
- if(a==='add'){if(needLogin())return;const n=$('#ad'+rid).value.trim();if(!n)return toast('배우 이름을 입력하세요');await act('add_candidate',{rid,nm:n},`${n} 후보 등록 완료`);return}
+ if(a==='add'){if(needLogin())return;const inp=$('#ad'+rid),n=inp.value.trim();if(!n)return toast('배우 이름을 입력하세요');const pid=await psgResolve(inp);if(!pid)return;await act('add_candidate',{rid,nm:inp.value.trim(),pid},`${inp.value.trim()} 후보 등록 완료`);return}
  if(a==='talk'){if(needLogin())return;const tx=$('#tx'+rid).value.trim();if(!tx)return toast('의견을 입력하세요');const pv=$('#tp'+rid).value;await act('post_talk',{tid:SEL,ck:null,rid,cid:pv?+pv:null,parent:null,txt:tx},'토론 탭에도 올라갔어요');return}
  if(a==='likec'){if(needLogin())return;await act('vote_thread',{cid:+b.dataset.id,val:1},D&&D.cliked.has(+b.dataset.id)?'공감을 취소했어요':'공감했어요');return}
  if(a==='likes'){if(needLogin())return;await act('like_sheet_team',{sid:+b.dataset.sid},'이 팀에 공감했어요');try{loadTalk(SEL)}catch(e){}return}
@@ -2520,7 +2532,7 @@ async function renderActor(){const pid=PAGE.pid;
  if(!PAGE||PAGE.pid!==pid)return;
  const p=pg.person,fan=(mine.data||[]).length>0,name=p.name;
  if(prof&&prof.birthday&&!AGE[name]){AGE[name]=prof.birthday}
- const photo=(prof&&prof.photo)||IMG['p:'+name]||'';
+ const photo=hiRes((prof&&prof.photo)||IMG['p:'+name]||'');
  const races=pg.races||[],open=races.filter(r=>r.open),done=races.filter(r=>!r.open);
  const lead=open.filter(r=>r.rank===1&&r.votes>0).length;
  const raceCard=r=>{const pct=r.total?r.votes/r.total:0;return `<div class="race${r.rank===1&&r.votes>0?' lead':''}"><div><a href="#${esc(r.topic_id)}"><b>${esc(r.title)}</b></a> <span class="sub">${esc(r.ch)} 역</span></div>
@@ -3803,7 +3815,7 @@ async function filmoFallback(nm){try{if(typeof loadOrig==='function')await loadO
  if(d.p&&!IMG['p:'+nm])IMG['p:'+nm]=d.p;return (d.f||[]).map(x=>{if(x.tk&&x.p)WKP[x.tk]=x.p;return {wi:'',tk:x.tk,t:x.t,y:x.y,ch:x.ch}})}catch(e){return []}}
 /* ===== 내 팀 꾸미기: 위아래로 배우, 좌우로 그 배우의 작품 속 모습. 랜덤 돌리기는 좌우 ===== */
 var SLT={ri:0};
-const slBig=u=>u?u.replace('/w185/','/w342/'):'';
+const slBig=u=>u?hiRes(u):'';
 function slotRoles(){return D?D.roles.filter(r=>!isSync(r)&&document.getElementById('sp'+r.id)):[]}
 function eraVal(w){return `${w.y}|${w.wi||''}|${w.t.slice(0,60)}`}
 function slotStage(box){const host=box.querySelector('.sheet');if(!host)return;let st=host.querySelector('#slotStage');if(!st){st=document.createElement('div');st.id='slotStage';st.className='slt';host.insertBefore(st,host.querySelector('.sb'))}
@@ -3927,8 +3939,8 @@ renderDuel=function(){const box=$('#duel');if(!box)return;
  return _vsfRender()};
 function vsfAl(n,W,H){const a=AMF[n];if(!a||!a.f||!a.p)return '';const f=a.f,iw=500,ih=750,pad=40,k=(f[2]+f[3])/2;if(k<.09)return '';
  const s=(H*.215)/(k*ih),bw=iw*s,ex=W/2,ey=H*.41,x=ex+pad-f[0]*iw*s,y=ey+pad-f[1]*ih*s;
- return `top:-${pad}px;left:-${pad}px;right:-${pad}px;bottom:-${pad}px;background-image:url('https://image.tmdb.org/t/p/w500${esc(a.p)}');background-size:${Math.round(bw)}px auto;background-position:${Math.round(x)}px ${Math.round(y)}px;transform-origin:${Math.round(ex+pad)}px ${Math.round(ey+pad)}px;transform:rotate(${-f[5]}deg)`}
-function vsfPh(n,W,H){const al=vsfAl(n,W,H),a0=AMF[n];if(al)return `<span class="ph bgc" style="background-image:url('https://image.tmdb.org/t/p/w185${esc(a0.p)}')"></span><span class="ph al" style="${al}"></span>`;const a=AMF[n],u=a&&a.p?'https://image.tmdb.org/t/p/w500'+a.p:IMG['p:'+n];return `<span class="ph"${u?` style="background-image:url('${esc(u)}')"`:''}></span>`}
+ return `top:-${pad}px;left:-${pad}px;right:-${pad}px;bottom:-${pad}px;background-image:url('https://image.tmdb.org/t/p/original${esc(a.p)}');background-size:${Math.round(bw)}px auto;background-position:${Math.round(x)}px ${Math.round(y)}px;transform-origin:${Math.round(ex+pad)}px ${Math.round(ey+pad)}px;transform:rotate(${-f[5]}deg)`}
+function vsfPh(n,W,H){const al=vsfAl(n,W,H),a0=AMF[n];if(al)return `<span class="ph bgc" style="background-image:url('https://image.tmdb.org/t/p/w185${esc(a0.p)}')"></span><span class="ph al" style="${al}"></span>`;const a=AMF[n],u=hiRes(a&&a.p?'https://image.tmdb.org/t/p/w500'+a.p:IMG['p:'+n]);return `<span class="ph"${u?` style="background-image:url('${esc(u)}')"`:''}></span>`}
 function vsfNm(n){const d=dispName(n),m=d.match(/^(.*?)\s*\(([^()]*)\)$/);return m?`<b>${esc(m[1])}</b><em>${esc(m[2])}</em>`:`<b>${esc(d)}</b>`}
 function vsfRender(box){const d=DUEL,W=box.clientWidth||360,H=Math.max(400,Math.min(innerHeight-250,760)),R=d.res,h=d.hi,ver=verLabel(d.cat);
  const cls=k=>R?(R.k===k?'win':'lose'):h?(h===k?'hi':'dim'):'idle';
@@ -3961,7 +3973,9 @@ document.addEventListener('click',e=>{if(e.target.closest('[data-act="vsHere"]')
    한 번 더 탭하면 CAST 도장과 함께 나머지 카드가 흩어지고 표가 들어감. 맨 아래에 토론 공감 1위 한 줄 */
 var HC={sel:0,confirm:false,voted:false,key:'',ri:0,timer:null},HCQ={};
 function hcCands(r){return (r.cands||[]).slice(0,10)}
-function hcImg(n){const a=AMF[n];return a&&a.p?'https://image.tmdb.org/t/p/w500'+a.p:(IMG['p:'+n]||'')}
+/* 큰 사진 자리는 TMDB 원본 해상도로(작은 썸네일은 그대로 둬 데이터를 아낌) */
+function hiRes(u){return u?String(u).replace(/\/t\/p\/(?:w\d+|h\d+)\//,'/t/p/original/'):u}
+function hcImg(n){const a=AMF[n];return hiRes(a&&a.p?'https://image.tmdb.org/t/p/w500'+a.p:(IMG['p:'+n]||''))}
 function hcClose(t){const x=roundLeft(t),m=x.match(/D-\d+/);return m?m[0]:/오늘/.test(x)?'D-0':x}
 function hcRailItems(t,r){const it=[],n=(t.news||[])[0],q=HCQ[t.id];
  it.push({tg:'마감',tx:`${String(r.ch).replace(/\s*\(.*\)$/,'')} 역 투표 ${roundLeft(t)}`,href:'#'+t.id});
@@ -4107,8 +4121,8 @@ function hcTodoFocus(){const row=$('#tdRow'),c=row&&row.querySelector('.td.cur')
 function openHcAdd(rid){const t=curTopic(),r=curRole();if(!t||!r)return;const old=$('#hcAddSheet');if(old)old.remove();
  const el=document.createElement('div');el.id='hcAddSheet';el.className='wsheet';const ch=esc(String(r.ch).replace(/\s*\(.*\)$/,''));
  el.innerHTML=`<div class="ws-in hca" role="dialog" aria-label="${ch} 역 후보 추가"><div class="ws-h"><b>${ch} 역, 내가 미는 배우</b><button class="x" data-act="hca-x" aria-label="닫기">✕</button></div>
- <p class="hca-sub">${esc(t.title)}. 목록에 없는 배우를 올리면 내 한 표가 바로 들어가요.</p>
- <label class="hca-l">배우 이름<input id="dlNew" maxlength="20" autocomplete="off" placeholder="예: 김태리"></label>
+ <p class="hca-sub">${esc(t.title)}. 지금 후보에 없는 배우를 골라 올리면 내 한 표가 바로 들어가요.</p>
+ <label class="hca-l">배우 이름<span class="psg-w"><input id="dlNew" data-psg="1" maxlength="20" autocomplete="off" placeholder="예: 김태리" aria-autocomplete="list"></span></label>
  <label class="hca-l">한 줄 이유 (선택)<input id="dlPitch" maxlength="80" placeholder="예: 눈빛이 원작 그대로"></label>
  <button class="hca-go" data-act="hca-go" data-rid="${rid}">후보로 올리고 한 표</button>
  <a class="hca-more" href="#${esc(t.id)}" data-act="hca-x">작품 페이지에서 전체 후보 보기</a></div>`;
@@ -4119,12 +4133,13 @@ function openHcAdd(rid){const t=curTopic(),r=curRole();if(!t||!r)return;const ol
 document.addEventListener('click',async e=>{const b=e.target.closest('[data-act="hc-add"]');if(b){e.preventDefault();openHcAdd(+b.dataset.rid);return}
  const g=e.target.closest('[data-act="hca-go"]');if(!g)return;e.preventDefault();const sh=$('#hcAddSheet'),t=curTopic(),r=curRole(),rid=+g.dataset.rid,nm=($('#dlNew')||{value:''}).value.trim(),pitch=($('#dlPitch')||{value:''}).value.trim();
  if(!nm){toast('배우 이름을 적어 주세요');return}
+ const pidSel=await psgResolve($('#dlNew'));if(!pidSel)return;
  if(!USER||!PROF){track('login_prompt',{t:t&&t.id,r:rid,m:{add:true}});if(sh)sh.remove();openLoginSheet();return}
- g.disabled=true;try{const cid=await rpc('add_candidate',{rid,nm,pitch:pitch||null});track('cand_add',{t:t&&t.id,r:rid,c:cid,m:{pitch:!!pitch,from:'bar'}});toast(`${nm} 후보를 올리고 한 표 넣었어요`);if(r&&r.id===rid&&!r.mine)r.mine=cid;
+ g.disabled=true;try{const nm2=($('#dlNew')||{value:nm}).value.trim()||nm;const cid=await rpc('add_candidate',{rid,nm:nm2,pitch:pitch||null,pid:pidSel});track('cand_add',{t:t&&t.id,r:rid,c:cid,m:{pitch:!!pitch,from:'bar'}});toast(`${nm2} 후보를 올리고 한 표 넣었어요`);if(r&&r.id===rid&&!r.mine)r.mine=cid;
   if(sh){sh.classList.remove('on');setTimeout(()=>sh.remove(),250)}
-  const [fresh]=await Promise.all([rpc('vote_deck',{lim:16}).catch(()=>null),(typeof loadNames==='function'?loadNames([nm]).catch(()=>{}):null)]);
+  const [fresh]=await Promise.all([rpc('vote_deck',{lim:16}).catch(()=>null),(typeof loadNames==='function'?loadNames([nm2]).catch(()=>{}):null)]);
   const ft=fresh&&t&&fresh.find(x=>x.id===t.id);if(ft)Object.assign(t,{seen:ft.seen,roles:ft.roles});
-  hcAddCast(t,rid,cid,nm)}catch(err){g.disabled=false;toast(errMsg(err))}});
+  hcAddCast(t,rid,cid,nm2)}catch(err){g.disabled=false;toast(errMsg(err))}});
 /* 새 후보를 카드 더미 맨 앞에 끼워 넣고, 날아 들어오는 카드에 CAST 도장을 찍은 뒤 다음 배역으로 */
 function hcAddCast(t,rid,cid,nm){const r=curRole();if(!r||r.id!==rid||!DECKV||!$('#hcArc')){nextRole();return}
  r.cands=r.cands||[];let c=r.cands.find(x=>x.id===cid);if(!c){c={id:cid,name:nm,votes:1};}r.cands=[c,...r.cands.filter(x=>x.id!==cid)];r.mine=cid;
@@ -4143,6 +4158,26 @@ function hcFlutter(el,off){el.classList.add('fly');const base=el.style.transform
   fr.push({transform:`translate(${x.toFixed(1)}px,${y.toFixed(1)}px) ${base} rotate(${rz.toFixed(1)}deg) rotateY(${ry.toFixed(1)}deg) rotateX(${rx.toFixed(1)}deg)`,opacity:u<.75?1:Math.max(0,1-(u-.75)/.25),offset:u})}
  el.style.transition='none';el.style.filter='brightness(.75)';
  const an=el.animate(fr,{duration:T*1000,delay:k*55+R()*40,easing:'linear',fill:'both'});an.onfinish=()=>{el.style.visibility='hidden'}}
+
+/* 후보 이름 자동 완성: 배우 DB에 있는 사람만 고를 수 있고, 철자가 틀리면 비슷한 이름을 보여 줌 */
+const PSG={t:null,seq:0};
+function psgBox(inp){let w=inp.parentElement;if(!w.classList.contains('psg-w')){const s=document.createElement('span');s.className='psg-w';inp.replaceWith(s);s.appendChild(inp);w=s}
+ let b=w.querySelector('.psg');if(!b){b=document.createElement('div');b.className='psg';b.setAttribute('role','listbox');w.appendChild(b)}return b}
+async function psgFetch(inp){const q=inp.value.trim(),b=psgBox(inp),my=++PSG.seq;if(!q){b.innerHTML='';b.hidden=true;return []}
+ let L=[];try{L=await rpc('people_suggest',{q,lim:6})||[]}catch(e){}if(my!==PSG.seq)return L;
+ if(!L.length){b.innerHTML=`<p class="psg-none">배우 목록에 없는 이름이에요. 철자를 확인해 주세요</p>`;b.hidden=false;return L}
+ try{await loadNames(L.map(x=>x.name))}catch(e){}if(my!==PSG.seq)return L;
+ const ex=L.find(x=>x.exact);if(ex&&!inp.dataset.pid){inp.dataset.pid=ex.id;inp.dataset.pnm=ex.name}
+ b.innerHTML=(ex?'':`<p class="psg-hd">혹시 이 배우인가요?</p>`)+L.map(x=>{const u=IMG['p:'+x.name]||'';return `<button type="button" class="psg-i${+inp.dataset.pid===+x.id?' on':''}" data-psg-id="${x.id}" data-psg-nm="${esc(x.name)}" role="option"><span class="ph"${u?` style="background-image:url('${esc(u)}')"`:''}>${u?'':esc(x.name[0])}</span><span class="tx"><b>${esc(x.name)}</b><small>${x.hint?`최근작 《${esc(x.hint)}》`:esc(x.name_en&&x.name_en!==x.name?x.name_en:'')}</small></span>${+inp.dataset.pid===+x.id?'<i>선택됨</i>':''}</button>`}).join('');b.hidden=false;return L}
+document.addEventListener('input',e=>{const inp=e.target;if(!(inp.matches&&(inp.matches('[data-psg]')||/^ad\d+$/.test(inp.id))))return;
+ if(inp.dataset.pnm!==inp.value.trim()){delete inp.dataset.pid;delete inp.dataset.pnm}clearTimeout(PSG.t);PSG.t=setTimeout(()=>psgFetch(inp),180)});
+document.addEventListener('click',e=>{const it=e.target.closest('[data-psg-id]');if(!it)return;e.preventDefault();const w=it.closest('.psg-w'),inp=w&&w.querySelector('input');if(!inp)return;
+ inp.value=it.dataset.psgNm;inp.dataset.pid=it.dataset.psgId;inp.dataset.pnm=it.dataset.psgNm;const b=w.querySelector('.psg');if(b){b.innerHTML='';b.hidden=true}
+ const nx=document.getElementById('dlPitch');if(inp.id==='dlNew'&&nx)nx.focus()});
+/* 제출 직전: 고른 배우가 있으면 그 번호, 없으면 정확히 같은 이름 하나일 때만 통과. 아니면 목록을 띄우고 멈춤 */
+async function psgResolve(inp){if(!inp)return null;if(inp.dataset.pid&&inp.dataset.pnm===inp.value.trim())return +inp.dataset.pid;
+ const L=await psgFetch(inp);const ex=L.filter(x=>x.exact);if(ex.length===1){inp.dataset.pid=ex[0].id;inp.dataset.pnm=ex[0].name;inp.value=ex[0].name;return ex[0].id}
+ toast(L.length?'아래 목록에서 배우를 골라 주세요':'배우 목록에 없는 이름이에요');inp.focus();return null}
 
 /* ================= C 디자인 통일 (작품 목록, 작품 상세, 랭킹, 나, 배우, VS 특집) ================= */
 /* ---- 공통 ---- */
@@ -4179,7 +4214,7 @@ function c2Buzz(){if(C2BZ===null){C2BZ=[];sb.rpc('buzz_cards',{n:12}).then(({dat
 
 /* ---- 작품 상세: 배역 보드 ---- */
 var C2SEL=null;
-function c2Ph(n){return hcImg(n)||IMG['p:'+n]||''}
+function c2Ph(n){return String(hcImg(n)||IMG['p:'+n]||'').replace('/t/p/original/','/t/p/h632/')}
 function c2Nm(n){const d=dispName(n),m=d.match(/^(.*?)\s*\((.*)\)$/);return m?`<b>${esc(m[1])}</b><small>${esc(m[2])}</small>`:`<b>${esc(d)}</b>`}
 function c2RoleFace(r){const mv=D.myVote[r.id],cs=D.cands[r.id]||[];let c=mv&&cs.find(x=>x.candidate_id===mv.candidate_id);if(!c&&D.seen)c=cs.slice().sort((a,b)=>b.votes-a.votes)[0];return c?c2Ph(c.name):''}
 function c2RoleHTML(r){const t=topic(),open=isOpen(t),mv=D.myVote[r.id],blind=open&&!mv&&!isOpt(r),cs0=D.cands[r.id]||[];

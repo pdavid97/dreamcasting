@@ -805,3 +805,15 @@ body{word-break:keep-all;overflow-wrap:break-word}
 
 .hc-arc.picked{overflow:visible;perspective:1600px}
 .hc-arc .card.fly{pointer-events:none;will-change:transform,opacity;backface-visibility:visible}
+/* 후보 이름 자동 완성 */
+.psg-w{position:relative;display:block}
+.psg{margin-top:6px;border:1px solid #2c2c2c;border-radius:12px;background:#121212;overflow:hidden}
+.psg[hidden]{display:none}
+.psg-hd,.psg-none{margin:0;padding:9px 12px;font-size:12px;color:#8A8A8A;font-weight:600}
+.psg-none{color:#ffb4a8}
+.psg-i{display:flex;align-items:center;gap:10px;width:100%;padding:8px 12px;border:0;border-top:1px solid #1e1e1e;background:none;color:#fff;text-align:left;cursor:pointer;min-height:52px}
+.psg-i:first-child{border-top:0}.psg-i:hover,.psg-i.on{background:#1b2208}
+.psg-i .ph{flex:none;width:36px;height:36px;border-radius:50%;background:#222 center 20%/cover;display:grid;place-items:center;font-size:13px;font-weight:800;color:#888}
+.psg-i .tx{flex:1;min-width:0;display:flex;flex-direction:column}.psg-i b{font-size:14px}.psg-i small{font-size:11px;color:#8A8A8A;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.psg-i i{font-style:normal;font-size:11px;font-weight:800;color:#D4FF3A}
+.psg-w input{width:100%;box-sizing:border-box}

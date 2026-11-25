@@ -65,7 +65,7 @@ async function renderActor(){const pid=PAGE.pid;
  if(!PAGE||PAGE.pid!==pid)return;
  const p=pg.person,fan=(mine.data||[]).length>0,name=p.name;
  if(prof&&prof.birthday&&!AGE[name]){AGE[name]=prof.birthday}
- const photo=(prof&&prof.photo)||IMG['p:'+name]||'';
+ const photo=hiRes((prof&&prof.photo)||IMG['p:'+name]||'');
  const races=pg.races||[],open=races.filter(r=>r.open),done=races.filter(r=>!r.open);
  const lead=open.filter(r=>r.rank===1&&r.votes>0).length;
  const raceCard=r=>{const pct=r.total?r.votes/r.total:0;return `<div class="race${r.rank===1&&r.votes>0?' lead':''}"><div><a href="#${esc(r.topic_id)}"><b>${esc(r.title)}</b></a> <span class="sub">${esc(r.ch)} 역</span></div>
