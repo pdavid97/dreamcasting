@@ -885,3 +885,5 @@ body{word-break:keep-all;overflow-wrap:break-word}
 /* 광장(카드) 화면에서는 되돌리기 알림을 위로 올려 하단 버튼을 가리지 않게 (11/25) */
 body[data-view="deck"] .undobar{top:calc(8px + env(safe-area-inset-top));bottom:auto;transform:translate(-50%,-20px);z-index:60;box-shadow:0 8px 24px rgba(0,0,0,.5)}
 body[data-view="deck"] .undobar.on{transform:translate(-50%,0)}
+/* 모바일에서 가로로 몇 px 밀리는 현상 방지 (11/25 봇 점검: 작품, 배우, 랭킹 화면) */
+html,body{overflow-x:clip}

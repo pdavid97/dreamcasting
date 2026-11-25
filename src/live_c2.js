@@ -413,3 +413,5 @@ document.addEventListener('click',async e=>{const b=e.target.closest('[data-act=
   try{track(isLife?'life_pick':'collect',{m:{k,on,via:'topic'}})}catch(x){}
   toast(isLife?(on?`${w.title}, 내 인생작으로 시네마 서재 맨 앞에 걸었어요`:'인생작에서 뺐어요'):(on?`${w.title}, 내 시네마 서재에 담았어요`:'시네마 서재에서 뺐어요'));
   renderTLove();const nb=document.querySelector(`#topicView .tlove [data-k="${b.dataset.k}"]`);if(on&&nb){nb.classList.add('pop');try{burst(nb)}catch(x){}}}catch(err){toast(errMsg(err))}finally{b.disabled=false}});
+/* 배우 나이는 어디에도 보여주지 않으므로 나이 조회 요청도 보내지 않음 (11/25 봇 점검) */
+loadAges=function(){};
