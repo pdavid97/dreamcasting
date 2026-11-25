@@ -2,7 +2,7 @@
 var VIEWX=null;
 function curView(){if(PAGE)return 'page';if(DECKV)return 'deck';if(VIEWX)return VIEWX;if(HOMEV)return 'explore';return 'topic'}
 function applyView(){document.body.dataset.view=curView()}
-function navItems(){const v=curView(),me=PROF?'#u/'+encodeURIComponent(PROF.nickname):'#me',myPage=v==='page'&&PAGE&&PAGE.kind==='u'&&PROF&&PAGE.nick===PROF.nickname;
+function navItems(){const v=curView(),me=PROF?'#u/'+encodeURIComponent(PROF.nickname):'#me',myPage=v==='page'&&PAGE&&((PAGE.kind==='u'&&PROF&&PAGE.nick===PROF.nickname)||PAGE.kind==='me');
  const unread=(typeof NOTICES!=='undefined'&&NOTICES?NOTICES.filter(x=>!x.read).length:0);
  return [['#','광장',IC.home,v==='deck'],['#explore','작품',IC.grid,v==='explore'||v==='topic'],['#vs','VS 한판',IC.vs,v==='vs'],['#rank','랭킹',IC.trophy,v==='rank'||(v==='page'&&PAGE&&PAGE.kind==='a')],[me,USER?(PROF?'나':'닉네임'):'로그인',IC.user,myPage,unread]]}
 function renderTabbar(){applyView();const html=navItems().map(x=>`<a href="${x[0]}" class="${x[3]?'on':''}" ${x[3]?'aria-current="page"':''}${x[4]?` aria-label="${x[1]}, 새 알림 ${x[4]}개"`:''}>${x[2]}${x[4]?`<i class="tb-badge">${x[4]>9?'9+':x[4]}</i>`:''}<span>${x[1]}</span></a>`).join('');
@@ -16,7 +16,7 @@ function navSpecial(h){VIEWX=null;
  if(h==='vs'){showHome(false);VIEWX='vs';renderTabbar();renderDuel();scrollTo({top:0});track('vs_view');return}
  if(h==='rank'||h==='actors'){showHome(false);VIEWX='rank';renderTabbar();scrollTo({top:0});track('rank_view');return}
  if(h==='make'){showHome(true);renderTabbar();$('#propBox').open=true;$('#propBox').scrollIntoView({behavior:'smooth'});return}
- if(h==='me'){renderTabbar();if(needLogin())return;if(PROF)location.hash='u/'+encodeURIComponent(PROF.nickname);return}
+ if(h==='me'){if(!USER){showMeLogin();return}renderTabbar();if(needLogin())return;if(PROF)location.hash='u/'+encodeURIComponent(PROF.nickname);return}
  showHome(true);renderTabbar()}
 
 /* 상단 바를 없애고 검색은 작품 탭 맨 위로 */
@@ -65,3 +65,11 @@ function goSearch(q){location.hash='explore';setTimeout(()=>{const i=$('#gq'),f=
 document.addEventListener('click',e=>{const b=e.target.closest('[data-act="q"]');if(!b)return;e.preventDefault();track('work_link',{m:{q:b.dataset.q}});goSearch(b.dataset.q)});
 
 document.addEventListener('click',e=>{const b=e.target.closest('[data-act="rkmore"]');if(!b)return;const sec=b.parentElement;sec.classList.toggle('all');b.textContent=sec.classList.contains('all')?'접기':'모두 보기'});
+
+/* 로그아웃 상태의 나 탭: 다른 화면 위에 시트를 띄우지 않고 전용 화면을 보여줌 */
+function showMeLogin(){PAGE={kind:'me'};const ic=(d,l)=>`<span class="ml-i"><svg viewBox="0 0 24 24" aria-hidden="true">${d}</svg><small>${l}</small></span>`;
+ showPage(`<div class="pg melogin"><div class="ml-hero"><b class="ml-k">DREAM<br>CASTING</b><h1>내 캐스팅을<br><em>남겨 두세요</em></h1></div>
+ <div class="ml-ics">${ic('<path d="M5 12l4 4 10-10"/>','투표 저장')}${ic('<circle cx="12" cy="9" r="4"/><path d="M5 20a7 7 0 0 1 14 0"/>','내 캐스팅 팀')}${ic('<path d="M8 4h8v5a4 4 0 0 1-8 0zM12 13v4M9 20h6"/>','포인트와 업적')}</div>
+ <button class="lg g big" data-act="google"><span class="gdot"></span>구글로 시작하기</button></div>`);renderTabbar();track('login_prompt',{m:{at:'me'}})}
+/* 화면을 옮기면 열려 있던 로그인 창은 닫음 */
+addEventListener('hashchange',()=>{const m=$('#loginModal');if(m)m.classList.remove('on');const s=$('#loginSheet');if(s)s.classList.remove('on')});

@@ -647,7 +647,7 @@ body{word-break:keep-all;overflow-wrap:break-word}
 .hc-rail .tg{flex:none;font-size:10px;font-weight:800;color:#D4FF3A;border:1px solid rgba(212,255,58,.4);border-radius:6px;padding:2px 6px}
 .hc-rail .tx{flex:1;min-width:0;font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;animation:hcRu .5s cubic-bezier(.2,.8,.2,1)}
 .hc-rail .ar{flex:none;color:#777}
-@keyframes hcRu{from{transform:translateY(8px);opacity:0}to{transform:none;opacity:1}}
+@keyframes hcRu{from{transform:translateY(6px);opacity:.4}to{transform:none;opacity:1}}
 .hc-hd{display:flex;justify-content:space-between;align-items:flex-end;gap:10px;padding:10px 16px 0}
 .hc-wk{border:0;background:none;color:#D4FF3A;font-size:11px;font-weight:800;padding:0;margin-right:6px;cursor:pointer}
 .hc-hd small{font-size:11px;color:#8A8A8A;font-weight:700}
@@ -758,3 +758,14 @@ body{word-break:keep-all;overflow-wrap:break-word}
 .mp2.wide{grid-template-columns:1fr}
 .mp2.wide .mp-o{aspect-ratio:16/9}
 .mp2.wide .mp-m{aspect-ratio:16/9}
+
+/* 로그아웃 상태 나 화면 */
+.pg.melogin{min-height:calc(100vh - 140px);display:flex;flex-direction:column;justify-content:center;gap:22px;padding:24px 20px}
+.melogin .ml-k{display:block;font:400 13px/1.05 Anton,sans-serif;letter-spacing:.06em;color:#D4FF3A}
+.melogin h1{margin:10px 0 0;font-size:34px;font-weight:900;letter-spacing:-.05em;line-height:1.12}.melogin h1 em{font-style:normal;color:#D4FF3A}
+.melogin .ml-ics{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.melogin .ml-i{display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px 6px;border-radius:16px;background:#141414}
+.melogin .ml-i svg{width:28px;height:28px;fill:none;stroke:#D4FF3A;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.melogin .ml-i small{font-size:12px;font-weight:800;color:#DADADA}
+.melogin .lg.big{width:100%;padding:15px;font-size:15px;border-radius:14px}
+.melogin .lg.big{display:flex;align-items:center;justify-content:center;gap:8px}
