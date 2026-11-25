@@ -391,3 +391,25 @@ var c2TeamRot=function(){FL.i=0;FL.busy=0;const box=$('#c2fl');if(!box)return;fl
  const miss=[...box.querySelectorAll('.ph[data-n]')].filter(e=>!e.style.backgroundImage);if(miss.length&&typeof loadNames==='function')Promise.resolve(loadNames([...new Set(miss.map(e=>e.dataset.n))])).then(()=>miss.forEach(e=>{const u=c2Ph(e.dataset.n);if(u){e.style.backgroundImage=`url('${u}')`;e.innerHTML=''}})).catch(()=>{});
  let sx=null,sy=null;box.addEventListener('pointerdown',e=>{sx=e.clientX;sy=e.clientY});box.addEventListener('pointerup',e=>{if(sx==null)return;const dx=e.clientX-sx,dy=e.clientY-sy;sx=null;if(Math.abs(dy)>40&&Math.abs(dy)>Math.abs(dx)){flTo(dy<0?1:-1,1)}else if(Math.abs(dx)>40)flTo(dx<0?1:-1,1)})};
 document.addEventListener('click',e=>{const b=e.target.closest('[data-act="flp"]');if(!b)return;e.preventDefault();flTo(+b.dataset.d,1)});
+
+/* ---------- 작품 화면 상단: 바로 좋아요(시네마 서재에 담기)와 인생작 (11/25) ---------- */
+let MYLIFE=new Set(),MYLIFE_AT=0;const LOVE={};
+async function loadMyLife(){if(!USER){MYLIFE=new Set();return}if(Date.now()-MYLIFE_AT<60000)return;MYLIFE_AT=Date.now();try{MYLIFE=new Set(await rpc('my_life_ids',{})||[])}catch(e){}}
+function tlWork(t){if(!(t.id in WORK)&&typeof loadWork==='function')loadWork(t);const w=(WORK&&WORK[t.id])||t.work;if(!w||!w.tmdb_id)return null;return {m:w.kind==='영화'?'movie':'tv',id:+w.tmdb_id,title:w.title||t.title,y:w.year||'',p:w.poster&&/^https:\/\/image\.tmdb\.org\/t\/p\//.test(w.poster)?w.poster:''}}
+function renderTLove(){const th=document.querySelector('#topicView .th'),t=typeof topic==='function'&&topic();if(!th||!t)return;let bar=th.querySelector('.tlove');const w=tlWork(t);
+ if(!w){if(bar)bar.remove();return}
+ const k=w.m+':'+w.id,fav=MYCOL.has(k),life=MYLIFE.has(k),c=LOVE[k]||{};
+ const html=`<button class="tl${fav?' on':''}" data-act="tlove" data-k="fav" aria-pressed="${fav}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.2C.9 8.4 3 4.5 6.7 4.5c2.1 0 3.7 1.2 5.3 3 1.6-1.8 3.2-3 5.3-3 3.7 0 5.8 3.9 4.3 7.3C19.5 16.4 12 21 12 21z"/></svg><span>좋아요</span>${c.fav?`<b>${fmt(c.fav)}</b>`:''}</button><button class="tl life${life?' on':''}" data-act="tlove" data-k="life" aria-pressed="${life}"><i aria-hidden="true">👑</i><span>인생작</span>${c.life?`<b>${fmt(c.life)}</b>`:''}</button>`;
+ if(!bar){bar=document.createElement('div');bar.className='tlove';const h1=th.querySelector('#tTitle');(h1&&h1.parentNode||th).appendChild(bar)}bar.innerHTML=html;
+ if(!(k in LOVE)){LOVE[k]={};rpc('work_love',{media:w.m,tmdb_id:w.id}).then(r=>{LOVE[k]=r||{};renderTLove()}).catch(()=>{})}
+ if(USER&&Date.now()-MYLIFE_AT>60000)loadMyLife().then(renderTLove)}
+(function(){const f=topicHero;topicHero=function(){f.apply(this,arguments);try{renderTLove()}catch(e){}}})();
+(function(){const f=loadWork;loadWork=async function(){const r=await f.apply(this,arguments);try{renderTLove()}catch(e){}return r}})();
+(function(){const f=render;render=function(){f.apply(this,arguments);try{renderTLove()}catch(e){}}})();
+document.addEventListener('click',async e=>{const b=e.target.closest('[data-act="tlove"]');if(!b)return;e.preventDefault();if(needLogin())return;const t=topic(),w=t&&tlWork(t);if(!w)return;const k=w.m+':'+w.id,isLife=b.dataset.k==='life';b.disabled=true;
+ try{const args={media:w.m,tmdb_id:w.id,title:w.title,yr:+w.y||null,poster:w.p||null,via:'topic'};const on=await rpc(isLife?'toggle_life':'toggle_collect',args);
+  if(isLife){if(on){MYLIFE.add(k);MYCOL.add(k)}else MYLIFE.delete(k)}else{if(on)MYCOL.add(k);else{MYCOL.delete(k);MYLIFE.delete(k)}}
+  const c=LOVE[k]=LOVE[k]||{};if(isLife){c.life=Math.max(0,(c.life||0)+(on?1:-1))}else{c.fav=Math.max(0,(c.fav||0)+(on?1:-1))}
+  try{track(isLife?'life_pick':'collect',{m:{k,on,via:'topic'}})}catch(x){}
+  toast(isLife?(on?`${w.title}, 내 인생작으로 시네마 서재 맨 앞에 걸었어요`:'인생작에서 뺐어요'):(on?`${w.title}, 내 시네마 서재에 담았어요`:'시네마 서재에서 뺐어요'));
+  renderTLove();const nb=document.querySelector(`#topicView .tlove [data-k="${b.dataset.k}"]`);if(on&&nb){nb.classList.add('pop');try{burst(nb)}catch(x){}}}catch(err){toast(errMsg(err))}finally{b.disabled=false}});

@@ -398,3 +398,15 @@ body[data-view="page"] #trHelp{display:none}
 .c2fl .fl-pg{font-size:12px;color:#888}.c2fl .fl-pg b{color:#fff}
 .c2fl .fg[style*="--c:1"] .ft{aspect-ratio:4/3}
 .c2fl .ft .ini{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-style:normal;font-size:34px;font-weight:900;color:#444}
+/* 작품 화면 좋아요, 인생작 */
+.tlove{display:flex;gap:8px;margin-top:10px;position:relative;z-index:2}
+.tlove .tl{display:inline-flex;align-items:center;gap:6px;height:36px;padding:0 14px;border-radius:18px;border:1px solid rgba(255,255,255,.28);background:rgba(10,10,10,.55);backdrop-filter:blur(6px);color:#fff;font-size:13px;font-weight:800;cursor:pointer}
+.tlove .tl svg{width:16px;height:16px;fill:none;stroke:#fff;stroke-width:2}
+.tlove .tl.on{border-color:#ff5a8a;background:rgba(255,90,138,.18)}.tlove .tl.on svg{fill:#ff5a8a;stroke:#ff5a8a}
+.tlove .tl.life i{font-style:normal;filter:grayscale(1);opacity:.75}
+.tlove .tl.life.on{border-color:#ffcf5a;background:rgba(255,207,90,.16);color:#ffcf5a}.tlove .tl.life.on i{filter:none;opacity:1}
+.tlove .tl b{font-size:12px;color:#bbb;font-weight:700}.tlove .tl.on b{color:inherit}
+.tlove .tl.pop{animation:tlp .45s ease}
+@keyframes tlp{40%{transform:scale(1.15)}}
+.fr-life{position:absolute;z-index:3;top:-8px;left:50%;transform:translateX(-50%);font-size:10px;font-weight:900;color:#1a1200;background:#ffcf5a;padding:2px 8px;border-radius:9px;white-space:nowrap;box-shadow:0 2px 6px rgba(0,0,0,.4)}
+#trHelp{top:3px;width:22px;height:22px;font-size:11px;right:max(3px,calc(50vw - var(--appw,480px)/2 + 3px));opacity:.8}

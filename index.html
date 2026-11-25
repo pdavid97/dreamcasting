@@ -2224,6 +2224,18 @@ body[data-view="page"] #trHelp{display:none}
 .c2fl .fl-pg{font-size:12px;color:#888}.c2fl .fl-pg b{color:#fff}
 .c2fl .fg[style*="--c:1"] .ft{aspect-ratio:4/3}
 .c2fl .ft .ini{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-style:normal;font-size:34px;font-weight:900;color:#444}
+/* 작품 화면 좋아요, 인생작 */
+.tlove{display:flex;gap:8px;margin-top:10px;position:relative;z-index:2}
+.tlove .tl{display:inline-flex;align-items:center;gap:6px;height:36px;padding:0 14px;border-radius:18px;border:1px solid rgba(255,255,255,.28);background:rgba(10,10,10,.55);backdrop-filter:blur(6px);color:#fff;font-size:13px;font-weight:800;cursor:pointer}
+.tlove .tl svg{width:16px;height:16px;fill:none;stroke:#fff;stroke-width:2}
+.tlove .tl.on{border-color:#ff5a8a;background:rgba(255,90,138,.18)}.tlove .tl.on svg{fill:#ff5a8a;stroke:#ff5a8a}
+.tlove .tl.life i{font-style:normal;filter:grayscale(1);opacity:.75}
+.tlove .tl.life.on{border-color:#ffcf5a;background:rgba(255,207,90,.16);color:#ffcf5a}.tlove .tl.life.on i{filter:none;opacity:1}
+.tlove .tl b{font-size:12px;color:#bbb;font-weight:700}.tlove .tl.on b{color:inherit}
+.tlove .tl.pop{animation:tlp .45s ease}
+@keyframes tlp{40%{transform:scale(1.15)}}
+.fr-life{position:absolute;z-index:3;top:-8px;left:50%;transform:translateX(-50%);font-size:10px;font-weight:900;color:#1a1200;background:#ffcf5a;padding:2px 8px;border-radius:9px;white-space:nowrap;box-shadow:0 2px 6px rgba(0,0,0,.4)}
+#trHelp{top:3px;width:22px;height:22px;font-size:11px;right:max(3px,calc(50vw - var(--appw,480px)/2 + 3px));opacity:.8}
 
 </style>
 </head>
@@ -2552,7 +2564,7 @@ function renderPoster(){const box=$('#poster');const s=POSTER&&POSTER.tid===SEL&
  box.innerHTML=`<div class="pwrap"><div class="pfig">${posterSVG(s)}</div><div><h3 style="font-size:22px">가상 캐스팅 포스터</h3><p class="sub" style="margin:6px 0 10px">${esc(s.nickname)}의 시트로 만든 팬메이드 포스터예요. 실존 배우의 얼굴은 쓰지 않고 실루엣과 크레딧으로 구성해요.</p><div class="qty" role="group" aria-label="포스터 분위기">${Object.entries(PST).map(([k,v])=>`<button class="chip" data-act="pstyle" data-v="${k}" aria-pressed="${k===PSTYLE}">${v.n}</button>`).join('')}</div><div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap"><button class="b sm buy" data-act="share" data-sid="${s.id}">공유 문구 복사</button><button class="b sm" data-act="pclose">닫기</button></div>
  ${USER&&s.user_id===USER.id?`<div class="pup"><b>배경 이미지</b><p class="dl">직접 만든 이미지를 올리거나 AI로 얼굴 없는 실루엣 배경을 만들 수 있어요. 실존 인물 얼굴을 합성한 이미지, 남의 사진, 공식 포스터는 올리지 말아 주세요. 신고 3건이면 숨겨져요.</p><div class="row2"><label class="b sm">이미지 올리기<input type="file" accept="image/*" data-act-file="poster" data-sid="${s.id}" hidden></label><button class="b sm" data-act="paigen" data-sid="${s.id}">AI 배경 만들기 50P</button>${s.poster_url?`<button class="b sm" data-act="pclear" data-sid="${s.id}">배경 지우기</button>`:''}</div></div>`:(s.poster_url&&USER?`<button class="lk" data-act="preport" data-sid="${s.id}">이 포스터 신고</button>`:'')}
  </div></div>`}
-function render(){renderTFeed();try{topicHero()}catch(e){}renderWho();renderTabs();renderShelf();renderPerks();renderRank();renderFeed();renderFanBoard();renderTabbar();if(HOMEV)renderHome();if(!D||D.tid!==SEL)return;{const ns=[];D.roles.forEach(r=>{if(r.orig)ns.push(r.orig);if(r.actor)ns.push(r.actor);(D.cands[r.id]||[]).forEach(c=>ns.push(c.name))});D.sheets.forEach(x=>Object.values(x.picks||{}).forEach(p=>{if(p.n)ns.push(p.n)}));loadAges(ns)}renderHead();renderWork();renderStats();renderWatch();renderDuel();renderPoster();drawChart();renderRoles();renderSide();renderOps();$('#roles').classList.toggle('unseen',!D.seen);document.querySelector('.fig')&&document.querySelector('.fig').classList.toggle('unseen',!D.seen);if(TALK.tid!==D.tid){TALK={tid:D.tid,combos:[],open:null,thread:[],myv:{}};if(D.seen)loadTalk(D.tid);else renderTalk()}}
+function render(){renderTFeed();try{topicHero()}catch(e){}renderWho();renderTabs();renderShelf();renderPerks();renderRank();renderFeed();renderFanBoard();renderTabbar();if(HOMEV)renderHome();if(!D||D.tid!==SEL)return;{const ns=[];D.roles.forEach(r=>{if(r.orig)ns.push(r.orig);if(r.actor)ns.push(r.actor);(D.cands[r.id]||[]).forEach(c=>ns.push(c.name))});D.sheets.forEach(x=>Object.values(x.picks||{}).forEach(p=>{if(p.n)ns.push(p.n)}));loadAges(ns)}renderHead();renderWork();renderStats();renderWatch();renderDuel();renderPoster();drawChart();renderRoles();renderSide();renderOps();$('#roles').classList.toggle('unseen',!D.seen);document.querySelector('.fig')&&document.querySelector('.fig').classList.toggle('unseen',!D.seen);if(TALK.tid!==D.tid){TALK={tid:D.tid,combos:[],open:null,thread:[],myv:{}};if(D.seen)loadTalk(D.tid);else renderTalk()}else if(D.seen&&!TALK.combos.length)loadTalk(D.tid);else renderTalk()}
 
 /* ---------- events ---------- */
 async function selectTopic(id){VIEWX=null;closePage();showHome(false);showDeck(false);SEL=id;CAT=topic().cat;SROLE=0;if(DUEL&&DUEL.done)DUEL=null;POSTER=null;shareText='';D=null;try{history.replaceState(null,'','#'+id)}catch(e){}setTTab(TTAB_NEXT||'vote');TTAB_NEXT=null;TF.f='all';render();topicHero();$('#tTitle').textContent=topic().title;await loadTopic();render();loadImages()}
@@ -3086,7 +3098,7 @@ function renderTalk(){const box=$('#talkBox');if(!box||!D)return;const t=topic()
  if(!seen){box.innerHTML=`<div class="talk0"><b>캐스팅 팀 순위는 투표한 사람에게 열려요</b><p class="sub">배역 하나라도 투표하면 득표율, 내 팀과 광장 민심 팀, 팀 공감 순위를 볼 수 있어요. 토론은 토론 탭에서 누구나 읽을 수 있어요.</p><a class="b buy" href="#">카드로 투표하기</a></div>`;return}
  const cs=TALK.combos,RS=(D.roles||[]).filter(r=>!isSync(r)&&!isOpt(r));
  const mySh=USER&&(D.sheets||[]).find(x=>x.user_id===USER.id);
- const myTeam=RS.map(r=>{const v=D.myVote[r.id],c=v&&(D.cands[r.id]||[]).find(x=>x.candidate_id===v.candidate_id),pk=mySh&&mySh.picks&&mySh.picks[r.id];
+ const myTeam=RS.map(r=>{const v=D.myVote[r.id]||(()=>{const p=pend().find(x=>x.rid===r.id),dr=((typeof DECK!=='undefined'&&DECK.find(d=>d.id===D.tid))||{}).roles,mr=dr&&dr.find(x=>x.id===r.id),cid=(p&&p.cid)||(mr&&mr.mine);return cid?{candidate_id:cid}:null})(),c=v&&(D.cands[r.id]||[]).find(x=>String(x.candidate_id)===String(v.candidate_id)),pk=mySh&&mySh.picks&&mySh.picks[r.id];
   /* 꾸민 팀을 저장했으면 그 배우와 시절이 내 팀의 최종 모습. 투표와 다르면 내 표를 함께 보여 줌 */
   const pc=pk&&pk.c&&(D.cands[r.id]||[]).find(x=>String(x.candidate_id)===String(pk.c)),pn=pk?(pk.n||(pc&&pc.name)||null):null,name=pn||(c?c.name:null);
   const era=name&&pk&&pk.y?{...pk,_nm:name}:null;return {r,name,era,vote:pn&&c&&c.name!==pn?c.name:null}});
@@ -3555,7 +3567,7 @@ async function loadAvRoom(nick,me){const box=$('#avroom');if(!box)return;let ite
  const hero=items[0],rest=items.slice(1,12),th=avTheme();
  const sz=i=>['m','s','m','s','s','m','s','m','s','s','m'][i%11];
  const tilt=t=>{const h=[...String(t)].reduce((a,c)=>a+c.charCodeAt(0),0);return ((h%5)-2)*0.6};
- const frame=(w,i)=>`<button class="fr fr-${sz(i)}" style="--tilt:${tilt(w.title)}deg" data-act="wk-open" data-m="${w.media}" data-id="${w.tmdb_id}" aria-label="${esc(w.title)} 자세히"><span class="fr-l" aria-hidden="true"></span><span class="fr-in">${w.poster?`<img src="${esc(w.poster)}" alt="" loading="lazy">`:`<em>${esc(w.title)}</em>`}</span><span class="fr-tag">${esc(w.title)}${w.year?` <small>${esc(w.year)}</small>`:''}</span></button>`;
+ const frame=(w,i)=>`<button class="fr fr-${sz(i)}" style="--tilt:${tilt(w.title)}deg" data-act="wk-open" data-m="${w.media}" data-id="${w.tmdb_id}" aria-label="${esc(w.title)} 자세히"><span class="fr-l" aria-hidden="true"></span><span class="fr-in">${w.poster?`<img src="${esc(w.poster)}" alt="" loading="lazy">`:`<em>${esc(w.title)}</em>`}</span>${w.life?'<span class="fr-life">👑 인생작</span>':''}<span class="fr-tag">${esc(w.title)}${w.year?` <small>${esc(w.year)}</small>`:''}</span></button>`;
  const empties=me?Math.max(0,Math.min(6,9-items.length)):0;
  const spineCol=t=>{const h=[...String(t)].reduce((a,c)=>(a*31+c.charCodeAt(0))|0,7);return `hsl(${Math.abs(h)%360} 35% ${28+Math.abs(h>>3)%18}%)`};
  box.innerHTML=`<div class="sh"><h2>${me?'나의 시네마 서재':esc(nick)+' 님의 시네마 서재'}</h2><span class="sub">${items.length}편 소장${tg.length?`, 취향 ${esc(tg.join(', '))}`:''}</span></div>
@@ -4248,7 +4260,7 @@ ${ll.length?`<div class="mp-links"><b>원작과의 연결고리</b>${ll.map(x=>`
 const _hcRender2=renderDeck;
 renderDeck=function(){const box=$('#deck'),t=DECKV&&curTopic();if(box&&t&&DECK.length&&DR>=t.roles.length){cardLeave();return renderDoneC(box,t)}return _hcRender2()};
 
-if(/[?&]test=1/.test(location.search))window.__hcT=f=>f({DECK,c2User:d=>c2User(d),rpc:(a,b)=>rpc(a,b),deep:(t,d)=>{DEEP[t]=d;renderDeepT()},setDI:v=>DI=v,setDR:v=>DR=v,renderDeck:()=>renderDeck(),vsLegacy:async()=>{VS_N=8;await vsTrySpecial(false);renderDuel()},setStreak:n=>{STREAK=n},addCast:async(nm)=>{nextRole=()=>{};await loadNames([nm]);hcAddCast(curTopic(),curRole().id,999999,nm)}});
+if(/[?&]test=1/.test(location.search))window.__hcT=f=>f({DECK,tl:()=>{const t=topic();return [t&&t.id,WORK[t.id]&&Object.keys(WORK[t.id]).join(),JSON.stringify(tlWork(t)),String(typeof renderTLove)]},c2User:d=>c2User(d),rpc:(a,b)=>rpc(a,b),deep:(t,d)=>{DEEP[t]=d;renderDeepT()},setDI:v=>DI=v,setDR:v=>DR=v,renderDeck:()=>renderDeck(),vsLegacy:async()=>{VS_N=8;await vsTrySpecial(false);renderDuel()},setStreak:n=>{STREAK=n},addCast:async(nm)=>{nextRole=()=>{};await loadNames([nm]);hcAddCast(curTopic(),curRole().id,999999,nm)}});
 
 const HC_RELHD='<b class="hd"><span>🔗 이어서 고르기</span><small>내 픽과 이어진 배역</small></b>';
 /* 이어서 고르기: 리포트 끝에서 다음에 할 일을 이유와 함께 2~3개 추천해 계속 이어지게 */
@@ -4742,6 +4754,28 @@ var c2TeamRot=function(){FL.i=0;FL.busy=0;const box=$('#c2fl');if(!box)return;fl
  const miss=[...box.querySelectorAll('.ph[data-n]')].filter(e=>!e.style.backgroundImage);if(miss.length&&typeof loadNames==='function')Promise.resolve(loadNames([...new Set(miss.map(e=>e.dataset.n))])).then(()=>miss.forEach(e=>{const u=c2Ph(e.dataset.n);if(u){e.style.backgroundImage=`url('${u}')`;e.innerHTML=''}})).catch(()=>{});
  let sx=null,sy=null;box.addEventListener('pointerdown',e=>{sx=e.clientX;sy=e.clientY});box.addEventListener('pointerup',e=>{if(sx==null)return;const dx=e.clientX-sx,dy=e.clientY-sy;sx=null;if(Math.abs(dy)>40&&Math.abs(dy)>Math.abs(dx)){flTo(dy<0?1:-1,1)}else if(Math.abs(dx)>40)flTo(dx<0?1:-1,1)})};
 document.addEventListener('click',e=>{const b=e.target.closest('[data-act="flp"]');if(!b)return;e.preventDefault();flTo(+b.dataset.d,1)});
+
+/* ---------- 작품 화면 상단: 바로 좋아요(시네마 서재에 담기)와 인생작 (11/25) ---------- */
+let MYLIFE=new Set(),MYLIFE_AT=0;const LOVE={};
+async function loadMyLife(){if(!USER){MYLIFE=new Set();return}if(Date.now()-MYLIFE_AT<60000)return;MYLIFE_AT=Date.now();try{MYLIFE=new Set(await rpc('my_life_ids',{})||[])}catch(e){}}
+function tlWork(t){if(!(t.id in WORK)&&typeof loadWork==='function')loadWork(t);const w=(WORK&&WORK[t.id])||t.work;if(!w||!w.tmdb_id)return null;return {m:w.kind==='영화'?'movie':'tv',id:+w.tmdb_id,title:w.title||t.title,y:w.year||'',p:w.poster&&/^https:\/\/image\.tmdb\.org\/t\/p\//.test(w.poster)?w.poster:''}}
+function renderTLove(){const th=document.querySelector('#topicView .th'),t=typeof topic==='function'&&topic();if(!th||!t)return;let bar=th.querySelector('.tlove');const w=tlWork(t);
+ if(!w){if(bar)bar.remove();return}
+ const k=w.m+':'+w.id,fav=MYCOL.has(k),life=MYLIFE.has(k),c=LOVE[k]||{};
+ const html=`<button class="tl${fav?' on':''}" data-act="tlove" data-k="fav" aria-pressed="${fav}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.2C.9 8.4 3 4.5 6.7 4.5c2.1 0 3.7 1.2 5.3 3 1.6-1.8 3.2-3 5.3-3 3.7 0 5.8 3.9 4.3 7.3C19.5 16.4 12 21 12 21z"/></svg><span>좋아요</span>${c.fav?`<b>${fmt(c.fav)}</b>`:''}</button><button class="tl life${life?' on':''}" data-act="tlove" data-k="life" aria-pressed="${life}"><i aria-hidden="true">👑</i><span>인생작</span>${c.life?`<b>${fmt(c.life)}</b>`:''}</button>`;
+ if(!bar){bar=document.createElement('div');bar.className='tlove';const h1=th.querySelector('#tTitle');(h1&&h1.parentNode||th).appendChild(bar)}bar.innerHTML=html;
+ if(!(k in LOVE)){LOVE[k]={};rpc('work_love',{media:w.m,tmdb_id:w.id}).then(r=>{LOVE[k]=r||{};renderTLove()}).catch(()=>{})}
+ if(USER&&Date.now()-MYLIFE_AT>60000)loadMyLife().then(renderTLove)}
+(function(){const f=topicHero;topicHero=function(){f.apply(this,arguments);try{renderTLove()}catch(e){}}})();
+(function(){const f=loadWork;loadWork=async function(){const r=await f.apply(this,arguments);try{renderTLove()}catch(e){}return r}})();
+(function(){const f=render;render=function(){f.apply(this,arguments);try{renderTLove()}catch(e){}}})();
+document.addEventListener('click',async e=>{const b=e.target.closest('[data-act="tlove"]');if(!b)return;e.preventDefault();if(needLogin())return;const t=topic(),w=t&&tlWork(t);if(!w)return;const k=w.m+':'+w.id,isLife=b.dataset.k==='life';b.disabled=true;
+ try{const args={media:w.m,tmdb_id:w.id,title:w.title,yr:+w.y||null,poster:w.p||null,via:'topic'};const on=await rpc(isLife?'toggle_life':'toggle_collect',args);
+  if(isLife){if(on){MYLIFE.add(k);MYCOL.add(k)}else MYLIFE.delete(k)}else{if(on)MYCOL.add(k);else{MYCOL.delete(k);MYLIFE.delete(k)}}
+  const c=LOVE[k]=LOVE[k]||{};if(isLife){c.life=Math.max(0,(c.life||0)+(on?1:-1))}else{c.fav=Math.max(0,(c.fav||0)+(on?1:-1))}
+  try{track(isLife?'life_pick':'collect',{m:{k,on,via:'topic'}})}catch(x){}
+  toast(isLife?(on?`${w.title}, 내 인생작으로 시네마 서재 맨 앞에 걸었어요`:'인생작에서 뺐어요'):(on?`${w.title}, 내 시네마 서재에 담았어요`:'시네마 서재에서 뺐어요'));
+  renderTLove();const nb=document.querySelector(`#topicView .tlove [data-k="${b.dataset.k}"]`);if(on&&nb){nb.classList.add('pop');try{burst(nb)}catch(x){}}}catch(err){toast(errMsg(err))}finally{b.disabled=false}});
 
 }
 </script>

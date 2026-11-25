@@ -147,7 +147,7 @@ function renderTalk(){const box=$('#talkBox');if(!box||!D)return;const t=topic()
  if(!seen){box.innerHTML=`<div class="talk0"><b>캐스팅 팀 순위는 투표한 사람에게 열려요</b><p class="sub">배역 하나라도 투표하면 득표율, 내 팀과 광장 민심 팀, 팀 공감 순위를 볼 수 있어요. 토론은 토론 탭에서 누구나 읽을 수 있어요.</p><a class="b buy" href="#">카드로 투표하기</a></div>`;return}
  const cs=TALK.combos,RS=(D.roles||[]).filter(r=>!isSync(r)&&!isOpt(r));
  const mySh=USER&&(D.sheets||[]).find(x=>x.user_id===USER.id);
- const myTeam=RS.map(r=>{const v=D.myVote[r.id],c=v&&(D.cands[r.id]||[]).find(x=>x.candidate_id===v.candidate_id),pk=mySh&&mySh.picks&&mySh.picks[r.id];
+ const myTeam=RS.map(r=>{const v=D.myVote[r.id]||(()=>{const p=pend().find(x=>x.rid===r.id),dr=((typeof DECK!=='undefined'&&DECK.find(d=>d.id===D.tid))||{}).roles,mr=dr&&dr.find(x=>x.id===r.id),cid=(p&&p.cid)||(mr&&mr.mine);return cid?{candidate_id:cid}:null})(),c=v&&(D.cands[r.id]||[]).find(x=>String(x.candidate_id)===String(v.candidate_id)),pk=mySh&&mySh.picks&&mySh.picks[r.id];
   /* 꾸민 팀을 저장했으면 그 배우와 시절이 내 팀의 최종 모습. 투표와 다르면 내 표를 함께 보여 줌 */
   const pc=pk&&pk.c&&(D.cands[r.id]||[]).find(x=>String(x.candidate_id)===String(pk.c)),pn=pk?(pk.n||(pc&&pc.name)||null):null,name=pn||(c?c.name:null);
   const era=name&&pk&&pk.y?{...pk,_nm:name}:null;return {r,name,era,vote:pn&&c&&c.name!==pn?c.name:null}});

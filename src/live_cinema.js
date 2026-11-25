@@ -56,7 +56,7 @@ async function loadAvRoom(nick,me){const box=$('#avroom');if(!box)return;let ite
  const hero=items[0],rest=items.slice(1,12),th=avTheme();
  const sz=i=>['m','s','m','s','s','m','s','m','s','s','m'][i%11];
  const tilt=t=>{const h=[...String(t)].reduce((a,c)=>a+c.charCodeAt(0),0);return ((h%5)-2)*0.6};
- const frame=(w,i)=>`<button class="fr fr-${sz(i)}" style="--tilt:${tilt(w.title)}deg" data-act="wk-open" data-m="${w.media}" data-id="${w.tmdb_id}" aria-label="${esc(w.title)} 자세히"><span class="fr-l" aria-hidden="true"></span><span class="fr-in">${w.poster?`<img src="${esc(w.poster)}" alt="" loading="lazy">`:`<em>${esc(w.title)}</em>`}</span><span class="fr-tag">${esc(w.title)}${w.year?` <small>${esc(w.year)}</small>`:''}</span></button>`;
+ const frame=(w,i)=>`<button class="fr fr-${sz(i)}" style="--tilt:${tilt(w.title)}deg" data-act="wk-open" data-m="${w.media}" data-id="${w.tmdb_id}" aria-label="${esc(w.title)} 자세히"><span class="fr-l" aria-hidden="true"></span><span class="fr-in">${w.poster?`<img src="${esc(w.poster)}" alt="" loading="lazy">`:`<em>${esc(w.title)}</em>`}</span>${w.life?'<span class="fr-life">👑 인생작</span>':''}<span class="fr-tag">${esc(w.title)}${w.year?` <small>${esc(w.year)}</small>`:''}</span></button>`;
  const empties=me?Math.max(0,Math.min(6,9-items.length)):0;
  const spineCol=t=>{const h=[...String(t)].reduce((a,c)=>(a*31+c.charCodeAt(0))|0,7);return `hsl(${Math.abs(h)%360} 35% ${28+Math.abs(h>>3)%18}%)`};
  box.innerHTML=`<div class="sh"><h2>${me?'나의 시네마 서재':esc(nick)+' 님의 시네마 서재'}</h2><span class="sub">${items.length}편 소장${tg.length?`, 취향 ${esc(tg.join(', '))}`:''}</span></div>
