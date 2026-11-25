@@ -8,7 +8,8 @@ let ageBusy=false;
 async function loadAges(names){const need=[...new Set(names)].filter(n=>n&&!(n in AGE)).slice(0,40);if(!need.length||ageBusy)return;ageBusy=true;
  try{const d=await meta({ages:need});Object.assign(AGE,d.ages||{});try{localStorage.setItem('dcAge1',JSON.stringify(AGE))}catch(e){}render()}catch(e){}ageBusy=false}
 const ageAt=(name,y)=>{const b=AGE[name];if(!b)return null;const by=+b.slice(0,4),bm=+b.slice(5,7)||1;if(!by)return null;if(y&&y<NOW_Y)return y-by;const n=new Date();return n.getFullYear()-by-((n.getMonth()+1)<bm?1:0)};
-const ageTxt=(name,y)=>{const a=ageAt(name,y);return a==null?'':(y&&y<NOW_Y?`${y}년 당시 ${a}세`:`만 ${a}세`)};
+/* 배우 나이는 어떤 형태로도 보여 주지 않음 */
+const ageTxt=()=>'';
 const pickLabel=(r,p)=>{const n=pickName(r,p);return n&&p&&p.w?`${n} (《${p.w}》 속 모습)`:n&&p&&p.y?`${n} (${p.y}년)`:n};
 const actorLink=(name,inner)=>`<a class="alink" href="#a/${encodeURIComponent(name)}" title="${esc(name)} 배우 페이지">${inner||dispHTML(name)}</a>`;
 
@@ -85,6 +86,7 @@ async function renderActor(){const pid=PAGE.pid;
  ${fanZone(p.id,name)}
 
  ${credRoll(name,awards,works,prof)}
+ <section id="trivia" hidden></section>
 
  <section><div class="sh"><h2>지금 물망에 오른 작품</h2><span class="sub">1위까지 남은 표</span></div>
   <div class="races">${open.map(raceCard).join('')||`<p class="empty3">아직 투표가 열린 배역 후보가 아니에요. 작품 배역 보드에서 ${esc(name)} 님을 후보로 올려 보세요.</p>`}</div>
@@ -102,11 +104,7 @@ async function renderActor(){const pid=PAGE.pid;
 </div>
 
  ${bestWorks(name)}
- <section><div class="sh"><h2>필모그래피</h2><span class="sub">넘겨 보고, 눌러서 자세히, 하트로 내 AV룸에, 왕관으로 내 인생작에</span></div>
-  ${filmCarousel(works.slice(0,40),pid)}
-  ${prof&&prof.tmdb?`<p class="dl"><a href="${esc(prof.tmdb)}" target="_blank" rel="noopener">TMDB에서 전체 필모 보기</a></p>`:''}
- </section>
- <section id="costar" hidden></section></div>`);loadCostars(pid,name)}
+ <section id="costar" hidden></section></div>`);PAGE.awards=awards;PAGE.prof=prof;PAGE.name=name;loadCostars(pid,name);loadPersonTrivia(pid,name);loadHonors(pid,prof)}
 
 /* 유저 페이지 */
 /* 업적: 팬 언어로, 어떻게 얻는지와 진행도를 함께 */

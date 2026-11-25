@@ -10,13 +10,13 @@ async function loadInsights(){const box=$('#insight');if(!box)return;box.innerHT
  // 1 최애 배우
  const fav=igCnt(rows.map(r=>r.pick)).slice(0,8);
  // 2 커플(같은 작품의 남주와 여주)
- const couples=[];works.forEach(w=>{const m=w.s.male_lead,f=w.s.female_lead;if(m&&f)couples.push({a:m.pick,b:f.pick,t:w.title,ya:m.by,yb:f.by})});
+ const couples=[];works.forEach(w=>{const m=w.s.male_lead,f=w.s.female_lead;if(m&&f)couples.push({a:m.pick,b:f.pick,t:w.title,ya:null,yb:null})});
  // 3 원작 배우와 내 픽
  const match=rows.filter(r=>r.orig).map(r=>({o:r.orig,p:r.pick,t:r.title,ch:r.ch}));
  // 4 라이벌 구도(같은 성별의 주연과 서브)
- const rivals=[];works.forEach(w=>{[['male_lead','male_sub'],['female_lead','female_sub']].forEach(([a,b])=>{if(w.s[a]&&w.s[b])rivals.push({a:w.s[a].pick,b:w.s[b].pick,ca:w.s[a].ch,cb:w.s[b].ch,t:w.title,ya:w.s[a].by,yb:w.s[b].by})})});
+ const rivals=[];works.forEach(w=>{[['male_lead','male_sub'],['female_lead','female_sub']].forEach(([a,b])=>{if(w.s[a]&&w.s[b])rivals.push({a:w.s[a].pick,b:w.s[b].pick,ca:w.s[a].ch,cb:w.s[b].ch,t:w.title,ya:null,yb:null})})});
  // 5 주연과 조연 쌍
- const ls=[];works.forEach(w=>{LEADS.forEach(a=>SUBS.forEach(b=>{if(w.s[a]&&w.s[b])ls.push({a:w.s[a].pick,b:w.s[b].pick,t:w.title,ca:w.s[a].ch,cb:w.s[b].ch,ya:w.s[a].by,yb:w.s[b].by})}))});
+ const ls=[];works.forEach(w=>{LEADS.forEach(a=>SUBS.forEach(b=>{if(w.s[a]&&w.s[b])ls.push({a:w.s[a].pick,b:w.s[b].pick,t:w.title,ca:w.s[a].ch,cb:w.s[b].ch,ya:null,yb:null})}))});
  const uniq=new Set(rows.map(r=>r.pick)).size,xp=Math.round(uniq/rows.length*100),top=fav[0],tu=top?IMG['p:'+top[0]]:'';
  const persona=xp<45?['한 우물 덕후','마음에 든 배우를 여러 작품에 계속 불러요']:xp<75?['안목 있는 큐레이터','믿는 배우와 새 얼굴을 섞어 골라요']:['새 얼굴 탐험가','작품마다 다른 배우를 시험해 봐요'];
  box.innerHTML=`<div class="sh"><h2>내 캐스팅 리포트</h2><span class="sub">나만 볼 수 있어요</span></div>
@@ -32,7 +32,7 @@ async function loadInsights(){const box=$('#insight');if(!box)return;box.innerHT
   ${igCard('나도 모르게 맺어주는 커플',coupleLine(couples),couples.length?coupleViz(couples):igEmpty('같은 작품에서 남주와 여주를 둘 다 고르면 내 커플 취향이 보여요.'))}
   ${igCard('원작 배우와 내가 매치업한 배우',matchLine(match),match.length?matchFlow(match):igEmpty('원작 배우가 있는 배역에 투표하면 이어져요.'))}
   ${igCard('나도 모르게 붙이는 라이벌 구도',rivalLine(rivals),rivals.length?rivalViz(rivals):igEmpty('같은 작품에서 주연과 같은 성별의 서브를 함께 고르면 라이벌 구도가 보여요.'))}
-  ${igCard('주연과 조연, 내가 짜는 세대 조합',lsLine(ls),ls.length?lsViz(ls):igEmpty('같은 작품에서 주연과 조연을 함께 고르면 세대 조합이 보여요.'))}
+  ${igCard('주연과 조연, 내가 짜는 조합',lsLine(ls),ls.length?lsViz(ls):igEmpty('같은 작품에서 주연과 조연을 함께 고르면 조합이 보여요.'))}
  </div><div id="igDeep"><p class="sub">나도 모르는 내 취향과 내 배우 소식을 모으는 중이에요</p></div>`;igBind();loadDeep()}
 function igCnt(arr){const m={};arr.forEach(k=>{if(k)m[k]=(m[k]||0)+1});return Object.entries(m).sort((a,b)=>b[1]-a[1])}
 const jj=(w,a,b)=>{const c=(w||'').trim().slice(-1).charCodeAt(0);return w+(c>=0xac00&&c<=0xd7a3&&(c-0xac00)%28?a:b)};
@@ -81,7 +81,7 @@ function coupleViz(arr){const L=25,W=320,x0=24,x1=296,X=g=>x0+(Math.max(-L,Math.
   <text x="${x0}" y="101" font-size="10" fill="var(--mute)">← 여자 연상</text><text x="${X(0)}" y="101" font-size="10" text-anchor="middle" fill="var(--mute)">동갑</text><text x="${x1}" y="101" font-size="10" text-anchor="end" fill="var(--mute)">남자 연상 →</text>
   ${av!=null?`<g><path d="M${X(av)-6},${66} L${X(av)+6},${66} L${X(av)},${72} Z" fill="var(--ink)"/><text x="${X(av)}" y="14" font-size="10" text-anchor="middle" font-weight="700" fill="var(--ink)">내 평균</text><line x1="${X(av)}" x2="${X(av)}" y1="18" y2="64" stroke="var(--ink)" stroke-dasharray="2 3"/></g>`:''}${dots}</svg>`;
  const chips=`<div class="ig-pairs">${arr.slice(-6).reverse().map(x=>{const d=x.ya&&x.yb?x.yb-x.ya:null;return `<div class="pr" data-tip="${esc(x.t)}: ${esc(x.a)}와 ${esc(x.b)}"><span class="duo">${igAv(x.a)}${igAv(x.b)}<i>♥</i></span><span class="nm"><b>${esc(x.a)}</b><b>${esc(x.b)}</b><small>${esc(x.t)}</small></span>${d==null?'':`<em class="${d<0?'f':'m'}">${d===0?'동갑':d>0?`남 +${d}`:`여 +${-d}`}</em>`}</div>`}).join('')}</div>`;
- return svg+chips}
+ return (g.length?svg:'')+chips}
 /* 라이벌: 도전자(서브)가 더 젊은가 */
 function rivalLine(arr){const g=arr.filter(x=>x.ya&&x.yb);if(!g.length)return pairLine(arr,'라이벌');
  const young=g.filter(x=>x.yb>x.ya).length,old=g.filter(x=>x.yb<x.ya).length;
@@ -137,7 +137,7 @@ async function loadDeep(){const box=$('#igDeep');if(!box)return;let I=null,S=nul
  if(!I){box.innerHTML='';return}
  const H=I.hidden||[];try{await loadNames(H.map(h=>h.name))}catch(e){}
  box.innerHTML=`<div class="sh ig-sh"><h2>나도 모르는 내 취향</h2><span class="sub">표, VS 한판, 응원, 인생작, 오래 본 카드까지 합쳐서</span></div>
- <div class="ig-grid ig-story">${[igHidden(H),igArch(I),igStyle(S,I),igAge(I.age||[]),igVsCrowd(S),igCrowd(I.crowd||[]),igTwin(I.twin),igRaces(I.races||[])].join('')}</div>
+ <div class="ig-grid ig-story">${[igHidden(H),igArch(I),igStyle(S,I),igVsCrowd(S),igCrowd(I.crowd||[]),igTwin(I.twin),igRaces(I.races||[])].join('')}</div>
  <div class="sh ig-sh"><h2>내 배우 소식</h2><span class="sub">숨은 최애 ${esc(H.slice(0,4).map(h=>h.name).join(', ')||'')} 기준</span></div>
  <div id="igNews" class="ig-grid ig-story"><p class="sub">신작, 행사, 굿즈 소식을 찾는 중이에요</p></div>`;
  igBind2(box);loadNews(H.slice(0,4).map(h=>h.name))}
@@ -237,7 +237,7 @@ function igStyle(S,I){const V=(S&&S.votes)||[],A=(I&&I.age)||[];
  const sg=s=>/^male/.test(s||'')?2:/^female/.test(s||'')?1:0;
  const gv=V.filter(v=>sg(v.slot)&&(v.pg===1||v.pg===2)),gp=igPct(gv.filter(v=>v.pg===sg(v.slot)).length,gv.length);
  const rv=V.filter(v=>v.preg&&v.ereg),rp=igPct(rv.filter(v=>v.preg===v.ereg).length,rv.length);
- const ap=A.length?igPct(A.filter(a=>Math.abs(a.pick_age-a.orig_age)<=5).length,A.length):null;
+ const ap=null;
  const dims=[['나이',ap,A.length,'원작 배우가 그 역을 맡았을 때와 5살 안쪽'],['성별',gp,gv.length,'배역 성별 그대로'],['국적권',rp,rv.length,'작품이 만들어질 나라의 배우']].filter(x=>x[1]!=null);
  const avg=dims.length?Math.round(dims.reduce((s,x)=>s+x[1],0)/dims.length):null;
  const ty=avg==null?'':avg>=80?'원작 충실형':avg<=50?'의외형 캐스팅':'충실과 의외 사이';
@@ -245,7 +245,7 @@ function igStyle(S,I){const V=(S&&S.votes)||[],A=(I&&I.age)||[];
  const gs=cnt(V.flatMap(v=>Array.isArray(v.g)?v.g:[])).slice(0,4),ns=cnt(V.map(v=>v.net)).slice(0,4),ks=cnt(V.map(v=>v.kind));
  const chips=(L,u)=>`<div class="arch">${L.map(([k,n])=>`<span style="--s:1" data-tip="${esc(k)} ${n}${u}">${esc(k)} <b>${n}</b></span>`).join('')}</div>`;
  return igCard('내 캐스팅 성향 리포트',avg==null?'':`원작 일치도 <b>${avg}%</b>, <b>${ty}</b>.`,
- `${dims.length?`<div class="sty">${dims.map(([l,p,n,t])=>`<div data-tip="${esc(t)}: ${n}개 중 ${p}%"><small>${l}</small><span><i style="width:${p}%"></i></span><b>${p}%</b></div>`).join('')}<p class="ig-cap">원작과 같은 결로 고른 비율. 나이는 원작 캐스팅 당시와 내 픽의 지금 나이로 비교</p></div>`:''}
+ `${dims.length?`<div class="sty">${dims.map(([l,p,n,t])=>`<div data-tip="${esc(t)}: ${n}개 중 ${p}%"><small>${l}</small><span><i style="width:${p}%"></i></span><b>${p}%</b></div>`).join('')}<p class="ig-cap">원작과 같은 결로 고른 비율</p></div>`:''}
  ${gs.length?`<p class="ig-sub">자주 고른 장르</p>${chips(gs,'표')}`:''}
  ${ns.length?`<p class="ig-sub">자주 고른 방송사, 플랫폼</p>${chips(ns,'표')}`:''}
  ${ks.length>1?`<p class="ig-cap">${ks.map(([k,n])=>`${esc(k)} ${n}표`).join(', ')}</p>`:''}`)}

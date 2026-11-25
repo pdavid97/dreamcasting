@@ -162,7 +162,7 @@ function c2HexLab(t){t=String(t||'').replace(/&amp;/g,'&');if(t.length<=6)return
 /* ---- P2 18: 원작 배우 나이는 원작 공개 당시 기준 ---- */
 const C2OA={};
 (function(){const f=loadTopic;loadTopic=async function(){const r=await f.apply(this,arguments);const tid=SEL;if(tid&&!C2OA[tid]){C2OA[tid]={};rpc('cast_links',{tid}).then(L=>{(L||[]).forEach(x=>{if(x.ob&&x.oy&&!C2OA[tid][x.rid])C2OA[tid][x.rid]=x.oy-x.ob});if(D&&D.tid===tid)renderRoles()}).catch(()=>{})}return r}})();
-function c2OrigAge(r){const m=C2OA[SEL];return m&&m[r.id]?`, 당시 ${m[r.id]}살`:''}
+function c2OrigAge(){return ''}
 
 /* ---- P2 21: 추천 노출 확대 (VS 확정 직후, 나 탭) ---- */
 function c2RelItem(d,r,why){const v=verLabel(d.cat),u=d.vposter||d.poster;return `<a class="rl" href="#${esc(d.id)}"><span class="ph"${u?` style="background-image:url('${esc(u)}')"`:''}></span><span class="tx"><b>《${esc(d.title)}》${v?' '+esc(v):''} ${esc(c2Short(r.ch))} 역</b><small>${why}</small></span><i>›</i></a>`}

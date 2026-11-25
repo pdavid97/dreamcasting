@@ -148,12 +148,8 @@ async function reasonsFor(o: { others: { name: string; ch: string; slot: string 
   // 나이
   const age = ageAt(p.birthday, new Date().getFullYear());
   const origAge = op && o.workYear ? ageAt(op.birthday, o.workYear) : null;
-  if (age != null && origAge != null && orig) {
-    const d = age - origAge;
-    if (Math.abs(d) <= 3) R.push({ k: "age", w: 50, text: `${eunneun(orig)} ${origAge}살에 ${eulreul(ch0)} 연기했어요. ${eunneun(name)} 지금 ${age}살, 나이 궁합 합격.` });
-    else if (d > 3) { const by = +(p.birthday || "0").slice(0, 4) + origAge; R.push({ k: "age", w: 30, text: `지금은 원작보다 ${d}살 많지만, 다이얼을 ${by}년으로 돌리면 딱 그 나이예요.` }); }
-    else R.push({ k: "age", w: 30, text: `원작 배우보다 ${-d}살 어려요. 풋풋한 리부트를 원한다면 이쪽.` });
-  }
+  // 배우 나이는 어떤 형태로도 문구에 넣지 않음(2026-11-25 운영 원칙)
+  void age; void origAge;
   // 대표작
   const famous = [...past].sort((a, b) => (b.vote_count || 0) - (a.vote_count || 0))[0];
   if (famous) R.push({ k: "famous", w: 20, text: pick([`${T(ctitle(famous))}${ro(ctitle(famous))} 얼굴 도장은 이미 꾹. 이번엔 ${ch0} 차례?`, `${T(ctitle(famous))}의 그 얼굴이 ${iga(ch0)} 된다면?`], cid) });

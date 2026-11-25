@@ -131,7 +131,8 @@ async function chooseForRole(o: { role: Record<string, any>; topic: Record<strin
     for (const [kw, re] of arch) { const c = cs.filter((x) => x.character && re.test(x.character)).sort((a, z) => (z.vote_count || 0) - (a.vote_count || 0))[0]; if (c) { s += 0.35; why = pick([`${T(ct(c))}에서 ${c.character} 역을 맡았던 ${kw} 경력자. 이 배역은 사실상 경력직 채용이에요.`, `${kw} 역은 ${T(ct(c))}에서 이미 해봤어요. 이력서 한 줄이면 서류 통과.`], hash(b.p.name)); break; } }
     if (genres.length) { const n = cs.filter((c) => (c.genre_ids || []).some((g) => genres.includes(GENRES[g]))).length; if (n >= 3) s += Math.min(0.2, n * 0.02); }
     const a = b.a;
-    if (!why && a != null && origAge != null && role.orig) why = Math.abs(a - origAge) <= 3 ? `${role.orig}${jong(role.orig) ? "이" : "가"} ${ch} 역을 맡았을 때 ${origAge}살, 지금 ${a}살. 나이 궁합부터 합격이에요.` : (a < origAge ? `원작 ${role.orig}${jong(role.orig) ? "이" : "가"} 연기할 때보다 ${origAge - a}살 어려요. 더 젊은 ${ch}${jong(ch) ? "을" : "를"} 그려볼 수 있는 카드.` : `원작 ${role.orig}${jong(role.orig) ? "이" : "가"} 연기할 때보다 ${a - origAge}살 많아요. 연륜이 붙은 ${ch}${jong(ch) ? "을" : "를"} 보고 싶다면 이쪽.`);
+    // 배우 나이는 추천 문구에 넣지 않음(2026-11-25 운영 원칙). 나이는 후보 고르는 기준으로만 씀
+    void a;
     if (!why) {
       const opts: string[] = [];
       const rank = base.slice().sort((x, z) => z.p.pop - x.p.pop).findIndex((x) => x.p.name === b.p.name) + 1;

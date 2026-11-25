@@ -86,7 +86,7 @@ function hcType(S0,links){if(S0.length<2)return null;/* 성향 평가는 2개 �
  if(gaps.length){const g=Math.round(gaps.reduce((a,b)=>a+b,0)/gaps.length);if(g>=8)badges.push(`세대교체, 원작 당시보다 평균 ${g}살 젊게`);else if(g<=-8)badges.push(`관록 캐스팅, 원작 당시보다 평균 ${-g}살 위`);else if(Math.abs(g)<=3)badges.push('원작 당시와 나이대 비슷')}
  return Object.assign(t,{badges,m1,k})}
 // 나이 비교: 원작 배우의 작품 공개 당시 나이 대 내 배우의 지금 나이. 양수면 내 배우가 더 어림. 공개 연도를 모르면 비교하지 않음
-function ageGap(x){if(!x||!x.ob||!x.cb||!x.oy)return null;return (x.oy-x.ob)-(new Date().getFullYear()-x.cb)}
+function ageGap(){return null}
 function hcLinkLines(S,links){const out=[];for(const s of S){const x=links.find(y=>y.cid===s.mine.id);if(!x||!s.r.orig)continue;const nm=dispName(s.mine.name).replace(/\s*\(.*\)$/,''),on=String(s.r.orig);
  const af=(x.aff||[])[0];if(af){out.push(`${esc(nm)}와 원작 ${esc(on)}, 같은 ${af.k==='group'?'그룹':'소속'} ${esc(af.n)} 출신`);continue}
  const ws=x.works||[];if(ws.length){const w=ws[0],same=w.t===curTopic()?.title;out.push(same?`${esc(nm)}, 원작 《${esc(w.t)}》에 ${esc(on)}와 함께 출연했어요`:`${esc(nm)}와 원작 ${esc(on)}, 《${esc(w.t)}》${w.y?`(${w.y})`:''}에서 함께 출연`)}
