@@ -93,7 +93,7 @@ async function chooseForRole(o: { role: Record<string, any>; topic: Record<strin
   const { role, topic } = o;
   const work = topic.work || {};
   // 국적권: 할리우드판은 영미권(intl), 중국판 cn, 대만판 tw, 홍콩판 hk, 나머지는 한국(kr)
-  const region = ({ k2us: "intl", k2cn: "cn", k2tw: "tw", k2hk: "hk" } as Record<string, string>)[topic.cat] || "kr";
+  const region = ({ k2us: "intl", k2cn: "cn", k2tw: "tw", k2hk: "hk" } as Record<string, string>)[topic.cat] || (topic.work && topic.work.region) || "kr"; // 실화(bio) 판은 work.region으로 후보 지역을 정함
   const slot: string = role.slot || "";
   const orig = role.orig ? await findPerson(role.orig) : null;
   let gender = (role.gender as number) || (slot.startsWith("male") ? 2 : slot.startsWith("female") ? 1 : (orig?.gender || 0));
@@ -229,7 +229,7 @@ Deno.serve(async (req) => {
           if (ex) { await rest(`candidates?id=eq.${ex.id}`, { method: "PATCH", body: JSON.stringify(body) }); keep.add(ex.id); }
           else { const ins = await rest("candidates", { method: "POST", headers: { Prefer: "return=representation" }, body: JSON.stringify({ role_id: r.id, name: p.pool.name.replace(/\s*\(.*\)$/, ""), ...body }) }); const j = await ins.json(); if (Array.isArray(j) && j[0]) keep.add(j[0].id); else out.push({ err: j }); }
         }
-        for (const c of (Array.isArray(cands) ? cands : [])) if (!keep.has(c.id)) { const voted = (c.votes?.[0]?.count || 0) > 0; await rest(`candidates?id=eq.${c.id}`, { method: "PATCH", body: JSON.stringify({ in_set: voted }) }); }
+        for (const c of (Array.isArray(cands) ? cands : [])) if (!keep.has(c.id) && c.pick !== "seed") { /* 기사나 운영자가 넣은 후보(seed)는 유지 */ const voted = (c.votes?.[0]?.count || 0) > 0; await rest(`candidates?id=eq.${c.id}`, { method: "PATCH", body: JSON.stringify({ in_set: voted }) }); }
         out.push({ t: t.title, ch: r.ch, picks: picks.map((p) => `${p.pick}:${p.pool.name}`) });
       }
     }

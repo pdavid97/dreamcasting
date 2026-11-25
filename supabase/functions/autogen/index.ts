@@ -1,9 +1,15 @@
 // 판 자동 생성(초안): 화제작과 해외 인기작에서 캐스팅 판 초안을 만들어 승인 대기열(topics.auto.status=pending)에 올림
 // POST { n: 5 } : 최대 n개 초안 생성. 한국 작품은 할리우드판(k2us), 미국과 영국 작품은 한국판(us2k)
 // 배역: 원작 출연 순서대로 남녀 주연, 조연 최대 4개(이름 있는 배역만). 후보는 recommend 함수가 채움
+// POST { bio: true, n: 5 } : 실화 영화, 드라마(ip_work grp biopic)에서 실존 인물 배역만 골라 "실화 캐스팅"(cat bio) 초안. 배역명이 TMDB 인물로 확인될 때만 실존 인물로 봄
 // 초안은 opens_at을 먼 미래로 두어 공개되지 않음. 운영자가 admin.html에서 승인하면 공개
 import { rr } from "./rr.ts";
-const SB = Deno.env.get("SUPABASE_URL")!, SR = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+const SB = Deno.env.get("SUPABASE_URL")!, SR = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!, TK = (Deno.env.get("TMDB_TOKEN") || "").trim();
+async function tmdb(path: string, q: Record<string, string> = {}) {
+  const u = new URL("https://api.themoviedb.org/3/" + path); for (const [k, v] of Object.entries(q)) u.searchParams.set(k, v);
+  const h: Record<string, string> = { accept: "application/json" }; if (TK.length > 60) h.Authorization = "Bearer " + TK; else u.searchParams.set("api_key", TK);
+  const r = await fetch(u, { headers: h }); return r.ok ? await r.json() : null;
+}
 const H = { apikey: SR, Authorization: `Bearer ${SR}`, "Content-Type": "application/json" };
 const j = (o: unknown, s = 200) => new Response(JSON.stringify(o), { status: s, headers: { "Content-Type": "application/json" } });
 const get = async (p: string) => { const r = await fetch(`${SB}/rest/v1/${p}`, { headers: H }); if (!r.ok) throw new Error(p + " " + await r.text()); return await r.json(); };
@@ -17,8 +23,51 @@ const CTRY: Record<string, string> = { US: "미국", GB: "영국", KR: "한국" 
 type W = { key: string; title: string; title_en: string; year: number; lang: string; countries: string[]; genres: string[]; pop: number; poster: string | null; grp: string[] };
 type C = { name: string; character: string; ord: number; gender: number };
 
+// 위키데이터에서 배역명과 같은 이름의 실존 인물(사람, 위키 문서 8개 이상, 배우 아님)을 찾음. 한국어 이름이 있으면 함께
+async function wdHuman(name: string): Promise<{ id: string; ko: string | null } | null> {
+  const UA = { "User-Agent": "dreamcasting/1.0 (https://pdavid97.github.io/dreamcasting/)" };
+  const s = await (await fetch(`https://www.wikidata.org/w/api.php?action=wbsearchentities&format=json&language=en&type=item&limit=3&search=${encodeURIComponent(name)}`, { headers: UA })).json().catch(() => null);
+  const hit = (s?.search || []).find((x: any) => (x.label || "").toLowerCase() === name.toLowerCase());
+  if (!hit) return null;
+  const e = (await (await fetch(`https://www.wikidata.org/w/api.php?action=wbgetentities&format=json&props=labels|descriptions|sitelinks|claims&languages=ko|en&ids=${hit.id}`, { headers: UA })).json().catch(() => null))?.entities?.[hit.id];
+  if (!e) return null;
+  const human = (e.claims?.P31 || []).some((c: any) => c.mainsnak?.datavalue?.value?.id === "Q5");
+  const desc = (e.descriptions?.en?.value || "").toLowerCase();
+  if (!human || Object.keys(e.sitelinks || {}).length < 8 || /actor|actress|fictional/.test(desc)) return null;
+  return { id: hit.id, ko: e.labels?.ko?.value || null };
+}
+// 실화 캐스팅 초안: 출연 순서 4번째 안의 배역 중 배역명이 위키데이터 실존 인물로 확인되는 배역만, 최대 3개
+async function bioDraft(w: W, dry?: boolean): Promise<{ ok?: unknown; why?: string }> {
+  const cast = await get(`ip_cast?select=name,character,ord,gender,tmdb_person&key=eq.${encodeURIComponent(w.key)}&order=ord.asc&limit=10`) as (C & { tmdb_person: number })[];
+  const roles: { ch: string; orig: string; slot: string; gender: number; real: string }[] = [];
+  const cnt = { m: 0, f: 0 };
+  for (const c of cast) {
+    if (roles.length >= 3) break;
+    const ch = (c.character || "").split("/")[0].replace(/\s*\(.*?\)\s*/g, "").trim();
+    if (!ch || NO_CH.test(ch) || ch.split(" ").length < 2 || (c.gender !== 1 && c.gender !== 2)) continue;
+    if (c.ord > 3) continue;
+    const real = await wdHuman(ch); if (!real) continue;
+    const p = { name: real.ko || ch };
+    const g = c.gender, first = g === 2 ? cnt.m++ === 0 : cnt.f++ === 0;
+    roles.push({ ch: /[가-힣]/.test(p.name) ? p.name : ch, orig: c.name, slot: (g === 2 ? "male_" : "female_") + (first ? "lead" : "sub"), gender: g, real: ch });
+  }
+  if (!roles.length || !roles.some((r) => r.slot.endsWith("lead"))) return { why: "실존 인물 배역 없음" };
+  const [m, id] = w.key.split(":"); const medium = m === "tv" ? "드라마" : "영화";
+  const kr = (w.countries || []).includes("KR"), tid = "aub" + m[0] + id;
+  const ctry = kr ? "한국" : CTRY[(w.countries || []).find((c) => c in CTRY) || ""] || "해외";
+  const topic = { id: tid, cat: "bio", title: w.title, info: `${w.year}년 ${ctry} ${medium}, 실화`, fact: "", user_made: false, tags: ["실화", ...(w.genres || []).slice(0, 2)], src_medium: medium, dst_medium: medium,
+    work: { tmdb_id: Number(id), kind: medium, title: w.title, original: w.title_en, year: String(w.year || ""), genres: w.genres || [], region: kr ? "kr" : "intl",
+      poster: w.poster ? "https://image.tmdb.org/t/p/w342" + w.poster : "", tmdb: `https://www.themoviedb.org/${m}/${id}`, cast: roles.map((r) => ({ ch: r.ch, name: r.orig })) },
+    work_at: "2099-01-01T00:00:00Z", opens_at: "2099-01-01T00:00:00Z", season: 1, auto: { status: "pending", key: w.key, src: "bio", at: new Date().toISOString() } };
+  if (dry) return { ok: { tid, title: w.title, roles } };
+  await post("topics", [topic]);
+  await post("roles", roles.map((r, pos) => ({ topic_id: tid, pos, ch: r.ch, orig: r.orig, descr: "실존 인물", stage: "dream", kind: "actor", slot: r.slot, gender: r.gender })));
+  const rc = await fetch(`${SB}/functions/v1/recommend`, { method: "POST", headers: H, body: JSON.stringify({ tid, limit: 1 }) });
+  return { ok: { tid, title: w.title, roles: roles.map((r) => r.ch), rec: rc.status } };
+}
+
 Deno.serve(async (req) => {
-  const b = await req.json().catch(() => ({})) as { n?: number; dry?: boolean };
+  const b = await req.json().catch(() => ({})) as { n?: number; dry?: boolean; bio?: boolean };
   const n = Math.min(10, Math.max(1, Number(b.n) || 5));
   try {
     // 이미 있는 판(초안, 반려 포함)은 건너뜀
@@ -27,8 +76,8 @@ Deno.serve(async (req) => {
     // 후보 작품: 화제 점수 순(buzz_cards), 그다음 해외 인기작 인기순
     const buzz = await (await fetch(`${SB}/rest/v1/rpc/buzz_cards`, { method: "POST", headers: H, body: JSON.stringify({ n: 30 }) })).json() as { key: string; kr: number | null; gl: number | null; tt: number | null }[];
     const sig = new Map(buzz.map((x) => [x.key, { kr: x.kr, gl: x.gl, tt: x.tt }]));
-    const pop = await get("ip_work?select=key&grp=ov.{us_tv,netflix_tv,ott_tv,us_film}&order=pop.desc.nullslast&limit=200") as { key: string }[];
-    const keys = [...new Set([...buzz.map((x) => x.key), ...pop.map((x) => x.key)])].filter((k) => !seenKey.has(k) && !seenId.has(k.split(":")[1]));
+    const pop = await get(b.bio ? "ip_work?select=key&grp=cs.{biopic}&order=pop.desc.nullslast&limit=300" : "ip_work?select=key&grp=ov.{us_tv,netflix_tv,ott_tv,us_film}&order=pop.desc.nullslast&limit=200") as { key: string }[];
+    const keys = [...new Set([...(b.bio ? [] : buzz.map((x) => x.key)), ...pop.map((x) => x.key)])].filter((k) => !seenKey.has(k) && !seenId.has(k.split(":")[1]));
     const made: unknown[] = [], skip: string[] = [];
     for (let i = 0; i < keys.length && made.length < n; i += 40) {
       const part = keys.slice(i, i + 40);
@@ -38,6 +87,7 @@ Deno.serve(async (req) => {
         if (made.length >= n) break;
         const w = byKey.get(key); if (!w || seenTitle.has(w.title)) continue;
         const kr = w.lang === "ko" && (w.countries || []).includes("KR"), us = w.lang === "en" && (w.countries || []).some((c) => c === "US" || c === "GB");
+        if (b.bio) { const r = await bioDraft(w, b.dry); if (r.ok) { made.push(r.ok); seenTitle.add(w.title); } else skip.push(w.title + ": " + r.why); continue; }
         if (!kr && !us) { skip.push(w.title + ": 국가"); continue; }
         if ((w.genres || []).some((g) => NO_GENRE.test(g))) { skip.push(w.title + ": 장르"); continue; }
         const cast = await get(`ip_cast?select=name,character,ord,gender&key=eq.${encodeURIComponent(key)}&order=ord.asc&limit=20`) as C[];

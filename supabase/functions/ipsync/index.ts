@@ -1,5 +1,5 @@
 // 해외 인기작 기초 데이터(TMDB): 할리우드 영화, 미국 드라마, 넷플릭스와 주요 OTT 오리지널을 ip_work, ip_cast에 적재
-// POST { grp: "us_film" | "us_tv" | "netflix_tv" | "netflix_film" | "ott_tv" | "buzz" } (buzz: 넷플릭스 Top 10과 스트리밍 방영작, work_buzz 기준) : 그 묶음의 목록을 받고, 아직 없는 작품의 상세와 출연진(상위 20명)을 한 번에 최대 MAX편 채움
+// POST { grp: "us_film" | "us_tv" | "netflix_tv" | "netflix_film" | "ott_tv" | "buzz" | "biopic" } (buzz: 넷플릭스 Top 10과 스트리밍 방영작, work_buzz 기준) : 그 묶음의 목록을 받고, 아직 없는 작품의 상세와 출연진(상위 20명)을 한 번에 최대 MAX편 채움
 // 같은 묶음을 다시 부르면 이어서 채움. 공개 TMDB 정보만 저장하고, 묶음별 목록 갱신은 20시간에 한 번
 const SB = Deno.env.get("SUPABASE_URL")!, SR = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!, TK = (Deno.env.get("TMDB_TOKEN") || "").trim();
 const H = { apikey: SR, Authorization: `Bearer ${SR}`, "Content-Type": "application/json" };
@@ -11,6 +11,8 @@ const P: Record<string, { m: "movie" | "tv"; q: Record<string, string>; pages: n
   netflix_tv: [{ m: "tv", q: { with_networks: "213", sort_by: "vote_count.desc" }, pages: 15 }],
   netflix_film: [{ m: "movie", q: { with_companies: "178464", sort_by: "vote_count.desc" }, pages: 10 }, { m: "movie", q: { with_watch_providers: "8", watch_region: "KR", with_watch_monetization_types: "flatrate", sort_by: "vote_count.desc" }, pages: 10 }],
   buzz: [],
+  // 실화(전기, 실존 인물) 영화와 드라마. 연쇄살인 같은 범죄 실화와 다큐멘터리는 뺌
+  biopic: [{ m: "movie", q: { with_keywords: "5565", without_keywords: "10714", without_genres: "99", sort_by: "vote_count.desc" }, pages: 15 }, { m: "tv", q: { with_keywords: "5565", without_keywords: "10714", without_genres: "99", sort_by: "vote_count.desc" }, pages: 5 }],
   ott_tv: [{ m: "tv", q: { with_networks: "49|2552|2739|1024|453", sort_by: "vote_count.desc" }, pages: 15 }],
 };
 async function t(path: string, q: Record<string, string> = {}) {

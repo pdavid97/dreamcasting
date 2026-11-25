@@ -38,7 +38,7 @@ const SB_URL='https://dnzcvbidppzaogtmwamc.supabase.co',ANON='eyJhbGciOiJIUzI1Ni
 const sb=window.supabase.createClient(SB_URL,ANON);
 const $=s=>document.querySelector(s);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const CAT={us2k:'한국판',k2us:'할리우드판',k2cn:'중국판',wn:'웹소설 실사화',ip2live:'실사화'};
+const CAT={us2k:'한국판',k2us:'할리우드판',k2cn:'중국판',wn:'웹소설 실사화',ip2live:'실사화',bio:'실화 캐스팅'};
 function sig(a){const s=a&&a.signal||{},o=[];if(s.kr)o.push('넷플릭스 한국 '+s.kr+'위');if(s.gl)o.push('넷플릭스 전세계 '+s.gl+'위');if(s.tt)o.push('Trakt 급상승 '+s.tt+'위');if(a&&a.src==='pop')o.push('인기작');return o.map(x=>'<span>'+esc(x)+'</span>').join('')}
 function news(t){const n=t.auto&&t.auto.news;if(!n||!n.u)return'';const u=SB_URL+'/functions/v1/go?t='+encodeURIComponent(t.id)+'&k=news&u='+encodeURIComponent(n.u)+'&pg=admin';return `<div class="i" style="margin-top:6px">관련 기사: <a href="${esc(u)}" target="_blank" rel="noopener">${esc(n.t)}</a>${n.s?' ('+esc(n.s)+')':''}</div>`}
 async function load(){
