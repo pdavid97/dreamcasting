@@ -1,5 +1,5 @@
 // 해외 인기작 기초 데이터(TMDB): 할리우드 영화, 미국 드라마, 넷플릭스와 주요 OTT 오리지널을 ip_work, ip_cast에 적재
-// POST { grp: "us_film" | "us_tv" | "netflix_tv" | "netflix_film" | "ott_tv" } : 그 묶음의 목록을 받고, 아직 없는 작품의 상세와 출연진(상위 20명)을 한 번에 최대 MAX편 채움
+// POST { grp: "us_film" | "us_tv" | "netflix_tv" | "netflix_film" | "ott_tv" | "buzz" } (buzz: 넷플릭스 Top 10과 스트리밍 방영작, work_buzz 기준) : 그 묶음의 목록을 받고, 아직 없는 작품의 상세와 출연진(상위 20명)을 한 번에 최대 MAX편 채움
 // 같은 묶음을 다시 부르면 이어서 채움. 공개 TMDB 정보만 저장하고, 묶음별 목록 갱신은 20시간에 한 번
 const SB = Deno.env.get("SUPABASE_URL")!, SR = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!, TK = (Deno.env.get("TMDB_TOKEN") || "").trim();
 const H = { apikey: SR, Authorization: `Bearer ${SR}`, "Content-Type": "application/json" };
@@ -10,6 +10,7 @@ const P: Record<string, { m: "movie" | "tv"; q: Record<string, string>; pages: n
   us_tv: [{ m: "tv", q: { with_origin_country: "US", sort_by: "vote_count.desc" }, pages: 20 }],
   netflix_tv: [{ m: "tv", q: { with_networks: "213", sort_by: "vote_count.desc" }, pages: 15 }],
   netflix_film: [{ m: "movie", q: { with_companies: "178464", sort_by: "vote_count.desc" }, pages: 10 }, { m: "movie", q: { with_watch_providers: "8", watch_region: "KR", with_watch_monetization_types: "flatrate", sort_by: "vote_count.desc" }, pages: 10 }],
+  buzz: [],
   ott_tv: [{ m: "tv", q: { with_networks: "49|2552|2739|1024|453", sort_by: "vote_count.desc" }, pages: 15 }],
 };
 async function t(path: string, q: Record<string, string> = {}) {
@@ -39,7 +40,8 @@ Deno.serve(async (req) => {
     const sk = "ipsync_" + g;
     const st = (await get(`kobis_state?k=eq.${sk}&select=v,updated_at`))[0];
     let keys: string[] = st?.v?.keys || [];
-    if (!st || Date.now() - new Date(st.updated_at).getTime() > 20 * 36e5) {
+    if (g === "buzz") keys = (await get("work_buzz?select=key&limit=5000")).map((x: { key: string }) => x.key).filter((k: string) => /^(movie|tv):\d+$/.test(k));
+    else if (!st || Date.now() - new Date(st.updated_at).getTime() > 20 * 36e5) {
       const ks = new Set<string>();
       for (const s of spec) for (let p = 1; p <= s.pages; p++) {
         const d = await t(`discover/${s.m}`, { ...s.q, page: String(p), "vote_count.gte": "200" });
