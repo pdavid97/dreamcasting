@@ -2287,7 +2287,7 @@ function talkHTML(r){const cms=D.comments.filter(c=>c.role_id===r.id&&!c.parent_
  return `<details class="talk"><summary>토론 ${cms.length}개${best&&best.likes>=3?`, 베스트 공감 ${best.likes}`:''}</summary><ul class="cm">${show.map(li).join('')||'<li class="empty3">첫 의견을 남겨 주세요</li>'}</ul>
  <div class="talkf"><select id="tp${r.id}" aria-label="지지 후보">${isSync(r)?'<option value="">감상</option>':'<option value="">자유 의견</option>'+cs.map(c=>`<option value="${c.candidate_id}">${esc(c.name)} 지지</option>`).join('')}</select><input type="text" id="tx${r.id}" placeholder="의견을 남겨 주세요" maxlength="280" aria-label="토론 의견"><button class="b sm" data-act="talk" data-rid="${r.id}">등록</button></div><a class="tall" href="#" data-act="ttab" data-k="talk" data-f="r${r.id}">이 배역 토론 모두 보기, 다른 배역과 팀 이야기는 토론 탭에서</a></details>`}
 function roleHTML(r,i){const t=topic(),open=isOpen(t),g=PROF?grade(PROF.points):0;
- const head=`<div class="top"><h3 class="cn">${isSync(r)?avatar(r.actor):''}<span>${esc(r.ch)}${isSync(r)?` <span style="font-family:'Noto Sans KR';font-size:17px;font-weight:700">${esc(r.actor)}</span>`:''}</span></h3><span class="sub">${r.age_hint?`배역 나이 ${esc(r.age_hint)} `:''}${r.orig?`원작 ${actorLink(r.orig)}${ageTxt(r.orig)?` (지금 ${ageTxt(r.orig)})`:''} `:''}${t.cat==='wn'?`<span class="st ${r.stage}">${SNAME[r.stage]}</span>`:''}</span></div>${r.descr?`<p class="sub">${esc(r.descr)}</p>`:''}`;
+ const head=`<div class="top"><h3 class="cn">${isSync(r)?avatar(r.actor):''}<span>${esc(r.ch)}${isSync(r)?` <span style="font-family:'Noto Sans KR';font-size:17px;font-weight:700">${esc(r.actor)}</span>`:''}</span></h3><span class="sub">${r.age_hint?`배역 나이 ${esc(r.age_hint)} `:''}${r.orig?`원작 ${actorLink(r.orig,undefined,r.orig_pid)}${ageTxt(r.orig)?` (지금 ${ageTxt(r.orig)})`:''} `:''}${t.cat==='wn'?`<span class="st ${r.stage}">${SNAME[r.stage]}</span>`:''}</span></div>${r.descr?`<p class="sub">${esc(r.descr)}</p>`:''}`;
  if(isSync(r)){const s=D.sync[r.id]||{avg:0,n:0},mine=D.mySync[r.id];
   return `<article class="role${i===SROLE?' sel':''}" data-act="role" data-i="${i}">${head}${r.final_share!=null?`<div class="banner">캐스팅 확정 당시 광장 민심 ${Math.round(r.final_share*100)}%</div>`:''}
   <div class="sync"><div><div class="ix"><b class="num">${!mine&&open?'?':s.n?s.avg.toFixed(2):'-'}</b><small> / 10 싱크로율, ${!mine&&open?'투표하면 평균 공개':fmt(s.n)+'표'}</small></div>
@@ -2430,7 +2430,7 @@ const ageAt=(name,y)=>{const b=AGE[name];if(!b)return null;const by=+b.slice(0,4
 /* 배우 나이는 어떤 형태로도 보여 주지 않음 */
 const ageTxt=()=>'';
 const pickLabel=(r,p)=>{const n=pickName(r,p);return n&&p&&p.w?`${n} (《${p.w}》 속 모습)`:n&&p&&p.y?`${n} (${p.y}년)`:n};
-const actorLink=(name,inner)=>`<a class="alink" href="#a/${encodeURIComponent(name)}" title="${esc(name)} 배우 페이지">${inner||dispHTML(name)}</a>`;
+const actorLink=(name,inner,pid)=>`<a class="alink" href="#a/${encodeURIComponent(name)}${pid?'~'+(+pid):''}" title="${esc(name)} 배우 페이지">${inner||dispHTML(name)}</a>`;
 
 /* ---------- 작품 정보 ---------- */
 let WORK={},workBusy=new Set();
@@ -2471,8 +2471,8 @@ async function openRoute(){const h=decodeURIComponent(location.hash.slice(1));
 function showPage(html){if(typeof showDeck==='function')showDeck(false);$('#page').innerHTML=html;if(typeof bindFilmCarousel==='function')bindFilmCarousel();$('#page').hidden=false;document.querySelector('.desk').hidden=true;scrollTo({top:$('#page').offsetTop-10,behavior:'smooth'})}
 
 /* 배우 페이지 */
-async function openActor(name){name=name.trim();if(!name)return;PAGE={kind:'a',name};showPage(`<div class="pg"><p class="dl">${esc(name)} 배우 페이지를 여는 중이에요</p></div>`);
- try{let pid=null;const s=await rpc('people_search',{q:name});const ex=(s||[]).find(x=>x.name===name);if(ex)pid=ex.id;else{const e=await meta({ensure:name});pid=e.id}
+async function openActor(name){name=name.trim();const pm=name.match(/~(\d+)$/),fix=pm?+pm[1]:null;if(pm)name=name.slice(0,pm.index).trim();if(!name)return;PAGE={kind:'a',name};showPage(`<div class="pg"><p class="dl">${esc(name)} 배우 페이지를 여는 중이에요</p></div>`);
+ try{let pid=fix;if(!pid){const s=await rpc('people_search',{q:name});const ex=(s||[]).find(x=>x.name===name);if(ex)pid=ex.id;else{const e=await meta({ensure:name});pid=e.id}}
   if(!pid){showPage(`<div class="pg"><button class="b sm" data-act="back">광장으로</button><h1>${esc(name)}</h1><p class="sub">TMDB에서 이 배우를 찾지 못했어요. 이름 표기를 확인해 주세요.</p></div>`);return}
   PAGE.pid=pid;await renderActor()}catch(e){showPage(`<div class="pg"><button class="b sm" data-act="back">광장으로</button><p class="dl">${esc(errMsg(e))}</p></div>`)}}
 async function renderActor(){const pid=PAGE.pid;
@@ -3549,7 +3549,7 @@ async function loadCostars(pid,name){let L=[];try{L=await rpc('costars',{pid,lim
  if(!PAGE||PAGE.pid!==pid)return;
  const disp=n=>esc(dispName(n).replace(/\s*\(.*\)$/,''));
  box.innerHTML=`<div class="sh"><h2>${disp(name)} 님과 자주 함께한 배우</h2><span class="sub">같은 작품 주요 배역 기준</span></div>
- <div class="co">${L.map(x=>{const u=IMG['p:'+x.name]||x.photo||'',w=(x.works||[]).slice(0,3),h='#a/'+encodeURIComponent(x.name);return `<div class="co-c"><a class="co-ph" href="${h}" aria-label="${disp(x.name)} 페이지"${u?` style="background-image:url('${esc(u)}')"`:''}>${u?'':esc(x.name[0])}</a><a class="co-nm" href="${h}"><b>${disp(x.name)}</b></a><em>${x.n}편 함께</em><span class="co-w">${w.map(v=>v.id?`<button data-act="wk-open" data-m="${esc(v.m||'movie')}" data-id="${v.id}">${esc(v.t)}</button>`:`<span>${esc(v.t)}</span>`).join('')}</span></div>`}).join('')}</div>`;
+ <div class="co">${L.map(x=>{const u=IMG['p:'+x.name]||x.photo||'',w=(x.works||[]).slice(0,3),h='#a/'+encodeURIComponent(x.name)+'~'+x.id;return `<div class="co-c"><a class="co-ph" href="${h}" aria-label="${disp(x.name)} 페이지"${u?` style="background-image:url('${esc(u)}')"`:''}>${u?'':esc(x.name[0])}</a><a class="co-nm" href="${h}"><b>${disp(x.name)}</b></a><em>${x.n}편 함께</em><span class="co-w">${w.map(v=>v.id?`<button data-act="wk-open" data-m="${esc(v.m||'movie')}" data-id="${v.id}">${esc(v.t)}</button>`:`<span>${esc(v.t)}</span>`).join('')}</span></div>`}).join('')}</div>`;
  box.hidden=false;flowRow(box.querySelector('.co'),'.co-c',0.022)}
 (function(){const f=bindFilmCarousel;bindFilmCarousel=function(){f.apply(this,arguments);bindCred();
  const tr=$('#fcTrack');if(!tr||tr._flow)return;const orig=[...tr.querySelectorAll('.fc-c')],N=orig.length;if(N<3)return;
@@ -4091,7 +4091,7 @@ function c2RoleFace(r){const mv=D.myVote[r.id],cs=D.cands[r.id]||[];let c=mv&&cs
 function c2RoleHTML(r){const t=topic(),open=isOpen(t),mv=D.myVote[r.id],blind=open&&!mv&&!isOpt(r),cs0=D.cands[r.id]||[];
  const cs=blind?cs0.slice().sort((a,b)=>a.candidate_id-b.candidate_id):cs0.slice().sort((a,b)=>b.votes-a.votes),tot=total(r)||1,EXP=EXPC.has(r.id),LIM=blind?8:7;
  const op=r.orig?c2Ph(r.orig):'',ag=r.orig&&typeof ageTxt==='function'?'':'';
- const head=`<div class="c2rh"><h2>${esc(c2Short(r.ch))}</h2>${r.orig?`<a class="og" href="#a/${encodeURIComponent(r.orig)}">${op?`<i style="background-image:url('${esc(op)}')"></i>`:''}원작 ${esc(dispName(r.orig).replace(/\s*\(.*\)$/,''))}${c2OrigAge(r)}</a>`:''}</div>${r.descr?`<p class="c2rd">${esc(r.descr)}</p>`:''}`;
+ const head=`<div class="c2rh"><h2>${esc(c2Short(r.ch))}</h2>${r.orig?`<a class="og" href="#a/${encodeURIComponent(r.orig)}${r.orig_pid?'~'+r.orig_pid:''}">${op?`<i style="background-image:url('${esc(op)}')"></i>`:''}원작 ${esc(dispName(r.orig).replace(/\s*\(.*\)$/,''))}${c2OrigAge(r)}</a>`:''}</div>${r.descr?`<p class="c2rd">${esc(r.descr)}</p>`:''}`;
  if(!cs.length)return `<article class="c2role">${head}<p class="empty3">아직 후보가 없어요</p>${open?c2Add(r):''}</article>`;
  if(blind){const sh=EXP?cs:cs.slice(0,LIM);
   return `<article class="c2role">${head}<div class="c2pk">${sh.map(c=>{const on=C2SEL&&C2SEL.rid===r.id&&C2SEL.cid===c.candidate_id,u=c2Ph(c.name),a=ageTxt(c.name);
@@ -4236,7 +4236,7 @@ async function c2EnsureDeck(){if(!(DECK&&DECK.length))try{await loadDeck()}catch
 
 /* ---- P2 22: 광장에서 투표 중인 배역의 원작 배우를 머리에 표시 (포스터 속 인물 구분은 자동으로 할 수 없어 원작 얼굴로 대신) ---- */
 (function(){const f=renderDeckC;renderDeckC=function(box,t,r){f.apply(this,arguments);if(!r||!r.orig)return;const u=c2Ph(r.orig),hd=box.querySelector('.hc-hd > div');if(!hd||!u)return;
- hd.insertAdjacentHTML('beforeend',`<a class="hc-og" href="#a/${encodeURIComponent(r.orig)}"><i style="background-image:url('${esc(u)}')"></i><span>원작 <b>${esc(dispName(r.orig).replace(/\s*\(.*\)$/,''))}</b></span></a>`)}})();
+ hd.insertAdjacentHTML('beforeend',`<a class="hc-og" href="#a/${encodeURIComponent(r.orig)}${r.orig_pid?'~'+r.orig_pid:''}"><i style="background-image:url('${esc(u)}')"></i><span>원작 <b>${esc(dispName(r.orig).replace(/\s*\(.*\)$/,''))}</b></span></a>`)}})();
 
 /* ---- P3 25: 내 팀 안에서 같은 소속사, 레이블, 그룹 출신 찾기 (Wikidata, person_affil) ---- */
 (function(){const f=renderDoneC;renderDoneC=async function(box,t){const r=await f.apply(this,arguments);try{

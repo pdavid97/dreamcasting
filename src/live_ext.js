@@ -11,7 +11,7 @@ const ageAt=(name,y)=>{const b=AGE[name];if(!b)return null;const by=+b.slice(0,4
 /* 배우 나이는 어떤 형태로도 보여 주지 않음 */
 const ageTxt=()=>'';
 const pickLabel=(r,p)=>{const n=pickName(r,p);return n&&p&&p.w?`${n} (《${p.w}》 속 모습)`:n&&p&&p.y?`${n} (${p.y}년)`:n};
-const actorLink=(name,inner)=>`<a class="alink" href="#a/${encodeURIComponent(name)}" title="${esc(name)} 배우 페이지">${inner||dispHTML(name)}</a>`;
+const actorLink=(name,inner,pid)=>`<a class="alink" href="#a/${encodeURIComponent(name)}${pid?'~'+(+pid):''}" title="${esc(name)} 배우 페이지">${inner||dispHTML(name)}</a>`;
 
 /* ---------- 작품 정보 ---------- */
 let WORK={},workBusy=new Set();
@@ -52,8 +52,8 @@ async function openRoute(){const h=decodeURIComponent(location.hash.slice(1));
 function showPage(html){if(typeof showDeck==='function')showDeck(false);$('#page').innerHTML=html;if(typeof bindFilmCarousel==='function')bindFilmCarousel();$('#page').hidden=false;document.querySelector('.desk').hidden=true;scrollTo({top:$('#page').offsetTop-10,behavior:'smooth'})}
 
 /* 배우 페이지 */
-async function openActor(name){name=name.trim();if(!name)return;PAGE={kind:'a',name};showPage(`<div class="pg"><p class="dl">${esc(name)} 배우 페이지를 여는 중이에요</p></div>`);
- try{let pid=null;const s=await rpc('people_search',{q:name});const ex=(s||[]).find(x=>x.name===name);if(ex)pid=ex.id;else{const e=await meta({ensure:name});pid=e.id}
+async function openActor(name){name=name.trim();const pm=name.match(/~(\d+)$/),fix=pm?+pm[1]:null;if(pm)name=name.slice(0,pm.index).trim();if(!name)return;PAGE={kind:'a',name};showPage(`<div class="pg"><p class="dl">${esc(name)} 배우 페이지를 여는 중이에요</p></div>`);
+ try{let pid=fix;if(!pid){const s=await rpc('people_search',{q:name});const ex=(s||[]).find(x=>x.name===name);if(ex)pid=ex.id;else{const e=await meta({ensure:name});pid=e.id}}
   if(!pid){showPage(`<div class="pg"><button class="b sm" data-act="back">광장으로</button><h1>${esc(name)}</h1><p class="sub">TMDB에서 이 배우를 찾지 못했어요. 이름 표기를 확인해 주세요.</p></div>`);return}
   PAGE.pid=pid;await renderActor()}catch(e){showPage(`<div class="pg"><button class="b sm" data-act="back">광장으로</button><p class="dl">${esc(errMsg(e))}</p></div>`)}}
 async function renderActor(){const pid=PAGE.pid;
