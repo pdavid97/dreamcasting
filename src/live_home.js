@@ -82,12 +82,14 @@ function hcType(S0,links){if(S0.length<2)return null;/* 성향 평가는 2개 �
  const badges=[];if(low&&m1)badges.push(`숨은 진주 ${low}명`);
  const L=S.map(s=>links.find(x=>x.cid===s.mine.id)).filter(Boolean);
  const L0=S0.map(s=>links.find(x=>x.cid===s.mine.id)).filter(Boolean),co=L0.filter(x=>(x.works||[]).length).length;if(co)badges.push(`원작 연결고리 ${co}개`);
- const gaps=L0.filter(x=>x.ob&&x.cb).map(x=>x.cb-x.ob);
- if(gaps.length){const g=Math.round(gaps.reduce((a,b)=>a+b,0)/gaps.length);if(g>=8)badges.push(`세대교체, 원작보다 평균 ${g}살 젊게`);else if(g<=-8)badges.push(`관록 캐스팅, 원작보다 평균 ${-g}살 위`);else if(Math.abs(g)<=3)badges.push('원작과 나이대 거의 같음')}
+ const gaps=L0.map(ageGap).filter(g=>g!=null);
+ if(gaps.length){const g=Math.round(gaps.reduce((a,b)=>a+b,0)/gaps.length);if(g>=8)badges.push(`세대교체, 원작 당시보다 평균 ${g}살 젊게`);else if(g<=-8)badges.push(`관록 캐스팅, 원작 당시보다 평균 ${-g}살 위`);else if(Math.abs(g)<=3)badges.push('원작 당시와 나이대 비슷')}
  return Object.assign(t,{badges,m1,k})}
+// 나이 비교: 원작 배우의 작품 공개 당시 나이 대 내 배우의 지금 나이. 양수면 내 배우가 더 어림. 공개 연도를 모르면 비교하지 않음
+function ageGap(x){if(!x||!x.ob||!x.cb||!x.oy)return null;return (x.oy-x.ob)-(new Date().getFullYear()-x.cb)}
 function hcLinkLines(S,links){const out=[];for(const s of S){const x=links.find(y=>y.cid===s.mine.id);if(!x||!s.r.orig)continue;const nm=dispName(s.mine.name).replace(/\s*\(.*\)$/,''),on=String(s.r.orig);
  const ws=x.works||[];if(ws.length){const w=ws[0],same=w.t===curTopic()?.title;out.push(same?`${esc(nm)}, 원작 《${esc(w.t)}》에 ${esc(on)}와 함께 출연했어요`:`${esc(nm)}와 원작 ${esc(on)}, 《${esc(w.t)}》${w.y?`(${w.y})`:''}에서 함께 출연`)}
- else if(x.ob&&x.cb){const g=x.cb-x.ob;if(Math.abs(g)>=1)out.push(`${esc(nm)}, 원작 ${esc(on)}보다 ${Math.abs(g)}살 ${g>0?'어려요':'많아요'}`)}}
+ else{const g=ageGap(x);if(g!=null){const a=new Date().getFullYear()-x.cb,oa=x.oy-x.ob;out.push(Math.abs(g)<=1?`${esc(nm)}, 지금 ${a}살로 원작 당시 ${esc(on)}(${oa}살)와 비슷해요`:`${esc(nm)}, 지금 ${a}살로 원작 당시 ${esc(on)}(${oa}살)보다 ${Math.abs(g)}살 ${g>0?'어려요':'많아요'}`)}}}
  return out.slice(0,4)}
 async function renderDoneC(box,t){track('result_view',{t:t.id});
  const S=t.roles.map(hcRoleStat).filter(Boolean),ver=verLabel(t.cat)||'';
