@@ -74,7 +74,7 @@ async function flushPending(){if(!USER||!PROF)return;const a=pend();if(!a.length
  for(const p of a){try{await rpc('cast_vote_src',{rid:p.rid,cid:p.cid,src:'wheel'});ok++;track('vote_done',{t:p.tid,r:p.rid,c:p.cid,m:{after_login:true}})}catch(e){}}
  if(ok){toast(`로그인 전에 고른 ${ok}표를 반영했어요`);track('login_done',{m:{flushed:ok}})}await loadDeck();const t=curTopic();if(t)DR=Math.min(DR+0,t.roles.length)}
 
-function openLoginSheet(g){const m=$('#loginSheet');if(!m)return;const n=pend().length,h=$('#lsH'),pp=m.querySelector('p');if(h&&pp){if(g&&n){h.textContent=`${n}표를 골랐어요! 로그인하면 바로 저장돼요`;pp.textContent='7일 뒤 결과 발표 때 내 픽이 1위면 적중 포인트를 받아요. 구글 계정으로 3초면 끝나요.'}else{h.textContent='로그인하면 이 표가 바로 반영돼요';pp.textContent='고른 후보는 저장해 뒀어요. 구글 계정으로 3초면 끝나요.'}}m.classList.add('on');setTimeout(()=>{const b=m.querySelector('[data-act=login]');if(b)b.focus()},50)}
+function openLoginSheet(g){const m=$('#loginSheet');if(!m)return;const n=pend().length,h=$('#lsH'),pp=m.querySelector('p');if(h&&pp){if(g&&n){h.textContent=`${n}표를 골랐어요! 로그인하면 바로 저장돼요`;pp.textContent='결과 발표 때 내 픽이 1위면 적중 포인트'}else{h.textContent='로그인하면 이 표가 바로 반영돼요';pp.textContent='고른 후보는 저장해 뒀어요'}}m.classList.add('on');setTimeout(()=>{const b=m.querySelector('[data-act=login]');if(b)b.focus()},50)}
 
 /* 스와이프: 왼쪽 = 건너뛰기, 오른쪽 = 다음 작품 */
 function bindSwipe(){const c=$('#dkCard');if(!c)return;let x0=null,dx=0,id=null;
@@ -205,7 +205,7 @@ function roundLeft(t){const ms=new Date(t.closes_at)-Date.now(),h=Math.ceil(ms/3
 const isNewT=d=>d.opens_at&&Date.now()-new Date(d.opens_at)<864e5;
 function stTag(d){const ms=new Date(d.closes_at)-Date.now();return isNewT(d)?`<em class="tg n">${d.season>1?`시즌 ${d.season}`:'NEW'}</em>`:ms>0&&ms<864e5?'<em class="tg c">오늘 마감</em>':''}
 function roundBanner(){const rs=(RB.results||[]).filter(r=>Date.now()-new Date(r.at)<2*864e5);
- if(!rs.length){const c=RB.closing||[];return c.length?`<p class="rbn-line">⏰ 오늘 자정 마감: ${c.map(x=>`<a href="#${esc(x.tid)}">${esc(x.title)}</a>`).join(', ')}</p>`:''}
+ if(!rs.length){const c=RB.closing||[];return c.length?`<p class="rbn-line">오늘 자정 마감: ${c.map(x=>`<a href="#${esc(x.tid)}">${esc(x.title)}</a>`).join(', ')}</p>`:''}
  return `<section class="rbn" aria-label="결과 발표"><div class="rbn-h"><b>📣 결과 발표</b><small>7일 투표가 끝난 판이에요</small></div><div class="rbn-row">${rs.map(r=>{const mine=(r.roles||[]).filter(x=>x.mine),hit=mine.filter(x=>x.mine===x.win).length;
   return `<button class="rbn-c" data-act="rres" data-t="${esc(r.tid)}" data-s="${r.season}"${r.poster?` style="--bg:url('${esc(r.poster)}')"`:''}><small>${r.season>1?`시즌 ${r.season}`:'결과'}</small><b>${esc(r.title)}</b><span>${mine.length?(hit?`🎯 ${hit}/${mine.length} 적중${r.pts?`, +${r.pts}P`:''}`:`내 픽 ${mine.length}개, 적중 없음`):'결과 보기'}</span></button>`}).join('')}</div></section>`}
 function openResult(tid,season){try{const a=JSON.parse(localStorage.getItem('dcResSeen')||'[]');if(!a.includes(tid+':'+season)){a.push(tid+':'+season);localStorage.setItem('dcResSeen',JSON.stringify(a.slice(-60)))}}catch(e){}const r=(RB.results||[]).find(x=>x.tid===tid&&String(x.season)===String(season));if(!r)return;
@@ -229,7 +229,7 @@ function deckEnd(box){const rs=(RB.results||[]).slice(0,3),cl=RB.closing||[];con
  const tile=(href,ic,b,s,act)=>`<a class="de-t" href="${href}"${act||''}><span>${ic}</span><b>${b}</b><small>${s}</small></a>`;
  box.innerHTML=`<div class="dk">${storyRings()}<div class="dk-end"><div class="de-h"><span>🎬</span><b>오늘 카드는 여기까지!</b><p>내일 0시에 새 판이 열려요. 그 전에 이건 어때요?</p></div>
   <div class="de-grid">${tile('#vs','⚡','VS 한판','두 명 중 한 명만, 빠르게')}${USER?tile('#me','📅','주간 결산','이번 주 내 캐스팅 돌아보기',' data-act="upg" data-k="week"'):tile('#','🗳️','표 저장하기','로그인하면 결과 알림',' data-act="dk-login"')}${tile('#make','➕','작품 제안','보고 싶은 판을 직접 열기')}${tile('#','🔁','처음부터 다시','넘긴 카드 다시 보기',' data-act="dk-restart"')}</div>
-  ${cl.length?`<h3>⏰ 오늘 자정 마감</h3><div class="de-list">${cl.map(x=>`<a href="#${esc(x.tid)}">${esc(x.title)}<i>→</i></a>`).join('')}</div>`:''}
+  ${cl.length?`<h3>오늘 자정 마감</h3><div class="de-list">${cl.map(x=>`<a href="#${esc(x.tid)}">${esc(x.title)}<i>→</i></a>`).join('')}</div>`:''}
   ${open.length?`<h3>덱에 없던 작품</h3><div class="de-list">${open.map(x=>`<a href="#${esc(x.id)}">${esc(x.title)}${verLabel(x.cat)?` <small>${esc(verLabel(x.cat))}</small>`:''}<i>→</i></a>`).join('')}</div>`:''}</div></div>`;
  stripFocus()}
 document.addEventListener('click',e=>{if(e.target.closest('[data-act="dk-login"]')){e.preventDefault();openLoginSheet(true)}});

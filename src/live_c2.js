@@ -30,7 +30,7 @@ function c2RoleFace(r){const mv=D.myVote[r.id],cs=D.cands[r.id]||[];let c=mv&&cs
 function c2RoleHTML(r){const t=topic(),open=isOpen(t),mv=D.myVote[r.id],blind=open&&!mv&&!isOpt(r),cs0=D.cands[r.id]||[];
  const cs=blind?cs0.slice().sort((a,b)=>a.candidate_id-b.candidate_id):cs0.slice().sort((a,b)=>b.votes-a.votes),tot=total(r)||1,EXP=EXPC.has(r.id),LIM=blind?8:7;
  const op=r.orig?c2Ph(r.orig):'',ag=r.orig&&typeof ageTxt==='function'?'':'';
- const head=`<div class="c2rh"><h2>${esc(c2Short(r.ch))}</h2>${r.orig?`<a class="og" href="#a/${encodeURIComponent(r.orig)}">${op?`<i style="background-image:url('${esc(op)}')"></i>`:''}원작 ${esc(dispName(r.orig).replace(/\s*\(.*\)$/,''))}</a>`:''}</div>${r.descr?`<p class="c2rd">${esc(r.descr)}</p>`:''}`;
+ const head=`<div class="c2rh"><h2>${esc(c2Short(r.ch))}</h2>${r.orig?`<a class="og" href="#a/${encodeURIComponent(r.orig)}">${op?`<i style="background-image:url('${esc(op)}')"></i>`:''}원작 ${esc(dispName(r.orig).replace(/\s*\(.*\)$/,''))}${c2OrigAge(r)}</a>`:''}</div>${r.descr?`<p class="c2rd">${esc(r.descr)}</p>`:''}`;
  if(!cs.length)return `<article class="c2role">${head}<p class="empty3">아직 후보가 없어요</p>${open?c2Add(r):''}</article>`;
  if(blind){const sh=EXP?cs:cs.slice(0,LIM);
   return `<article class="c2role">${head}<div class="c2pk">${sh.map(c=>{const on=C2SEL&&C2SEL.rid===r.id&&C2SEL.cid===c.candidate_id,u=c2Ph(c.name),a=ageTxt(c.name);
@@ -117,6 +117,7 @@ function c2Actor(){const pg=document.querySelector('.pg.actor');if(!pg)return;
  const dl=pg.querySelector('.ahero p.dl');if(dl)dl.remove();
  const ph=pg.querySelector('.ahero img.aph');if(ph){const h=pg.querySelector('.ahero');h.style.setProperty('--ab',`url('${ph.src}')`);h.classList.add('c2a')}
  const cs=pg.querySelector('.cheer-st');if(cs&&[...cs.querySelectorAll('b')].every(b=>/^(0|-|0일)$/.test(b.textContent.trim()))){const nx=cs.nextElementSibling;if(nx&&/아직/.test(nx.textContent))nx.remove();cs.remove()}
+ if(!pg.querySelector('.cheer-st'))pg.querySelectorAll('.cheer p, .cheer .sub').forEach(x=>{if(/아직 이번 달 응원/.test(x.textContent))x.remove()});
  pg.querySelectorAll('.race .row2 .b.sm.buy').forEach(b=>b.textContent='한 표')}
 
 /* ---- VS 특집(케미, 원작 대 새 얼굴)도 확정 VS 디자인으로 ---- */
@@ -135,3 +136,41 @@ vsRenderSpecial=function(box){const d=DUEL,R=d.res,[L,Rt]=vsSides(),ver=verLabel
 document.addEventListener('click',e=>{const d=DUEL;if(!d||!d.kind)return;const b=e.target.closest('[data-act="c2sp"]');
  if(!b){if(d.hi2&&!d.res&&e.target.closest('#duel')&&!e.target.closest('[data-act]')){d.hi2=null;renderDuel()}return}
  e.preventDefault();if(d.res)return;const k=b.dataset.v;if(d.hi2!==k){d.hi2=k;navigator.vibrate&&navigator.vibrate(8);renderDuel();return}vsPick(k,false)});
+
+/* ---- P2 15: 배우 페이지, 남의 페이지에서는 들어온 탭을 그대로 켜 둠 ---- */
+var C2TAB='#';
+(function(){const f=navItems;navItems=function(){const L=f(),v=curView(),own=L[4][3];
+ if(v==='page'&&PAGE&&!own&&(PAGE.kind==='a'||PAGE.kind==='u')){L.forEach(x=>x[3]=x[0]===C2TAB)}
+ else{const on=L.find(x=>x[3]);if(on)C2TAB=on[0]}return L}})();
+
+/* ---- P2 17: 육각 타일 작품명은 단어 단위로 줄여 두 줄까지 ---- */
+function c2HexLab(t){t=String(t||'').replace(/&amp;/g,'&');if(t.length<=6)return t;const w=t.split(/\s+/);let o='';for(const x of w){if((o+' '+x).trim().length>9)break;o=(o+' '+x).trim()}
+ if(!o)o=w[0].slice(0,5);return o.length<t.length?o+'…':o}
+(function(){const f=storyRings;storyRings=function(){return f.apply(this,arguments).replace(/<em>([^<]*)<\/em>/g,(m,x)=>`<em>${esc(c2HexLab(x))}</em>`)}})();
+
+/* ---- P2 18: 원작 배우 나이는 원작 공개 당시 기준 ---- */
+const C2OA={};
+(function(){const f=loadTopic;loadTopic=async function(){const r=await f.apply(this,arguments);const tid=SEL;if(tid&&!C2OA[tid]){C2OA[tid]={};rpc('cast_links',{tid}).then(L=>{(L||[]).forEach(x=>{if(x.ob&&x.oy&&!C2OA[tid][x.rid])C2OA[tid][x.rid]=x.oy-x.ob});if(D&&D.tid===tid)renderRoles()}).catch(()=>{})}return r}})();
+function c2OrigAge(r){const m=C2OA[SEL];return m&&m[r.id]?`, 당시 ${m[r.id]}살`:''}
+
+/* ---- P2 21: 추천 노출 확대 (VS 확정 직후, 나 탭) ---- */
+function c2RelItem(d,r,why){const v=verLabel(d.cat),u=d.vposter||d.poster;return `<a class="rl" href="#${esc(d.id)}"><span class="ph"${u?` style="background-image:url('${esc(u)}')"`:''}></span><span class="tx"><b>《${esc(d.title)}》${v?' '+esc(v):''} ${esc(c2Short(r.ch))} 역</b><small>${why}</small></span><i>›</i></a>`}
+function c2RelFor(names,skipRid,n){const out=[],used=new Set(),pd=pend(),open=r=>!r.mine&&!pd.some(p=>p.rid===r.id);
+ for(const nm of names){for(const d of (DECK||[])){if(out.length>=n)break;if(used.has(d.id))continue;const r=(d.roles||[]).find(r=>r.id!==skipRid&&open(r)&&(r.cands||[]).some(c=>c.name===nm));
+  if(r){used.add(d.id);out.push(c2RelItem(d,r,`<em>${esc(dispName(nm).replace(/\s*\(.*\)$/,''))}</em>, 여기서도 후보예요`))}}}
+ if(out.length<n){const s=(DECK||[]).filter(d=>!used.has(d.id)&&new Date(d.closes_at)>Date.now()).sort((a,b)=>new Date(a.closes_at)-new Date(b.closes_at));
+  for(const d of s){if(out.length>=n)break;const r=(d.roles||[]).find(open);if(r){used.add(d.id);const h=Math.ceil((new Date(d.closes_at)-Date.now())/36e5);out.push(c2RelItem(d,r,h<=24?'오늘 마감':`마감 D-${Math.ceil(h/24)}`))}}}
+ return out}
+async function c2EnsureDeck(){if(!(DECK&&DECK.length))try{await loadDeck()}catch(e){}}
+/* VS: 확정하면 그 배우가 후보인 다른 배역을 아래에 */
+(function(){const f=vsfCast;vsfCast=async function(d,k){const w=k==='a'?d.a:d.b;f.apply(this,arguments);await c2EnsureDeck();
+ const it=c2RelFor([w.name],d.rid,2);let box=$('#c2vsRel');if(!box){const du=$('#duel');if(!du)return;du.insertAdjacentHTML('afterend','<div class="hc-rel c2vsrel" id="c2vsRel"></div>');box=$('#c2vsRel')}
+ if(it.length)box.innerHTML=`<b class="hd">이어서 고르기</b>${it.join('')}`}})();
+/* 나 탭: 내 픽 배우가 후보인 판, 곧 마감인 판 */
+(function(){const f=c2User;c2User=function(d){f(d);if(!d.me)return;c2EnsureDeck().then(()=>{const pg=document.querySelector('.pg.user');if(!pg||pg.querySelector('.c2merel'))return;
+ const names=[...new Set((d.votes||[]).map(v=>v.name))];const it=c2RelFor(names,null,3);if(!it.length)return;
+ const at=pg.querySelector('.c2sh');if(at)at.insertAdjacentHTML('beforebegin',`<div class="hc-rel c2merel"><b class="hd">이어서 고르기</b>${it.join('')}</div>`)})}})();
+
+/* ---- P2 22: 광장에서 투표 중인 배역의 원작 배우를 머리에 표시 (포스터 속 인물 구분은 자동으로 할 수 없어 원작 얼굴로 대신) ---- */
+(function(){const f=renderDeckC;renderDeckC=function(box,t,r){f.apply(this,arguments);if(!r||!r.orig)return;const u=c2Ph(r.orig),hd=box.querySelector('.hc-hd > div');if(!hd||!u)return;
+ hd.insertAdjacentHTML('beforeend',`<a class="hc-og" href="#a/${encodeURIComponent(r.orig)}"><i style="background-image:url('${esc(u)}')"></i><span>원작 <b>${esc(dispName(r.orig).replace(/\s*\(.*\)$/,''))}</b></span></a>`)}})();

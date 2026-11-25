@@ -190,3 +190,13 @@ body[data-view=rank] .side::before{display:none!important;content:none!important
 .vsf.c2sp .hi .tg2,.vsf.c2sp .win .tg2{background:var(--lime);color:#0A0A0A}
 .vsf.c2sp .nm em{font-style:normal}
 .onb-dots i.on{background:var(--lime)!important}
+/* P2 16: 광장 옆 카드는 괄호 이름을 숨겨 잘리지 않게 */
+.hc-arc .card:not(.on) .nm .nmp{display:none}
+.hc-arc .card:not(.on) .nm b{font-size:16px}
+/* P2 17: 육각 타일 이름 두 줄, 단어 안 줄바꿈 금지 */
+.hexrow .sr .in[style] em{-webkit-line-clamp:2!important;max-width:50px!important;word-break:keep-all;font-size:9px!important;line-height:1.15}
+.c2vsrel,.c2merel{margin-top:14px}
+.c2merel{margin-top:22px}
+.hc-og{display:inline-flex;align-items:center;gap:6px;margin-top:6px;padding:3px 10px 3px 3px;border-radius:999px;background:#161616;color:#BDBDBD;font-size:11px;font-weight:700;text-decoration:none}
+.hc-og i{width:24px;height:24px;border-radius:50%;background:#222 center 20%/cover;box-shadow:0 0 0 1.5px var(--lime),0 0 12px rgba(212,255,58,.35)}
+.hc-og b{color:#fff}
