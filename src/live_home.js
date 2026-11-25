@@ -10,7 +10,10 @@ function hcRailItems(t,r){const it=[],n=(t.news||[])[0],q=HCQ[t.id];
  it.push({tg:'마감',tx:`${String(r.ch).replace(/\s*\(.*\)$/,'')} 역 투표 ${roundLeft(t)}`,href:'#'+t.id});
  if(n&&n.u)it.push({tg:'뉴스',tx:String(n.t||'').replace(/\s-\s[^-]+$/,''),href:goURL(t.id,'news','news',n.u),ext:1});
  if(q)it.push({tg:'토론',tx:`"${q.body}" 공감 ${q.up}`,href:'#'+t.id});
- it.push({tg:'VS',tx:`${String(r.ch).replace(/\s*\(.*\)$/,'')} 역 1:1 대결이 열려 있어요`,href:'#vs'});return it}
+ it.push({tg:'VS',tx:`${String(r.ch).replace(/\s*\(.*\)$/,'')} 역 1:1 대결이 열려 있어요`,href:'#vs'});
+ const now=Date.now(),bio=(TOPICS||[]).find(x=>x.cat==='bio'&&!x.closed_at&&(!x.opens_at||Date.parse(x.opens_at)<=now)&&Date.parse(x.closes_at)>now&&x.id!==t.id);
+ if(bio){const br=(bio.roles||[])[0];it.splice(1,0,{tg:'실화',tx:`${bio.title}${br?`, ${String(br.ch).replace(/\s*\(.*\)$/,'')} 역은 누구?`:''}`,href:'#'+bio.id})}
+ return it}
 function hcRail(t,r){const it=hcRailItems(t,r),x=it[HC.ri%it.length];return `<a class="hc-rail" href="${esc(x.href)}"${x.ext?' target="_blank" rel="noopener"':''}><span class="dot"></span><span class="tg">${x.tg}</span><span class="tx">${esc(x.tx)}</span><span class="ar">›</span></a>`}
 function hcTf(i,n){let off=i-HC.sel;if(off>n/2)off-=n;if(off<-n/2)off+=n;const on=i===HC.sel;
  return {on,off,tf:on?(HC.voted?'translateY(4px) scale(1.06)':'translateY(-10px) scale(1)'):`rotate(${off*9}deg) translateY(${Math.abs(off)*3}px) scale(.9)`,z:20-Math.abs(off)}}
@@ -23,13 +26,12 @@ function renderDeckC(box,t,r){const cs=hcCands(r),n=cs.length,tot=r.cands.reduce
  if(HC.key!==key){HC.key=key;HC.confirm=false;HC.voted=false;const p=pend().find(x=>x.rid===r.id),picked=r.mine||(p&&p.cid);HC.sel=Math.max(0,cs.findIndex(c=>c.id===picked))}
  const ch=Math.max(230,Math.min(440,innerHeight-475)),cw=Math.round(Math.min(ch*.66,(box.clientWidth||innerWidth)*.6)),ver=verLabel(t.cat)||'';
  const cards=cs.map((c,i)=>{const tf=hcTf(i,n),u=hcImg(c.name);return `<button class="card${tf.on?' on':''}" data-hc="${i}" aria-label="${esc(dispName(c.name))}" style="transform:${tf.tf};z-index:${tf.z}"><span class="ph"${u?` style="background-image:url('${esc(u)}')"`:''}>${u?'':esc(c.name[0])}</span><span class="no">${String(i+1).padStart(2,'0')}</span><span class="nm"><b>${dispHTML(c.name)}</b><small>${esc(hcSub(c,r,tot))}</small></span></button>`}).join('');
- const hx=storyRings();box.innerHTML=`<div class="hc" style="--ch:${ch}px;--cw:${cw}px"><div class="hc-hex" id="hcHex"><div class="hc-hexin">${hx}${hx.replace('<nav class="srow hexrow"','<nav aria-hidden="true" class="srow hexrow"')}</div></div>${hcRail(t,r)}
-<div class="hc-hd"><div><button class="hc-wk" data-act="works">작품 ${DI+1}/${DECK.length} <i>▾</i></button><small>${esc(t.title)}${ver?' '+esc(ver):''}${t.season>1?`, 시즌 ${t.season}`:''}</small><h1>${esc(String(r.ch).replace(/\s*\(.*\)$/,''))} 역은 <em>누구?</em></h1></div><div class="clk">${hcClose(t)}<small>마감까지</small><span class="steps">${t.roles.map((x,i)=>`<i class="${i<DR?'ok':i===DR?'on':''}"></i>`).join('')}</span></div></div>
+ box.innerHTML=`<div class="hc" style="--ch:${ch}px;--cw:${cw}px">${todoRow()}${hcRail(t,r)}
+<div class="hc-hd"><div><a class="hc-ti" href="#${esc(t.id)}" aria-label="${esc(t.title)} 작품과 후보 전체 보기">${esc(t.title)}${ver?' '+esc(ver):''}${t.season>1?`, 시즌 ${t.season}`:''}<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg></a><h1>${esc(String(r.ch).replace(/\s*\(.*\)$/,''))} 역은 <em>누구?</em></h1></div><div class="clk">${hcClose(t)}<small>배역 ${Math.min(DR+1,t.roles.length)}/${t.roles.length}</small><span class="steps">${t.roles.map((x,i)=>`<i class="${i<DR?'ok':i===DR?'on':''}"></i>`).join('')}</span></div></div>
 <div class="hc-arc${HC.voted?' picked':''}" id="hcArc">${cards}${HC.voted?'<div class="cast">CAST!</div>':''}</div>
 <p class="hc-hint" id="hcHint">${hcHint(r,cs)}</p>
-<div class="hc-dock" id="hcDock">${hcQuote(t)}</div>
-<div class="hc-links"><button data-act="dk-skip">${DR<t.roles.length-1?'이 배역 패스':'마지막 배역 패스'}</button><a href="#${esc(t.id)}">작품 보기, 후보 추가</a><button data-act="dk-nexttopic">${DECK[DI+1]?'다음 작품':'작품 패스'}</button></div></div>`;
- hcUpdate();hcLoadQuote(t.id);
+<div class="hc-bar"><button class="hb" data-act="dk-skip">패스</button><button class="hb main" data-act="hc-add" data-rid="${r.id}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>후보 추가</button><button class="hb" data-act="dk-nexttopic">${DECK[DI+1]?'다음 작품':'작품 패스'}<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button></div></div>`;
+ hcUpdate();hcLoadQuote(t.id);hcTodoFocus();
  clearInterval(HC.timer);HC.timer=setInterval(()=>{const el=document.querySelector('.hc-rail');const t2=curTopic(),r2=curRole();if(!el||!t2||!r2||!DECKV){clearInterval(HC.timer);return}HC.ri++;el.outerHTML=hcRail(t2,r2)},3600)}
 function hcUpdate(){const arc=$('#hcArc'),t=curTopic(),r=curRole();if(!arc||!r)return;const cs=hcCands(r),n=cs.length;
  arc.classList.toggle('picked',HC.voted);
@@ -99,9 +101,9 @@ function oartBg(t){const a=t.oart,u=a&&a.url||t.vposter||t.poster;if(!u)return '
 async function renderDoneC(box,t){track('result_view',{t:t.id});
  const S=t.roles.map(hcRoleStat).filter(Boolean),ver=verLabel(t.cat)||'';
  if(!(t.id in HCL)){HCL[t.id]=null;rpc('cast_links',{tid:t.id}).then(x=>{HCL[t.id]=x||[];const c=curTopic();if(c&&c.id===t.id&&DR>=c.roles.length)renderDeck()}).catch(()=>{HCL[t.id]=[]})}
- const links=HCL[t.id]||[],ty=hcType(S,links),ll=hcLinkLines(S,links),hx=storyRings();
+ const links=HCL[t.id]||[],ty=hcType(S,links),ll=hcLinkLines(S,links);
  const strips=S.map((s,i)=>{const u=hcImg(s.mine.name);return `<span class="mp-s" style="--i:${i};${u?`background-image:url('${esc(u)}')`:''}"></span>`}).join('');
- box.innerHTML=`<div class="hc hcd"><div class="hc-hex" id="hcHex"><div class="hc-hexin">${hx}${hx.replace('<nav class="srow hexrow"','<nav aria-hidden="true" class="srow hexrow"')}</div></div>
+ box.innerHTML=`<div class="hc hcd">${todoRow()}
 <div class="mp2${t.oart&&t.oart.w>t.oart.h?' wide':''}"><div class="mp-o"${oartBg(t)}><span class="lb">원작</span></div><div class="mp-m"><div class="mp-row" style="--n:${Math.max(1,S.length)}">${strips||'<span class="mp-empty">아직 고른 배역이 없어요</span>'}</div><span class="lb on">내 캐스팅</span></div></div>
 <div class="mp-tt"><b>${esc(t.title)}</b><span>${ver?esc(ver)+', ':''}${S.map(s=>esc(dispName(s.mine.name).replace(/\s*\(.*\)$/,''))).join(', ')}</span></div>
 ${ty?`<div class="mp-type"><span class="tg">${esc(ty.tag)}</span><p>${esc(ty.say)}</p>${ty.badges.length?`<div class="bd">${ty.badges.map(b=>`<i>${esc(b)}</i>`).join('')}</div>`:''}</div>`:''}
@@ -128,3 +130,37 @@ function hcRelLocal(t,S){const out=[],used=new Set([t.id]),pd=pend();
 async function hcRelServer(t){const x=await rpc('duel_next',{skip:[],prefer:t.id}).catch(()=>null);const box=$('#hcRel');if(!x||!x.why||!box||(HC.relUsed&&HC.relUsed.has(x.tid)))return;
  const di=DECK.findIndex(d=>d.id===x.tid);if(di<0)return;const why=esc(x.why.replace(/(\S+)이\(가\)/,(m,n)=>jj(n,'이','가')));
  if(!box.querySelector('.hd'))box.insertAdjacentHTML('afterbegin','<b class="hd">이어서 고르기</b>');box.querySelector('.hd').insertAdjacentHTML('afterend',hcRelItem(di,DECK[di],why,x.ch))}
+
+/* ===== 광장 상단 할 일 줄(11/25): 육각 타일 대신 포스터 원. 투표 중인 판만 마감 순, 테두리 링은 내 진행률, 다 끝낸 판은 뒤로, 발표는 맨 끝 "결과" 하나로 ===== */
+function todoRow(){const out=[],pd=pend();
+ const items=DECK.map((d,i)=>{const rs=d.roles||[],n=rs.length,m=rs.filter(r=>r.mine||pd.some(p=>p.rid===r.id)).length;return {d,i,n,m,done:n&&m>=n,left:new Date(d.closes_at)-Date.now()}});
+ items.sort((a,b)=>(a.done-b.done)||(a.left-b.left));
+ for(const x of items){const {d,i,n,m}=x,dd=Math.max(0,Math.ceil(x.left/864e5)),lab=x.left<864e5?'D-0':'D-'+dd,fr=n?m/n:0,u=d.vposter||d.poster||'';
+  out.push(`<button class="td${i===DI?' cur':''}${x.done?' done':''}${x.left<864e5?' hot':''}" data-act="dk-goto" data-i="${i}" aria-label="${esc(d.title)}, ${lab}, 배역 ${n}개 중 ${m}개 투표"${i===DI?' aria-current="true"':''}>
+   <span class="ring" style="--p:${Math.round(fr*360)}deg"><span class="po"${u?` style="background-image:url('${esc(u)}')"`:''}>${u?'':esc(String(d.title).slice(0,4))}</span>${x.done?'<i class="ck" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg></i>':''}</span>
+   <b>${esc(d.title)}</b><small>${x.done?'완료':lab}</small></button>`)}
+ const rs=(typeof RB!=='undefined'&&RB.results||[]).filter(r=>Date.now()-new Date(r.at)<2*864e5);
+ if(rs.length){const seen=(()=>{try{return JSON.parse(localStorage.getItem('dcResSeen')||'[]')}catch(e){return[]}})(),f=rs.find(r=>!seen.includes(r.tid+':'+r.season))||rs[0];
+  out.push(`<button class="td res" data-act="rres" data-t="${esc(f.tid)}" data-s="${f.season}" aria-label="결과 발표 ${rs.length}개 보기"><span class="ring"><span class="po"${f.poster?` style="background-image:url('${esc(f.poster)}')"`:''}></span><i class="tr" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 4h8v5a4 4 0 0 1-8 0zM6 5H4a3 3 0 0 0 4 4M18 5h2a3 3 0 0 1-4 4M12 13v4M8 20h8"/></svg></i></span><b>결과 발표</b><small>${rs.length}개</small></button>`)}
+ return `<nav class="tdrow" id="tdRow" aria-label="투표 중인 판">${out.join('')}</nav>`}
+function hcTodoFocus(){const row=$('#tdRow'),c=row&&row.querySelector('.td.cur');if(!row||!c)return;const x=c.offsetLeft-row.clientWidth/2+c.offsetWidth/2;row.scrollLeft=Math.max(0,x)}
+/* 후보 추가 시트: 이름과 한 줄 이유. 등록하면 바로 내 표가 들어감 */
+function openHcAdd(rid){const t=curTopic(),r=curRole();if(!t||!r)return;const old=$('#hcAddSheet');if(old)old.remove();
+ const el=document.createElement('div');el.id='hcAddSheet';el.className='wsheet';const ch=esc(String(r.ch).replace(/\s*\(.*\)$/,''));
+ el.innerHTML=`<div class="ws-in hca" role="dialog" aria-label="${ch} 역 후보 추가"><div class="ws-h"><b>${ch} 역, 내가 미는 배우</b><button class="x" data-act="hca-x" aria-label="닫기">✕</button></div>
+ <p class="hca-sub">${esc(t.title)}. 목록에 없는 배우를 올리면 내 한 표가 바로 들어가요.</p>
+ <label class="hca-l">배우 이름<input id="dlNew" maxlength="20" autocomplete="off" placeholder="예: 김태리"></label>
+ <label class="hca-l">한 줄 이유 (선택)<input id="dlPitch" maxlength="80" placeholder="예: 눈빛이 원작 그대로"></label>
+ <button class="hca-go" data-act="hca-go" data-rid="${rid}">후보로 올리고 한 표</button>
+ <a class="hca-more" href="#${esc(t.id)}" data-act="hca-x">작품 페이지에서 전체 후보 보기</a></div>`;
+ document.body.appendChild(el);requestAnimationFrame(()=>{el.classList.add('on');const i=$('#dlNew');if(i)i.focus()});
+ el.addEventListener('click',e=>{if(e.target===el||e.target.closest('[data-act="hca-x"]')){el.classList.remove('on');setTimeout(()=>el.remove(),250)}});
+ el.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.id==='dlPitch'){const g=el.querySelector('.hca-go');if(g)g.click()}});
+ try{track('hc_add_open',{t:t.id,r:r.id})}catch(x){}}
+document.addEventListener('click',async e=>{const b=e.target.closest('[data-act="hc-add"]');if(b){e.preventDefault();openHcAdd(+b.dataset.rid);return}
+ const g=e.target.closest('[data-act="hca-go"]');if(!g)return;e.preventDefault();const sh=$('#hcAddSheet'),t=curTopic(),r=curRole(),rid=+g.dataset.rid,nm=($('#dlNew')||{value:''}).value.trim(),pitch=($('#dlPitch')||{value:''}).value.trim();
+ if(!nm){toast('배우 이름을 적어 주세요');return}
+ if(!USER||!PROF){track('login_prompt',{t:t&&t.id,r:rid,m:{add:true}});if(sh)sh.remove();openLoginSheet();return}
+ g.disabled=true;try{const cid=await rpc('add_candidate',{rid,nm,pitch:pitch||null});track('cand_add',{t:t&&t.id,r:rid,c:cid,m:{pitch:!!pitch,from:'bar'}});toast(`${nm} 후보를 올리고 한 표 넣었어요`);if(r&&r.id===rid&&!r.mine)r.mine=cid;
+  if(sh){sh.classList.remove('on');setTimeout(()=>sh.remove(),250)}
+  const fresh=await rpc('vote_deck',{lim:16}).catch(()=>null);const ft=fresh&&t&&fresh.find(x=>x.id===t.id);if(ft)Object.assign(t,{seen:ft.seen,roles:ft.roles});nextRole()}catch(err){g.disabled=false;toast(errMsg(err))}});

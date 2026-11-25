@@ -769,3 +769,31 @@ body{word-break:keep-all;overflow-wrap:break-word}
 .melogin .ml-i small{font-size:12px;font-weight:800;color:#DADADA}
 .melogin .lg.big{width:100%;padding:15px;font-size:15px;border-radius:14px}
 .melogin .lg.big{display:flex;align-items:center;justify-content:center;gap:8px}
+
+/* 광장 상단 할 일 줄(포스터 원, 진행률 링) */
+.tdrow{display:flex;gap:12px;overflow-x:auto;padding:12px 14px 4px;scrollbar-width:none;scroll-behavior:smooth}.tdrow::-webkit-scrollbar{display:none}
+.td{flex:0 0 64px;display:flex;flex-direction:column;align-items:center;gap:3px;border:0;background:none;color:#fff;padding:0;cursor:pointer}
+.td .ring{position:relative;width:62px;height:62px;border-radius:50%;padding:3px;background:conic-gradient(#D4FF3A var(--p,0deg),#2c2c2c 0);display:block}
+.td .po{display:grid;place-items:center;width:100%;height:100%;border-radius:50%;background:#1b1b1b center/cover;border:2px solid #0A0A0A;font-size:10px;color:#aaa;overflow:hidden}
+.td b{max-width:64px;font-size:11px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.td small{font-size:10px;font-weight:800;color:#8A8A8A}.td.hot small{color:#D4FF3A}
+.td.cur .ring{transform:scale(1.08);box-shadow:0 0 0 2px #0A0A0A,0 0 0 4px #fff}.td.cur b{color:#D4FF3A}
+.td.done{opacity:.55}.td.done .ring{background:#6E8A1E}
+.td .ck,.td .tr{position:absolute;right:-2px;bottom:-2px;width:22px;height:22px;border-radius:50%;background:#D4FF3A;color:#1d2600;display:grid;place-items:center;border:2px solid #0A0A0A}
+.td .ck svg,.td .tr svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.td.res .ring{background:#e6c77a}.td.res .tr{background:#e6c77a;color:#2a1f05}
+.hc-ti{display:inline-flex;align-items:center;gap:4px;font-size:12px;color:#B8B8B8;font-weight:700;text-decoration:none}
+.hc-ti svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
+/* 하단 액션 바: 큰 버튼 세 칸 */
+.hc-bar{position:sticky;bottom:0;display:grid;grid-template-columns:1fr 1.35fr 1fr;gap:8px;padding:10px 14px calc(10px + env(safe-area-inset-bottom,0px));background:#0A0A0A;border-top:1px solid #1e1e1e;margin-top:auto;z-index:30}
+.hb{height:48px;border-radius:14px;border:1px solid #3a3a3a;background:#121212;color:#eee;font-size:14px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;gap:6px;cursor:pointer}
+.hb svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.hb.main{background:#D4FF3A;border-color:#D4FF3A;color:#162000}
+.hb:active{transform:scale(.97)}
+/* 후보 추가 시트 */
+.hca{padding-bottom:18px}.hca-sub{margin:0 0 12px;font-size:13px;color:#8A8A8A}
+.hca-l{display:flex;flex-direction:column;gap:6px;font-size:12px;font-weight:700;margin-bottom:12px}
+.hca-l input{height:46px;border-radius:12px;border:1px solid #333;background:#151515;color:#fff;padding:0 14px;font-size:15px}
+.hca-go{width:100%;height:50px;border:0;border-radius:14px;background:#D4FF3A;color:#162000;font-size:15px;font-weight:800;cursor:pointer}
+.hca-more{display:block;text-align:center;margin-top:12px;font-size:12px;color:#8A8A8A}
+.hc-bar .hb{flex-direction:row;white-space:nowrap;padding:0 10px;line-height:1}
