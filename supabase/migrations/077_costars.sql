@@ -7,7 +7,7 @@ language sql stable security definer set search_path=public as $$
         where c.person_id<>pid and coalesce(c.ord,99)<=8 and not coalesce(c.anthology,false)),
   g as (select person_id, count(distinct work_id)::int n from c group by person_id having count(distinct work_id)>=2)
   select p.id, p.name, g.n, p.profile->>'photo',
-    (select jsonb_agg(x order by x->>'y' desc) from (select distinct jsonb_build_object('t',wk.title,'y',wk.year) x
+    (select jsonb_agg(x order by x->>'y' desc) from (select distinct jsonb_build_object('t',wk.title,'y',wk.year,'id',wk.tmdb_id,'m',wk.media) x
        from c join work wk on wk.id=c.work_id where c.person_id=p.id) s)
   from g join people p on p.id=g.person_id
   where not coalesce(p.blocked,false)

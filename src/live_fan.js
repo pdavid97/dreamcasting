@@ -70,14 +70,24 @@ async function loadCostars(pid,name){let L=[];try{L=await rpc('costars',{pid,lim
  if(!PAGE||PAGE.pid!==pid)return;
  const disp=n=>esc(dispName(n).replace(/\s*\(.*\)$/,''));
  box.innerHTML=`<div class="sh"><h2>${disp(name)} 님과 자주 함께한 배우</h2><span class="sub">같은 작품 주요 배역 기준</span></div>
- <div class="co">${L.map(x=>{const u=IMG['p:'+x.name]||x.photo||'',w=(x.works||[]).slice(0,3);return `<a class="co-c" href="#a/${encodeURIComponent(x.name)}"><span class="co-ph"${u?` style="background-image:url('${esc(u)}')"`:''}>${u?'':esc(x.name[0])}</span><b>${disp(x.name)}</b><em>${x.n}편 함께</em><small>${w.map(v=>esc(v.t)).join(', ')}</small></a>`}).join('')}</div>`;
+ <div class="co">${L.map(x=>{const u=IMG['p:'+x.name]||x.photo||'',w=(x.works||[]).slice(0,3),h='#a/'+encodeURIComponent(x.name);return `<div class="co-c"><a class="co-ph" href="${h}" aria-label="${disp(x.name)} 페이지"${u?` style="background-image:url('${esc(u)}')"`:''}>${u?'':esc(x.name[0])}</a><a class="co-nm" href="${h}"><b>${disp(x.name)}</b></a><em>${x.n}편 함께</em><span class="co-w">${w.map(v=>v.id?`<button data-act="wk-open" data-m="${esc(v.m||'movie')}" data-id="${v.id}">${esc(v.t)}</button>`:`<span>${esc(v.t)}</span>`).join('')}</span></div>`}).join('')}</div>`;
  box.hidden=false}
 (function(){const f=bindFilmCarousel;bindFilmCarousel=function(){f.apply(this,arguments);bindCred();
- const tr=$('#fcTrack');if(!tr||tr._auto)return;const cards=[...tr.querySelectorAll('.fc-c')];if(cards.length<3)return;
- const side=()=>{const i=cards.findIndex(c=>c.classList.contains('on'));cards.forEach((c,k)=>{c.classList.toggle('lf',k<i);c.classList.toggle('rt',k>i)})};
- tr.addEventListener('scroll',()=>requestAnimationFrame(side),{passive:true});side();
- let idle=Date.now();const poke=()=>idle=Date.now();['pointerdown','wheel','touchstart','keydown','focusin'].forEach(ev=>tr.addEventListener(ev,poke,{passive:true}));
- if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;
- tr._auto=setInterval(()=>{if(!document.body.contains(tr)){clearInterval(tr._auto);return}
-  if(Date.now()-idle<7000||document.hidden)return;const r=tr.getBoundingClientRect();if(r.bottom<0||r.top>innerHeight)return;
-  const i=cards.findIndex(c=>c.classList.contains('on'));if(i>=cards.length-1)tr.scrollTo({left:0,behavior:'smooth'});else fcGo(1)},3200)}})();
+ const tr=$('#fcTrack');if(!tr||tr._flow)return;const orig=[...tr.querySelectorAll('.fc-c')],N=orig.length;if(N<3)return;
+ const calm=matchMedia('(prefers-reduced-motion: reduce)').matches;
+ /* 끝없이 흐르도록 카드 한 벌을 뒤에 복제(읽기 도구에서는 숨김) */
+ if(!calm){orig.forEach(c=>{const k=c.cloneNode(true);k.classList.add('fc-dup');k.setAttribute('aria-hidden','true');k.querySelectorAll('button,a').forEach(x=>x.tabIndex=-1);tr.appendChild(k)});tr.classList.add('fc-run')}
+ const cards=[...tr.querySelectorAll('.fc-c')],loopW=()=>cards[N].offsetLeft-cards[0].offsetLeft;
+ const mark=()=>{const mid=tr.scrollLeft+tr.clientWidth/2;let b=0,bd=1e9;cards.forEach((c,i)=>{const d=Math.abs(c.offsetLeft+c.offsetWidth/2-mid);if(d<bd){bd=d;b=i}});
+  cards.forEach((c,i)=>{c.classList.toggle('on',i===b);c.classList.toggle('lf',i<b);c.classList.toggle('rt',i>b)});
+  const ix=$('#fcIdx'),yr=$('#fcYr');if(ix)ix.textContent=(b%N)+1;if(yr)yr.textContent=cards[b].dataset.year||''};
+ tr.addEventListener('scroll',()=>requestAnimationFrame(mark),{passive:true});mark();tr._flow=1;if(calm)return;
+ let hold=0,pos=tr.scrollLeft,last=0;const stop=ms=>hold=Date.now()+ms;
+ ['pointerdown','wheel','touchstart','keydown','focusin'].forEach(ev=>tr.addEventListener(ev,()=>stop(5000),{passive:true}));
+ tr.addEventListener('mouseenter',()=>stop(1e9));tr.addEventListener('mouseleave',()=>stop(800));
+ const fc=tr.closest('.fc');if(fc)fc.addEventListener('click',e=>{if(e.target.closest('.fc-b,.fc-y'))stop(6000)},true);
+ const step=t=>{if(!document.body.contains(tr))return;const dt=last?Math.min(64,t-last):16;last=t;
+  const r=tr.getBoundingClientRect(),vis=r.bottom>0&&r.top<innerHeight&&!document.hidden;
+  if(Date.now()>hold&&vis){if(Math.abs(tr.scrollLeft-pos)>2)pos=tr.scrollLeft;pos+=dt*0.045;const L=loopW();if(L>0&&pos>=L)pos-=L;tr.scrollLeft=pos}else pos=tr.scrollLeft;
+  requestAnimationFrame(step)};
+ requestAnimationFrame(step)}})();
