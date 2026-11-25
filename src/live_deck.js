@@ -168,7 +168,7 @@ function threadHTML(c){if(!USER)return '<p class="sub">로그인하면 토론방
  const all=TALK.thread,top=all.filter(x=>!x.parent_id).sort((a,b)=>b.rank_score-a.rank_score||(b.up-b.down)-(a.up-a.down)||new Date(b.created_at)-new Date(a.created_at));
  const kids=id=>all.filter(x=>x.parent_id===id).sort((a,b)=>new Date(a.created_at)-new Date(b.created_at));
  const item=(x,reply)=>{const mv=TALK.myv[x.id]||0;const body=x.hidden?`<details class="folded"><summary>비추천이 많아 접힌 글이에요. 펼치기</summary>${esc(x.body)}</details>`:`<p>${esc(x.body)}</p>`;
-  return `<div class="tc${reply?' re':''}"><small><b>${esc(x.nickname)}</b> ${new Date(x.created_at).toLocaleDateString('ko-KR')}</small>${body}
+  return `<div class="tc${reply?' re':''}"><small><b>${esc(x.nickname)}</b>${gBadge(x.fame)} ${new Date(x.created_at).toLocaleDateString('ko-KR')}</small>${body}
   <div class="tv"><button class="${mv===1?'on':''}" data-act="tvote" data-id="${x.id}" data-v="1" aria-label="추천">▲ ${fmt(x.up)}</button><button class="${mv===-1?'on dn':''}" data-act="tvote" data-id="${x.id}" data-v="-1" aria-label="비추천">▼ ${fmt(x.down)}</button>${reply?'':`<button data-act="treply" data-id="${x.id}">답글</button>`}${x.mine?`<button data-act="tdel" data-id="${x.id}">삭제</button>`:''}</div>
   <div class="tr-form" id="tr${x.id}" hidden><input type="text" maxlength="500" placeholder="답글 쓰기"><button class="b sm" data-act="tpost" data-parent="${x.id}">등록</button></div></div>`};
  return `<div class="tform"><textarea id="tNew" maxlength="500" rows="2" placeholder="이 조합에 대한 생각. 근거를 들면 추천을 더 받아요"></textarea><button class="b sm buy" data-act="tpost">글 쓰기</button></div>

@@ -309,3 +309,22 @@ body[data-view=rank] .side::before{display:none!important;content:none!important
 .cr-act .fc-best.on{background:#e6c77a;color:#141414;border-color:#e6c77a}
 .cr-act .hrt.on{background:#e3121e;border-color:#e3121e}
 .cr-it .cr-aw{font-family:inherit;font-style:normal;opacity:1}.cr-it .cr-aw.wk{opacity:.9}
+/* 등급 배지, 심화 분석 */
+.gbd{display:inline-block;margin-left:5px;padding:1px 6px;border-radius:8px;font-size:10px;font-weight:700;line-height:1.5;vertical-align:1px;background:#1d1d1d;color:#bbb;border:1px solid #333}
+.gbd.g2{color:#D4FF3A;border-color:#4a5a14}.gbd.g3{color:#ffcf5a;border-color:#6b5414}.gbd.g4{color:#fff;background:linear-gradient(90deg,#b8860b,#e6007e);border-color:transparent}
+.dp{margin:14px 0;padding:14px;border:1px solid #2a2a2a;border-radius:16px;background:#0f0f0f}
+.dp>b{font-size:15px}
+.dp.lock{display:flex;gap:12px;align-items:center;justify-content:space-between}
+.dp.lock p{margin:4px 0 0;font-size:12px;color:#999;line-height:1.5}
+.dp.lock .hb{height:40px;padding:0 14px;flex:none;border-color:#D4FF3A;color:#D4FF3A}
+.dp-e{font-size:12px;color:#888;margin:6px 0 0}
+.dp-r{margin-top:14px;padding-top:12px;border-top:1px solid #222}
+.dp-r h4{margin:0 0 8px;font-size:14px}
+.dp-fl svg{width:100%;height:56px;display:block}
+.dp-fl polyline:nth-child(1){stroke:#D4FF3A}.dp-fl polyline:nth-child(2){stroke:#ff5a8a}.dp-fl polyline:nth-child(3){stroke:#6ab7ff}
+.dp-lg{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px;font-size:12px}
+.dp-lg span::before{content:'';display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:4px;background:currentColor}
+.dp-lg .c0{color:#D4FF3A}.dp-lg .c1{color:#ff5a8a}.dp-lg .c2{color:#6ab7ff}
+.dp-sub{margin-top:10px}.dp-sub small{display:block;color:#888;font-size:11px;margin-bottom:4px}
+.dp-dr{display:flex;justify-content:space-between;font-size:12px;padding:3px 0;border-bottom:1px dashed #222}.dp-dr b{font-weight:600;color:#ccc}
+.dp-tw{display:flex;flex-wrap:wrap;gap:6px}.dp-tw span{font-size:12px;padding:3px 8px;border-radius:10px;background:#1a1a1a;border:1px solid #2c2c2c}

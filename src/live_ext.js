@@ -133,14 +133,14 @@ const badgeOn=b=>(b[3](STATS_CUR)||0)>=b[4];let STATS_CUR={};
 const GENRES=['로맨스','코미디','드라마','사극','판타지','스릴러','범죄','미스터리','액션','가족','의학','법정'];
 async function openUser(nick){PAGE={kind:'u',nick};showPage(`<div class="pg"><p class="dl">${esc(nick)} 님 페이지를 여는 중이에요</p></div>`);
  try{const d=await rpc('user_page',{nick});if(!PAGE||PAGE.nick!==nick)return;if(d&&d.me){try{d.taste=await rpc('my_taste',{})}catch(e){}}if(!d){showPage(`<div class="pg"><button class="b sm" data-act="back">광장으로</button><p class="dl">없는 닉네임이에요.</p></div>`);return}renderUser(d)}catch(e){showPage(`<div class="pg"><button class="b sm" data-act="back">광장으로</button><p class="dl">${esc(errMsg(e))}</p></div>`)}}
-function renderUser(d){const p=d.profile,s=d.stats,g=grade(p.points),nx=GRADES[g+1],rate=s.decided?Math.round(s.hits/s.decided*100):null,ts=p.tastes||{};
+function renderUser(d){const p=d.profile,s=d.stats,F=fm(p),g=grade(F),nx=GRADES[g+1],rate=s.decided?Math.round(s.hits/s.decided*100):null,ts=p.tastes||{};
  const cname=id=>(CATS.find(c=>c.id===id)||{}).name||id;
  const tile=(v,l)=>`<span><b class="num">${v}</b><small>${l}</small></span>`;
  showPage(`<div class="pg user">
  <button class="b sm" data-act="back">광장으로</button>
  <div class="uhero"><div><span class="sub">${d.me?'내 페이지':'캐스팅 디렉터 페이지'}</span><h1>${esc(p.nickname)}</h1>
-  <p><b style="color:var(--red)">${GRADES[g][1]}</b> <span class="num">${fmt(p.points)}P</span>, 안목 랭킹 ${fmt(p.rank)}위${nx?`, 다음 등급 ${GRADES[g+1][1]}까지 ${fmt(nx[0]-p.points)}P`:''}</p>
-  <div class="gbar" aria-hidden="true"><i style="width:${nx?clamp((p.points-GRADES[g][0])/(nx[0]-GRADES[g][0]),0,1)*100:100}%"></i></div>
+  <p><b style="color:var(--red)">${GRADES[g][1]}</b> <span class="num">명성 ${fmt(F)}</span>, 안목 포인트 ${fmt(p.points)}P, 랭킹 ${fmt(p.rank)}위${nx?`, 다음 등급 ${GRADES[g+1][1]}까지 명성 ${fmt(nx[0]-F)}`:''}</p>
+  <div class="gbar" aria-hidden="true"><i style="width:${nx?clamp((F-GRADES[g][0])/(nx[0]-GRADES[g][0]),0,1)*100:100}%"></i></div>
   
   ${p.bio?`<p class="bio">${esc(p.bio)}</p>`:''}
   <p class="sub">${[...(ts.cats||[]).map(cname),...(ts.genres||[]),...(ts.makers||[])].map(x=>`<span class="chip2">${esc(x)}</span>`).join(' ')}</p></div>
@@ -192,12 +192,13 @@ async function uploadPoster(sid,file){if(!/^image\//.test(file.type))return toas
  try{const blob=await shrink(file);if(!blob||blob.size>2e6)throw new Error('이미지가 너무 커요. 2MB 이하로 줄여 주세요');const path=`${USER.id}/${sid}-${Date.now()}.webp`;
   const {error}=await sb.storage.from('posters').upload(path,blob,{contentType:'image/webp',upsert:false});if(error)throw error;
   await rpc('set_sheet_poster',{sid,url:`${SB_URL}/storage/v1/object/public/posters/${path}`,kind:'upload'});toast('포스터를 붙였어요');busy=false;await refresh()}catch(e){busy=false;toast(errMsg(e))}}
-async function aiPoster(sid){busy=true;toast('AI 배경을 만드는 중이에요. 10초쯤 걸려요');
+async function aiPoster(sid){if(PROF&&PROF.points<50)return toast('AI 포스터는 안목 포인트 50P가 필요해요');busy=true;toast('AI 배경을 만드는 중이에요. 10초쯤 걸려요');
  try{const {data}=await sb.auth.getSession();const r=await fetch(SB_URL+'/functions/v1/poster',{method:'POST',headers:{'Content-Type':'application/json',apikey:ANON,Authorization:'Bearer '+(data.session?data.session.access_token:ANON)},body:JSON.stringify({sid,mood:PSTYLE,figures:D.roles.filter(r=>!isSync(r)).length})});
   const d=await r.json().catch(()=>({}));busy=false;
+  if(r.status===402){busy=false;return toast('안목 포인트가 모자라요. 50P가 필요해요')}
   if(r.status===503)return toast('AI 포스터는 아직 준비 중이에요. 직접 만든 이미지를 올려 주세요');
   if(r.status===429)return toast(d.error==='user_limit'?'AI 포스터는 하루 3장까지 만들 수 있어요':'오늘 AI 포스터가 모두 소진됐어요. 내일 다시 시도해 주세요');
-  if(!r.ok)return toast('AI 배경을 만들지 못했어요');toast(`AI 배경을 붙였어요. 오늘 ${d.left}장 더 만들 수 있어요`);await refresh()}catch(e){busy=false;toast(errMsg(e))}}
+  if(!r.ok)return toast('AI 배경을 만들지 못했어요');toast(`AI 배경을 붙였어요. 50P를 썼어요. 오늘 ${d.left}장 더 만들 수 있어요`);await loadProfile();await refresh()}catch(e){busy=false;toast(errMsg(e))}}
 
 /* ---------- 감상하러 가기(유튜브, 스트리밍, 공식) + 노출/클릭 측정 ---------- */
 let SID='';try{SID=localStorage.getItem('dcSid')||'';if(!SID){SID=Math.random().toString(36).slice(2)+Date.now().toString(36);localStorage.setItem('dcSid',SID)}}catch(e){}

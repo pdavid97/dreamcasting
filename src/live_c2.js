@@ -71,7 +71,7 @@ renderFanBoard=function(){const b=$('#fanb');if(!b)return;const L=FANB.slice().s
  b.innerHTML=c2Pod(L,x=>c2Ph(x.name),x=>`${fmt(x.votes)}표`,href)+`<div class="c2rk">${L.slice(3).map((x,i)=>{const u=c2Ph(x.name);return `<a class="c2rr" href="${href(x)}"><span class="n">${i+4}</span><span class="av"${u?` style="background-image:url('${esc(u)}')"`:''}></span><span class="nm"><b>${esc(x._n)}</b><small>팬 ${fmt(x.fans)}, 1위 ${x.leads}</small></span><span class="v">${fmt(x.votes)}<small>표</small></span></a>`}).join('')}</div>
  <div class="c2srch"><input type="text" id="aSearch" maxlength="20" placeholder="배우 찾기" aria-label="배우 이름"><button data-act="asearch" aria-label="찾기"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6"/><path d="M20 20l-4.5-4.5"/></svg></button></div>`};
 renderRank=function(){const b=$('#rank');if(!b)return;if(!LEAD.length){b.innerHTML='<p class="empty3">첫 랭커를 기다리고 있어요.</p>';return}
- b.innerHTML=`<div class="c2rk">${LEAD.slice(0,10).map((r,i)=>`<a class="c2rr${PROF&&r.id===PROF.id?' me':''}" href="#u/${encodeURIComponent(r.nickname)}"><span class="n">${i+1}</span><span class="av ini">${esc(String(r.nickname).slice(0,1))}</span><span class="nm"><b>${esc(r.nickname)}</b><small>${GRADES[grade(r.points)][1]}</small></span><span class="v">${fmt(r.points)}<small>P</small></span></a>`).join('')}</div>`};
+ b.innerHTML=`<div class="c2rk">${LEAD.slice(0,10).map((r,i)=>`<a class="c2rr${PROF&&r.id===PROF.id?' me':''}" href="#u/${encodeURIComponent(r.nickname)}"><span class="n">${i+1}</span><span class="av ini">${esc(String(r.nickname).slice(0,1))}</span><span class="nm"><b>${esc(r.nickname)}</b><small>${GRADES[grade(fm(r))][1]}</small></span><span class="v">${fmt(fm(r))}<small>명성</small></span></a>`).join('')}</div>`};
 (function(){document.querySelectorAll('.rknav button > span[aria-hidden]').forEach(s=>s.remove());const side=document.querySelector('.side');if(side&&!side.querySelector('.c2rt')){const h=document.createElement('div');h.className='c2rt';h.innerHTML='<small>지금 광장에서</small><h1>누가 <em>가장 뜨거울</em>까요</h1>';side.insertBefore(h,side.firstChild)}})();
 
 /* ---- 나 (유저 페이지) v2 ---- */
@@ -93,12 +93,12 @@ function c2Bubbles(box){cancelAnimationFrame(C2BUB);if(!box||!box.isConnected)re
 let C2TR=null;
 function c2TeamRot(){clearInterval(C2TR);let k=0;const set=()=>{const cs=[...document.querySelectorAll('.c2team .tm')];if(!cs.length){clearInterval(C2TR);return}cs.forEach((c,ci)=>{const n=c.querySelectorAll('.ph.fr').length||1,i=(k+ci)%n;['.ph.fr','b.fr','.dots i'].forEach(q=>c.querySelectorAll(q).forEach((e,j)=>e.classList.toggle('on',j===i)))})};set();C2TR=setInterval(()=>{k++;set()},2600)}
 (function(){const f=renderUser;renderUser=function(d){f(d);try{c2User(d)}catch(e){console.error(e)}}})();
-function c2User(d){const pg=document.querySelector('.pg.user');if(!pg)return;const p=d.profile,s=d.stats,g=grade(p.points),nx=GRADES[g+1],prog=nx?clamp((p.points-GRADES[g][0])/(nx[0]-GRADES[g][0]),0,1):1,rate=s.decided?Math.round(s.hits/s.decided*100):null;
+function c2User(d){const pg=document.querySelector('.pg.user');if(!pg)return;const p=d.profile,s=d.stats,F=fm(p),g=grade(F),nx=GRADES[g+1],prog=nx?clamp((F-GRADES[g][0])/(nx[0]-GRADES[g][0]),0,1):1,rate=s.decided?Math.round(s.hits/s.decided*100):null;
  const C=2*Math.PI*44,ring=`<svg class="rg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="44"/><circle class="on" cx="50" cy="50" r="44" stroke-dasharray="${C}" stroke-dashoffset="${C*(1-prog)}"/></svg>`;
  const tile=(ic,v,l)=>`<span class="st">${c2Svg(ic)}<b>${v}</b><small>${l}</small></span>`;
  const likes=(s.sheet_likes||0)+(s.comment_likes||0)+(s.fan_likes||0);
  const hero=`<div class="c2me"><div class="top">${ring}<div class="id"><small>${d.me?'내 캐스팅 디렉터 카드':'캐스팅 디렉터'}</small><h1>${esc(p.nickname)}</h1><span class="gr">${GRADES[g][1]}</span></div></div>
-  <div class="pts"><div class="pl"><b>${fmt(p.points)}<small>P</small></b>${nx?`<span>${GRADES[g+1][1]}까지 ${fmt(nx[0]-p.points)}P</span>`:''}</div><div class="bar"><i style="width:${Math.round(prog*100)}%"></i></div><span class="rkl">안목 랭킹 ${fmt(p.rank)}위</span></div>
+  <div class="pts"><div class="pl"><b>${fmt(F)}<small>명성</small></b>${nx?`<span>${GRADES[g+1][1]}까지 ${fmt(nx[0]-F)}</span>`:''}</div><div class="bar"><i style="width:${Math.round(prog*100)}%"></i></div><span class="rkl">랭킹 ${fmt(p.rank)}위, 안목 포인트 ${fmt(p.points)}P</span></div>
   <div class="sts">${tile(C2B[3],rate==null?'-':rate+'%','적중률')}${tile(C2B[0],fmt(s.votes),'던진 표')}${tile(C2B[7],fmt(likes),'받은 공감')}${tile(C2B[6],fmt(s.sheets),'내 시트')}</div></div>`;
  /* 취향 버블 */
  const cats=d.taste&&d.taste.cats?Object.entries(d.taste.cats).filter(x=>x[1]>0).sort((a,b)=>b[1]-a[1]).slice(0,8):[];const mx=cats.length?cats[0][1]:1;
@@ -232,7 +232,7 @@ async function vsStreakCheck(){const m=VSM.find(x=>x===STREAK);if(!m||VS_DONE.ha
  const el=document.createElement('div');el.className='vsburst';
  el.innerHTML=`<div class="vb-in"><small>연속 ${m}판 달성</small><b>+${VSP[m]}</b><span>${guest?'로그인하면 안목 포인트로 쌓여요':got?'안목 포인트를 받았어요':'오늘 이미 받은 보상이에요'}</span></div>`;
  document.body.appendChild(el);setTimeout(()=>el.classList.add('out'),1900);setTimeout(()=>el.remove(),2400);try{navigator.vibrate&&navigator.vibrate([10,30,10,30,20])}catch(e){}
- try{track('vs_streak',{m:{n:m,got,guest}})}catch(e){}if(got&&PROF){PROF.points=(PROF.points||0)+got;try{renderMe&&renderMe()}catch(e){}}}
+ try{track('vs_streak',{m:{n:m,got,guest}})}catch(e){}if(got&&PROF){PROF.points=(PROF.points||0)+got;if(PROF.fame!=null)PROF.fame+=got;try{renderMe&&renderMe()}catch(e){}}}
 (function(){const f=renderDuel;renderDuel=function(){const r=f.apply(this,arguments);vsStreakCheck();return r}})();
 
 /* VS 결과 막대: 투표하면 양쪽 득표율과 광장 몇 명의 선택인지 보여 줌. 자동으로 넘어가지 않고 "다음 대결"로 */
@@ -289,3 +289,21 @@ document.addEventListener('click',async e=>{const b=e.target.closest('[data-act^
  if(a==='pmgo'){const m=PM.list[PM.i];if(!m||!PM.side||PM.busy)return;if(!USER||!PROF){track&&track('login_prompt',{m:{pm:true}});openLoginSheet();return}
   PM.busy=true;try{const r=await rpc('pm_bet_place',{mid:m.id,side:PM.side,stake:PM.stake});Object.assign(m,{sa:r.sa,sb:r.sb,n:(+m.n||0)+1,my:PM.side,stake:PM.stake});PROF.points=r.points;PM.done=m;PM.list.splice(PM.i,1);PM.i--;
    track&&track('pm_bet',{t:m.topic_id,r:m.role_id,m:{stake:PM.stake}});try{navigator.vibrate&&navigator.vibrate([12,40,24])}catch(x){}pmRender(box)}catch(err){toast(errMsg(err))}PM.busy=false}});
+
+/* ---------- 심화 분석 (안목 포인트 30P로 판별 해금) ---------- */
+const DEEP={};
+async function loadDeepT(tid){if(DEEP[tid]&&DEEP[tid]!=='x')return;DEEP[tid]='x';try{DEEP[tid]=USER?await rpc('topic_deep',{tid}):{locked:true}}catch(e){DEEP[tid]={locked:true}}renderDeepT()}
+function dpSpark(c,mx,days){const W=220,H=46;if(!c.pts.length)return'';const xs=d=>days.length>1?days.indexOf(d)/(days.length-1)*W:W/2;let last=0;const pt=days.map(d=>{const f=c.pts.find(p=>p[0]===d);if(f)last=f[1];return`${xs(d).toFixed(1)},${(H-2-last/mx*(H-6)).toFixed(1)}`});return`<polyline points="${pt.join(' ')}" fill="none" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"/>`}
+const DPG={'14-19':'10대','20-24':'20대 초반','25-29':'20대 후반','30-34':'30대 초반','35-39':'30대 후반','40-49':'40대','50+':'50대 이상',m:'남성',f:'여성',x:'미공개','?':'미공개'};
+function dpDemo(L){const by={};L.forEach(x=>{const [a,g]=String(x.g).split('|');const k=[DPG[a]||a,DPG[g]||g].filter(v=>v&&v!=='미공개').join(' ')||'미공개';(by[k]=by[k]||[]).push(x)});const ks=Object.keys(by);if(!ks.length)return'<p class="dp-e">그룹별 3표가 쌓이면 보여요</p>';return ks.map(k=>{const a=by[k].sort((x,y)=>y.n-x.n),t=a.reduce((m,x)=>m+x.n,0);return`<div class="dp-dr"><b>${esc(k)}</b><span>${esc(a[0].c)} ${Math.round(a[0].n/t*100)}%</span></div>`}).join('')}
+function renderDeepT(){const box=$('#tDeep');if(!box)return;const t=topic();if(!t){box.innerHTML='';return}const d=DEEP[t.id];if(d===undefined){loadDeepT(t.id);box.innerHTML='';return}if(d==='x')return;
+ if(d.locked){box.innerHTML=`<div class="dp lock"><div><b>심화 분석</b><p>후보별 득표 흐름, 세대와 성별 선호, 나와 같은 픽을 한 사람들의 다른 선택</p></div><button class="hb" data-act="dpbuy">${USER?'30P로 열기':'로그인하고 열기'}</button></div>`;return}
+ const R=(d.roles||[]).filter(r=>(r.flow||[]).length);if(!R.length){box.innerHTML=`<div class="dp"><b>심화 분석</b><p class="dp-e">아직 쌓인 표가 없어요</p></div>`;return}
+ box.innerHTML=`<div class="dp"><b>심화 분석</b>${R.map(r=>{const days=[...new Set(r.flow.flatMap(c=>c.pts.map(p=>p[0])))].sort(),mx=Math.max(1,...r.flow.flatMap(c=>c.pts.map(p=>p[1])));
+  return`<section class="dp-r"><h4>${esc(r.ch||'')}</h4><div class="dp-fl"><svg viewBox="0 0 220 46" preserveAspectRatio="none">${r.flow.map(c=>dpSpark(c,mx,days)).join('')}</svg><div class="dp-lg">${r.flow.map((c,i)=>`<span class="c${i}">${esc(c.c)} ${fmt((c.pts[c.pts.length-1]||[0,0])[1])}표</span>`).join('')}</div></div>
+  <div class="dp-sub"><small>세대와 성별 1위</small>${dpDemo(r.demo||[])}</div>
+  ${(r.twins||[]).length?`<div class="dp-sub"><small>나와 같은 픽을 한 사람들이 다른 배역에서 많이 고른 배우</small><div class="dp-tw">${r.twins.map(x=>`<span>${esc(x.name)} ${x.n}</span>`).join('')}</div></div>`:''}</section>`}).join('')}</div>`}
+{const f=renderStats;renderStats=function(){f.apply(this,arguments);try{renderDeepT()}catch(e){}}}
+document.addEventListener('click',async e=>{const b=e.target.closest('[data-act="dpbuy"]');if(!b)return;if(!USER){try{openLoginSheet()}catch(x){toast('로그인이 필요해요')}return}const t=topic();if(!t)return;
+ if(!confirmBuy())return;b.disabled=true;try{const n=await rpc('deep_unlock_buy',{tid:t.id});if(PROF&&n)PROF.points-=n;toast(n?'심화 분석을 열었어요. 30P를 썼어요':'이미 열려 있어요');delete DEEP[t.id];loadDeepT(t.id);try{renderWho()}catch(x){}}catch(x){b.disabled=false;toast(errMsg(x))}
+ function confirmBuy(){if(PROF&&PROF.points<30){toast('안목 포인트가 모자라요. 30P가 필요해요');return false}return true}});
