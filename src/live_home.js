@@ -91,13 +91,17 @@ function hcLinkLines(S,links){const out=[];for(const s of S){const x=links.find(
  const ws=x.works||[];if(ws.length){const w=ws[0],same=w.t===curTopic()?.title;out.push(same?`${esc(nm)}, 원작 《${esc(w.t)}》에 ${esc(on)}와 함께 출연했어요`:`${esc(nm)}와 원작 ${esc(on)}, 《${esc(w.t)}》${w.y?`(${w.y})`:''}에서 함께 출연`)}
  else{const g=ageGap(x);if(g!=null){const a=new Date().getFullYear()-x.cb,oa=x.oy-x.ob;out.push(Math.abs(g)<=1?`${esc(nm)}, 지금 ${a}살로 원작 당시 ${esc(on)}(${oa}살)와 비슷해요`:`${esc(nm)}, 지금 ${a}살로 원작 당시 ${esc(on)}(${oa}살)보다 ${Math.abs(g)}살 ${g>0?'어려요':'많아요'}`)}}}
  return out.slice(0,4)}
+// 원작 패널: 자동 선택된 단체 사진(없으면 원작 포스터). 얼굴들이 모인 가운데로 맞춰 자름
+function oartBg(t){const a=t.oart,u=a&&a.url||t.vposter||t.poster;if(!u)return '';let pos='center 20%';
+ if(a&&a.faces&&a.faces.length){const F=a.faces;if(a.w>a.h)return ` style="background-image:url('${esc(u)}');background-position:center"`;const cx=F.reduce((s,f)=>s+f[0]+f[2]/2,0)/F.length,cy=F.reduce((s,f)=>s+f[1]+f[3]/2,0)/F.length;pos=`${Math.round(cx*100)}% ${Math.round(Math.min(.6,cy)*100)}%`}
+ return ` style="background-image:url('${esc(u)}');background-position:${pos}"`}
 async function renderDoneC(box,t){track('result_view',{t:t.id});
  const S=t.roles.map(hcRoleStat).filter(Boolean),ver=verLabel(t.cat)||'';
  if(!(t.id in HCL)){HCL[t.id]=null;rpc('cast_links',{tid:t.id}).then(x=>{HCL[t.id]=x||[];const c=curTopic();if(c&&c.id===t.id&&DR>=c.roles.length)renderDeck()}).catch(()=>{HCL[t.id]=[]})}
  const links=HCL[t.id]||[],ty=hcType(S,links),ll=hcLinkLines(S,links),hx=storyRings();
  const strips=S.map((s,i)=>{const u=hcImg(s.mine.name);return `<span class="mp-s" style="--i:${i};${u?`background-image:url('${esc(u)}')`:''}"></span>`}).join('');
  box.innerHTML=`<div class="hc hcd"><div class="hc-hex" id="hcHex"><div class="hc-hexin">${hx}${hx.replace('<nav class="srow hexrow"','<nav aria-hidden="true" class="srow hexrow"')}</div></div>
-<div class="mp2"><div class="mp-o"${t.vposter||t.poster?` style="background-image:url('${esc(t.vposter||t.poster)}')"`:''}><span class="lb">원작</span></div><div class="mp-m"><div class="mp-row" style="--n:${Math.max(1,S.length)}">${strips||'<span class="mp-empty">아직 고른 배역이 없어요</span>'}</div><span class="lb on">내 캐스팅</span></div></div>
+<div class="mp2${t.oart&&t.oart.w>t.oart.h?' wide':''}"><div class="mp-o"${oartBg(t)}><span class="lb">원작</span></div><div class="mp-m"><div class="mp-row" style="--n:${Math.max(1,S.length)}">${strips||'<span class="mp-empty">아직 고른 배역이 없어요</span>'}</div><span class="lb on">내 캐스팅</span></div></div>
 <div class="mp-tt"><b>${esc(t.title)}</b><span>${ver?esc(ver)+', ':''}${S.map(s=>esc(dispName(s.mine.name).replace(/\s*\(.*\)$/,''))).join(', ')}</span></div>
 ${ty?`<div class="mp-type"><span class="tg">${esc(ty.tag)}</span><p>${esc(ty.say)}</p>${ty.badges.length?`<div class="bd">${ty.badges.map(b=>`<i>${esc(b)}</i>`).join('')}</div>`:''}</div>`:''}
 <div class="mp-roles">${t.roles.map(r=>{const s=S.find(x=>x.r===r);if(!s)return `<div class="mr skip"><span class="ch">${esc(String(r.ch).replace(/\s*\(.*\)$/,''))}</span><span class="pk">건너뜀</span></div>`;

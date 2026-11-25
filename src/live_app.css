@@ -754,3 +754,7 @@ body{word-break:keep-all;overflow-wrap:break-word}
 .hc-rel .rl .ph{flex:none;width:40px;height:56px;border-radius:8px;background:#222 center/cover}
 .hc-rel .rl .tx{flex:1;min-width:0}.hc-rel .rl b{display:block;font-size:14px;font-weight:900}.hc-rel .rl small{display:block;font-size:12px;color:#9A9A9A;margin-top:3px}.hc-rel .rl em{font-style:normal;color:#D4FF3A}
 .hc-rel .rl i{flex:none;font-style:normal;font-size:22px;color:#D4FF3A}
+/* 원작이 가로 단체 사진이면 위아래로: 원작 가로 전체, 아래 내 캐스팅 */
+.mp2.wide{grid-template-columns:1fr}
+.mp2.wide .mp-o{aspect-ratio:16/9}
+.mp2.wide .mp-m{aspect-ratio:16/9}
