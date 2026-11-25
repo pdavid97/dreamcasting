@@ -38,7 +38,7 @@ async function vsPick(key,bad){const d=DUEL;if(!d||!d.kind||d.res)return;const m
  const r=await vsLog(d.kind,{tid:d.tid,rid:d.kind==='orig'?d.rid:null,w:d.kind==='orig'&&key==='new'?d.c.id:null,bad,ms,pk:d.pk,m});
  if(r&&DUEL===d){d.res.same=+r.same||0;d.res.tot=+r.tot||0;if(!bad&&!d.res.tot){d.res.same=1;d.res.tot=1}renderDuel()}
  track&&track('vs_pick',{t:d.tid,r:d.rid||null,ms,m:{k:d.kind,v:bad?'bad':key}});
- setTimeout(()=>{if(DUEL===d)vsNext()},bad?900:1800)}
+ setTimeout(()=>{if(DUEL===d&&(bad||d.kind!=='legacy'))vsNext()},bad?900:1800)}
 
 document.addEventListener('click',e=>{const b=e.target.closest('[data-act="vsPick"],[data-act="vsBad"],[data-act="vsNext"],[data-act="vsHere"]');if(!b)return;e.preventDefault();const a=b.dataset.act;
  if(a==='vsPick')vsPick(b.dataset.v,false);else if(a==='vsBad')vsPick(null,true);else if(a==='vsNext')vsNext();

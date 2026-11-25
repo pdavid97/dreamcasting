@@ -135,13 +135,15 @@ vsRenderSpecial=function(box){const d=DUEL,R=d.res,[L,Rt]=vsSides(),ver=verLabel
  const ik=d.pk+':'+d.t0,intro=!h&&!R&&VSF_INK!==ik;if(intro)VSF_INK=ik;
  const pct=s=>R&&R.tot?Math.round((R.pick===s.key?R.same:R.tot-R.same)/R.tot*100):null;
  const body=s=>d.kind==='chem'?`<span class="ph2c"><span class="t">${vsfPh(s.m.name,W,H/2)}</span><span class="b">${vsfPh(s.f.name,W,H/2)}</span></span><span class="hl"></span><span class="nm"><b>${esc(dispName(s.m.name).replace(/\s*\(.*\)$/,''))}</b><em>× ${esc(dispName(s.f.name).replace(/\s*\(.*\)$/,''))}</em></span>`
+  :d.kind==='legacy'?`${vsfPh(s.n,W,H)}<span class="hl"></span><span class="tg2">${esc(s.y||'')}${s.wk?' '+esc(c2Short(s.wk)):''}</span><span class="nm">${vsfNm(s.n)}</span>`
   :`${vsfPh(s.n,W,H)}<span class="hl"></span><span class="tg2">${s.key==='orig'?'원작':'새 얼굴'}</span><span class="nm">${vsfNm(s.n)}</span>`;
  const half=(s,pos)=>`<button class="${pos} ${cls(s)}" data-act="c2sp" data-v="${s.key}">${body(s)}${R&&R.pick===s.key&&pct(s)!=null&&R.tot>1?`<span class="pct">${pct(s)}%</span>`:''}${h===s.key&&!R?'<span class="ask2"><b>한 번 더 탭하면 확정</b></span>':''}${R&&R.pick===s.key?'<span class="cast2">PICK!</span>':''}</button>`;
- const q=d.kind==='chem'?`${esc(c2Short(d.rm.ch))} × ${esc(c2Short(d.rf.ch))}, 더 끌리는 커플은?`:`${esc(c2Short(d.ch))} 역, 원작 그대로?`;
- box.innerHTML=`<div class="vsf c2sp ${d.kind}"><div class="vsf-hd"><a href="#${esc(d.tid)}">${esc(d.title)}${ver?' '+esc(ver):''}</a><b>${q}</b></div>
+ const q=d.kind==='legacy'?`역대 ${esc(d.ch)}, 누가 최고?`:d.kind==='chem'?`${esc(c2Short(d.rm.ch))} × ${esc(c2Short(d.rf.ch))}, 더 끌리는 커플은?`:`${esc(c2Short(d.ch))} 역, 원작 그대로?`;
+ box.innerHTML=`<div class="vsf c2sp ${d.kind}"><div class="vsf-hd">${d.tid?`<a href="#${esc(d.tid)}">${esc(d.title)}${ver?' '+esc(ver):''}</a>`:`<a>${esc(d.title)}</a>`}<b>${q}</b></div>
 <div class="fight${intro?' intro':''}" style="height:${H}px">${half(L,'l')}${half(Rt,'r')}<span class="vsb">VS</span><span class="wl"></span></div>
 <div class="vsf-ft"><span>${R&&R.tot>1?`광장 ${R.tot}명의 선택`:''}</span><span class="stk">연속 <b>${STREAK}</b>판</span></div>
-<div class="vsf-links">${R?'':'<button data-act="vsBad">둘 다 별로</button><button data-act="vsNext">다른 대결</button>'}</div></div>`};
+${d.kind==='legacy'&&R&&d.line?`<div class="c2line"><b>역대 ${esc(d.ch)}</b>${d.line.map(x=>`<span><em>${esc(x.year||'')}</em>${esc(x.name)} <small>${esc(c2Short(x.work||''))}</small></span>`).join('')}</div>`:''}
+<div class="vsf-links">${R?(d.kind==='legacy'?'<button data-act="vsNext">다음 대결</button>':''):'<button data-act="vsBad">둘 다 별로</button><button data-act="vsNext">다른 대결</button>'}</div></div>`};
 document.addEventListener('click',e=>{const d=DUEL;if(!d||!d.kind)return;const b=e.target.closest('[data-act="c2sp"]');
  if(!b){if(d.hi2&&!d.res&&e.target.closest('#duel')&&!e.target.closest('[data-act]')){d.hi2=null;renderDuel()}return}
  e.preventDefault();if(d.res)return;const k=b.dataset.v;if(d.hi2!==k){d.hi2=k;navigator.vibrate&&navigator.vibrate(8);renderDuel();return}vsPick(k,false)});
@@ -206,3 +208,12 @@ function c2GenPoster(t){if(!t)return '';if(C2GP[t.id])return C2GP[t.id];let h=0;
 (function(){const f=shPoster;shPoster=function(t){return f(t)||c2GenPoster(t)}})();
 (function(){const f=topicHero;topicHero=function(){f();const th=document.querySelector('#topicView .th'),t=typeof topic==='function'&&topic();if(th&&t&&!tBack(t))th.style.setProperty('--hb',`url("${c2GenPoster(t)}")`)}})();
 (function(){const f=loadDeck;loadDeck=async function(){const r=await f.apply(this,arguments);try{(DECK||[]).forEach(d=>{if(!d.poster&&!d.vposter){const t=(TOPICS||[]).find(x=>x.id===d.id)||d;d.vposter=d.poster=c2GenPoster(t)}})}catch(e){}return r}})();
+
+/* ---- 역대 배역 대결(legacy): 같은 배역을 맡은 실사 배우끼리. 결과 뒤에 배역 연표 ---- */
+(function(){const _sides=vsSides;vsSides=function(){const d=DUEL;if(d&&d.kind==='legacy'){const A={key:'a',w:String(d.a.id),n:d.a.name,y:d.a.year,wk:d.a.work},B={key:'b',w:String(d.b.id),n:d.b.name,y:d.b.year,wk:d.b.work};return d.flip?[B,A]:[A,B]}return _sides()}})();
+vsTrySpecial=async function(first){if(first)return false;VS_N++;if(VS_N%3!==0)return false;
+ const cyc=['legacy','orig','chem'],st=(VS_N/3)%3,order=[cyc[st]].concat(cyc.filter((_,i)=>i!==st));
+ for(const k of order){const s=k==='legacy'?await rpc('vs_legacy',{skip:VS_SKIP}).catch(()=>null):await rpc('vs_special',{k,prefer:SEL||null,skip:VS_SKIP}).catch(()=>null);
+  if(s&&s.kind){let names;if(s.kind==='legacy'){for(const x of [s.a,s.b])if(x.p&&!IMG['p:'+x.name])IMG['p:'+x.name]='https://image.tmdb.org/t/p/w500'+x.p;names=[s.a.name,s.b.name]}else names=s.kind==='chem'?[s.a.m.name,s.a.f.name,s.b.m.name,s.b.f.name]:[s.orig,s.c.name];
+   await duelImgs(names);DUEL={...s,flip:Math.random()<.5,res:null,t0:performance.now()};track&&track('vs_special',{t:s.tid,r:s.rid||null,m:{k:s.kind}});return true}}
+ return false};
