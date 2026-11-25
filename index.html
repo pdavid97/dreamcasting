@@ -1910,6 +1910,7 @@ body[data-view=rank] .side::before{display:none!important;content:none!important
 .hc-og{display:inline-flex;align-items:center;gap:6px;margin-top:6px;padding:3px 10px 3px 3px;border-radius:999px;background:#161616;color:#BDBDBD;font-size:11px;font-weight:700;text-decoration:none}
 .hc-og i{width:24px;height:24px;border-radius:50%;background:#222 center 20%/cover;box-shadow:0 0 0 1.5px var(--lime),0 0 12px rgba(212,255,58,.35)}
 .hc-og b{color:#fff}
+.foot .tmdb-logo{display:inline-block;vertical-align:middle;margin-right:4px}.foot .tmdb-logo img{display:block;height:12px;width:auto}
 
 </style>
 </head>
@@ -1990,7 +1991,7 @@ body[data-view=rank] .side::before{display:none!important;content:none!important
       <li>안목 포인트는 투표, 토론, 시트 게시, 받은 공감으로 쌓이고 충전이나 현금 교환은 없어요. 실제 캐스팅이 발표되면 그 배우를 처음 제안한 사람에게 500P, 투표한 사람에게 200P를 주고, 민심이 낮았던 의외의 캐스팅일수록 최대 3배까지 보너스가 붙어요.</li>
     </ul>
   </details>
-  <p class="foot">후보 목록은 토론을 위한 예시이며 실제 리메이크 계획이나 섭외와 관계없어요. 배우 사진과 작품 정보: TMDB. This product uses the TMDB API but is not endorsed or certified by TMDB. 시청처 정보: JustWatch. 뉴스 헤드라인: Google 뉴스, 각 기사 저작권은 해당 언론사에 있어요. 소속 정보: Wikidata.<span id="legalLinks"> <a href="terms.html">이용약관</a> | <a href="privacy.html"><b>개인정보처리방침</b></a></span></p>
+  <p class="foot">후보 목록은 토론을 위한 예시이며 실제 리메이크 계획이나 섭외와 관계없어요. <span class="tmdb-logo"><img src="assets/tmdb.svg" alt="TMDB" width="92" height="12"></span> 배우 사진과 작품 정보: TMDB. This product uses the TMDB API but is not endorsed or certified by TMDB. 시청처 정보: JustWatch. 뉴스 헤드라인: Google 뉴스, 각 기사 저작권은 해당 언론사에 있어요. 소속 정보: Wikidata.<span id="legalLinks"> <a href="terms.html">이용약관</a> | <a href="privacy.html"><b>개인정보처리방침</b></a></span></p>
 </main>
 
 <div class="sheetm" id="loginSheet" role="dialog" aria-modal="true" aria-labelledby="lsH"><div><h2 id="lsH">로그인하면 이 표가 바로 반영돼요</h2><p>고른 후보는 저장해 뒀어요. 구글 계정으로 3초면 끝나요.</p><button class="lg g big" data-act="google">구글로 계속하기</button><button class="lk" data-act="sheet-close">나중에</button></div></div>
@@ -2060,7 +2061,7 @@ async function loadTopic(){
  if(SEL===tid)D=nd;
 }
 async function loadSide(){const [f,l]=await Promise.all([sb.from('feed').select('*').order('id',{ascending:false}).limit(30),sb.from('v_leaders').select('*')]);FEED=f.data||[];LEAD=l.data||[]}
-const TERMS_VER='2026-11-22b',CONSENT_ON=true;let PRIV=null;
+const TERMS_VER='2026-11-24',CONSENT_ON=true;let PRIV=null;
 function fillConsent(){if(CONSENT_ON){$('#cnsBox').hidden=false;$('#legalLinks').hidden=false}const p=PRIV||{};$('#cTerms').checked=p.terms_ver===TERMS_VER;$('#cStats').checked=!!p.stats_at;$('#cAge').value=p.age_band||'';$('#cGen').value=p.gender_self||'';$('#cReg').value=p.region_self||''}
 async function loadProfile(){if(!USER){PROF=null;PRIV=null;NOTICES=[];return}const {data}=await sb.from('profiles').select('*').eq('id',USER.id).maybeSingle();PROF=data||null;const pv=await sb.from('profile_private').select('*').eq('user_id',USER.id).maybeSingle();PRIV=pv.data||null;if(typeof loadMyCol==='function')loadMyCol(true);if(CONSENT_ON&&PROF&&!(PRIV&&PRIV.terms_ver===TERMS_VER)&&!(()=>{try{return sessionStorage.getItem('cnsAsk')}catch(e){return 1}})()){try{sessionStorage.setItem('cnsAsk','1')}catch(e){}setTimeout(()=>{$('#nickIn').value=PROF.nickname;fillConsent();$('#nickH').textContent='약관 동의와 내 정보 설정';$('#nickModal').classList.add('on')},600)}await Promise.all([loadNotices(),loadWants()])}
 async function refresh(all){try{if(all)await loadTopics();await Promise.all([loadTopic(),loadSide(),loadProfile(),loadFanBoard()]);render();loadImages();if(HOMEV)loadHome();if(USER&&PROF){onbAfterLogin();if(pend().length)flushPending()}if(PAGE&&PAGE.kind==='a'&&PAGE.pid&&!busy)renderActor().catch(()=>{})}catch(e){console.error(e);toast('불러오지 못했어요: '+errMsg(e))}}
