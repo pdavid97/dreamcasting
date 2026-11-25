@@ -130,20 +130,20 @@ function c2Actor(){const pg=document.querySelector('.pg.actor');if(!pg)return;
  pg.querySelectorAll('.race .row2 .b.sm.buy').forEach(b=>b.textContent='한 표')}
 
 /* ---- VS 특집(케미, 원작 대 새 얼굴)도 확정 VS 디자인으로 ---- */
-vsRenderSpecial=function(box){const d=DUEL,R=d.res,[L,Rt]=vsSides(),ver=verLabel(d.cat),W=box.clientWidth||360,H=Math.max(400,Math.min(innerHeight-250,760)),h=d.hi2;
+vsRenderSpecial=function(box){const d=DUEL,R=d.res,[L,Rt]=vsSides(),ver=verLabel(d.cat),W=box.clientWidth||360,H=Math.max(300,Math.min(innerHeight-(DUEL&&DUEL.res?420:340),760)),h=d.hi2;
  const cls=s=>R?(R.bad?'lose':R.pick===s.key?'win':'lose'):h?(h===s.key?'hi':'dim'):'idle';
  const ik=d.pk+':'+d.t0,intro=!h&&!R&&VSF_INK!==ik;if(intro)VSF_INK=ik;
  const pct=s=>R&&R.tot?Math.round((R.pick===s.key?R.same:R.tot-R.same)/R.tot*100):null;
  const body=s=>d.kind==='chem'?`<span class="ph2c"><span class="t">${vsfPh(s.m.name,W,H/2)}</span><span class="b">${vsfPh(s.f.name,W,H/2)}</span></span><span class="hl"></span><span class="nm"><b>${esc(dispName(s.m.name).replace(/\s*\(.*\)$/,''))}</b><em>× ${esc(dispName(s.f.name).replace(/\s*\(.*\)$/,''))}</em></span>`
   :d.kind==='legacy'?`${vsfPh(s.n,W,H)}<span class="hl"></span><span class="tg2">${esc(s.y||'')}${s.wk?' '+esc(c2Short(s.wk)):''}</span><span class="nm">${vsfNm(s.n)}</span>`
   :`${vsfPh(s.n,W,H)}<span class="hl"></span><span class="tg2">${s.key==='orig'?'원작':'새 얼굴'}</span><span class="nm">${vsfNm(s.n)}</span>`;
- const half=(s,pos)=>`<button class="${pos} ${cls(s)}" data-act="c2sp" data-v="${s.key}">${body(s)}${R&&R.pick===s.key&&pct(s)!=null&&R.tot>1?`<span class="pct">${pct(s)}%</span>`:''}${h===s.key&&!R?'<span class="ask2"><b>한 번 더 탭하면 확정</b></span>':''}${R&&R.pick===s.key?'<span class="cast2">PICK!</span>':''}</button>`;
+ const half=(s,pos)=>`<button class="${pos} ${cls(s)}" data-act="c2sp" data-v="${s.key}">${body(s)}${R&&!R.bad&&pct(s)!=null?`<span class="pct">${pct(s)}%</span>`:''}${h===s.key&&!R?'<span class="ask2"><b>한 번 더 탭하면 확정</b></span>':''}${R&&R.pick===s.key?'<span class="cast2">PICK!</span>':''}</button>`;
  const q=d.kind==='legacy'?`역대 ${esc(d.ch)}, 누가 최고?`:d.kind==='chem'?`${esc(c2Short(d.rm.ch))} × ${esc(c2Short(d.rf.ch))}, 더 끌리는 커플은?`:`${esc(c2Short(d.ch))} 역, 원작 그대로?`;
  box.innerHTML=`<div class="vsf c2sp ${d.kind}"><div class="vsf-hd">${d.tid?`<a href="#${esc(d.tid)}">${esc(d.title)}${ver?' '+esc(ver):''}</a>`:`<a>${esc(d.title)}</a>`}<b>${q}</b></div>
 <div class="fight${intro?' intro':''}" style="height:${H}px">${half(L,'l')}${half(Rt,'r')}<span class="vsb">VS</span><span class="wl"></span></div>
-<div class="vsf-ft"><span>${R&&R.tot>1?`광장 ${R.tot}명의 선택`:''}</span><span class="stk">연속 <b>${STREAK}</b>판</span></div>
+${R&&!R.bad?(()=>{const nmOf=s=>d.kind==='chem'?`${c2Short(dispName(s.m.name))} × ${c2Short(dispName(s.f.name))}`:dispName(s.n);const lp=pct(L);return vsResHTML(nmOf(L),nmOf(Rt),lp,R.tot,R.pick===L.key?0:1)})():''}${vsStreakHTML()}
 ${d.kind==='legacy'&&R&&d.line?`<div class="c2line"><b>역대 ${esc(d.ch)}</b>${d.line.map(x=>`<span><em>${esc(x.year||'')}</em>${esc(x.name)} <small>${esc(c2Short(x.work||''))}</small></span>`).join('')}</div>`:''}
-<div class="vsf-links">${R?(d.kind==='legacy'?'<button data-act="vsNext">다음 대결</button>':''):'<button data-act="vsBad">둘 다 별로</button><button data-act="vsNext">다른 대결</button>'}</div></div>`};
+<div class="hc-bar vsf-bar${R?' one':''}">${R?(R.bad?'':'<button class="hb main" data-act="vsNext">다음 대결<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>'):'<button class="hb" data-act="vsBad"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 14V4M7 14l4 6c1.1 0 2-.9 2-2v-3h5.3a2 2 0 0 0 2-2.3l-1.2-7A2 2 0 0 0 17.1 4H7M7 14H4V4h3"/></svg>둘 다 별로</button><button class="hb main" data-act="vsNext">다른 대결<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>'}</div></div>`};
 document.addEventListener('click',e=>{const d=DUEL;if(!d||!d.kind)return;const b=e.target.closest('[data-act="c2sp"]');
  if(!b){if(d.hi2&&!d.res&&e.target.closest('#duel')&&!e.target.closest('[data-act]')){d.hi2=null;renderDuel()}return}
  e.preventDefault();if(d.res)return;const k=b.dataset.v;if(d.hi2!==k){d.hi2=k;navigator.vibrate&&navigator.vibrate(8);renderDuel();return}vsPick(k,false)});
@@ -217,3 +217,27 @@ vsTrySpecial=async function(first){if(first)return false;VS_N++;if(VS_N%3!==0)re
   if(s&&s.kind){let names;if(s.kind==='legacy'){for(const x of [s.a,s.b])if(x.p&&!IMG['p:'+x.name])IMG['p:'+x.name]='https://image.tmdb.org/t/p/w500'+x.p;names=[s.a.name,s.b.name]}else names=s.kind==='chem'?[s.a.m.name,s.a.f.name,s.b.m.name,s.b.f.name]:[s.orig,s.c.name];
    await duelImgs(names);DUEL={...s,flip:Math.random()<.5,res:null,t0:performance.now()};track&&track('vs_special',{t:s.tid,r:s.rid||null,m:{k:s.kind}});return true}}
  return false};
+
+/* ===== VS 연속 보상(11/25): 오늘 5, 10, 20판에 안목 포인트 +10, +20, +50. 3판마다 특별 대결(역대 배역, 원작, 케미) ===== */
+const VSM=[5,10,20],VSP={5:10,10:20,20:50};let VS_DONE=new Set();
+function vsStreakHTML(){const n=STREAK,m=VSM.find(x=>x>n),prev=[...VSM].reverse().find(x=>x<=n)||0,toSp=3-(VS_N%3||0);
+ const pips=m?Array.from({length:m-prev},(_,i)=>`<i class="${prev+i<n?'on':''}${prev+i===n?' nx':''}"></i>`).join(''):'';
+ const sp=DUEL&&DUEL.kind&&DUEL.kind!=='normal'?'<b>지금 특별 대결</b>':`특별 대결까지 <b>${toSp===3?3:toSp}판</b>`;
+ return `<div class="vstk" aria-label="연속 ${n}판">
+  <div class="vstk-n"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3c1 3.5 5 5.5 5 10a5 5 0 0 1-10 0c0-2 1-3.5 2-4.5.3 1.6 1.2 2.6 2.4 2.9C11 9 11 6 12 3z"/></svg><b>${n}</b><small>연속</small></div>
+  <div class="vstk-m">${m?`<div class="vstk-t"><span>${m}판 달성하면</span><b>+${VSP[m]} 안목 포인트</b></div><div class="vstk-p">${pips}</div>`:`<div class="vstk-t"><span>오늘 연속 보상</span><b>모두 받았어요</b></div>`}</div>
+  <div class="vstk-s"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l2.7 5.6 6.1.8-4.5 4.2 1.1 6-5.4-3-5.4 3 1.1-6L3.2 9.4l6.1-.8z"/></svg><span>${sp}</span></div></div>`}
+async function vsStreakCheck(){const m=VSM.find(x=>x===STREAK);if(!m||VS_DONE.has(m))return;VS_DONE.add(m);
+ let got=0,guest=!USER||!PROF;if(!guest){try{got=await rpc('vs_streak_claim',{n:m})||0}catch(e){}}
+ const el=document.createElement('div');el.className='vsburst';
+ el.innerHTML=`<div class="vb-in"><small>연속 ${m}판 달성</small><b>+${VSP[m]}</b><span>${guest?'로그인하면 안목 포인트로 쌓여요':got?'안목 포인트를 받았어요':'오늘 이미 받은 보상이에요'}</span></div>`;
+ document.body.appendChild(el);setTimeout(()=>el.classList.add('out'),1900);setTimeout(()=>el.remove(),2400);try{navigator.vibrate&&navigator.vibrate([10,30,10,30,20])}catch(e){}
+ try{track('vs_streak',{m:{n:m,got,guest}})}catch(e){}if(got&&PROF){PROF.points=(PROF.points||0)+got;try{renderMe&&renderMe()}catch(e){}}}
+(function(){const f=renderDuel;renderDuel=function(){const r=f.apply(this,arguments);vsStreakCheck();return r}})();
+
+/* VS 결과 막대: 투표하면 양쪽 득표율과 광장 몇 명의 선택인지 보여 줌. 자동으로 넘어가지 않고 "다음 대결"로 */
+function vsResHTML(a,b,pa,n,mine){if(pa==null)return `<div class="vsres wait"><p>광장 표를 세는 중이에요</p></div>`;
+ const pb=100-pa,me=mine===0?pa:pb,strip=x=>esc(String(x).replace(/\s*\(.*\)$/,''));
+ const say=n<=1?'첫 표를 던졌어요. 다음 사람을 기다려요':me>=50?`광장 ${n}명 중 ${me}%가 나와 같은 선택`:`광장 ${n}명 중 ${me}%만 고른 소신 픽`;
+ return `<div class="vsres"><div class="vr-n"><span class="${mine===0?'me':''}">${strip(a)}<b>${pa}%</b></span><span class="${mine===1?'me':''}"><b>${pb}%</b>${strip(b)}</span></div>
+ <div class="vr-bar"><i class="a${mine===0?' me':''}" style="width:${pa}%"></i><i class="b${mine===1?' me':''}" style="width:${pb}%"></i></div><p>${say}</p></div>`}

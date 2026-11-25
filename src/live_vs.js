@@ -38,7 +38,7 @@ async function vsPick(key,bad){const d=DUEL;if(!d||!d.kind||d.res)return;const m
  const r=await vsLog(d.kind,{tid:d.tid,rid:d.kind==='orig'?d.rid:null,w:d.kind==='orig'&&key==='new'?d.c.id:null,bad,ms,pk:d.pk,m});
  if(r&&DUEL===d){d.res.same=+r.same||0;d.res.tot=+r.tot||0;if(!bad&&!d.res.tot){d.res.same=1;d.res.tot=1}renderDuel()}
  track&&track('vs_pick',{t:d.tid,r:d.rid||null,ms,m:{k:d.kind,v:bad?'bad':key}});
- setTimeout(()=>{if(DUEL===d&&(bad||d.kind!=='legacy'))vsNext()},bad?900:1800)}
+ if(bad)setTimeout(()=>{if(DUEL===d)vsNext()},900)}
 
 document.addEventListener('click',e=>{const b=e.target.closest('[data-act="vsPick"],[data-act="vsBad"],[data-act="vsNext"],[data-act="vsHere"]');if(!b)return;e.preventDefault();const a=b.dataset.act;
  if(a==='vsPick')vsPick(b.dataset.v,false);else if(a==='vsBad')vsPick(null,true);else if(a==='vsNext')vsNext();
@@ -80,25 +80,25 @@ function vsfAl(n,W,H){const a=AMF[n];if(!a||!a.f||!a.p)return '';const f=a.f,iw=
  return `top:-${pad}px;left:-${pad}px;right:-${pad}px;bottom:-${pad}px;background-image:url('https://image.tmdb.org/t/p/original${esc(a.p)}');background-size:${Math.round(bw)}px auto;background-position:${Math.round(x)}px ${Math.round(y)}px;transform-origin:${Math.round(ex+pad)}px ${Math.round(ey+pad)}px;transform:rotate(${-f[5]}deg)`}
 function vsfPh(n,W,H){const al=vsfAl(n,W,H),a0=AMF[n];if(al)return `<span class="ph bgc" style="background-image:url('https://image.tmdb.org/t/p/w185${esc(a0.p)}')"></span><span class="ph al" style="${al}"></span>`;const a=AMF[n],u=hiRes(a&&a.p?'https://image.tmdb.org/t/p/w500'+a.p:IMG['p:'+n]);return `<span class="ph"${u?` style="background-image:url('${esc(u)}')"`:''}></span>`}
 function vsfNm(n){const d=dispName(n),m=d.match(/^(.*?)\s*\(([^()]*)\)$/);return m?`<b>${esc(m[1])}</b><em>${esc(m[2])}</em>`:`<b>${esc(d)}</b>`}
-function vsfRender(box){const d=DUEL,W=box.clientWidth||360,H=Math.max(400,Math.min(innerHeight-250,760)),R=d.res,h=d.hi,ver=verLabel(d.cat);
+function vsfRender(box){const d=DUEL,W=box.clientWidth||360,H=Math.max(300,Math.min(innerHeight-(DUEL&&DUEL.res?420:340),760)),R=d.res,h=d.hi,ver=verLabel(d.cat);
  const cls=k=>R?(R.k===k?'win':'lose'):h?(h===k?'hi':'dim'):'idle';
  const ik=d.pk+':'+d.t0,intro=!h&&!R&&VSF_INK!==ik;if(intro)VSF_INK=ik;
  const pct=k=>Math.round((k==='a'?R.pa:1-R.pa)*100);
- const half=(k,c,pos)=>`<button class="${pos} ${cls(k)}" data-act="vsf" data-v="${k}" aria-label="${esc(dispName(c.name))} 고르기">${vsfPh(c.name,W,H)}<span class="hl"></span><span class="nm">${vsfNm(c.name)}${R&&R.k===k&&R.n>1?`<span class="pct">${pct(k)}%</span>`:''}</span>${h===k&&!R?'<span class="ask2"><b>한 번 더 탭하면 확정</b></span>':''}${R&&R.k===k?'<span class="cast2">CAST!</span>':''}</button>`;
+ const half=(k,c,pos)=>`<button class="${pos} ${cls(k)}" data-act="vsf" data-v="${k}" aria-label="${esc(dispName(c.name))} 고르기">${vsfPh(c.name,W,H)}<span class="hl"></span><span class="nm">${vsfNm(c.name)}${R&&!R.bad&&R.n>0?`<span class="pct">${pct(k)}%</span>`:''}</span>${h===k&&!R?'<span class="ask2"><b>한 번 더 탭하면 확정</b></span>':''}${R&&R.k===k?'<span class="cast2">CAST!</span>':''}</button>`;
  box.innerHTML=`<div class="vsf"><div class="vsf-hd"><a href="#${esc(d.tid)}">${esc(d.title)}${ver?' '+esc(ver):''}</a><b>${esc(String(d.ch).replace(/\s*\(.*\)$/,''))} 역은 누구?</b></div>
 <div class="fight${intro?' intro':''}" style="height:${H}px">${half('a',d.a,'l')}${half('b',d.b,'r')}<span class="vsb">VS</span><span class="wl"></span></div>
-<div class="vsf-ft"><span>${R&&R.n>1?`광장 ${R.n}명의 선택`:''}</span><span class="stk">연속 <b>${STREAK}</b>판</span></div>
-<div class="vsf-links">${R?'':'<button data-act="vsfBad">둘 다 별로</button><button data-act="vsfSkip">다른 대결</button>'}</div></div>`}
+${R&&!R.bad?vsResHTML(dispName(d.a.name),dispName(d.b.name),R.n?Math.round(R.pa*100):null,R.n,R.k==='a'?0:1):''}${vsStreakHTML()}
+<div class="hc-bar vsf-bar${R?' one':''}">${R?(R.bad?'':'<button class="hb main" data-act="vsfGo">다음 대결<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>'):'<button class="hb" data-act="vsfBad"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 14V4M7 14l4 6c1.1 0 2-.9 2-2v-3h5.3a2 2 0 0 0 2-2.3l-1.2-7A2 2 0 0 0 17.1 4H7M7 14H4V4h3"/></svg>둘 다 별로</button><button class="hb main" data-act="vsfSkip">다른 대결<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>'}</div></div>`}
 function vsfNext(d,ms){setTimeout(()=>{if(DUEL===d){DUEL=null;newDuel(false).then(()=>renderDuel())}},ms)}
 async function vsfCast(d,k){const w=k==='a'?d.a:d.b,l=k==='a'?d.b:d.a,guest=!USER||!PROF,ms=performance.now()-d.t0;
  d.res={k,pa:k==='a'?1:0,n:0};STREAK++;renderDuel();
  const lp=vsLog('role',{tid:d.tid,rid:d.rid,w:w.candidate_id,l:l.candidate_id,ms,pk:d.pk,m:{v:'vsf',n:d.n}});
  if(guest){GUEST++;try{localStorage.setItem('guestDuels',GUEST)}catch(e){}}else rpc('duel_vote',{rid:d.rid,x:d.a.candidate_id,y:d.b.candidate_id,win:w.candidate_id}).then(()=>loadProfile().then(renderWho)).catch(()=>null);
  try{const r=await lp;if(r&&+r.tot>0&&DUEL===d){const s=+r.same/(+r.tot);d.res.pa=k==='a'?s:1-s;d.res.n=+r.tot;renderDuel()}}catch(e){}
- track&&track('duel_pick',{t:d.tid,r:d.rid,ms});vsfNext(d,1700)}
-document.addEventListener('click',e=>{const d=DUEL;if(!d||!d.vsf)return;const b=e.target.closest('[data-act="vsf"],[data-act="vsfBad"],[data-act="vsfSkip"]');
+ track&&track('duel_pick',{t:d.tid,r:d.rid,ms})}
+document.addEventListener('click',e=>{const d=DUEL;if(!d||!d.vsf)return;const b=e.target.closest('[data-act="vsf"],[data-act="vsfBad"],[data-act="vsfSkip"],[data-act="vsfGo"]');
  if(!b){if(d.hi&&!d.res&&e.target.closest('#duel')){d.hi=null;renderDuel()}return}
- e.preventDefault();if(d.res)return;const a=b.dataset.act;
+ e.preventDefault();const a=b.dataset.act;if(a==='vsfGo'){track&&track('duel_next',{t:d.tid,r:d.rid});DUEL=null;newDuel(false).then(()=>renderDuel());return}if(d.res)return;
  if(a==='vsfSkip'){track&&track('duel_skip',{t:d.tid,r:d.rid});DUEL=null;newDuel(false).then(()=>renderDuel());return}
  if(a==='vsfBad'){d.res={bad:true};vsLog('role',{tid:d.tid,rid:d.rid,bad:true,ms:performance.now()-d.t0,pk:d.pk,m:{v:'vsf',a:d.a.candidate_id,b:d.b.candidate_id}});renderDuel();vsfNext(d,500);return}
  const k=b.dataset.v;if(d.hi!==k){d.hi=k;renderDuel();return}vsfCast(d,k)});
