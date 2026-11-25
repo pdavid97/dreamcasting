@@ -241,3 +241,40 @@ function vsResHTML(a,b,pa,n,mine){if(pa==null)return `<div class="vsres wait"><p
  const say=n<=1?'첫 표를 던졌어요. 다음 사람을 기다려요':me>=50?`광장 ${n}명 중 ${me}%가 나와 같은 선택`:`광장 ${n}명 중 ${me}%만 고른 소신 픽`;
  return `<div class="vsres"><div class="vr-n"><span class="${mine===0?'me':''}">${strip(a)}<b>${pa}%</b></span><span class="${mine===1?'me':''}"><b>${pb}%</b>${strip(b)}</span></div>
  <div class="vr-bar"><i class="a${mine===0?' me':''}" style="width:${pa}%"></i><i class="b${mine===1?' me':''}" style="width:${pb}%"></i></div><p>${say}</p></div>`}
+
+/* ===== VS 탭 나누기(11/25): 내 픽(내 취향) / 민심 픽(광장이 누구를 더 고를지 안목 포인트로 예측) =====
+   민심 픽 정답은 그 판 마감 때 광장 실제 득표. 정산할 때 내 표는 빼고 셈. 배역 표가 20표 미만이면 돌려받음
+   포인트는 충전, 현금, 상품권 교환이 없음 */
+let VSMODE='mine';const PM={list:null,i:0,side:null,stake:30,done:null,mine:null,busy:false};
+function vsTabsHTML(){return `<div class="vstabs" role="tablist"><button role="tab" aria-selected="${VSMODE==='mine'}" class="${VSMODE==='mine'?'on':''}" data-act="vsmode" data-m="mine"><b>내 픽</b><small>내 취향대로</small></button><button role="tab" aria-selected="${VSMODE==='pm'}" class="${VSMODE==='pm'?'on':''}" data-act="vsmode" data-m="pm"><b>민심 픽</b><small>광장의 선택 맞히기</small></button></div>`}
+(function(){const f=renderDuel;renderDuel=function(){const box=$('#duel');if(VSMODE==='pm'&&box){pmRender(box);return}const r=f.apply(this,arguments);if(box&&box.firstElementChild&&!box.querySelector('.vstabs'))box.insertAdjacentHTML('afterbegin',vsTabsHTML());return r}})();
+async function pmLoad(force){if(PM.list&&!force)return;try{PM.list=await rpc('pm_feed',{lim:30})||[]}catch(e){PM.list=[]}PM.i=0;
+ try{await loadNames(PM.list.slice(0,6).flatMap(m=>[m.a.name,m.b.name]))}catch(e){}
+ if(USER&&PROF){try{PM.mine=await rpc('pm_mine',{})}catch(e){}}}
+function pmOdds(m,side,stake){const sa=+m.sa||0,sb=+m.sb||0,pool=sa+sb+stake,mine=(side==='a'?sa:sb)+stake;return Math.min(5,Math.max(1.2,pool/mine))}
+function pmLeft(t){const ms=new Date(t)-Date.now(),d=Math.floor(ms/864e5),h=Math.floor(ms%864e5/36e5);return d>0?`D-${d}`:h>0?`${h}시간 남음`:'곧 마감'}
+async function pmRender(box){box.innerHTML=vsTabsHTML()+'<div class="pm pm-load"><p>민심 대결을 불러오는 중</p></div>';await pmLoad();if(VSMODE!=='pm')return;
+ const m=PM.done||PM.list[PM.i],W=box.clientWidth||360,H=Math.max(260,Math.min(innerHeight-520,560)),pts=PROF?PROF.points||0:null;
+ const st=PM.mine&&PM.mine.done?`<span class="pm-hit">적중 ${PM.mine.hit}/${PM.mine.done}</span>`:'';
+ if(!m){box.innerHTML=vsTabsHTML()+`<div class="pm pm-empty"><b>열린 민심 대결을 모두 예측했어요</b><span>판이 마감되면 정산 결과가 포인트로 들어와요</span>${st}</div>`;return}
+ const sa=+m.sa||0,sb=+m.sb||0,tot=sa+sb,pa=tot?Math.round(sa/tot*100):50,done=PM.done===m,sel=done?m.my:PM.side;
+ const half=(k,c)=>`<button class="${k==='a'?'l':'r'} ${sel?(sel===k?'win':'lose'):'idle'}" data-act="pmside" data-k="${k}" aria-pressed="${sel===k}">${vsfPh(c.name,W,H)}<span class="hl"></span><span class="nm">${vsfNm(c.name)}</span>${sel===k?`<span class="pm-tag">${done?'예측 완료':'민심은 이쪽'}</span>`:''}</button>`;
+ const odds=sel&&!done?pmOdds(m,sel,PM.stake):null,nm=k=>esc(dispName(k==='a'?m.a.name:m.b.name).replace(/\s*\(.*\)$/,''));
+ box.innerHTML=vsTabsHTML()+`<div class="vsf pm"><div class="vsf-hd"><a href="#${esc(m.topic_id)}">${esc(m.title)}${verLabel(m.cat)?' '+esc(verLabel(m.cat)):''}</a><b>${esc(String(m.ch).replace(/\s*\(.*\)$/,''))} 역, 광장은 누구를 더 고를까?</b></div>
+<div class="fight" style="height:${H}px">${half('a',m.a)}${half('b',m.b)}<span class="vsb">VS</span><span class="wl"></span></div>
+<div class="pm-mkt"><div class="vr-n"><span>${nm('a')}<b>${pa}%</b></span><span><b>${100-pa}%</b>${nm('b')}</span></div><div class="vr-bar"><i class="a me" style="width:${pa}%"></i><i class="b" style="width:${100-pa}%"></i></div>
+ <p>${m.n?`예측 ${m.n}명이 건 포인트 비율`:'아직 아무도 예측하지 않았어요'}, ${pmLeft(m.closes_at)} 정산</p></div>
+${done?`<div class="pm-ok"><b>${nm(m.my)}에게 ${m.stake}포인트 예측 완료</b><span>${pmLeft(m.closes_at)}, 판이 마감되면 광장 실제 득표로 정산돼요</span></div>`:
+ `<div class="pm-stake"><span>얼마나 확신해요?</span>${[10,30,50].map(v=>`<button class="${PM.stake===v?'on':''}" data-act="pmstake" data-v="${v}"${pts!=null&&pts<v?' disabled':''}>${v}</button>`).join('')}<em>${pts!=null?`내 포인트 ${pts}`:'로그인 후 예측'}</em></div>
+ ${odds?`<p class="pm-odds">맞히면 <b>+${Math.round(PM.stake*odds)}</b> 포인트 (${odds.toFixed(1)}배)</p>`:'<p class="pm-odds">광장이 더 많이 고를 것 같은 쪽을 누르세요</p>'}`}
+<div class="hc-bar vsf-bar">${done?`<button class="hb main" data-act="pmnext">다음 예측<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>`:`<button class="hb" data-act="pmnext">다른 대결</button><button class="hb main" data-act="pmgo"${sel?'':' disabled'}>${sel?`${PM.stake}포인트 예측하기`:'한쪽을 먼저 골라요'}</button>`}</div>
+<p class="pm-rule">정산 때 내 표는 빼고 계산해요. 배역 표가 20표 미만이거나 동점이면 포인트를 돌려드려요. 안목 포인트는 현금이나 상품으로 바꿀 수 없어요. ${st}</p></div>`}
+document.addEventListener('click',async e=>{const b=e.target.closest('[data-act^="pm"],[data-act="vsmode"]');if(!b)return;const a=b.dataset.act;
+ if(a==='vsmode'){e.preventDefault();const m=b.dataset.m;if(VSMODE===m)return;VSMODE=m;track&&track('vs_mode',{m:{mode:m}});if(m==='pm'){PM.done=null;PM.side=null}renderDuel();return}
+ if(VSMODE!=='pm')return;e.preventDefault();const box=$('#duel');
+ if(a==='pmside'){if(PM.done)return;PM.side=b.dataset.k;pmRender(box);return}
+ if(a==='pmstake'){PM.stake=+b.dataset.v;pmRender(box);return}
+ if(a==='pmnext'){PM.done=null;PM.side=null;PM.i++;if(PM.i>=PM.list.length){PM.list=null}pmRender(box);return}
+ if(a==='pmgo'){const m=PM.list[PM.i];if(!m||!PM.side||PM.busy)return;if(!USER||!PROF){track&&track('login_prompt',{m:{pm:true}});openLoginSheet();return}
+  PM.busy=true;try{const r=await rpc('pm_bet_place',{mid:m.id,side:PM.side,stake:PM.stake});Object.assign(m,{sa:r.sa,sb:r.sb,n:(+m.n||0)+1,my:PM.side,stake:PM.stake});PROF.points=r.points;PM.done=m;PM.list.splice(PM.i,1);PM.i--;
+   track&&track('pm_bet',{t:m.topic_id,r:m.role_id,m:{stake:PM.stake}});try{navigator.vibrate&&navigator.vibrate([12,40,24])}catch(x){}pmRender(box)}catch(err){toast(errMsg(err))}PM.busy=false}});
