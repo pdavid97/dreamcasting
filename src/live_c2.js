@@ -91,7 +91,7 @@ function c2Bubbles(box){cancelAnimationFrame(C2BUB);if(!box||!box.isConnected)re
     const rv=(c.vx-a.vx)*nx+(c.vy-a.vy)*ny;if(rv<0){const k=-1.6*rv/(1/a.m+1/c.m);if(a!==drag){a.vx-=k/a.m*nx;a.vy-=k/a.m*ny}if(c!==drag){c.vx+=k/c.m*nx;c.vy+=k/c.m*ny}}}}
   for(const b of B)b.el.style.transform=`translate(${b.x-b.r}px,${b.y-b.r}px)`;C2BUB=requestAnimationFrame(step)};step()}
 let C2TR=null;
-function c2TeamRot(){clearInterval(C2TR);let k=0;const set=()=>{const cs=[...document.querySelectorAll('.c2team .tm')];if(!cs.length){clearInterval(C2TR);return}cs.forEach((c,ci)=>{const n=c.querySelectorAll('.ph.fr').length||1,i=(k+ci)%n;['.ph.fr','b.fr','.dots i'].forEach(q=>c.querySelectorAll(q).forEach((e,j)=>e.classList.toggle('on',j===i)))})};set();C2TR=setInterval(()=>{k++;set()},2600)}
+function c2TeamRotOld(){clearInterval(C2TR);let k=0;const set=()=>{const cs=[...document.querySelectorAll('.c2team .tm')];if(!cs.length){clearInterval(C2TR);return}cs.forEach((c,ci)=>{const n=c.querySelectorAll('.ph.fr').length||1,i=(k+ci)%n;['.ph.fr','b.fr','.dots i'].forEach(q=>c.querySelectorAll(q).forEach((e,j)=>e.classList.toggle('on',j===i)))})};set();C2TR=setInterval(()=>{k++;set()},2600)}
 (function(){const f=renderUser;renderUser=function(d){f(d);try{c2User(d)}catch(e){console.error(e)}}})();
 function c2User(d){const pg=document.querySelector('.pg.user');if(!pg)return;const p=d.profile,s=d.stats,F=fm(p),g=grade(F),nx=GRADES[g+1],prog=nx?clamp((F-GRADES[g][0])/(nx[0]-GRADES[g][0]),0,1):1,rate=s.decided?Math.round(s.hits/s.decided*100):null;
  const C=2*Math.PI*44,ring=`<svg class="rg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="44"/><circle class="on" cx="50" cy="50" r="44" stroke-dasharray="${C}" stroke-dashoffset="${C*(1-prog)}"/></svg>`;
@@ -104,8 +104,8 @@ function c2User(d){const pg=document.querySelector('.pg.user');if(!pg)return;con
  const cats=d.taste&&d.taste.cats?Object.entries(d.taste.cats).filter(x=>x[1]>0).sort((a,b)=>b[1]-a[1]).slice(0,8):[];const mx=cats.length?cats[0][1]:1;
  const taste=cats.length?`<div class="c2sh"><b>내 취향</b></div><div class="c2taste" id="c2taste">${cats.map(([k,v])=>{const w=Math.round(62+46*Math.sqrt(v/mx));return `<span class="tb" style="width:${w}px;height:${w}px">${c2Svg(C2CAT[k]||C2B[2])}<small>${esc((CATS.find(c=>c.id===k)||{}).name||k)}</small></span>`}).join('')}</div>`:'';
  /* 내 캐스팅 팀: 작품별 카드, 배역 사진 로테이션 */
- const G={};(d.votes||[]).forEach(v=>{(G[v.tid]=G[v.tid]||{t:v.title,tid:v.tid,cs:[]}).cs.push(v)});const teams=Object.values(G).map(x=>(x.cs=x.cs.filter(v=>c2Ph(v.name)),x)).filter(x=>x.cs.length).slice(0,10);
- const team=teams.length?`<div class="c2sh"><b>내 캐스팅 팀</b><small>${teams.length}개 작품</small></div><div class="c2team">${teams.map(x=>`<a class="tm" href="#${esc(x.tid)}">${x.cs.map(v=>`<span class="ph fr" style="background-image:url('${esc(c2Ph(v.name))}')"></span>`).join('')}<span class="cap"><small>${esc(x.t)}</small><span class="nms">${x.cs.map(v=>`<b class="fr"><em>${esc(c2Short(v.ch))} 역</em>${esc(dispName(v.name).replace(/\s*\(.*\)$/,''))}</b>`).join('')}</span></span>${x.cs.length>1?`<span class="dots">${x.cs.map(()=>'<i></i>').join('')}</span>`:''}</a>`).join('')}</div>`:'';
+ const G={};(d.votes||[]).forEach(v=>{(G[v.tid]=G[v.tid]||{t:v.title,tid:v.tid,cs:[]}).cs.push(v)});const teams=Object.values(G).filter(x=>x.cs.length).slice(0,10);
+ const team=teams.length?`<div class="c2sh"><b>내 캐스팅 팀</b><small>${teams.length}개 작품</small></div><div class="c2fl" id="c2fl"><div class="fl-st">${teams.map((x,pi)=>{const n=x.cs.length,sh=x.cs.slice(0,4),cols=n===1?1:n===3?3:2;return `<div class="fp${pi?'':' on'}" data-i="${pi}"><a class="fh" href="#${esc(x.tid)}"><b>${esc(x.t)}</b><small>내 캐스팅 ${n}명 →</small></a><div class="fg" style="--c:${cols}">${sh.map((v,k)=>`<a class="ft" href="#a/${encodeURIComponent(v.name)}">${(()=>{const u=c2Ph(v.name);return `<span class="ph" data-n="${esc(v.name)}"${u?` style="background-image:url('${esc(u)}')"`:''}>${u?'':`<i class="ini">${esc(dispName(v.name).slice(0,1))}</i>`}</span>`})()}<span class="tx"><em>${esc(c2Short(v.ch))} 역</em><b>${esc(dispName(v.name).replace(/\s*\(.*\)$/,''))}</b></span>${k===3&&n>4?`<i class="more">+${n-4}</i>`:''}</a>`).join('')}</div></div>`}).join('')}</div>${teams.length>1?`<div class="fl-nav"><button data-act="flp" data-d="-1" aria-label="이전 작품">←</button><span class="fl-pg"><b>1</b> / ${teams.length}</span><button data-act="flp" data-d="1" aria-label="다음 작품">→</button></div>`:''}</div>`:'';
  /* 업적 */
  STATS_CUR=s;const bd=BADGES.map((b,i)=>{const v=Math.min(b[3](s)||0,b[4]);return {i,on:v>=b[4],l:b[1],v,max:b[4]}}),non=bd.filter(x=>x.on).length;
  const badges=`<div class="c2sh"><b>업적</b><small>${non}/${bd.length}</small></div><div class="c2bd">${bd.sort((a,b)=>b.on-a.on).map(x=>`<span class="bd${x.on?' on':''}" title="${esc(BADGES[x.i][2])}"><i>${c2Svg(C2B[x.i]||C2B[2])}</i><small>${esc(x.l)}</small></span>`).join('')}</div>`;
@@ -376,3 +376,18 @@ addEventListener('hashchange',()=>{if(TR)trEnd();trAuto()});setTimeout(trAuto,40
 (function(){const b=document.createElement('button');b.id='trHelp';b.setAttribute('aria-label','이 화면 사용법 보기');b.textContent='?';b.addEventListener('click',()=>{const v=trView();if(TOUR[v])trStart(v,true);else toast('이 화면은 따로 안내가 없어요')});document.body.appendChild(b)})();
 /* 배우 페이지를 다시 그릴 때(응원, 팬글, 평가 뒤) 스크롤 자리를 지킴 */
 (function(){const f=renderActor;let last=null;renderActor=async function(){const same=PAGE&&last===PAGE.pid,y=scrollY;const r=await f.apply(this,arguments);if(same&&y)requestAnimationFrame(()=>scrollTo(0,y));last=PAGE&&PAGE.pid;return r}})();
+
+/* 내 캐스팅 팀: 작품별 페이지를 플립차트처럼 위로 넘김 (11/25) */
+const FL={i:0,t:0,busy:0};
+function flTo(d,user){const box=$('#c2fl');if(!box||FL.busy)return;const ps=[...box.querySelectorAll('.fp')],n=ps.length;if(n<2)return;const a=ps[FL.i],ni=(FL.i+d+n)%n,b=ps[ni];FL.busy=1;
+ b.classList.add('nx');const fwd=d>0;
+ const an=fwd?a.animate([{transform:'perspective(900px) rotateX(0)',opacity:1},{transform:'perspective(900px) rotateX(-96deg)',opacity:.35}],{duration:620,easing:'cubic-bezier(.55,.05,.6,.95)'})
+  :b.animate([{transform:'perspective(900px) rotateX(-96deg)',opacity:.35},{transform:'perspective(900px) rotateX(0)',opacity:1}],{duration:620,easing:'cubic-bezier(.2,.6,.3,1)'});
+ if(!fwd){b.classList.add('top')}
+ an.onfinish=()=>{a.classList.remove('on');b.classList.remove('nx','top');b.classList.add('on');FL.i=ni;FL.busy=0;const pg=box.querySelector('.fl-pg b');if(pg)pg.textContent=ni+1};
+ if(user)flAuto(9000)}
+function flAuto(delay){clearTimeout(FL.t);const go=()=>{if(!$('#c2fl'))return;if(document.visibilityState==='visible')flTo(1);FL.t=setTimeout(go,4200)};FL.t=setTimeout(go,delay||4200)}
+var c2TeamRot=function(){FL.i=0;FL.busy=0;const box=$('#c2fl');if(!box)return;flAuto();
+ const miss=[...box.querySelectorAll('.ph[data-n]')].filter(e=>!e.style.backgroundImage);if(miss.length&&typeof loadNames==='function')Promise.resolve(loadNames([...new Set(miss.map(e=>e.dataset.n))])).then(()=>miss.forEach(e=>{const u=c2Ph(e.dataset.n);if(u){e.style.backgroundImage=`url('${u}')`;e.innerHTML=''}})).catch(()=>{});
+ let sx=null,sy=null;box.addEventListener('pointerdown',e=>{sx=e.clientX;sy=e.clientY});box.addEventListener('pointerup',e=>{if(sx==null)return;const dx=e.clientX-sx,dy=e.clientY-sy;sx=null;if(Math.abs(dy)>40&&Math.abs(dy)>Math.abs(dx)){flTo(dy<0?1:-1,1)}else if(Math.abs(dx)>40)flTo(dx<0?1:-1,1)})};
+document.addEventListener('click',e=>{const b=e.target.closest('[data-act="flp"]');if(!b)return;e.preventDefault();flTo(+b.dataset.d,1)});

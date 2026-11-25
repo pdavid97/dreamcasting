@@ -106,7 +106,7 @@ body[data-view=page] #tabs,body[data-view=page] #shelf,body[data-view=deck] #tab
 .bdg em{font-style:normal;font-size:11px;font-weight:800;color:var(--mute)}.bdg.on em{color:var(--ink)}
 .bp{height:5px;border-radius:9px;background:var(--line);overflow:hidden;margin-top:4px}.bp i{display:block;height:100%;background:var(--acc)}
 
-/* 나의 AV룸: 시네마 서재 */
+/* 나의 시네마 서재: 시네마 서재 */
 .den{--wall:#1f3a2e;--wall2:#18302a;--frame:#b08a4a;--frame2:#6e5428;--mat:#f3ead8;--wood:#4a2f1c;--wood2:#2e1d11;--txt:#f3ead8;
  position:relative;border-radius:18px;overflow:hidden;color:var(--txt);
  background:repeating-linear-gradient(90deg,var(--wall) 0 22px,var(--wall2) 22px 24px);box-shadow:inset 0 30px 60px rgba(0,0,0,.35);transition:filter .4s}

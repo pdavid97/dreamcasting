@@ -221,7 +221,7 @@
 .wk-pc .ph{display:grid;place-items:center;width:68px;height:68px;margin:0 auto 4px;border-radius:50%;background:#333 center/cover;font-weight:700}
 .wk-pc b{display:block;font-size:12px}.wk-pc small{opacity:.6;font-size:11px}
 .wk-sec.nf summary{cursor:pointer;font-size:13px}.wk-sec.nf input[type=range]{width:100%}
-/* 나의 AV룸 */
+/* 나의 시네마 서재 */
 .av{position:relative;border-radius:18px;overflow:hidden;background:radial-gradient(ellipse at 50% 0%,#3a2a1c 0%,#1a120c 55%,#0d0907 100%);padding:18px 16px 0;color:#fff}
 .av-screen{position:relative;height:200px;border-radius:8px;background:#000;overflow:hidden;box-shadow:0 0 0 6px #120c08,0 0 50px rgba(255,200,120,.18)}
 .av-glow{position:absolute;inset:-20px;background:center/cover;filter:blur(18px) brightness(.75);transform:scale(1.1)}

@@ -373,3 +373,28 @@ button.rk.mmr{width:100%;text-align:left;background:none;border:0;border-bottom:
 #trO .tr-hint{font-size:11px;color:#D4FF3A}
 #trHelp{position:fixed;top:10px;right:max(10px,calc(50vw - var(--appw,480px)/2 + 10px));z-index:800;width:30px;height:30px;border-radius:50%;border:1px solid #3a3a3a;background:rgba(18,18,18,.85);color:#ddd;font-weight:800;font-size:14px;cursor:pointer;backdrop-filter:blur(6px)}
 body[data-view="page"] #trHelp{display:none}
+/* 내 캐스팅 팀 플립차트 */
+.c2fl{position:relative;margin-top:4px}
+.c2fl .fl-st{display:grid;perspective:900px}
+.c2fl .fp{grid-area:1/1;visibility:hidden;background:#121212;border:1px solid #2a2a2a;border-radius:18px;padding:12px;transform-origin:50% 0;backface-visibility:hidden;box-shadow:0 10px 24px rgba(0,0,0,.45)}
+.c2fl .fp.on{visibility:visible;z-index:2}
+.c2fl .fp.nx{visibility:visible;z-index:1}
+.c2fl .fp.nx.top{z-index:3}
+.c2fl .fp::before{content:'';position:absolute;left:50%;top:-6px;width:60px;height:10px;margin-left:-30px;border-radius:6px;background:#2a2a2a;box-shadow:inset 0 2px 0 #3a3a3a}
+.c2fl .fh{display:flex;align-items:baseline;justify-content:space-between;gap:8px;text-decoration:none;color:#fff;margin:2px 2px 10px}
+.c2fl .fh b{font-size:16px;font-weight:900;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.c2fl .fh small{flex:none;font-size:11px;font-weight:700;color:#D4FF3A}
+.c2fl .fg{display:grid;grid-template-columns:repeat(var(--c),1fr);gap:8px}
+.c2fl .ft{position:relative;display:block;border-radius:12px;overflow:hidden;aspect-ratio:3/4;background:#1a1a1a;color:#fff;text-decoration:none}
+.c2fl .fg[style*="--c:1"] .ft{aspect-ratio:4/5}
+.c2fl .ft .ph{position:absolute;inset:0;background:#1a1a1a center 18%/cover}
+.c2fl .ft::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent 58%,rgba(0,0,0,.88))}
+.c2fl .ft .tx{position:absolute;z-index:2;left:8px;right:6px;bottom:7px}
+.c2fl .ft em{display:block;font-style:normal;font-size:10px;font-weight:700;color:#D4FF3A}
+.c2fl .ft b{display:block;font-size:13px;font-weight:900;line-height:1.2}
+.c2fl .ft .more{position:absolute;z-index:2;top:6px;right:6px;font-style:normal;font-size:11px;font-weight:800;background:rgba(0,0,0,.7);padding:2px 7px;border-radius:9px}
+.c2fl .fl-nav{display:flex;align-items:center;justify-content:center;gap:14px;margin-top:10px}
+.c2fl .fl-nav button{width:40px;height:34px;border-radius:12px;border:1px solid #333;background:#141414;color:#D4FF3A;font-size:16px;font-weight:900;cursor:pointer}
+.c2fl .fl-pg{font-size:12px;color:#888}.c2fl .fl-pg b{color:#fff}
+.c2fl .fg[style*="--c:1"] .ft{aspect-ratio:4/3}
+.c2fl .ft .ini{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-style:normal;font-size:34px;font-weight:900;color:#444}

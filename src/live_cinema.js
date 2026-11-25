@@ -1,8 +1,8 @@
-/* ================= 시네마: 필모그래피 캐러셀, 작품 상세 시트, 컬렉션(나의 AV룸) ================= */
+/* ================= 시네마: 필모그래피 캐러셀, 작품 상세 시트, 컬렉션(나의 시네마 서재) ================= */
 let MYCOL=new Set(),MYCOL_AT=0;
 async function loadMyCol(force){if(!USER){MYCOL=new Set();return}if(!force&&Date.now()-MYCOL_AT<60000)return;try{const r=await rpc('my_collect_ids',{});MYCOL=new Set(r||[]);MYCOL_AT=Date.now()}catch(e){}}
 const colKey=(m,id)=>`${m}:${id}`;
-const heartBtn=(m,id,title,year,poster,via)=>`<button class="hrt${MYCOL.has(colKey(m,id))?' on':''}" data-act="collect" data-m="${m}" data-id="${id}" data-t="${esc(title)}" data-y="${esc(year||'')}" data-p="${esc(poster||'')}" data-via="${esc(via||'')}" aria-pressed="${MYCOL.has(colKey(m,id))}" aria-label="${esc(title)} 내 AV룸에 담기"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.2C.9 8.4 3 4.5 6.7 4.5c2.1 0 3.7 1.2 5.3 3 1.6-1.8 3.2-3 5.3-3 3.7 0 5.8 3.9 4.3 7.3C19.5 16.4 12 21 12 21z"/></svg></button>`;
+const heartBtn=(m,id,title,year,poster,via)=>`<button class="hrt${MYCOL.has(colKey(m,id))?' on':''}" data-act="collect" data-m="${m}" data-id="${id}" data-t="${esc(title)}" data-y="${esc(year||'')}" data-p="${esc(poster||'')}" data-via="${esc(via||'')}" aria-pressed="${MYCOL.has(colKey(m,id))}" aria-label="${esc(title)} 내 시네마 서재에 담기"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.2C.9 8.4 3 4.5 6.7 4.5c2.1 0 3.7 1.2 5.3 3 1.6-1.8 3.2-3 5.3-3 3.7 0 5.8 3.9 4.3 7.3C19.5 16.4 12 21 12 21z"/></svg></button>`;
 
 /* 필모그래피: 스와이프 캐러셀. 카드를 누르면 작품 상세 시트 */
 function filmCarousel(works,pid){
@@ -37,7 +37,7 @@ function renderWork(){const d=WK;if(!d)return;const box=$('#wkBox');
  const fw=PAGE&&PAGE.works&&d.i!=null?PAGE.works[d.i]:null,aired=fw&&fw.year&&+fw.year<=NOW_Y;
  const DIR={kr2us:'할리우드판',us2kr:'한국판',kr2cn:'중국판',cn2kr:'한국판',us2cn:'중국판',cn2us:'할리우드판',kr2tw:'대만판',tw2kr:'한국판',kr2hk:'홍콩판',hk2kr:'한국판',us2tw:'대만판',us2hk:'홍콩판',hk2us:'할리우드판'};
  box.innerHTML=`<div class="wk-hero"${d.backdrop?` style="background-image:url('${esc(d.backdrop)}')"`:''}><button class="wk-x" data-act="wk-close" aria-label="닫기">×</button></div>
- <div class="wk-top">${d.poster?`<img class="wk-p" src="${esc(d.poster)}" alt="">`:''}<div><h3>${esc(d.title)}</h3><small>${esc(d.media==='movie'?'영화':'드라마')} ${esc(d.year||'')}${d.genres&&d.genres.length?', '+esc(d.genres.slice(0,3).join(', ')):''}${d.votes>=20?`, 평점 ${d.rating}`:''}</small><div class="wk-acts">${heartBtn(d.media,d.id,d.title,d.year,d.poster,'work')}<span class="sub">내 AV룸에 담기</span></div></div></div>
+ <div class="wk-top">${d.poster?`<img class="wk-p" src="${esc(d.poster)}" alt="">`:''}<div><h3>${esc(d.title)}</h3><small>${esc(d.media==='movie'?'영화':'드라마')} ${esc(d.year||'')}${d.genres&&d.genres.length?', '+esc(d.genres.slice(0,3).join(', ')):''}${d.votes>=20?`, 평점 ${d.rating}`:''}</small><div class="wk-acts">${heartBtn(d.media,d.id,d.title,d.year,d.poster,'work')}<span class="sub">내 시네마 서재에 담기</span></div></div></div>
  ${(()=>{const pf=fw&&typeof perfOf==='function'?perfOf(PAGE.pid,fw):null;return pf&&pf.n?`<p class="wk-ps">광장 연기 점수 <b class="num">${pf.avg}</b>, ${fmt(pf.n)}명 평가${fw.ch?`, ${esc(fw.ch)} 역`:''}</p>`:''})()}
  ${d.overview?`<p class="wk-ov">${esc(d.overview)}</p>`:''}
  ${d.topics.length?`<div class="wk-sec"><b>광장에서 투표 중</b>${d.topics.map(t=>`<a class="wk-chip hot" href="#${esc(t.id)}" data-act="wk-go">${esc((CATS.find(c=>c.id===t.cat)||{}).name||'')} ${esc(t.title)} 가상 캐스팅</a>`).join('')}</div>`:''}
@@ -47,8 +47,8 @@ function renderWork(){const d=WK;if(!d)return;const box=$('#wkBox');
  ${aired?`<details class="wk-sec nf"><summary>이 작품 속 연기 점수 주기</summary><input type="range" min="0" max="100" step="5" value="70" id="ps${d.i}" aria-label="연기 점수"><output id="po${d.i}">70</output><input type="text" id="pr${d.i}" maxlength="200" placeholder="한줄평(선택)"><button class="b sm buy" data-act="perf" data-i="${d.i}">평가</button></details>`:''}
  <p class="dl" style="padding:0 18px 16px">작품 정보와 사진: TMDB</p>`}
 
-/* 나의 AV룸 */
-/* 나의 AV룸: 서재 벽에 액자로 걸린 포스터, 그림 조명, DVD 책장, 조명 스위치 */
+/* 나의 시네마 서재 */
+/* 나의 시네마 서재: 서재 벽에 액자로 걸린 포스터, 그림 조명, DVD 책장, 조명 스위치 */
 const AV_THEMES=[['wood','클래식 우드'],['noir','누아르'],['gallery','화이트 갤러리']];
 function avTheme(){try{return localStorage.getItem('avTheme')||'wood'}catch(e){return 'wood'}}
 async function loadAvRoom(nick,me){const box=$('#avroom');if(!box)return;let items=[];try{items=await rpc('av_room',{nick})||[]}catch(e){}
@@ -59,7 +59,7 @@ async function loadAvRoom(nick,me){const box=$('#avroom');if(!box)return;let ite
  const frame=(w,i)=>`<button class="fr fr-${sz(i)}" style="--tilt:${tilt(w.title)}deg" data-act="wk-open" data-m="${w.media}" data-id="${w.tmdb_id}" aria-label="${esc(w.title)} 자세히"><span class="fr-l" aria-hidden="true"></span><span class="fr-in">${w.poster?`<img src="${esc(w.poster)}" alt="" loading="lazy">`:`<em>${esc(w.title)}</em>`}</span><span class="fr-tag">${esc(w.title)}${w.year?` <small>${esc(w.year)}</small>`:''}</span></button>`;
  const empties=me?Math.max(0,Math.min(6,9-items.length)):0;
  const spineCol=t=>{const h=[...String(t)].reduce((a,c)=>(a*31+c.charCodeAt(0))|0,7);return `hsl(${Math.abs(h)%360} 35% ${28+Math.abs(h>>3)%18}%)`};
- box.innerHTML=`<div class="sh"><h2>${me?'나의 AV룸':esc(nick)+' 님의 AV룸'}</h2><span class="sub">${items.length}편 소장${tg.length?`, 취향 ${esc(tg.join(', '))}`:''}</span></div>
+ box.innerHTML=`<div class="sh"><h2>${me?'나의 시네마 서재':esc(nick)+' 님의 시네마 서재'}</h2><span class="sub">${items.length}편 소장${tg.length?`, 취향 ${esc(tg.join(', '))}`:''}</span></div>
  <div class="den th-${th}" id="den">
   <div class="den-top"><span class="den-plate">${esc(nick)}의 시네마 서재<small>${items.length?`${items.length}편이 걸려 있어요`:'아직 빈 벽이에요'}</small></span>
    <span class="den-ctl">${me?`<select id="avTh" aria-label="서재 분위기">${AV_THEMES.map(t=>`<option value="${t[0]}"${t[0]===th?' selected':''}>${t[1]}</option>`).join('')}</select>`:''}<button class="den-sw" data-act="den-light" aria-pressed="false" title="조명 끄고 상영 모드">조명</button></span></div>
@@ -81,6 +81,6 @@ document.addEventListener('click',async e=>{const b=e.target.closest('[data-act]
  if(a==='den-light'){const d=$('#den');const on=d.classList.toggle('dark');b.setAttribute('aria-pressed',on);b.textContent=on?'조명 켜기':'조명';return}
  if(a==='wk-close'){closeWork();return}
  if(a==='wk-go'){closeWork();return}
- if(a==='collect'){e.preventDefault();e.stopPropagation();if(needLogin())return;try{const on=await rpc('toggle_collect',{media:b.dataset.m,tmdb_id:+b.dataset.id,title:b.dataset.t,yr:+b.dataset.y||null,poster:b.dataset.p||null,via:b.dataset.via||null});const k=colKey(b.dataset.m,b.dataset.id);if(on)MYCOL.add(k);else MYCOL.delete(k);document.querySelectorAll(`.hrt[data-m="${b.dataset.m}"][data-id="${b.dataset.id}"]`).forEach(h=>{h.classList.toggle('on',on);h.setAttribute('aria-pressed',on);if(on){h.classList.remove('pop');void h.offsetWidth;h.classList.add('pop')}});toast(on?`${b.dataset.t}, 내 AV룸에 담았어요`:'AV룸에서 뺐어요');if($('#avroom')&&PROF&&PAGE&&PAGE.nick===PROF.nickname)loadAvRoom(PROF.nickname,true)}catch(err){toast(errMsg(err))}return}
+ if(a==='collect'){e.preventDefault();e.stopPropagation();if(needLogin())return;try{const on=await rpc('toggle_collect',{media:b.dataset.m,tmdb_id:+b.dataset.id,title:b.dataset.t,yr:+b.dataset.y||null,poster:b.dataset.p||null,via:b.dataset.via||null});const k=colKey(b.dataset.m,b.dataset.id);if(on)MYCOL.add(k);else MYCOL.delete(k);document.querySelectorAll(`.hrt[data-m="${b.dataset.m}"][data-id="${b.dataset.id}"]`).forEach(h=>{h.classList.toggle('on',on);h.setAttribute('aria-pressed',on);if(on){h.classList.remove('pop');void h.offsetWidth;h.classList.add('pop')}});toast(on?`${b.dataset.t}, 내 시네마 서재에 담았어요`:'시네마 서재에서 뺐어요');if($('#avroom')&&PROF&&PAGE&&PAGE.nick===PROF.nickname)loadAvRoom(PROF.nickname,true)}catch(err){toast(errMsg(err))}return}
 });
 addEventListener('keydown',e=>{if(e.key==='Escape'&&$('#wkModal')&&$('#wkModal').classList.contains('on'))closeWork()});

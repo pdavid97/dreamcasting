@@ -119,7 +119,7 @@ ${ll.length?`<div class="mp-links"><b>원작과의 연결고리</b>${ll.map(x=>`
 const _hcRender2=renderDeck;
 renderDeck=function(){const box=$('#deck'),t=DECKV&&curTopic();if(box&&t&&DECK.length&&DR>=t.roles.length){cardLeave();return renderDoneC(box,t)}return _hcRender2()};
 
-if(/[?&]test=1/.test(location.search))window.__hcT=f=>f({DECK,deep:(t,d)=>{DEEP[t]=d;renderDeepT()},setDI:v=>DI=v,setDR:v=>DR=v,renderDeck:()=>renderDeck(),vsLegacy:async()=>{VS_N=8;await vsTrySpecial(false);renderDuel()},setStreak:n=>{STREAK=n},addCast:async(nm)=>{nextRole=()=>{};await loadNames([nm]);hcAddCast(curTopic(),curRole().id,999999,nm)}});
+if(/[?&]test=1/.test(location.search))window.__hcT=f=>f({DECK,c2User:d=>c2User(d),rpc:(a,b)=>rpc(a,b),deep:(t,d)=>{DEEP[t]=d;renderDeepT()},setDI:v=>DI=v,setDR:v=>DR=v,renderDeck:()=>renderDeck(),vsLegacy:async()=>{VS_N=8;await vsTrySpecial(false);renderDuel()},setStreak:n=>{STREAK=n},addCast:async(nm)=>{nextRole=()=>{};await loadNames([nm]);hcAddCast(curTopic(),curRole().id,999999,nm)}});
 
 const HC_RELHD='<b class="hd"><span>🔗 이어서 고르기</span><small>내 픽과 이어진 배역</small></b>';
 /* 이어서 고르기: 리포트 끝에서 다음에 할 일을 이유와 함께 2~3개 추천해 계속 이어지게 */

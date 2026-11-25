@@ -124,7 +124,7 @@ const BADGES=[
 
 /* 나 페이지: 다이어리 목차(아이콘 탭)로 한 장씩 보기 */
 let UPG=null,UPG_D=null;
-function UPGS(d){const me=d&&d.me,un=me?NOTICES.filter(x=>!x.read).length:0;return [me&&['week','📅','주간 결산'],me&&['report','📊','리포트'],['av','🎞️',me?'내 AV룸':'AV룸'],['vote','🗳️','투표 기록'],['sheet','🎬','시트, 팬 채널'],['badge','🏅','업적'],me&&['taste','💗','내 취향'],me&&['bell','🔔','알림',un||''],me&&['set','⚙️','설정']].filter(Boolean)}
+function UPGS(d){const me=d&&d.me,un=me?NOTICES.filter(x=>!x.read).length:0;return [me&&['week','📅','주간 결산'],me&&['report','📊','리포트'],['av','🎞️',me?'내 시네마 서재':'시네마 서재'],['vote','🗳️','투표 기록'],['sheet','🎬','시트, 팬 채널'],['badge','🏅','업적'],me&&['taste','💗','내 취향'],me&&['bell','🔔','알림',un||''],me&&['set','⚙️','설정']].filter(Boolean)}
 function upgCur(d){const ks=UPGS(d).map(x=>x[0]);let k=UPG;try{k=k||sessionStorage.getItem('upg')}catch(e){}return ks.includes(k)?k:ks[0]}
 function showUpg(k){UPG=k;try{sessionStorage.setItem('upg',k)}catch(e){}document.querySelectorAll('.dpg').forEach(x=>x.classList.toggle('on',x.dataset.pg===k));document.querySelectorAll('.dindex button').forEach(x=>x.classList.toggle('on',x.dataset.k===k));
  const pg=document.querySelector(`.dpg[data-pg="${k}"]`);if(pg)pg.querySelectorAll('.ig').forEach(c=>c.classList.add('in'))}
