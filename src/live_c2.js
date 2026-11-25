@@ -249,26 +249,37 @@ let VSMODE='mine';const PM={list:null,i:0,side:null,stake:30,done:null,mine:null
 function vsTabsHTML(){return `<div class="vstabs" role="tablist"><button role="tab" aria-selected="${VSMODE==='mine'}" class="${VSMODE==='mine'?'on':''}" data-act="vsmode" data-m="mine"><b>내 픽</b><small>내 취향대로</small></button><button role="tab" aria-selected="${VSMODE==='pm'}" class="${VSMODE==='pm'?'on':''}" data-act="vsmode" data-m="pm"><b>민심 픽</b><small>광장의 선택 맞히기</small></button></div>`}
 (function(){const f=renderDuel;renderDuel=function(){const box=$('#duel');if(VSMODE==='pm'&&box){pmRender(box);return}const r=f.apply(this,arguments);if(box&&box.firstElementChild&&!box.querySelector('.vstabs'))box.insertAdjacentHTML('afterbegin',vsTabsHTML());return r}})();
 async function pmLoad(force){if(PM.list&&!force)return;try{PM.list=await rpc('pm_feed',{lim:30})||[]}catch(e){PM.list=[]}PM.i=0;
- try{await loadNames(PM.list.slice(0,6).flatMap(m=>[m.a.name,m.b.name]))}catch(e){}
+ try{await loadNames(PM.list.slice(0,8).filter(m=>m.kind==='role'||m.kind==='pv').flatMap(m=>[m.a.name,m.b.name]))}catch(e){}
  if(USER&&PROF){try{PM.mine=await rpc('pm_mine',{})}catch(e){}}}
 function pmOdds(m,side,stake){const sa=+m.sa||0,sb=+m.sb||0,pool=sa+sb+stake,mine=(side==='a'?sa:sb)+stake;return Math.min(5,Math.max(1.2,pool/mine))}
 function pmLeft(t){const ms=new Date(t)-Date.now(),d=Math.floor(ms/864e5),h=Math.floor(ms%864e5/36e5);return d>0?`D-${d}`:h>0?`${h}시간 남음`:'곧 마감'}
+const PMK={role:{tag:'광장 투표',res:'판이 마감되면 광장 실제 득표로 정산'},nf_kr:{tag:'넷플릭스 한국 순위',res:'다음 주 넷플릭스 공식 순위가 나오면 정산'},pv:{tag:'위키백과 조회수',res:'7일 조회수가 모이면 정산'},box:{tag:'극장 관객 수',res:'그날 박스오피스 집계가 나오면 정산'}};
+/* 확률 변화 그래프: 예측이 걸릴 때마다 기록한 A쪽 포인트 비율 */
+function pmChart(m){const h=(m.hist||[]).slice();const now=Date.now()/1000,cur=(+m.sa+ +m.sb)?(+m.sa/(+m.sa+ +m.sb)):.5;
+ if(!h.length)h.push([now-3600,.5]);h.push([now,cur]);const t0=h[0][0],t1=Math.max(h[h.length-1][0],t0+1),W=300,H=64;
+ const pt=h.map(([t,p])=>[((t-t0)/(t1-t0))*W,H-4-(+p)*(H-8)]),path=pt.map((q,i)=>(i?'L':'M')+q[0].toFixed(1)+' '+q[1].toFixed(1)).join(' ');
+ return `<svg class="pm-ch" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" aria-hidden="true"><line x1="0" x2="${W}" y1="${H/2}" y2="${H/2}" class="mid"/><path d="${path}" class="ln"/><circle cx="${pt[pt.length-1][0]}" cy="${pt[pt.length-1][1]}" r="3.5" class="dot"/></svg>`}
+function pmFace(m,k,W,H){const c=m[k];if(m.kind==='nf_kr'||m.kind==='box'){return c.img?`<span class="ph pm-po" style="background-image:url('${esc(c.img)}')"></span>`:`<span class="ph pm-tx"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5h18v14H3zM7 5v14M17 5v14M3 9h4M3 15h4M17 9h4M17 15h4"/></svg></span>`}return vsfPh(c.name,W,H)}
 async function pmRender(box){box.innerHTML=vsTabsHTML()+'<div class="pm pm-load"><p>민심 대결을 불러오는 중</p></div>';await pmLoad();if(VSMODE!=='pm')return;
- const m=PM.done||PM.list[PM.i],W=box.clientWidth||360,H=Math.max(260,Math.min(innerHeight-520,560)),pts=PROF?PROF.points||0:null;
+ const m=PM.done||PM.list[PM.i],W=box.clientWidth||360,H=Math.max(240,Math.min(innerHeight-600,520)),pts=PROF?PROF.points||0:null;
  const st=PM.mine&&PM.mine.done?`<span class="pm-hit">적중 ${PM.mine.hit}/${PM.mine.done}</span>`:'';
- if(!m){box.innerHTML=vsTabsHTML()+`<div class="pm pm-empty"><b>열린 민심 대결을 모두 예측했어요</b><span>판이 마감되면 정산 결과가 포인트로 들어와요</span>${st}</div>`;return}
- const sa=+m.sa||0,sb=+m.sb||0,tot=sa+sb,pa=tot?Math.round(sa/tot*100):50,done=PM.done===m,sel=done?m.my:PM.side;
- const half=(k,c)=>`<button class="${k==='a'?'l':'r'} ${sel?(sel===k?'win':'lose'):'idle'}" data-act="pmside" data-k="${k}" aria-pressed="${sel===k}">${vsfPh(c.name,W,H)}<span class="hl"></span><span class="nm">${vsfNm(c.name)}</span>${sel===k?`<span class="pm-tag">${done?'예측 완료':'민심은 이쪽'}</span>`:''}</button>`;
- const odds=sel&&!done?pmOdds(m,sel,PM.stake):null,nm=k=>esc(dispName(k==='a'?m.a.name:m.b.name).replace(/\s*\(.*\)$/,''));
- box.innerHTML=vsTabsHTML()+`<div class="vsf pm"><div class="vsf-hd"><a href="#${esc(m.topic_id)}">${esc(m.title)}${verLabel(m.cat)?' '+esc(verLabel(m.cat)):''}</a><b>${esc(String(m.ch).replace(/\s*\(.*\)$/,''))} 역, 광장은 누구를 더 고를까?</b></div>
-<div class="fight" style="height:${H}px">${half('a',m.a)}${half('b',m.b)}<span class="vsb">VS</span><span class="wl"></span></div>
-<div class="pm-mkt"><div class="vr-n"><span>${nm('a')}<b>${pa}%</b></span><span><b>${100-pa}%</b>${nm('b')}</span></div><div class="vr-bar"><i class="a me" style="width:${pa}%"></i><i class="b" style="width:${100-pa}%"></i></div>
- <p>${m.n?`예측 ${m.n}명이 건 포인트 비율`:'아직 아무도 예측하지 않았어요'}, ${pmLeft(m.closes_at)} 정산</p></div>
-${done?`<div class="pm-ok"><b>${nm(m.my)}에게 ${m.stake}포인트 예측 완료</b><span>${pmLeft(m.closes_at)}, 판이 마감되면 광장 실제 득표로 정산돼요</span></div>`:
+ if(!m){box.innerHTML=vsTabsHTML()+`<div class="pm pm-empty"><b>열린 민심 대결을 모두 예측했어요</b><span>결과가 나오면 정산 결과가 포인트로 들어와요</span>${st}</div>`;return}
+ if(m.kind==='pv'&&!(IMG['p:'+m.a.name]&&IMG['p:'+m.b.name])){try{await loadNames([m.a.name,m.b.name])}catch(e){}}
+ const K=PMK[m.kind]||PMK.role,sa=+m.sa||0,sb=+m.sb||0,tot=sa+sb,pa=tot?Math.round(sa/tot*100):50,done=PM.done===m,sel=done?m.my:PM.side;
+ const nmf=k=>esc(dispName(m[k].name).replace(/\s*\(.*\)$/,'')),rk=m.kind==='nf_kr'&&m.now?k=>`<span class="pm-rk">이번 주 ${m.now[k==='a'?0:1]}위</span>`:()=>'';
+ const half=(k)=>`<button class="${k==='a'?'l':'r'} ${sel?(sel===k?'win':'lose'):'idle'}" data-act="pmside" data-k="${k}" aria-pressed="${sel===k}">${pmFace(m,k,W,H)}<span class="hl"></span><span class="nm">${m.kind==='role'||m.kind==='pv'?vsfNm(m[k].name):`<b>${esc(m[k].name)}</b>`}${rk(k)}</span>${sel===k?`<span class="pm-tag">${done?'예측 완료':'이쪽 예측'}</span>`:''}</button>`;
+ const odds=sel&&!done?pmOdds(m,sel,PM.stake):null;
+ const hd=m.kind==='role'?`<a href="#${esc(m.topic_id)}">${esc(m.title)}${verLabel(m.cat)?' '+esc(verLabel(m.cat)):''}</a><b>${esc(String(m.ch).replace(/\s*\(.*\)$/,''))} 역, 광장은 누구를 더 고를까?</b>`:`<b>${esc(m.q)}</b>`;
+ box.innerHTML=vsTabsHTML()+`<div class="vsf pm"><div class="vsf-hd"><span class="pm-kind">${esc(K.tag)}</span>${hd}</div>
+<div class="fight" style="height:${H}px">${half('a')}${half('b')}<span class="vsb">VS</span><span class="wl"></span></div>
+<div class="pm-mkt"><div class="pm-mh"><b>예측 확률</b><small>예측한 사람들이 건 포인트 비율이에요. 득표율이 아니에요</small></div>
+ <div class="vr-n"><span>${nmf('a')}<b>${pa}%</b></span><span><b>${100-pa}%</b>${nmf('b')}</span></div>${pmChart(m)}
+ <p>${m.n?`예측 ${m.n}명`:'아직 아무도 예측하지 않았어요'}, ${pmLeft(m.closes_at)} 예측 마감, ${esc(K.res)}</p></div>
+${done?`<div class="pm-ok"><b>${nmf(m.my)} 쪽에 ${m.stake}포인트 예측 완료</b><span>${esc(K.res)}돼요</span></div>`:
  `<div class="pm-stake"><span>얼마나 확신해요?</span>${[10,30,50].map(v=>`<button class="${PM.stake===v?'on':''}" data-act="pmstake" data-v="${v}"${pts!=null&&pts<v?' disabled':''}>${v}</button>`).join('')}<em>${pts!=null?`내 포인트 ${pts}`:'로그인 후 예측'}</em></div>
- ${odds?`<p class="pm-odds">맞히면 <b>+${Math.round(PM.stake*odds)}</b> 포인트 (${odds.toFixed(1)}배)</p>`:'<p class="pm-odds">광장이 더 많이 고를 것 같은 쪽을 누르세요</p>'}`}
+ ${odds?`<p class="pm-odds">맞히면 <b>+${Math.round(PM.stake*odds)}</b> 포인트 (${odds.toFixed(1)}배)</p>`:'<p class="pm-odds">이길 것 같은 쪽을 누르세요</p>'}`}
 <div class="hc-bar vsf-bar">${done?`<button class="hb main" data-act="pmnext">다음 예측<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>`:`<button class="hb" data-act="pmnext">다른 대결</button><button class="hb main" data-act="pmgo"${sel?'':' disabled'}>${sel?`${PM.stake}포인트 예측하기`:'한쪽을 먼저 골라요'}</button>`}</div>
-<p class="pm-rule">정산 때 내 표는 빼고 계산해요. 배역 표가 20표 미만이거나 동점이면 포인트를 돌려드려요. 안목 포인트는 현금이나 상품으로 바꿀 수 없어요. ${st}</p></div>`}
+<p class="pm-rule">${m.kind==='role'?'정산 때 내 표는 빼고 계산해요. 배역 표가 10표 미만이거나 동점이면 포인트를 돌려드려요. ':'동점이면 포인트를 돌려드려요. '}안목 포인트는 현금이나 상품으로 바꿀 수 없어요. ${st}</p></div>`}
 document.addEventListener('click',async e=>{const b=e.target.closest('[data-act^="pm"],[data-act="vsmode"]');if(!b)return;const a=b.dataset.act;
  if(a==='vsmode'){e.preventDefault();const m=b.dataset.m;if(VSMODE===m)return;VSMODE=m;track&&track('vs_mode',{m:{mode:m}});if(m==='pm'){PM.done=null;PM.side=null}renderDuel();return}
  if(VSMODE!=='pm')return;e.preventDefault();const box=$('#duel');
