@@ -144,7 +144,7 @@ async function loadTopic(){
  if(SEL===tid)D=nd;
 }
 async function loadSide(){const [f,l]=await Promise.all([sb.from('feed').select('*').order('id',{ascending:false}).limit(30),sb.from('v_leaders').select('*')]);FEED=f.data||[];LEAD=l.data||[]}
-const TERMS_VER='2026-11-22b',CONSENT_ON=true;let PRIV=null;
+const TERMS_VER='2026-11-24',CONSENT_ON=true;let PRIV=null;
 function fillConsent(){if(CONSENT_ON){$('#cnsBox').hidden=false;$('#legalLinks').hidden=false}const p=PRIV||{};$('#cTerms').checked=p.terms_ver===TERMS_VER;$('#cStats').checked=!!p.stats_at;$('#cAge').value=p.age_band||'';$('#cGen').value=p.gender_self||'';$('#cReg').value=p.region_self||''}
 async function loadProfile(){if(!USER){PROF=null;PRIV=null;NOTICES=[];return}const {data}=await sb.from('profiles').select('*').eq('id',USER.id).maybeSingle();PROF=data||null;const pv=await sb.from('profile_private').select('*').eq('user_id',USER.id).maybeSingle();PRIV=pv.data||null;if(typeof loadMyCol==='function')loadMyCol(true);if(CONSENT_ON&&PROF&&!(PRIV&&PRIV.terms_ver===TERMS_VER)&&!(()=>{try{return sessionStorage.getItem('cnsAsk')}catch(e){return 1}})()){try{sessionStorage.setItem('cnsAsk','1')}catch(e){}setTimeout(()=>{$('#nickIn').value=PROF.nickname;fillConsent();$('#nickH').textContent='약관 동의와 내 정보 설정';$('#nickModal').classList.add('on')},600)}await Promise.all([loadNotices(),loadWants()])}
 async function refresh(all){try{if(all)await loadTopics();await Promise.all([loadTopic(),loadSide(),loadProfile(),loadFanBoard()]);render();loadImages();if(HOMEV)loadHome();if(USER&&PROF){onbAfterLogin();if(pend().length)flushPending()}if(PAGE&&PAGE.kind==='a'&&PAGE.pid&&!busy)renderActor().catch(()=>{})}catch(e){console.error(e);toast('불러오지 못했어요: '+errMsg(e))}}
