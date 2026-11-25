@@ -36,8 +36,8 @@ function renderDeckC(box,t,r){const cs=hcCands(r),n=cs.length,tot=r.cands.reduce
 function hcUpdate(){const arc=$('#hcArc'),t=curTopic(),r=curRole();if(!arc||!r)return;const cs=hcCands(r),n=cs.length;
  arc.classList.toggle('picked',HC.voted);
  arc.querySelectorAll('.card').forEach(el=>{const i=+el.dataset.hc,tf=hcTf(i,n);
-  if(HC.voted&&!tf.on&&!el.classList.contains('fly')){const sg=tf.off<0?-1:1,k=Math.abs(tf.off);el.style.setProperty('--t0',el.style.transform||'none');el.style.setProperty('--dx',(sg*(90+k*70+Math.random()*60))+'px');el.style.setProperty('--up',(-30-k*14-Math.random()*30)+'px');el.style.setProperty('--r',(sg*(25+k*18+Math.random()*30))+'deg');el.style.setProperty('--fd',(k*70)+'ms');el.classList.add('fly')}
-  if(!HC.voted)el.classList.remove('fly');el.style.transform=tf.tf;el.style.zIndex=tf.z;el.style.transitionDelay=HC.voted&&!tf.on?Math.abs(tf.off)*60+'ms':'0ms';el.classList.toggle('on',tf.on);el.classList.toggle('ask-on',tf.on&&HC.confirm);
+  if(HC.voted&&!tf.on&&!el.classList.contains('fly')){hcFlutter(el,tf.off);return}
+  if(!HC.voted&&el.classList.contains('fly')){el.classList.remove('fly');(el.getAnimations?el.getAnimations():[]).forEach(x=>x.cancel())}if(el.classList.contains('fly'))return;el.style.transform=tf.tf;el.style.zIndex=tf.z;el.style.transitionDelay=HC.voted&&!tf.on?Math.abs(tf.off)*60+'ms':'0ms';el.classList.toggle('on',tf.on);el.classList.toggle('ask-on',tf.on&&HC.confirm);
   const a=el.querySelector('.ask');if(tf.on&&HC.confirm&&!a)el.insertAdjacentHTML('beforeend','<span class="ask"><b>한 표 확정?</b><small>한 번 더 탭</small></span>');if((!tf.on||!HC.confirm)&&a)a.remove()});
  if(HC.voted&&!arc.querySelector('.cast'))arc.insertAdjacentHTML('beforeend','<div class="cast">CAST!</div>');
  const h=$('#hcHint');if(h)h.innerHTML=hcHint(r,cs)}
@@ -176,3 +176,13 @@ function hcAddCast(t,rid,cid,nm){const r=curRole();if(!r||r.id!==rid||!DECKV||!$
  const h=$('#hcHint');if(h)h.textContent=`${dispName(nm)} 님이 후보로 들어왔어요`;
  const key=HC.key;setTimeout(()=>{if(HC.key!==key)return;HC.voted=true;try{navigator.vibrate&&navigator.vibrate([12,40,24])}catch(e){}hcUpdate();const h2=$('#hcHint');if(h2)h2.textContent=`${dispName(nm)}에게 첫 표를 던졌어요`;
   setTimeout(()=>{if(HC.key===key)nextRole()},1500)},700)}
+
+/* 고르지 않은 카드는 트럼프 카드가 흩날리듯: 살짝 튕겨 오른 뒤 중력으로 가속하며 떨어지고,
+   좌우로 흔들리면서 카드 면이 뒤집히듯 펄럭임. 위치를 프레임마다 계산해 Web Animations로 재생(합성 레이어만 써서 끊김 없음) */
+function hcFlutter(el,off){el.classList.add('fly');const base=el.style.transform||'',sg=off<0?-1:off>0?1:(Math.random()<.5?-1:1),k=Math.abs(off),R=Math.random;
+ if(matchMedia('(prefers-reduced-motion: reduce)').matches){el.animate([{opacity:1},{opacity:0}],{duration:300,fill:'forwards'});return}
+ const T=1.9+R()*.5,vx=sg*(40+k*22+R()*40),vy=-(170+R()*110),g=950,sw=22+R()*22,sf=.8+R()*.6,ph=R()*6.28,spin=sg*(50+R()*80),flip=0,fr=[],N=48;
+ for(let i=0;i<=N;i++){const t=T*i/N,u=i/N,x=vx*t+sw*Math.sin(ph+6.28*sf*t)*Math.min(1,t*2),y=vy*t+.5*g*t*t,rz=spin*t+12*Math.sin(ph+6.28*sf*t),ry=28*Math.sin(ph*1.3+6.28*sf*1.2*t)*Math.min(1,t*3),rx=14*Math.sin(ph+6.28*sf*.9*t)*Math.min(1,t*3);
+  fr.push({transform:`translate(${x.toFixed(1)}px,${y.toFixed(1)}px) ${base} rotate(${rz.toFixed(1)}deg) rotateY(${ry.toFixed(1)}deg) rotateX(${rx.toFixed(1)}deg)`,opacity:u<.75?1:Math.max(0,1-(u-.75)/.25),offset:u})}
+ el.style.transition='none';el.style.filter='brightness(.75)';
+ const an=el.animate(fr,{duration:T*1000,delay:k*55+R()*40,easing:'linear',fill:'both'});an.onfinish=()=>{el.style.visibility='hidden'}}

@@ -803,9 +803,5 @@ body{word-break:keep-all;overflow-wrap:break-word}
 .hc-arc .card.is-new .no::after{content:'NEW';margin-left:6px;font-size:14px;vertical-align:top;background:#D4FF3A;color:#162000;border-radius:4px;padding:1px 5px;text-shadow:none}
 .hc-bar.two{grid-template-columns:1.35fr 1fr}
 
-/* 투표하면 나머지 후보 카드가 옆으로 튕겨 날아가며 아래로 떨어짐 */
-.hc-arc .card.fly{animation:hcFly .95s cubic-bezier(.3,.1,.7,1) var(--fd,0ms) both;pointer-events:none}
-@keyframes hcFly{0%{transform:var(--t0);opacity:1}
- 30%{transform:translate(calc(var(--dx) * .45),var(--up)) rotate(calc(var(--r) * .4)) scale(.88);opacity:1}
- 100%{transform:translate(var(--dx),110vh) rotate(var(--r)) scale(.8);opacity:.2}}
-@media (prefers-reduced-motion:reduce){.hc-arc .card.fly{animation:none;opacity:0;transition:opacity .3s}}
+.hc-arc.picked{overflow:visible;perspective:1600px}
+.hc-arc .card.fly{pointer-events:none;will-change:transform,opacity;backface-visibility:visible}
