@@ -38,8 +38,9 @@ const SB_URL='https://dnzcvbidppzaogtmwamc.supabase.co',ANON='eyJhbGciOiJIUzI1Ni
 const sb=window.supabase.createClient(SB_URL,ANON);
 const $=s=>document.querySelector(s);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const CAT={us2k:'한국판',k2us:'할리우드판',k2cn:'중국판',wn:'웹소설 실사화'};
-function sig(a){const s=a&&a.signal||{},o=[];if(s.kr)o.push('넷플릭스 한국 '+s.kr+'위');if(s.gl)o.push('넷플릭스 전세계 '+s.gl+'위');if(s.tt)o.push('Trakt 급상승 '+s.tt+'위');if(a&&a.src==='pop')o.push('해외 인기작');return o.map(x=>'<span>'+esc(x)+'</span>').join('')}
+const CAT={us2k:'한국판',k2us:'할리우드판',k2cn:'중국판',wn:'웹소설 실사화',ip2live:'실사화'};
+function sig(a){const s=a&&a.signal||{},o=[];if(s.kr)o.push('넷플릭스 한국 '+s.kr+'위');if(s.gl)o.push('넷플릭스 전세계 '+s.gl+'위');if(s.tt)o.push('Trakt 급상승 '+s.tt+'위');if(a&&a.src==='pop')o.push('인기작');return o.map(x=>'<span>'+esc(x)+'</span>').join('')}
+function news(t){const n=t.auto&&t.auto.news;if(!n||!n.u)return'';const u=SB_URL+'/functions/v1/go?t='+encodeURIComponent(t.id)+'&k=news&u='+encodeURIComponent(n.u)+'&pg=admin';return `<div class="i" style="margin-top:6px">관련 기사: <a href="${esc(u)}" target="_blank" rel="noopener">${esc(n.t)}</a>${n.s?' ('+esc(n.s)+')':''}</div>`}
 async function load(){
   const {data:{session}}=await sb.auth.getSession();
   if(!session){$('#list').innerHTML='<div class="msg">먼저 <a href="./">드림캐스팅</a>에 로그인해 주세요.</div>';return}
@@ -48,7 +49,7 @@ async function load(){
   if(!data.length){$('#list').innerHTML='<div class="msg">대기 중인 판이 없어요.</div>';return}
   $('#list').innerHTML=data.map(t=>`<div class="card" id="c_${esc(t.id)}">
     <div class="hd">${t.poster?`<img src="${esc(t.poster)}" alt="">`:'<img alt="">'}<div>
-      <div class="t">${esc(t.title)}</div><div class="i">${esc(t.info)}, ${esc(CAT[t.cat]||t.cat)}</div><div class="sig">${sig(t.auto)}</div></div></div>
+      <div class="t">${esc(t.title)}</div><div class="i">${esc(t.info)}, ${esc(CAT[t.cat]||t.cat)}</div><div class="sig">${sig(t.auto)}</div>${news(t)}</div></div>
     ${(t.roles||[]).map(r=>`<div class="role"><b>${esc(r.ch)}</b> <span class="o">원작 ${esc(r.orig)}</span><div class="c">${esc((r.cands||[]).join(', ')||'후보 없음')}</div></div>`).join('')}
     <div class="act"><select data-days><option value="5">5일</option><option value="7" selected>7일</option><option value="14">14일</option></select>
     <button class="ok" data-ok="${esc(t.id)}">승인하고 공개</button><button class="no" data-no="${esc(t.id)}">반려</button></div></div>`).join('');

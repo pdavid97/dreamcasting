@@ -1,0 +1,2 @@
+-- 074 게임, 애니 실사화 뉴스 감지와 판 초안: 매주 화요일 KST 13:41, 최대 3개를 승인 대기열에
+select cron.schedule('dc-ipgen-weekly', '41 4 * * 2', $$select net.http_post(url:='https://dnzcvbidppzaogtmwamc.supabase.co/functions/v1/ipgen', headers:=jsonb_build_object('Content-Type','application/json','Authorization','Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRuemN2YmlkcHB6YW9ndG13YW1jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTUyODgwNzgsImV4cCI6MjExMDg2NDA3OH0.yiKbCh3iuH8_GFpx-ezzbauZNOkffOe5cuIGKUQGBIE'), body:='{"news":true,"make":3}'::jsonb, timeout_milliseconds:=150000)$$);
