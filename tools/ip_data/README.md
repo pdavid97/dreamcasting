@@ -12,4 +12,5 @@
 - 해외 인기작(TMDB): 함수 ipsync. 묶음 us_film(미국 영화), us_tv(미국 드라마), netflix_tv, netflix_film(넷플릭스 제작과 국내 넷플릭스 제공 영화), ott_tv(HBO, Apple TV+, Disney+, Prime Video, Hulu)를 ip_work, ip_cast에 적재
 - 정기 실행: 066_collect_cron.sql (KOBIS 매일, ipsync 매월 3일, IGDB 매월 4일, 한국 시간)
 - 화제작 신호: 함수 charts. 넷플릭스 공식 주간 Top 10 TSV(전세계, 한국, 미국, 일본, 2021년부터, nf_top10)와 TVmaze 스트리밍 방영 일정(tvm_web, CC BY-SA 4.0, 화면에 쓰면 TVmaze 출처 표시 필요). 작품별 요약은 뷰 work_buzz. ipsync의 buzz 묶음이 화제작 상세와 출연진을 채움
-- 화제작 정기 실행(tools/pending/068_charts_cron.sql)은 David 승인 후 적용
+- Trakt(비밀값 TRAKT_CLIENT_ID): 공개 급상승과 주간 시청 상위 100(trakt_trend), work_buzz에 합침. 화면에 쓰면 Trakt 출처 표시
+- 화제작 정기 실행: 068_charts_cron.sql (넷플릭스 매주 수요일, TVmaze와 Trakt 매일, buzz 상세 매일)

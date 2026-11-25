@@ -1,6 +1,7 @@
 // 화제작 신호 수집
 // POST { netflix: true } : 넷플릭스 공식 주간 Top 10 TSV(전세계 전체 기간, 국가별은 한국, 미국, 일본)를 nf_top10에 저장하고 제목을 TMDB 작품으로 연결(nf_title). 새 주차가 없으면 바로 끝남
 // POST { tvmaze: true, days: 3 } : TVmaze 스트리밍 방영 일정(CC BY-SA 4.0)을 날짜별로 tvm_web에 저장하고 작품을 IMDb/TVDB 번호로 TMDB에 연결
+// POST { trakt: true } : Trakt 공개 급상승(trending)과 주간 시청(watched/weekly) 영화, 드라마 상위 100을 trakt_trend에 저장(비밀값 TRAKT_CLIENT_ID, 하루 1회)
 // 공개 데이터만 저장. 크론이 공개 anon 키로 호출
 const SB = Deno.env.get("SUPABASE_URL")!, SR = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!, TK = (Deno.env.get("TMDB_TOKEN") || "").trim();
 const H = { apikey: SR, Authorization: `Bearer ${SR}`, "Content-Type": "application/json" };
@@ -30,7 +31,7 @@ async function tsv(name: string, keep?: (l: string) => boolean) {
 }
 
 Deno.serve(async (req) => {
-  const b = await req.json().catch(() => ({})) as { netflix?: boolean; tvmaze?: boolean; days?: number };
+  const b = await req.json().catch(() => ({})) as { netflix?: boolean; tvmaze?: boolean; trakt?: boolean; days?: number };
   const out: Record<string, unknown> = {};
   try {
     if (b.netflix) {
@@ -88,6 +89,24 @@ Deno.serve(async (req) => {
       }
       for (const r of rows as { show_id: number; key: string | null; checked_at: string }[]) await fetch(`${SB}/rest/v1/tvm_show?show_id=eq.${r.show_id}`, { method: "PATCH", headers: H, body: JSON.stringify({ key: r.key, checked_at: r.checked_at }) });
       out.tvm_shows = eps; out.tvm_mapped = rows.length;
+    }
+    if (b.trakt) {
+      const TC = (Deno.env.get("TRAKT_CLIENT_ID") || "").trim();
+      if (!TC) throw new Error("TRAKT_CLIENT_ID 없음");
+      const day = new Date().toISOString().slice(0, 10);
+      if ((await get(`trakt_trend?day=eq.${day}&select=rank&limit=1`)).length) out.trakt = "done today";
+      else {
+        const rows: unknown[] = [];
+        for (const [kind, path] of [["movie", "movies"], ["tv", "shows"]]) for (const list of ["trending", "watched/weekly"]) {
+          const r = await fetch(`https://api.trakt.tv/${path}/${list}?limit=100`, { headers: { "Content-Type": "application/json", "trakt-api-version": "2", "trakt-api-key": TC, "User-Agent": UA } });
+          if (!r.ok) throw new Error(`trakt ${list} ${r.status}`);
+          (await r.json()).forEach((x: any, i: number) => {
+            const m = x.movie || x.show; if (!m?.ids?.tmdb) return;
+            rows.push({ day, kind, list: list.split("/")[0], rank: i + 1, key: `${kind}:${m.ids.tmdb}`, title: m.title, year: m.year || null, watchers: x.watchers ?? x.watcher_count ?? null });
+          });
+        }
+        await upsert("trakt_trend", "day,kind,list,rank", rows); out.trakt = rows.length;
+      }
     }
     return j(out);
   } catch (e) { return j({ error: String(e), ...out }, 502); }
