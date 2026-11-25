@@ -57,10 +57,10 @@ function credRoll(name,awards,works,prof){
  const hon=w=>(H&&H.w&&H.w[mOf(w)+':'+w.id])||[];
  const nAw=Object.values(mine).reduce((s,x)=>s+x.length,0)+etc.length,nHon=ws.filter(w=>hon(w).length).length;
  const lau=`<i class="ic">${IC.laurel}</i>`,star='<i class="ic st">★</i>';
- const row=w=>{const m=mOf(w),ch=crClean(w.ch),tp=crTopic(w),wb=`data-act="wk-open" data-m="${m}" data-id="${w.id}"`,i=ws.indexOf(w),my=mine[w.id]||[],hw=hon(w);
+ const row=w=>{const m=mOf(w),ch=crClean(w.ch),tp=crTopic(w),pi=(PAGE&&PAGE.works||[]).indexOf(w),wb=`data-act="wk-open" data-m="${m}" data-id="${w.id}"${pi>=0?` data-i="${pi}"`:''}`,i=ws.indexOf(w),my=mine[w.id]||[],hw=hon(w);
   return `<div class="cr-it cw${my.length?' won':''}${hw.length?' hon':''}">
   <button class="cr-po" ${wb} aria-label="${esc(w.title)} 자세히">${w.poster?`<img src="${esc(w.poster)}" alt="" loading="lazy">`:`<span>${esc(w.title.slice(0,6))}</span>`}</button>
-  <div class="cr-tx"><em>${esc(w.year||'공개 예정')}</em><button class="cr-ln b1" ${wb}>${esc(w.title)}</button>
+  <div class="cr-tx"><em>${esc(w.year||'공개 예정')}${w.year&&+w.year<=NOW_Y?`<button class="cr-rate" ${wb}>☆ 연기 평가</button>`:''}</em><button class="cr-ln b1" ${wb}>${esc(w.title)}</button>
    ${ch?(tp?`<a class="cr-ln" href="#${esc(tp.id)}" title="광장의 ${esc(tp.title)} 가상 캐스팅">${esc(ch)} 역</a>`:`<button class="cr-ln" ${wb}>${esc(ch)} 역</button>`):''}
    ${my.map(a=>`<span class="cr-aw me">${lau}${esc(a.n)}${a.y?` <small>${esc(a.y)}</small>`:''}</span>`).join('')}
    ${hw.map(a=>`<span class="cr-aw wk">${star}작품 수상: ${esc(a.n)}${a.y?` <small>${esc(a.y)}</small>`:''}</span>`).join('')}

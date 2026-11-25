@@ -1807,6 +1807,19 @@ body{word-break:keep-all;overflow-wrap:break-word}
 .pm-mh{display:flex;align-items:baseline;gap:6px;margin-bottom:6px}.pm-mh b{font-size:12px;color:#fff}.pm-mh small{font-size:10px;color:#8A8A8A}
 .pm-ch{display:block;width:100%;height:56px;margin-top:8px}.pm-ch .mid{stroke:#2c2c2c;stroke-dasharray:3 3}.pm-ch .ln{fill:none;stroke:#D4FF3A;stroke-width:2;vector-effect:non-scaling-stroke}.pm-ch .dot{fill:#D4FF3A}
 .pm-tx svg{width:56px;height:56px;fill:none;stroke:#3a3a3a;stroke-width:1.5}
+/* 결과 화면 다음 행동(11/25) */
+.hc-rel.hot{margin:18px 12px 0;padding:14px 12px 12px;border-radius:18px;border:1.5px solid #D4FF3A;background:linear-gradient(180deg,rgba(212,255,58,.10),rgba(212,255,58,.02) 60%,#0d0d0d);box-shadow:0 0 0 4px rgba(212,255,58,.06),0 10px 30px rgba(212,255,58,.08)}
+.hc-rel.hot:empty{display:none}
+.hc-rel.hot .hd{display:flex;align-items:baseline;justify-content:space-between;gap:8px;font-size:16px}
+.hc-rel.hot .hd small{font-size:11px;font-weight:600;color:#D4FF3A}
+.hc-rel.hot .rl{background:#151515;border-color:#333}
+.hc-rel.hot .rl:first-of-type{border-color:#D4FF3A55}
+.hc-go{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px 12px 18px}
+.hc-go .hb{flex-direction:row;white-space:nowrap;text-decoration:none;font-size:15px;height:54px;border-radius:16px}
+.hc-go .gt{border-color:#4a4a4a;background:#181818;color:#fff}
+.hc-go .gn{background:#D4FF3A;border-color:#D4FF3A;color:#0a0a0a;font-weight:900}
+.hc-go .gn span{font-size:22px;line-height:1;margin-left:2px}
+.cr-rate{margin-left:8px;border:1px solid #4a5a14;background:rgba(212,255,58,.08);color:#D4FF3A;font-size:10px;font-weight:700;padding:1px 7px;border-radius:9px;cursor:pointer;font-style:normal;vertical-align:1px}
 
 /* ================= C 디자인 통일 ================= */
 :root{--lime:#D4FF3A}
@@ -2138,6 +2151,51 @@ body[data-view=rank] .side::before{display:none!important;content:none!important
 .dp-sub{margin-top:10px}.dp-sub small{display:block;color:#888;font-size:11px;margin-bottom:4px}
 .dp-dr{display:flex;justify-content:space-between;font-size:12px;padding:3px 0;border-bottom:1px dashed #222}.dp-dr b{font-weight:600;color:#ccc}
 .dp-tw{display:flex;flex-wrap:wrap;gap:6px}.dp-tw span{font-size:12px;padding:3px 8px;border-radius:10px;background:#1a1a1a;border:1px solid #2c2c2c}
+/* 크로스 미디어 펼침 */
+button.rk.mmr{width:100%;text-align:left;background:none;border:0;border-bottom:1px solid #1f1f1f;color:inherit;font:inherit;cursor:pointer}
+.mmr .ar{font-style:normal;color:#D4FF3A;font-weight:900;margin:0 2px}
+.mmr .cv{font-style:normal;display:inline-block;margin-left:6px;color:#888;transition:transform .2s}
+.mmr[aria-expanded="true"] .cv{transform:rotate(180deg)}
+.mmt{margin:0 0 8px 28px;border-left:2px solid #D4FF3A44;padding-left:10px}
+.mmi{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 0;border-bottom:1px dashed #222}
+.mmn{color:#fff;text-decoration:none;min-width:0}.mmn b{display:block;font-size:14px}.mmn small{font-size:11px;color:#888}
+.mms{flex:none;font-size:12px;font-weight:700;color:#D4FF3A;text-decoration:none;padding:5px 10px;border:1px solid #4a5a14;border-radius:12px}.mms.off{color:#666;border-color:#2a2a2a}
+/* 등급과 권한 표 */
+.pk-me{font-size:13px;color:#ccc;margin:4px 0 10px}.pk-me b{color:#D4FF3A}
+.pk-wrap{overflow-x:auto;margin:0 -4px;padding:0 4px}
+.pk-t{border-collapse:separate;border-spacing:0;width:100%;min-width:440px;font-size:12px}
+.pk-t th,.pk-t td{padding:8px 4px;text-align:center;border-bottom:1px solid #1f1f1f}
+.pk-t tbody th{text-align:left;font-weight:600;color:#ccc;padding-right:8px;min-width:104px;position:sticky;left:0;background:#0a0a0a}
+.pk-t thead th{vertical-align:bottom;color:#777;font-weight:700}.pk-t thead th b{display:block;font-size:12px;line-height:1.25}.pk-t thead th small{display:block;font-size:10px;font-weight:500;margin-top:3px}
+.pk-t thead th.on{color:#fff}
+.pk-t td.on{background:rgba(212,255,58,.05)}
+.pk-t .cur{background:rgba(212,255,58,.14)!important;box-shadow:inset 1px 0 #D4FF3A,inset -1px 0 #D4FF3A}
+.pk-t thead th.cur{box-shadow:inset 1px 0 #D4FF3A,inset -1px 0 #D4FF3A,inset 0 1px #D4FF3A;border-radius:10px 10px 0 0;color:#D4FF3A}
+.pk-t tbody tr:last-child .cur{box-shadow:inset 1px 0 #D4FF3A,inset -1px 0 #D4FF3A,inset 0 -1px #D4FF3A}
+.pk-t .ok{font-style:normal;color:#D4FF3A;font-weight:900;font-size:14px}.pk-t td:not(.on) .ok{color:#7a8a3a}
+.pk-t .no{font-style:normal;color:#333}
+.pk-t td b{color:#fff;font-size:12px}
+.pk-t tbody tr td:nth-child(n){transition:background .2s}
+/* 배우 팬 채널: 사진을 가리지 않고 전체를 먼저 보여준 뒤 정보는 사진 아래로 (11/25) */
+.pg.actor .ahero.c2a{background:none;padding:0 16px 16px}
+.pg.actor .ahero.c2a::before{content:'';display:block;margin:0 -16px 14px;aspect-ratio:2/3;max-height:78vh;background:linear-gradient(180deg,rgba(10,10,10,0) 88%,#0A0A0A),var(--ab) center top/cover no-repeat}
+/* 튜토리얼 */
+#trO{position:fixed;inset:0;z-index:9000;pointer-events:none}
+#trO .tr-mask{position:fixed;inset:0;background:rgba(0,0,0,.72);pointer-events:auto}
+#trO .tr-ring{position:fixed;border:2px solid #D4FF3A;border-radius:16px;box-shadow:0 0 0 4px rgba(212,255,58,.25);transition:all .3s ease;pointer-events:none}
+#trO.tap .tr-ring{animation:trp 1.2s ease-in-out infinite}
+@keyframes trp{50%{box-shadow:0 0 0 10px rgba(212,255,58,.08)}}
+#trO .tr-card{position:fixed;left:50%;transform:translateX(-50%);width:min(340px,calc(100vw - 32px));background:#161616;border:1px solid #333;border-radius:18px;padding:14px 16px 12px;color:#fff;pointer-events:auto;box-shadow:0 18px 40px rgba(0,0,0,.6);transition:top .3s ease}
+#trO .tr-card small{color:#D4FF3A;font-size:11px;font-weight:700}
+#trO .tr-card b{display:block;font-size:17px;margin:4px 0 6px}
+#trO .tr-card p{margin:0;font-size:13px;line-height:1.55;color:#cfcfcf}
+#trO .tr-a{display:flex;align-items:center;gap:8px;margin-top:12px}
+#trO .tr-a button{border:1px solid #333;background:none;color:#999;border-radius:12px;padding:8px 12px;font-size:13px;cursor:pointer}
+#trO .tr-a .nx{margin-left:auto;background:#D4FF3A;border-color:#D4FF3A;color:#0a0a0a;font-weight:800}
+#trO .tr-a .sk{margin-left:auto}
+#trO .tr-hint{font-size:11px;color:#D4FF3A}
+#trHelp{position:fixed;top:10px;right:max(10px,calc(50vw - var(--appw,480px)/2 + 10px));z-index:800;width:30px;height:30px;border-radius:50%;border:1px solid #3a3a3a;background:rgba(18,18,18,.85);color:#ddd;font-weight:800;font-size:14px;cursor:pointer;backdrop-filter:blur(6px)}
+body[data-view="page"] #trHelp{display:none}
 
 </style>
 </head>
@@ -2293,7 +2351,7 @@ async function loadSide(){const [f,l]=await Promise.all([sb.from('feed').select(
 const TERMS_VER='2026-11-24',CONSENT_ON=true;let PRIV=null;
 function fillConsent(){if(CONSENT_ON){$('#cnsBox').hidden=false;$('#legalLinks').hidden=false}const p=PRIV||{};$('#cTerms').checked=p.terms_ver===TERMS_VER;$('#cStats').checked=!!p.stats_at;$('#cAge').value=p.age_band||'';$('#cGen').value=p.gender_self||'';$('#cReg').value=p.region_self||''}
 async function loadProfile(){if(!USER){PROF=null;PRIV=null;NOTICES=[];return}const {data}=await sb.from('profiles').select('*').eq('id',USER.id).maybeSingle();PROF=data||null;const pv=await sb.from('profile_private').select('*').eq('user_id',USER.id).maybeSingle();PRIV=pv.data||null;if(typeof loadMyCol==='function')loadMyCol(true);if(CONSENT_ON&&PROF&&!(PRIV&&PRIV.terms_ver===TERMS_VER)&&!(()=>{try{return sessionStorage.getItem('cnsAsk')}catch(e){return 1}})()){try{sessionStorage.setItem('cnsAsk','1')}catch(e){}setTimeout(()=>{$('#nickIn').value=PROF.nickname;fillConsent();$('#nickH').textContent='약관 동의와 내 정보 설정';$('#nickModal').classList.add('on')},600)}await Promise.all([loadNotices(),loadWants()])}
-async function refresh(all){try{if(all)await loadTopics();await Promise.all([loadTopic(),loadSide(),loadProfile(),loadFanBoard()]);render();loadImages();if(HOMEV)loadHome();if(USER&&PROF){onbAfterLogin();if(pend().length)flushPending()}if(PAGE&&PAGE.kind==='a'&&PAGE.pid&&!busy)renderActor().catch(()=>{})}catch(e){console.error(e);toast('불러오지 못했어요: '+errMsg(e))}}
+async function refresh(all){try{if(all)await loadTopics();await Promise.all([loadTopic(),loadSide(),loadProfile(),loadFanBoard()]);render();loadImages();if(HOMEV)loadHome();if(USER&&PROF){onbAfterLogin();if(pend().length)flushPending()}}catch(e){console.error(e);toast('불러오지 못했어요: '+errMsg(e))}}
 async function act(fn,args,okMsg){if(busy)return;busy=true;try{const d=await rpc(fn,args);if(okMsg)toast(okMsg);await refresh(fn.startsWith('propose_topic')||fn.startsWith('admin'));return d}catch(e){toast(errMsg(e))}finally{busy=false}}
 
 /* ---------- images ---------- */
@@ -2341,7 +2399,7 @@ function renderShelf(){const list=TOPICS.filter(t=>t.cat===CAT);
  $('#shelf').innerHTML=list.map(t=>`<button class="topic" data-act="topic" data-id="${esc(t.id)}" aria-current="${!HOMEV&&t.id===SEL}"><span class="tp"${tPoster(t)?` style="background-image:url('${esc(tPoster(t))}')"`:''}><span>${tPoster(t)?'':esc(t.title)}</span></span><b>${esc(t.title)}</b><small>${esc(t.info)}</small><small>${t.user_made?'유저 제안, ':''}${isOpen(t)?`D-${dleft(t)}`:'결과 확정'}</small></button>`).join('')+`<button class="topic add" data-act="openprop"><span class="tp">+ 새 주제 제안</span><b>보고 싶은 작품</b><small>300P부터</small></button>`}
 const tStage=()=>{const o=['dream','rumor','cast','airing'];return o[Math.max(0,...D.roles.map(r=>o.indexOf(r.stage)))]};
 const total=r=>(D.cands[r.id]||[]).reduce((a,c)=>a+c.votes,0);
-function renderHead(){const t=topic();$('#tTitle').textContent=t.title;$('#tInfo').innerHTML=`${esc(t.info)}, ${esc(CATS.find(c=>c.id===t.cat).name)}${t.src_medium&&t.dst_medium&&t.src_medium!==t.dst_medium?` <span class="chip2">${esc(t.src_medium)} > ${esc(t.dst_medium)}</span>`:''} <button class="b sm" data-act="want">${WANTS.has(t.id)?'보고 싶어요 취소':'이렇게 나오면 보고 싶어요'} ${fmt(t.wants||0)}</button>`;$('#tFact').textContent=t.fact||'';
+function renderHead(){const t=topic();$('#tTitle').textContent=t.title;$('#tInfo').innerHTML=`${esc(t.info)}, ${esc(CATS.find(c=>c.id===t.cat).name)}${t.src_medium&&t.dst_medium&&t.src_medium!==t.dst_medium?` <span class="chip2">${esc(t.src_medium)} → ${esc(t.dst_medium)}</span>`:''} <button class="b sm" data-act="want">${WANTS.has(t.id)?'보고 싶어요 취소':'이렇게 나오면 보고 싶어요'} ${fmt(t.wants||0)}</button>`;$('#tFact').textContent=t.fact||'';
  const pu=IMG['w:'+t.id],pi=$('#tPoster');if(pu){if(pi.src!==pu)pi.src=pu;pi.alt=t.title+' 포스터';pi.hidden=false}else pi.hidden=true;
  const open=isOpen(t);$('#tClockL').textContent=open?(t.season>1?`시즌 ${t.season}, 마감까지`:'투표 마감까지'):'투표 상태';$('#tClock').textContent=open?(dleft(t)<=1?'오늘 자정':`D-${dleft(t)}`):'결과 발표';
  const tv=D.roles.reduce((a,r)=>a+(isSync(r)?(D.sync[r.id]?.n||0):total(r)),0);const noMine=isOpen(t)&&!D.roles.some(r=>D.myVote[r.id]||D.mySync[r.id]);$('#tVotes').textContent=noMine&&!tv?' 투표하면 득표 공개':` 총 ${fmt(tv)}표`;
@@ -2782,7 +2840,7 @@ function renderStats(){const box=$('#tStats');if(!box)return;const t=topic();if(
 let PERF={};
 async function loadPerf(pid){try{PERF[pid]=await rpc('perf_board',{pid})||[]}catch(e){PERF[pid]=[]}}
 function perfOf(pid,w){return (PERF[pid]||[]).find(p=>p.tmdb_id===w.id&&p.media===(w.type==='영화'?'movie':'tv'))}
-async function loadYearIndex(){const y=+($('#yIdx')?.value||NOW_Y);try{const d=await rpc('actor_year_index',{yr:y,lim:10});const b=$('#yIdxList');if(b)b.innerHTML=(d||[]).map((r,i)=>`<div class="rk"><b>${i+1}</b><span>${actorLink(r.name,`<b>${esc(r.name)}</b>`)}<small>연기 ${r.acting}, 화제성 ${r.buzz}, 평가 ${fmt(r.ratings)}</small></span><b class="num">${r.meta}</b></div>`).join('')||`<p class="empty3">${y}년 작품 연기 평가가 쌓이면 지수가 나와요. 배우 페이지 필모에서 평가해 보세요.</p>`}catch(e){}}
+async function loadYearIndex(){const y=+($('#yIdx')?.value||NOW_Y);try{const d=await rpc('actor_year_index',{yr:y,lim:10});const b=$('#yIdxList');if(b)b.innerHTML=(d||[]).map((r,i)=>`<div class="rk"><b>${i+1}</b><span>${actorLink(r.name,`<b>${esc(r.name)}</b>`)}<small>연기 ${r.acting}, 화제성 ${r.buzz}, 평가 ${fmt(r.ratings)}</small></span><b class="num">${r.meta}</b></div>`).join('')||`<p class="empty3">${y}년에 나온 작품의 연기 평가가 쌓이면 지수가 나와요. 배우 페이지 크레딧에서 ☆ 연기 평가를 눌러 점수를 줄 수 있어요.</p>`}catch(e){}}
 
 /* 새 주제 제안: 배역 줄 */
 function propRows(list){const box=$('#pRoles');if(!box)return;const row=r=>`<div class="prow"><select class="pk" aria-label="종류"><option value="actor" ${r.kind!=='option'?'selected':''}>인물(배우, 성우)</option><option value="option" ${r.kind==='option'?'selected':''}>선택지(장르, 개발사 등)</option></select><input class="pc" type="text" maxlength="20" placeholder="배역 또는 항목 이름" value="${esc(r.ch||'')}"><input class="po" type="text" maxlength="20" placeholder="원작 배우 (선택)" value="${esc(r.orig||'')}"><input class="pa" type="text" maxlength="20" placeholder="배역 나이 (선택)" value="${esc(r.age||'')}"><button class="lk" data-act="pdel" aria-label="지우기">지우기</button></div>`;
@@ -2797,7 +2855,7 @@ function propMode(){const c=$('#pCat').value;if(PCAT_LAST!==c){PCAT_LAST=c;const
 document.addEventListener('change',e=>{if(e.target.id==='pCat'||e.target.id==='pDst'){if(e.target.id==='pDst'&&[...document.querySelectorAll('#pRoles .prow')].every(r=>!r.querySelector('.pc').value.trim()||Object.values(PRESET).flat().some(x=>x.ch===r.querySelector('.pc').value.trim())))propRows([]);propMode()}});
 let WANTS=new Set();
 async function loadWants(){WANTS=new Set();if(!USER)return;const {data}=await sb.from('topic_wants').select('topic_id');(data||[]).forEach(x=>WANTS.add(x.topic_id))}
-async function loadMatrix(){try{const d=await rpc('media_matrix',{});const b=$('#mmx');if(b)b.innerHTML=(d||[]).filter(r=>r.src!==r.dst||r.src==='기타').slice(0,8).map((r,i)=>`<div class="rk"><b>${i+1}</b><span><b>${esc(r.src)} > ${esc(r.dst)}</b><small>주제 ${r.topics}, 시트 ${r.sheets}</small></span><b class="num">보고 싶어요 ${fmt(r.wants)}</b></div>`).join('')||'<p class="empty3">IP 실사화와 크로스 미디어 주제가 올라오면 매체별 수요가 쌓여요.</p>'}catch(e){}}
+async function loadMatrix(){try{const d=await rpc('media_matrix',{});const b=$('#mmx');if(b)b.innerHTML=(d||[]).filter(r=>r.src!==r.dst||r.src==='기타').slice(0,8).map((r,i)=>`<button class="rk mmr" data-act="mmx" data-s="${esc(r.src)}" data-d="${esc(r.dst)}" aria-expanded="false"><b>${i+1}</b><span><b>${esc(r.src)} <i class="ar">→</i> ${esc(r.dst)}</b><small>주제 ${r.topics}, 시트 ${r.sheets}, 투표 ${fmt(r.votes)}</small></span><b class="num">보고 싶어요 ${fmt(r.wants)}<i class="cv">⌄</i></b></button><div class="mmt" hidden></div>`).join('')||'<p class="empty3">IP 실사화와 크로스 미디어 주제가 올라오면 매체별 수요가 쌓여요.</p>'}catch(e){}}
 document.addEventListener('input',e=>{const t=e.target;if(t.id&&t.id.startsWith('ps')&&t.type==='range'){const o=document.getElementById('po'+t.id.slice(2));if(o)o.textContent=t.value}});
 document.addEventListener('change',e=>{if(e.target.id==='pTitle'&&$('#pCat').value!=='wn'&&![...document.querySelectorAll('#pRoles .pc')].some(x=>x.value.trim()))document.querySelector('[data-act=pfetch]').click()});
 
@@ -3490,7 +3548,7 @@ async function loadAvRoom(nick,me){const box=$('#avroom');if(!box)return;let ite
 document.addEventListener('click',async e=>{const b=e.target.closest('[data-act]');if(!b)return;const a=b.dataset.act;
  if(a==='fc-prev'){fcGo(-1);return}if(a==='fc-next'){fcGo(1);return}
  if(a==='fc-year'){const tr=$('#fcTrack');const c=tr&&[...tr.querySelectorAll('.fc-c')].find(x=>x.dataset.year===b.dataset.y);if(c)tr.scrollTo({left:c.offsetLeft-(tr.clientWidth-c.offsetWidth)/2,behavior:'smooth'});return}
- if(a==='wk-open'){const tr=$('#fcTrack');if(tr&&tr._drag&&Date.now()-tr._drag<300)return;e.preventDefault();openWork(b.dataset.m,+b.dataset.id,b.dataset.i!=null?+b.dataset.i:null);return}
+ if(a==='wk-open'){const tr=$('#fcTrack');if(tr&&tr._drag&&Date.now()-tr._drag<300)return;e.preventDefault();const rt=b.classList.contains('cr-rate'),pw=openWork(b.dataset.m,+b.dataset.id,b.dataset.i!=null?+b.dataset.i:null);if(rt)Promise.resolve(pw).then(()=>{const dd=document.querySelector('#wkBox details.nf');if(dd){dd.open=true;dd.scrollIntoView({block:'center',behavior:'smooth'})}});return}
  if(a==='den-light'){const d=$('#den');const on=d.classList.toggle('dark');b.setAttribute('aria-pressed',on);b.textContent=on?'조명 켜기':'조명';return}
  if(a==='wk-close'){closeWork();return}
  if(a==='wk-go'){closeWork();return}
@@ -3633,10 +3691,10 @@ function credRoll(name,awards,works,prof){
  const hon=w=>(H&&H.w&&H.w[mOf(w)+':'+w.id])||[];
  const nAw=Object.values(mine).reduce((s,x)=>s+x.length,0)+etc.length,nHon=ws.filter(w=>hon(w).length).length;
  const lau=`<i class="ic">${IC.laurel}</i>`,star='<i class="ic st">★</i>';
- const row=w=>{const m=mOf(w),ch=crClean(w.ch),tp=crTopic(w),wb=`data-act="wk-open" data-m="${m}" data-id="${w.id}"`,i=ws.indexOf(w),my=mine[w.id]||[],hw=hon(w);
+ const row=w=>{const m=mOf(w),ch=crClean(w.ch),tp=crTopic(w),pi=(PAGE&&PAGE.works||[]).indexOf(w),wb=`data-act="wk-open" data-m="${m}" data-id="${w.id}"${pi>=0?` data-i="${pi}"`:''}`,i=ws.indexOf(w),my=mine[w.id]||[],hw=hon(w);
   return `<div class="cr-it cw${my.length?' won':''}${hw.length?' hon':''}">
   <button class="cr-po" ${wb} aria-label="${esc(w.title)} 자세히">${w.poster?`<img src="${esc(w.poster)}" alt="" loading="lazy">`:`<span>${esc(w.title.slice(0,6))}</span>`}</button>
-  <div class="cr-tx"><em>${esc(w.year||'공개 예정')}</em><button class="cr-ln b1" ${wb}>${esc(w.title)}</button>
+  <div class="cr-tx"><em>${esc(w.year||'공개 예정')}${w.year&&+w.year<=NOW_Y?`<button class="cr-rate" ${wb}>☆ 연기 평가</button>`:''}</em><button class="cr-ln b1" ${wb}>${esc(w.title)}</button>
    ${ch?(tp?`<a class="cr-ln" href="#${esc(tp.id)}" title="광장의 ${esc(tp.title)} 가상 캐스팅">${esc(ch)} 역</a>`:`<button class="cr-ln" ${wb}>${esc(ch)} 역</button>`):''}
    ${my.map(a=>`<span class="cr-aw me">${lau}${esc(a.n)}${a.y?` <small>${esc(a.y)}</small>`:''}</span>`).join('')}
    ${hw.map(a=>`<span class="cr-aw wk">${star}작품 수상: ${esc(a.n)}${a.y?` <small>${esc(a.y)}</small>`:''}</span>`).join('')}
@@ -4158,12 +4216,13 @@ ${ty?`<div class="mp-type"><span class="tg">${esc(ty.tag)}</span><p>${esc(ty.say
  const same=s.tot>0&&s.rank===1,u=hcImg(s.mine.name);return `<div class="mr${same?' same':''}"><span class="ph"${u?` style="background-image:url('${esc(u)}')"`:''}></span><div class="tx"><span class="ch">${esc(SLOT[r.slot]||'')} ${esc(String(r.ch).replace(/\s*\(.*\)$/,''))}${r.orig?`<em>원작 ${esc(r.orig)}</em>`:''}</span><b>${dispHTML(s.mine.name)}</b><small>${!s.tot?'아직 광장 표가 없어요':same?'광장 1위와 같은 선택':`광장 1위 ${esc(dispName(s.top.name).replace(/\s*\(.*\)$/,''))} ${Math.round(s.topShare*100)}%`}</small></div><span class="pc"><b>${s.tot?Math.round(s.share*100)+'%':'첫 표'}</b><small>${s.tot?`${s.rank}위 / ${s.n}명`:''}</small></span></div>`}).join('')}</div>
 ${ll.length?`<div class="mp-links"><b>원작과의 연결고리</b>${ll.map(x=>`<p>${x}</p>`).join('')}</div>`:''}
 <div class="mp-n">${S.some(s=>s.tot)?`배역별 총 ${S.map(s=>s.tot).join(', ')}표 기준`:''}</div>
-<div class="hc-rel" id="hcRel">${hcRelLocal(t,S)}</div><div class="hc-links"><a href="#${esc(t.id)}/talk">결과와 토론방</a><button data-act="dk-nexttopic">다음 작품</button></div></div>`;hcRelServer(t)}
+<div class="hc-rel hot" id="hcRel">${hcRelLocal(t,S)}</div><div class="hc-go"><a class="hb gt" href="#${esc(t.id)}/talk"><span>💬</span>결과와 토론방</a><button class="hb gn" data-act="dk-nexttopic">다음 작품<span>›</span></button></div></div>`;hcRelServer(t);hcRelRoles(t)}
 const _hcRender2=renderDeck;
 renderDeck=function(){const box=$('#deck'),t=DECKV&&curTopic();if(box&&t&&DECK.length&&DR>=t.roles.length){cardLeave();return renderDoneC(box,t)}return _hcRender2()};
 
 if(/[?&]test=1/.test(location.search))window.__hcT=f=>f({DECK,deep:(t,d)=>{DEEP[t]=d;renderDeepT()},setDI:v=>DI=v,setDR:v=>DR=v,renderDeck:()=>renderDeck(),vsLegacy:async()=>{VS_N=8;await vsTrySpecial(false);renderDuel()},setStreak:n=>{STREAK=n},addCast:async(nm)=>{nextRole=()=>{};await loadNames([nm]);hcAddCast(curTopic(),curRole().id,999999,nm)}});
 
+const HC_RELHD='<b class="hd"><span>🔗 이어서 고르기</span><small>내 픽과 이어진 배역</small></b>';
 /* 이어서 고르기: 리포트 끝에서 다음에 할 일을 이유와 함께 2~3개 추천해 계속 이어지게 */
 function hcRelItem(di,x,why,ch){const d=DECK[di],v=verLabel(d.cat),u=d.vposter||d.poster;return `<a class="rl" href="#" data-act="dk-goto" data-i="${di}"><span class="ph"${u?` style="background-image:url('${esc(u)}')"`:''}></span><span class="tx"><b>《${esc(d.title)}》${v?' '+esc(v):''} ${esc(String(ch).replace(/\s*\(.*\)$/,''))} 역</b><small>${why}</small></span><i>›</i></a>`}
 function hcRelLocal(t,S){const out=[],used=new Set([t.id]),pd=pend();
@@ -4173,10 +4232,10 @@ function hcRelLocal(t,S){const out=[],used=new Set([t.id]),pd=pend();
    if(r){used.add(d.id);out.push(hcRelItem(i,d,`내 픽 <em>${esc(dispName(nm).replace(/\s*\(.*\)$/,''))}</em>, 여기서도 후보예요`,r.ch))}}}
  const i2=DECK.findIndex(d=>!used.has(d.id)&&new Date(d.closes_at)-Date.now()<864e5&&new Date(d.closes_at)>Date.now()&&(d.roles||[]).every(r=>open(d,r)));
  if(i2>=0&&out.length<3){used.add(DECK[i2].id);out.push(hcRelItem(i2,DECK[i2],'오늘 마감, 아직 한 표도 안 던졌어요',DECK[i2].roles[0].ch))}
- HC.relUsed=used;return out.length?`<b class="hd">이어서 고르기</b>${out.join('')}`:''}
+ HC.relUsed=used;return out.length?HC_RELHD+out.join(''):''}
 async function hcRelServer(t){const x=await rpc('duel_next',{skip:[],prefer:t.id}).catch(()=>null);const box=$('#hcRel');if(!x||!x.why||!box||(HC.relUsed&&HC.relUsed.has(x.tid)))return;
  const di=DECK.findIndex(d=>d.id===x.tid);if(di<0)return;const why=esc(x.why.replace(/(\S+)이\(가\)/,(m,n)=>jj(n,'이','가')));
- if(!box.querySelector('.hd'))box.insertAdjacentHTML('afterbegin','<b class="hd">이어서 고르기</b>');box.querySelector('.hd').insertAdjacentHTML('afterend',hcRelItem(di,DECK[di],why,x.ch))}
+ if(!box.querySelector('.hd'))box.insertAdjacentHTML('afterbegin',HC_RELHD);box.querySelector('.hd').insertAdjacentHTML('afterend',hcRelItem(di,DECK[di],why,x.ch))}
 
 /* ===== 광장 상단 할 일 줄(11/25): 육각 타일 대신 포스터 원. 투표 중인 판만 마감 순, 테두리 링은 내 진행률, 다 끝낸 판은 뒤로, 발표는 맨 끝 "결과" 하나로 ===== */
 function todoRow(){const out=[],pd=pend();
@@ -4252,6 +4311,15 @@ document.addEventListener('click',e=>{const it=e.target.closest('[data-psg-id]')
 async function psgResolve(inp){if(!inp)return null;if(inp.dataset.pid&&inp.dataset.pnm===inp.value.trim())return +inp.dataset.pid;
  const L=await psgFetch(inp);const ex=L.filter(x=>x.exact);if(ex.length===1){inp.dataset.pid=ex[0].id;inp.dataset.pnm=ex[0].name;inp.value=ex[0].name;return ex[0].id}
  toast(L.length?'아래 목록에서 배우를 골라 주세요':'배우 목록에 없는 이름이에요');inp.focus();return null}
+
+/* 이어서 고르기(11/25): 내 픽 배우가 원작에서 연기한 배역, 함께 출연한 배우의 배역을 서버에서 찾아 맨 위에 */
+async function hcRelRoles(t){if(!USER)return;const L=await rpc('rel_roles',{tid:t.id,lim:4}).catch(()=>null);const box=$('#hcRel');if(!L||!L.length||!box)return;
+ const used=HC.relUsed||new Set(),cl=n=>dispName(n||'').replace(/\s*\(.*\)$/,'');let add=[];
+ for(const x of L){if(used.has(x.topic_id))continue;used.add(x.topic_id);const di=DECK.findIndex(d=>d.id===x.topic_id),p=cl(x.pick),o=cl(x.orig);
+  const why=x.kind==='own'?`내 픽 <em>${esc(p)}</em>, 원작에서 직접 연기한 배역이에요`:`내 픽 <em>${esc(p)}</em>${jj(p,'과','와').slice(p.length)} ${x.via?`《${esc(x.via)}》에 `:''}함께 나온 ${esc(o)}의 배역`;
+  if(di>=0)add.push(hcRelItem(di,DECK[di],why,x.ch));else{const tt=(typeof TOPICS!=='undefined'?TOPICS:[]).find(q=>q.id===x.topic_id),pu=tt&&typeof shPoster==='function'?shPoster(tt):'';add.push(`<a class="rl" href="#${esc(x.topic_id)}"><span class="ph"${pu?` style="background-image:url('${esc(pu)}')"`:''}></span><span class="tx"><b>《${esc(x.title)}》 ${esc(String(x.ch).replace(/\s*\(.*\)$/,''))} 역</b><small>${why}</small></span><i>›</i></a>`)}if(add.length>=2)break}
+ if(!add.length)return;HC.relUsed=used;if(!box.querySelector('.hd'))box.insertAdjacentHTML('afterbegin',HC_RELHD);box.querySelector('.hd').insertAdjacentHTML('afterend',add.join(''));
+ const rs=[...box.querySelectorAll('.rl')];rs.slice(4).forEach(e=>e.remove())}
 
 /* ================= C 디자인 통일 (작품 목록, 작품 상세, 랭킹, 나, 배우, VS 특집) ================= */
 /* ---- 공통 ---- */
@@ -4454,7 +4522,7 @@ async function c2EnsureDeck(){if(!(DECK&&DECK.length))try{await loadDeck()}catch
 /* ---- P3 24: 포스터가 없는 웹소설, 웹툰 원작 판은 직접 만든 글자 카드로 (원작 그림은 쓰지 않음) ---- */
 const C2GP={};
 function c2GenPoster(t){if(!t)return '';if(C2GP[t.id])return C2GP[t.id];let h=0;for(const ch of String(t.id))h=(h*31+ch.charCodeAt(0))>>>0;
- const hues=[[268,330],[200,250],[150,190],[20,350],[40,10]],[a,b]=hues[h%hues.length],title=String(t.title||''),w=[];let line='';
+ const MH={'웹소설':[212,236],'웹툰':[268,300],'소설':[160,190],'만화':[20,350]},[a,b]=MH[t.src_medium]||[212,236],title=String(t.title||''),w=[];let line='';
  for(const x of title.split(/\s+/)){if((line+' '+x).trim().length>6&&line){w.push(line);line=x}else line=(line+' '+x).trim()}if(line)w.push(line);
  const fs=w.length>3?46:56,y0=420-(w.length-1)*fs*.55,med=t.src_medium||'원작',au=String(t.info||'').split(',')[0].replace(/\s*(웹소설|웹툰)$/,'');
  const e=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -4562,6 +4630,75 @@ function renderDeepT(){const box=$('#tDeep');if(!box)return;const t=topic();if(!
 document.addEventListener('click',async e=>{const b=e.target.closest('[data-act="dpbuy"]');if(!b)return;if(!USER){try{openLoginSheet()}catch(x){toast('로그인이 필요해요')}return}const t=topic();if(!t)return;
  if(!confirmBuy())return;b.disabled=true;try{const n=await rpc('deep_unlock_buy',{tid:t.id});if(PROF&&n)PROF.points-=n;toast(n?'심화 분석을 열었어요. 30P를 썼어요':'이미 열려 있어요');delete DEEP[t.id];loadDeepT(t.id);try{renderWho()}catch(x){}}catch(x){b.disabled=false;toast(errMsg(x))}
  function confirmBuy(){if(PROF&&PROF.points<30){toast('안목 포인트가 모자라요. 30P가 필요해요');return false}return true}});
+
+/* ---------- 크로스 미디어 수요: 줄을 누르면 어떤 판과 시트인지 펼침 ---------- */
+document.addEventListener('click',async e=>{const b=e.target.closest('[data-act="mmx"]');if(!b)return;const box=b.nextElementSibling;if(!box)return;
+ const open=b.getAttribute('aria-expanded')==='true';b.setAttribute('aria-expanded',String(!open));box.hidden=open;if(open||box.dataset.ok)return;box.innerHTML='<p class="empty3">불러오는 중이에요</p>';
+ try{const L=await rpc('media_topics',{s:b.dataset.s,d:b.dataset.d});box.dataset.ok=1;
+  box.innerHTML=(L||[]).map(x=>`<div class="mmi"><a class="mmn" href="#${esc(x.id)}"><b>${esc(x.title)}</b><small>${x.closed?'마감, ':''}투표 ${fmt(x.votes)}, 보고 싶어요 ${fmt(x.wants)}</small></a>${x.sheets?`<a class="mms" href="#${esc(x.id)}/talk">시트 ${fmt(x.sheets)}장 보기 →</a>`:'<span class="mms off">시트 0</span>'}</div>`).join('')||'<p class="empty3">아직 판이 없어요</p>'}catch(x){box.innerHTML='<p class="empty3">불러오지 못했어요</p>'}});
+
+/* ---------- 등급과 권한: 표 ---------- */
+const PERK_ROWS=[
+ ['투표, VS 한판, 토론, 캐스팅 시트',[1,1,1,1,1]],
+ ['하루 후보 추가',['10명','15명','20명','30명','50명']],
+ ['새 작품 판 제안',[0,1,1,1,1]],
+ ['댓글 등급 배지',[0,1,1,1,1]],
+ ['내 한 표가 두 표로',[0,0,1,1,1]],
+ ['배역별 디렉터스 픽',[0,0,0,1,1]],
+ ['포스터 캐스팅 디렉터 크레딧',[0,0,0,1,1]],
+ ['적중 배역 명예 크레딧',[0,0,0,0,1]]];
+renderPerks=function(){const box=$('#perks');if(!box)return;const g=PROF?grade(fm(PROF)):-1,F=PROF?fm(PROF):0,nx=GRADES[g+1];
+ const head=`<tr><th></th>${GRADES.map((x,i)=>`<th class="${i===g?'cur':''}${i<=g?' on':''}"><b>${x[1].replace(' ','<br>')}</b><small>${x[0]?'명성 '+fmt(x[0]):'시작'}</small></th>`).join('')}</tr>`;
+ const body=PERK_ROWS.map(([l,v])=>`<tr><th>${esc(l)}</th>${v.map((c,i)=>`<td class="${i===g?'cur':''}${i<=g?' on':''}">${c===1?'<i class="ok">✓</i>':c===0?'<i class="no">-</i>':`<b>${c}</b>`}</td>`).join('')}</tr>`).join('');
+ box.innerHTML=`${PROF?`<p class="pk-me">지금 <b>${GRADES[Math.max(g,0)][1]}</b>, 명성 ${fmt(F)}${nx?`. ${nx[1]}까지 ${fmt(nx[0]-F)} 남았어요`:''}</p>`:''}<div class="pk-wrap"><table class="pk-t"><thead>${head}</thead><tbody>${body}</tbody></table></div><p class="dl">명성은 투표, 댓글, 후보 추가처럼 광장에 기여할 때 쌓여요. 민심 픽에서 딴 포인트는 명성에 들어가지 않아요.</p>`};
+
+/* ================= 탭별 인터랙티브 튜토리얼 (11/25) =================
+   탭에 처음 들어오면 한 번 자동으로, 오른쪽 위 ? 버튼으로 언제든 다시. 탭 단계는 그 자리를 눌러야 넘어감 */
+const TOUR={
+ deck:[
+  {s:'#tdRow',h:'이건 뭐예요?',b:'지금 투표 중인 작품이에요. 포스터 둘레 링은 내가 고른 배역 비율, 숫자는 마감까지 남은 날이에요.'},
+  {s:'.hc-hd',h:'지금 고르는 배역',b:'원작에서 누가 연기했는지와 함께, 이번 리메이크에서 이 배역을 누가 맡으면 좋을지 고르는 자리예요.'},
+  {s:'#hcArc .card.on',h:'여기를 탭해 보세요',b:'마음에 드는 배우 카드를 누르면 내 픽이 돼요. 옆으로 밀면 다른 후보가 나와요.',tap:1},
+  {s:'.hc-bar',h:'다음은 어디로?',b:'다음 배역은 같은 작품의 다른 배역, 후보 추가는 원하는 배우 올리기, 다음 작품은 다른 작품으로 넘어가기예요.'},
+  {s:'#tabbar',h:'다른 탭도 둘러보세요',b:'작품, VS 한판, 랭킹, 내 페이지가 있어요. 탭마다 처음 들어가면 짧게 안내해 드려요.'}],
+ explore:[
+  {s:'#gs',h:'이건 뭐예요?',b:'작품이나 배우 이름으로 바로 찾는 검색창이에요.'},
+  {s:'.c2chips',h:'여기를 탭해 보세요',b:'웹소설 실사화, 한국판 리메이크처럼 종류별로 걸러 볼 수 있어요.',tap:1},
+  {s:'.c2hot,.c2c',h:'작품 카드',b:'카드를 누르면 작품 페이지로 가요. 배역별 투표, 결과와 토론방, 심화 분석이 모여 있어요.'},
+  {s:'#propBox',h:'원하는 작품이 없다면',b:'캐스팅 덕후 등급부터 새 작품 판을 직접 제안할 수 있어요.'}],
+ vs:[
+  {s:'.vstabs',h:'이건 뭐예요?',b:'내 픽은 내 취향대로 둘 중 하나를 고르는 대결, 민심 픽은 광장이 누구를 더 고를지 포인트를 걸고 맞히는 예측이에요.'},
+  {s:'.vsf',h:'여기를 탭해 보세요',b:'더 어울린다고 생각하는 쪽 사진을 누르면 바로 득표 결과가 나와요.',tap:1},
+  {s:'.vstk',h:'연속 보너스',b:'하루에 5판, 10판, 20판을 하면 안목 포인트를 10, 20, 50 받아요.'},
+  {s:'.vstabs [data-act="vsmode"]:last-child,.vstabs button:last-child',h:'민심 픽도 눌러 보세요',b:'맞히면 건 포인트보다 더 돌려받아요. 포인트는 현금이나 상품으로 바꿀 수 없어요.',tap:1}],
+ rank:[
+  {s:'.rknav',h:'이건 뭐예요?',b:'배우 화력, 메타 지수, 안목 랭킹, 크로스 미디어 수요를 골라 볼 수 있어요.'},
+  {s:'.rknav [data-k="perks"]',h:'여기를 탭해 보세요',b:'등급이 오를수록 어떤 권한이 생기는지 표로 보여 드려요.',tap:1},
+  {s:'#perks',h:'등급과 권한',b:'명성은 투표, 댓글, 후보 추가처럼 광장에 기여할 때 쌓여요. 등급이 오를수록 표 오른쪽 칸이 열려요.'}]};
+let TR=null;
+const trDone=()=>{try{return JSON.parse(localStorage.getItem('dc_tour')||'{}')}catch(e){return {}}},trMark=k=>{try{const d=trDone();d[k]=1;localStorage.setItem('dc_tour',JSON.stringify(d))}catch(e){}};
+function trFind(sel){for(const s of sel.split(',')){const e=[...document.querySelectorAll(s.trim())].find(x=>{const r=x.getBoundingClientRect();return r.width>0&&r.height>0});if(e)return e}return null}
+function trStart(view,force){const L=TOUR[view];if(!L||TR)return;if(!force&&trDone()[view])return;TR={v:view,i:0,L};trMark(view);
+ const o=document.createElement('div');o.id='trO';o.innerHTML='<div class="tr-mask"></div><div class="tr-ring"></div><div class="tr-card" role="dialog" aria-live="polite"></div>';document.body.appendChild(o);
+ o.addEventListener('click',e=>{const a=e.target.closest('[data-tr]');if(!a)return;if(a.dataset.tr==='x')trEnd();else trGo(TR.i+1)});trGo(0)}
+function trEnd(){TR=null;const o=$('#trO');if(o)o.remove();removeEventListener('resize',trPlace);removeEventListener('scroll',trPlace,true)}
+function trGo(i){if(!TR)return;if(i>=TR.L.length)return trEnd();let k=i;while(k<TR.L.length&&!trFind(TR.L[k].s))k++;if(k>=TR.L.length)return trEnd();TR.i=k;const st=TR.L[k],el=trFind(st.s);TR.el=el;
+ el.scrollIntoView({block:'center',behavior:'smooth'});
+ const c=$('#trO .tr-card');c.innerHTML=`<small>${k+1} / ${TR.L.length}</small><b>${st.tap?'👆 ':''}${esc(st.h)}</b><p>${esc(st.b)}</p><div class="tr-a"><button data-tr="x">그만 보기</button>${st.tap?'<span class="tr-hint">표시된 곳을 눌러 보세요</span><button data-tr="n" class="sk">건너뛰기</button>':`<button data-tr="n" class="nx">${k+1<TR.L.length?'다음':'시작하기'}</button>`}</div>`;
+ $('#trO').classList.toggle('tap',!!st.tap);setTimeout(trPlace,350);trPlace();addEventListener('resize',trPlace);addEventListener('scroll',trPlace,true)}
+function trPlace(){if(!TR||!TR.el)return;const o=$('#trO');if(!o)return;const r=TR.el.getBoundingClientRect(),p=8,W=innerWidth,H=innerHeight;
+ const x=Math.max(2,r.left-p),y=Math.max(2,r.top-p),w=Math.min(W-4,r.width+p*2),h=Math.min(H-4,r.height+p*2);
+ const ring=o.querySelector('.tr-ring');Object.assign(ring.style,{left:x+'px',top:y+'px',width:w+'px',height:h+'px'});
+ o.querySelector('.tr-mask').style.clipPath=`path(evenodd,'M0 0H${W}V${H}H0Z M${x} ${y}h${w}v${h}h${-w}Z')`;
+ const c=o.querySelector('.tr-card'),ch=c.offsetHeight||150,below=y+h+12+ch<H-70;c.style.top=(below?y+h+12:Math.max(10,y-ch-12))+'px'}
+document.addEventListener('click',e=>{if(!TR||!TR.el||!TR.L[TR.i].tap)return;if(e.target.closest('#trO'))return;if(TR.el.contains(e.target)){const i=TR.i+1;TR.el=null;setTimeout(()=>trGo(i),900)}},true);
+function trView(){const v=typeof curView==='function'?curView():'';return v==='topic'?'explore':v}
+function trAuto(){if(TR)return;try{const ob=JSON.parse(localStorage.getItem('dc_onb')||'{}');if(!ob.done)return}catch(e){return}if(document.querySelector('.modal.on,.sheet.on,#loginSheet.on'))return;const v=trView();if(TOUR[v]&&!trDone()[v])setTimeout(()=>{if(trView()===v)trStart(v)},1800)}
+addEventListener('hashchange',()=>{if(TR)trEnd();trAuto()});setTimeout(trAuto,4000);
+/* 다시 보기 버튼 */
+(function(){const b=document.createElement('button');b.id='trHelp';b.setAttribute('aria-label','이 화면 사용법 보기');b.textContent='?';b.addEventListener('click',()=>{const v=trView();if(TOUR[v])trStart(v,true);else toast('이 화면은 따로 안내가 없어요')});document.body.appendChild(b)})();
+/* 배우 페이지를 다시 그릴 때(응원, 팬글, 평가 뒤) 스크롤 자리를 지킴 */
+(function(){const f=renderActor;let last=null;renderActor=async function(){const same=PAGE&&last===PAGE.pid,y=scrollY;const r=await f.apply(this,arguments);if(same&&y)requestAnimationFrame(()=>scrollTo(0,y));last=PAGE&&PAGE.pid;return r}})();
 
 }
 </script>

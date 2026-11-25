@@ -199,7 +199,7 @@ async function c2EnsureDeck(){if(!(DECK&&DECK.length))try{await loadDeck()}catch
 /* ---- P3 24: 포스터가 없는 웹소설, 웹툰 원작 판은 직접 만든 글자 카드로 (원작 그림은 쓰지 않음) ---- */
 const C2GP={};
 function c2GenPoster(t){if(!t)return '';if(C2GP[t.id])return C2GP[t.id];let h=0;for(const ch of String(t.id))h=(h*31+ch.charCodeAt(0))>>>0;
- const hues=[[268,330],[200,250],[150,190],[20,350],[40,10]],[a,b]=hues[h%hues.length],title=String(t.title||''),w=[];let line='';
+ const MH={'웹소설':[212,236],'웹툰':[268,300],'소설':[160,190],'만화':[20,350]},[a,b]=MH[t.src_medium]||[212,236],title=String(t.title||''),w=[];let line='';
  for(const x of title.split(/\s+/)){if((line+' '+x).trim().length>6&&line){w.push(line);line=x}else line=(line+' '+x).trim()}if(line)w.push(line);
  const fs=w.length>3?46:56,y0=420-(w.length-1)*fs*.55,med=t.src_medium||'원작',au=String(t.info||'').split(',')[0].replace(/\s*(웹소설|웹툰)$/,'');
  const e=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -307,3 +307,72 @@ function renderDeepT(){const box=$('#tDeep');if(!box)return;const t=topic();if(!
 document.addEventListener('click',async e=>{const b=e.target.closest('[data-act="dpbuy"]');if(!b)return;if(!USER){try{openLoginSheet()}catch(x){toast('로그인이 필요해요')}return}const t=topic();if(!t)return;
  if(!confirmBuy())return;b.disabled=true;try{const n=await rpc('deep_unlock_buy',{tid:t.id});if(PROF&&n)PROF.points-=n;toast(n?'심화 분석을 열었어요. 30P를 썼어요':'이미 열려 있어요');delete DEEP[t.id];loadDeepT(t.id);try{renderWho()}catch(x){}}catch(x){b.disabled=false;toast(errMsg(x))}
  function confirmBuy(){if(PROF&&PROF.points<30){toast('안목 포인트가 모자라요. 30P가 필요해요');return false}return true}});
+
+/* ---------- 크로스 미디어 수요: 줄을 누르면 어떤 판과 시트인지 펼침 ---------- */
+document.addEventListener('click',async e=>{const b=e.target.closest('[data-act="mmx"]');if(!b)return;const box=b.nextElementSibling;if(!box)return;
+ const open=b.getAttribute('aria-expanded')==='true';b.setAttribute('aria-expanded',String(!open));box.hidden=open;if(open||box.dataset.ok)return;box.innerHTML='<p class="empty3">불러오는 중이에요</p>';
+ try{const L=await rpc('media_topics',{s:b.dataset.s,d:b.dataset.d});box.dataset.ok=1;
+  box.innerHTML=(L||[]).map(x=>`<div class="mmi"><a class="mmn" href="#${esc(x.id)}"><b>${esc(x.title)}</b><small>${x.closed?'마감, ':''}투표 ${fmt(x.votes)}, 보고 싶어요 ${fmt(x.wants)}</small></a>${x.sheets?`<a class="mms" href="#${esc(x.id)}/talk">시트 ${fmt(x.sheets)}장 보기 →</a>`:'<span class="mms off">시트 0</span>'}</div>`).join('')||'<p class="empty3">아직 판이 없어요</p>'}catch(x){box.innerHTML='<p class="empty3">불러오지 못했어요</p>'}});
+
+/* ---------- 등급과 권한: 표 ---------- */
+const PERK_ROWS=[
+ ['투표, VS 한판, 토론, 캐스팅 시트',[1,1,1,1,1]],
+ ['하루 후보 추가',['10명','15명','20명','30명','50명']],
+ ['새 작품 판 제안',[0,1,1,1,1]],
+ ['댓글 등급 배지',[0,1,1,1,1]],
+ ['내 한 표가 두 표로',[0,0,1,1,1]],
+ ['배역별 디렉터스 픽',[0,0,0,1,1]],
+ ['포스터 캐스팅 디렉터 크레딧',[0,0,0,1,1]],
+ ['적중 배역 명예 크레딧',[0,0,0,0,1]]];
+renderPerks=function(){const box=$('#perks');if(!box)return;const g=PROF?grade(fm(PROF)):-1,F=PROF?fm(PROF):0,nx=GRADES[g+1];
+ const head=`<tr><th></th>${GRADES.map((x,i)=>`<th class="${i===g?'cur':''}${i<=g?' on':''}"><b>${x[1].replace(' ','<br>')}</b><small>${x[0]?'명성 '+fmt(x[0]):'시작'}</small></th>`).join('')}</tr>`;
+ const body=PERK_ROWS.map(([l,v])=>`<tr><th>${esc(l)}</th>${v.map((c,i)=>`<td class="${i===g?'cur':''}${i<=g?' on':''}">${c===1?'<i class="ok">✓</i>':c===0?'<i class="no">-</i>':`<b>${c}</b>`}</td>`).join('')}</tr>`).join('');
+ box.innerHTML=`${PROF?`<p class="pk-me">지금 <b>${GRADES[Math.max(g,0)][1]}</b>, 명성 ${fmt(F)}${nx?`. ${nx[1]}까지 ${fmt(nx[0]-F)} 남았어요`:''}</p>`:''}<div class="pk-wrap"><table class="pk-t"><thead>${head}</thead><tbody>${body}</tbody></table></div><p class="dl">명성은 투표, 댓글, 후보 추가처럼 광장에 기여할 때 쌓여요. 민심 픽에서 딴 포인트는 명성에 들어가지 않아요.</p>`};
+
+/* ================= 탭별 인터랙티브 튜토리얼 (11/25) =================
+   탭에 처음 들어오면 한 번 자동으로, 오른쪽 위 ? 버튼으로 언제든 다시. 탭 단계는 그 자리를 눌러야 넘어감 */
+const TOUR={
+ deck:[
+  {s:'#tdRow',h:'이건 뭐예요?',b:'지금 투표 중인 작품이에요. 포스터 둘레 링은 내가 고른 배역 비율, 숫자는 마감까지 남은 날이에요.'},
+  {s:'.hc-hd',h:'지금 고르는 배역',b:'원작에서 누가 연기했는지와 함께, 이번 리메이크에서 이 배역을 누가 맡으면 좋을지 고르는 자리예요.'},
+  {s:'#hcArc .card.on',h:'여기를 탭해 보세요',b:'마음에 드는 배우 카드를 누르면 내 픽이 돼요. 옆으로 밀면 다른 후보가 나와요.',tap:1},
+  {s:'.hc-bar',h:'다음은 어디로?',b:'다음 배역은 같은 작품의 다른 배역, 후보 추가는 원하는 배우 올리기, 다음 작품은 다른 작품으로 넘어가기예요.'},
+  {s:'#tabbar',h:'다른 탭도 둘러보세요',b:'작품, VS 한판, 랭킹, 내 페이지가 있어요. 탭마다 처음 들어가면 짧게 안내해 드려요.'}],
+ explore:[
+  {s:'#gs',h:'이건 뭐예요?',b:'작품이나 배우 이름으로 바로 찾는 검색창이에요.'},
+  {s:'.c2chips',h:'여기를 탭해 보세요',b:'웹소설 실사화, 한국판 리메이크처럼 종류별로 걸러 볼 수 있어요.',tap:1},
+  {s:'.c2hot,.c2c',h:'작품 카드',b:'카드를 누르면 작품 페이지로 가요. 배역별 투표, 결과와 토론방, 심화 분석이 모여 있어요.'},
+  {s:'#propBox',h:'원하는 작품이 없다면',b:'캐스팅 덕후 등급부터 새 작품 판을 직접 제안할 수 있어요.'}],
+ vs:[
+  {s:'.vstabs',h:'이건 뭐예요?',b:'내 픽은 내 취향대로 둘 중 하나를 고르는 대결, 민심 픽은 광장이 누구를 더 고를지 포인트를 걸고 맞히는 예측이에요.'},
+  {s:'.vsf',h:'여기를 탭해 보세요',b:'더 어울린다고 생각하는 쪽 사진을 누르면 바로 득표 결과가 나와요.',tap:1},
+  {s:'.vstk',h:'연속 보너스',b:'하루에 5판, 10판, 20판을 하면 안목 포인트를 10, 20, 50 받아요.'},
+  {s:'.vstabs [data-act="vsmode"]:last-child,.vstabs button:last-child',h:'민심 픽도 눌러 보세요',b:'맞히면 건 포인트보다 더 돌려받아요. 포인트는 현금이나 상품으로 바꿀 수 없어요.',tap:1}],
+ rank:[
+  {s:'.rknav',h:'이건 뭐예요?',b:'배우 화력, 메타 지수, 안목 랭킹, 크로스 미디어 수요를 골라 볼 수 있어요.'},
+  {s:'.rknav [data-k="perks"]',h:'여기를 탭해 보세요',b:'등급이 오를수록 어떤 권한이 생기는지 표로 보여 드려요.',tap:1},
+  {s:'#perks',h:'등급과 권한',b:'명성은 투표, 댓글, 후보 추가처럼 광장에 기여할 때 쌓여요. 등급이 오를수록 표 오른쪽 칸이 열려요.'}]};
+let TR=null;
+const trDone=()=>{try{return JSON.parse(localStorage.getItem('dc_tour')||'{}')}catch(e){return {}}},trMark=k=>{try{const d=trDone();d[k]=1;localStorage.setItem('dc_tour',JSON.stringify(d))}catch(e){}};
+function trFind(sel){for(const s of sel.split(',')){const e=[...document.querySelectorAll(s.trim())].find(x=>{const r=x.getBoundingClientRect();return r.width>0&&r.height>0});if(e)return e}return null}
+function trStart(view,force){const L=TOUR[view];if(!L||TR)return;if(!force&&trDone()[view])return;TR={v:view,i:0,L};trMark(view);
+ const o=document.createElement('div');o.id='trO';o.innerHTML='<div class="tr-mask"></div><div class="tr-ring"></div><div class="tr-card" role="dialog" aria-live="polite"></div>';document.body.appendChild(o);
+ o.addEventListener('click',e=>{const a=e.target.closest('[data-tr]');if(!a)return;if(a.dataset.tr==='x')trEnd();else trGo(TR.i+1)});trGo(0)}
+function trEnd(){TR=null;const o=$('#trO');if(o)o.remove();removeEventListener('resize',trPlace);removeEventListener('scroll',trPlace,true)}
+function trGo(i){if(!TR)return;if(i>=TR.L.length)return trEnd();let k=i;while(k<TR.L.length&&!trFind(TR.L[k].s))k++;if(k>=TR.L.length)return trEnd();TR.i=k;const st=TR.L[k],el=trFind(st.s);TR.el=el;
+ el.scrollIntoView({block:'center',behavior:'smooth'});
+ const c=$('#trO .tr-card');c.innerHTML=`<small>${k+1} / ${TR.L.length}</small><b>${st.tap?'👆 ':''}${esc(st.h)}</b><p>${esc(st.b)}</p><div class="tr-a"><button data-tr="x">그만 보기</button>${st.tap?'<span class="tr-hint">표시된 곳을 눌러 보세요</span><button data-tr="n" class="sk">건너뛰기</button>':`<button data-tr="n" class="nx">${k+1<TR.L.length?'다음':'시작하기'}</button>`}</div>`;
+ $('#trO').classList.toggle('tap',!!st.tap);setTimeout(trPlace,350);trPlace();addEventListener('resize',trPlace);addEventListener('scroll',trPlace,true)}
+function trPlace(){if(!TR||!TR.el)return;const o=$('#trO');if(!o)return;const r=TR.el.getBoundingClientRect(),p=8,W=innerWidth,H=innerHeight;
+ const x=Math.max(2,r.left-p),y=Math.max(2,r.top-p),w=Math.min(W-4,r.width+p*2),h=Math.min(H-4,r.height+p*2);
+ const ring=o.querySelector('.tr-ring');Object.assign(ring.style,{left:x+'px',top:y+'px',width:w+'px',height:h+'px'});
+ o.querySelector('.tr-mask').style.clipPath=`path(evenodd,'M0 0H${W}V${H}H0Z M${x} ${y}h${w}v${h}h${-w}Z')`;
+ const c=o.querySelector('.tr-card'),ch=c.offsetHeight||150,below=y+h+12+ch<H-70;c.style.top=(below?y+h+12:Math.max(10,y-ch-12))+'px'}
+document.addEventListener('click',e=>{if(!TR||!TR.el||!TR.L[TR.i].tap)return;if(e.target.closest('#trO'))return;if(TR.el.contains(e.target)){const i=TR.i+1;TR.el=null;setTimeout(()=>trGo(i),900)}},true);
+function trView(){const v=typeof curView==='function'?curView():'';return v==='topic'?'explore':v}
+function trAuto(){if(TR)return;try{const ob=JSON.parse(localStorage.getItem('dc_onb')||'{}');if(!ob.done)return}catch(e){return}if(document.querySelector('.modal.on,.sheet.on,#loginSheet.on'))return;const v=trView();if(TOUR[v]&&!trDone()[v])setTimeout(()=>{if(trView()===v)trStart(v)},1800)}
+addEventListener('hashchange',()=>{if(TR)trEnd();trAuto()});setTimeout(trAuto,4000);
+/* 다시 보기 버튼 */
+(function(){const b=document.createElement('button');b.id='trHelp';b.setAttribute('aria-label','이 화면 사용법 보기');b.textContent='?';b.addEventListener('click',()=>{const v=trView();if(TOUR[v])trStart(v,true);else toast('이 화면은 따로 안내가 없어요')});document.body.appendChild(b)})();
+/* 배우 페이지를 다시 그릴 때(응원, 팬글, 평가 뒤) 스크롤 자리를 지킴 */
+(function(){const f=renderActor;let last=null;renderActor=async function(){const same=PAGE&&last===PAGE.pid,y=scrollY;const r=await f.apply(this,arguments);if(same&&y)requestAnimationFrame(()=>scrollTo(0,y));last=PAGE&&PAGE.pid;return r}})();

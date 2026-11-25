@@ -77,7 +77,7 @@ async function loadAvRoom(nick,me){const box=$('#avroom');if(!box)return;let ite
 document.addEventListener('click',async e=>{const b=e.target.closest('[data-act]');if(!b)return;const a=b.dataset.act;
  if(a==='fc-prev'){fcGo(-1);return}if(a==='fc-next'){fcGo(1);return}
  if(a==='fc-year'){const tr=$('#fcTrack');const c=tr&&[...tr.querySelectorAll('.fc-c')].find(x=>x.dataset.year===b.dataset.y);if(c)tr.scrollTo({left:c.offsetLeft-(tr.clientWidth-c.offsetWidth)/2,behavior:'smooth'});return}
- if(a==='wk-open'){const tr=$('#fcTrack');if(tr&&tr._drag&&Date.now()-tr._drag<300)return;e.preventDefault();openWork(b.dataset.m,+b.dataset.id,b.dataset.i!=null?+b.dataset.i:null);return}
+ if(a==='wk-open'){const tr=$('#fcTrack');if(tr&&tr._drag&&Date.now()-tr._drag<300)return;e.preventDefault();const rt=b.classList.contains('cr-rate'),pw=openWork(b.dataset.m,+b.dataset.id,b.dataset.i!=null?+b.dataset.i:null);if(rt)Promise.resolve(pw).then(()=>{const dd=document.querySelector('#wkBox details.nf');if(dd){dd.open=true;dd.scrollIntoView({block:'center',behavior:'smooth'})}});return}
  if(a==='den-light'){const d=$('#den');const on=d.classList.toggle('dark');b.setAttribute('aria-pressed',on);b.textContent=on?'조명 켜기':'조명';return}
  if(a==='wk-close'){closeWork();return}
  if(a==='wk-go'){closeWork();return}

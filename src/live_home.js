@@ -115,12 +115,13 @@ ${ty?`<div class="mp-type"><span class="tg">${esc(ty.tag)}</span><p>${esc(ty.say
  const same=s.tot>0&&s.rank===1,u=hcImg(s.mine.name);return `<div class="mr${same?' same':''}"><span class="ph"${u?` style="background-image:url('${esc(u)}')"`:''}></span><div class="tx"><span class="ch">${esc(SLOT[r.slot]||'')} ${esc(String(r.ch).replace(/\s*\(.*\)$/,''))}${r.orig?`<em>원작 ${esc(r.orig)}</em>`:''}</span><b>${dispHTML(s.mine.name)}</b><small>${!s.tot?'아직 광장 표가 없어요':same?'광장 1위와 같은 선택':`광장 1위 ${esc(dispName(s.top.name).replace(/\s*\(.*\)$/,''))} ${Math.round(s.topShare*100)}%`}</small></div><span class="pc"><b>${s.tot?Math.round(s.share*100)+'%':'첫 표'}</b><small>${s.tot?`${s.rank}위 / ${s.n}명`:''}</small></span></div>`}).join('')}</div>
 ${ll.length?`<div class="mp-links"><b>원작과의 연결고리</b>${ll.map(x=>`<p>${x}</p>`).join('')}</div>`:''}
 <div class="mp-n">${S.some(s=>s.tot)?`배역별 총 ${S.map(s=>s.tot).join(', ')}표 기준`:''}</div>
-<div class="hc-rel" id="hcRel">${hcRelLocal(t,S)}</div><div class="hc-links"><a href="#${esc(t.id)}/talk">결과와 토론방</a><button data-act="dk-nexttopic">다음 작품</button></div></div>`;hcRelServer(t)}
+<div class="hc-rel hot" id="hcRel">${hcRelLocal(t,S)}</div><div class="hc-go"><a class="hb gt" href="#${esc(t.id)}/talk"><span>💬</span>결과와 토론방</a><button class="hb gn" data-act="dk-nexttopic">다음 작품<span>›</span></button></div></div>`;hcRelServer(t);hcRelRoles(t)}
 const _hcRender2=renderDeck;
 renderDeck=function(){const box=$('#deck'),t=DECKV&&curTopic();if(box&&t&&DECK.length&&DR>=t.roles.length){cardLeave();return renderDoneC(box,t)}return _hcRender2()};
 
 if(/[?&]test=1/.test(location.search))window.__hcT=f=>f({DECK,deep:(t,d)=>{DEEP[t]=d;renderDeepT()},setDI:v=>DI=v,setDR:v=>DR=v,renderDeck:()=>renderDeck(),vsLegacy:async()=>{VS_N=8;await vsTrySpecial(false);renderDuel()},setStreak:n=>{STREAK=n},addCast:async(nm)=>{nextRole=()=>{};await loadNames([nm]);hcAddCast(curTopic(),curRole().id,999999,nm)}});
 
+const HC_RELHD='<b class="hd"><span>🔗 이어서 고르기</span><small>내 픽과 이어진 배역</small></b>';
 /* 이어서 고르기: 리포트 끝에서 다음에 할 일을 이유와 함께 2~3개 추천해 계속 이어지게 */
 function hcRelItem(di,x,why,ch){const d=DECK[di],v=verLabel(d.cat),u=d.vposter||d.poster;return `<a class="rl" href="#" data-act="dk-goto" data-i="${di}"><span class="ph"${u?` style="background-image:url('${esc(u)}')"`:''}></span><span class="tx"><b>《${esc(d.title)}》${v?' '+esc(v):''} ${esc(String(ch).replace(/\s*\(.*\)$/,''))} 역</b><small>${why}</small></span><i>›</i></a>`}
 function hcRelLocal(t,S){const out=[],used=new Set([t.id]),pd=pend();
@@ -130,10 +131,10 @@ function hcRelLocal(t,S){const out=[],used=new Set([t.id]),pd=pend();
    if(r){used.add(d.id);out.push(hcRelItem(i,d,`내 픽 <em>${esc(dispName(nm).replace(/\s*\(.*\)$/,''))}</em>, 여기서도 후보예요`,r.ch))}}}
  const i2=DECK.findIndex(d=>!used.has(d.id)&&new Date(d.closes_at)-Date.now()<864e5&&new Date(d.closes_at)>Date.now()&&(d.roles||[]).every(r=>open(d,r)));
  if(i2>=0&&out.length<3){used.add(DECK[i2].id);out.push(hcRelItem(i2,DECK[i2],'오늘 마감, 아직 한 표도 안 던졌어요',DECK[i2].roles[0].ch))}
- HC.relUsed=used;return out.length?`<b class="hd">이어서 고르기</b>${out.join('')}`:''}
+ HC.relUsed=used;return out.length?HC_RELHD+out.join(''):''}
 async function hcRelServer(t){const x=await rpc('duel_next',{skip:[],prefer:t.id}).catch(()=>null);const box=$('#hcRel');if(!x||!x.why||!box||(HC.relUsed&&HC.relUsed.has(x.tid)))return;
  const di=DECK.findIndex(d=>d.id===x.tid);if(di<0)return;const why=esc(x.why.replace(/(\S+)이\(가\)/,(m,n)=>jj(n,'이','가')));
- if(!box.querySelector('.hd'))box.insertAdjacentHTML('afterbegin','<b class="hd">이어서 고르기</b>');box.querySelector('.hd').insertAdjacentHTML('afterend',hcRelItem(di,DECK[di],why,x.ch))}
+ if(!box.querySelector('.hd'))box.insertAdjacentHTML('afterbegin',HC_RELHD);box.querySelector('.hd').insertAdjacentHTML('afterend',hcRelItem(di,DECK[di],why,x.ch))}
 
 /* ===== 광장 상단 할 일 줄(11/25): 육각 타일 대신 포스터 원. 투표 중인 판만 마감 순, 테두리 링은 내 진행률, 다 끝낸 판은 뒤로, 발표는 맨 끝 "결과" 하나로 ===== */
 function todoRow(){const out=[],pd=pend();
@@ -209,3 +210,12 @@ document.addEventListener('click',e=>{const it=e.target.closest('[data-psg-id]')
 async function psgResolve(inp){if(!inp)return null;if(inp.dataset.pid&&inp.dataset.pnm===inp.value.trim())return +inp.dataset.pid;
  const L=await psgFetch(inp);const ex=L.filter(x=>x.exact);if(ex.length===1){inp.dataset.pid=ex[0].id;inp.dataset.pnm=ex[0].name;inp.value=ex[0].name;return ex[0].id}
  toast(L.length?'아래 목록에서 배우를 골라 주세요':'배우 목록에 없는 이름이에요');inp.focus();return null}
+
+/* 이어서 고르기(11/25): 내 픽 배우가 원작에서 연기한 배역, 함께 출연한 배우의 배역을 서버에서 찾아 맨 위에 */
+async function hcRelRoles(t){if(!USER)return;const L=await rpc('rel_roles',{tid:t.id,lim:4}).catch(()=>null);const box=$('#hcRel');if(!L||!L.length||!box)return;
+ const used=HC.relUsed||new Set(),cl=n=>dispName(n||'').replace(/\s*\(.*\)$/,'');let add=[];
+ for(const x of L){if(used.has(x.topic_id))continue;used.add(x.topic_id);const di=DECK.findIndex(d=>d.id===x.topic_id),p=cl(x.pick),o=cl(x.orig);
+  const why=x.kind==='own'?`내 픽 <em>${esc(p)}</em>, 원작에서 직접 연기한 배역이에요`:`내 픽 <em>${esc(p)}</em>${jj(p,'과','와').slice(p.length)} ${x.via?`《${esc(x.via)}》에 `:''}함께 나온 ${esc(o)}의 배역`;
+  if(di>=0)add.push(hcRelItem(di,DECK[di],why,x.ch));else{const tt=(typeof TOPICS!=='undefined'?TOPICS:[]).find(q=>q.id===x.topic_id),pu=tt&&typeof shPoster==='function'?shPoster(tt):'';add.push(`<a class="rl" href="#${esc(x.topic_id)}"><span class="ph"${pu?` style="background-image:url('${esc(pu)}')"`:''}></span><span class="tx"><b>《${esc(x.title)}》 ${esc(String(x.ch).replace(/\s*\(.*\)$/,''))} 역</b><small>${why}</small></span><i>›</i></a>`)}if(add.length>=2)break}
+ if(!add.length)return;HC.relUsed=used;if(!box.querySelector('.hd'))box.insertAdjacentHTML('afterbegin',HC_RELHD);box.querySelector('.hd').insertAdjacentHTML('afterend',add.join(''));
+ const rs=[...box.querySelectorAll('.rl')];rs.slice(4).forEach(e=>e.remove())}

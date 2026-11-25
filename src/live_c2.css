@@ -328,3 +328,48 @@ body[data-view=rank] .side::before{display:none!important;content:none!important
 .dp-sub{margin-top:10px}.dp-sub small{display:block;color:#888;font-size:11px;margin-bottom:4px}
 .dp-dr{display:flex;justify-content:space-between;font-size:12px;padding:3px 0;border-bottom:1px dashed #222}.dp-dr b{font-weight:600;color:#ccc}
 .dp-tw{display:flex;flex-wrap:wrap;gap:6px}.dp-tw span{font-size:12px;padding:3px 8px;border-radius:10px;background:#1a1a1a;border:1px solid #2c2c2c}
+/* 크로스 미디어 펼침 */
+button.rk.mmr{width:100%;text-align:left;background:none;border:0;border-bottom:1px solid #1f1f1f;color:inherit;font:inherit;cursor:pointer}
+.mmr .ar{font-style:normal;color:#D4FF3A;font-weight:900;margin:0 2px}
+.mmr .cv{font-style:normal;display:inline-block;margin-left:6px;color:#888;transition:transform .2s}
+.mmr[aria-expanded="true"] .cv{transform:rotate(180deg)}
+.mmt{margin:0 0 8px 28px;border-left:2px solid #D4FF3A44;padding-left:10px}
+.mmi{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 0;border-bottom:1px dashed #222}
+.mmn{color:#fff;text-decoration:none;min-width:0}.mmn b{display:block;font-size:14px}.mmn small{font-size:11px;color:#888}
+.mms{flex:none;font-size:12px;font-weight:700;color:#D4FF3A;text-decoration:none;padding:5px 10px;border:1px solid #4a5a14;border-radius:12px}.mms.off{color:#666;border-color:#2a2a2a}
+/* 등급과 권한 표 */
+.pk-me{font-size:13px;color:#ccc;margin:4px 0 10px}.pk-me b{color:#D4FF3A}
+.pk-wrap{overflow-x:auto;margin:0 -4px;padding:0 4px}
+.pk-t{border-collapse:separate;border-spacing:0;width:100%;min-width:440px;font-size:12px}
+.pk-t th,.pk-t td{padding:8px 4px;text-align:center;border-bottom:1px solid #1f1f1f}
+.pk-t tbody th{text-align:left;font-weight:600;color:#ccc;padding-right:8px;min-width:104px;position:sticky;left:0;background:#0a0a0a}
+.pk-t thead th{vertical-align:bottom;color:#777;font-weight:700}.pk-t thead th b{display:block;font-size:12px;line-height:1.25}.pk-t thead th small{display:block;font-size:10px;font-weight:500;margin-top:3px}
+.pk-t thead th.on{color:#fff}
+.pk-t td.on{background:rgba(212,255,58,.05)}
+.pk-t .cur{background:rgba(212,255,58,.14)!important;box-shadow:inset 1px 0 #D4FF3A,inset -1px 0 #D4FF3A}
+.pk-t thead th.cur{box-shadow:inset 1px 0 #D4FF3A,inset -1px 0 #D4FF3A,inset 0 1px #D4FF3A;border-radius:10px 10px 0 0;color:#D4FF3A}
+.pk-t tbody tr:last-child .cur{box-shadow:inset 1px 0 #D4FF3A,inset -1px 0 #D4FF3A,inset 0 -1px #D4FF3A}
+.pk-t .ok{font-style:normal;color:#D4FF3A;font-weight:900;font-size:14px}.pk-t td:not(.on) .ok{color:#7a8a3a}
+.pk-t .no{font-style:normal;color:#333}
+.pk-t td b{color:#fff;font-size:12px}
+.pk-t tbody tr td:nth-child(n){transition:background .2s}
+/* 배우 팬 채널: 사진을 가리지 않고 전체를 먼저 보여준 뒤 정보는 사진 아래로 (11/25) */
+.pg.actor .ahero.c2a{background:none;padding:0 16px 16px}
+.pg.actor .ahero.c2a::before{content:'';display:block;margin:0 -16px 14px;aspect-ratio:2/3;max-height:78vh;background:linear-gradient(180deg,rgba(10,10,10,0) 88%,#0A0A0A),var(--ab) center top/cover no-repeat}
+/* 튜토리얼 */
+#trO{position:fixed;inset:0;z-index:9000;pointer-events:none}
+#trO .tr-mask{position:fixed;inset:0;background:rgba(0,0,0,.72);pointer-events:auto}
+#trO .tr-ring{position:fixed;border:2px solid #D4FF3A;border-radius:16px;box-shadow:0 0 0 4px rgba(212,255,58,.25);transition:all .3s ease;pointer-events:none}
+#trO.tap .tr-ring{animation:trp 1.2s ease-in-out infinite}
+@keyframes trp{50%{box-shadow:0 0 0 10px rgba(212,255,58,.08)}}
+#trO .tr-card{position:fixed;left:50%;transform:translateX(-50%);width:min(340px,calc(100vw - 32px));background:#161616;border:1px solid #333;border-radius:18px;padding:14px 16px 12px;color:#fff;pointer-events:auto;box-shadow:0 18px 40px rgba(0,0,0,.6);transition:top .3s ease}
+#trO .tr-card small{color:#D4FF3A;font-size:11px;font-weight:700}
+#trO .tr-card b{display:block;font-size:17px;margin:4px 0 6px}
+#trO .tr-card p{margin:0;font-size:13px;line-height:1.55;color:#cfcfcf}
+#trO .tr-a{display:flex;align-items:center;gap:8px;margin-top:12px}
+#trO .tr-a button{border:1px solid #333;background:none;color:#999;border-radius:12px;padding:8px 12px;font-size:13px;cursor:pointer}
+#trO .tr-a .nx{margin-left:auto;background:#D4FF3A;border-color:#D4FF3A;color:#0a0a0a;font-weight:800}
+#trO .tr-a .sk{margin-left:auto}
+#trO .tr-hint{font-size:11px;color:#D4FF3A}
+#trHelp{position:fixed;top:10px;right:max(10px,calc(50vw - var(--appw,480px)/2 + 10px));z-index:800;width:30px;height:30px;border-radius:50%;border:1px solid #3a3a3a;background:rgba(18,18,18,.85);color:#ddd;font-weight:800;font-size:14px;cursor:pointer;backdrop-filter:blur(6px)}
+body[data-view="page"] #trHelp{display:none}
