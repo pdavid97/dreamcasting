@@ -797,3 +797,8 @@ body{word-break:keep-all;overflow-wrap:break-word}
 .hca-go{width:100%;height:50px;border:0;border-radius:14px;background:#D4FF3A;color:#162000;font-size:15px;font-weight:800;cursor:pointer}
 .hca-more{display:block;text-align:center;margin-top:12px;font-size:12px;color:#8A8A8A}
 .hc-bar .hb{flex-direction:row;white-space:nowrap;padding:0 10px;line-height:1}
+/* 새로 올린 후보 카드가 위에서 떨어져 들어옴 */
+.hc-arc .card.new-in{animation:hcNewIn .65s cubic-bezier(.2,1.3,.4,1) both,hcGlw 2.2s ease-in-out .65s infinite}
+@keyframes hcNewIn{0%{transform:translateY(-120%) rotate(-14deg) scale(.7);opacity:0}70%{opacity:1}100%{transform:translateY(-10px) scale(1);opacity:1}}
+.hc-arc .card.is-new .no::after{content:'NEW';margin-left:6px;font-size:14px;vertical-align:top;background:#D4FF3A;color:#162000;border-radius:4px;padding:1px 5px;text-shadow:none}
+.hc-bar.two{grid-template-columns:1.35fr 1fr}

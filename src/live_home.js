@@ -30,7 +30,7 @@ function renderDeckC(box,t,r){const cs=hcCands(r),n=cs.length,tot=r.cands.reduce
 <div class="hc-hd"><div><a class="hc-ti" href="#${esc(t.id)}" aria-label="${esc(t.title)} 작품과 후보 전체 보기">${esc(t.title)}${ver?' '+esc(ver):''}${t.season>1?`, 시즌 ${t.season}`:''}<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg></a><h1>${esc(String(r.ch).replace(/\s*\(.*\)$/,''))} 역은 <em>누구?</em></h1></div><div class="clk">${hcClose(t)}<small>배역 ${Math.min(DR+1,t.roles.length)}/${t.roles.length}</small><span class="steps">${t.roles.map((x,i)=>`<i class="${i<DR?'ok':i===DR?'on':''}"></i>`).join('')}</span></div></div>
 <div class="hc-arc${HC.voted?' picked':''}" id="hcArc">${cards}${HC.voted?'<div class="cast">CAST!</div>':''}</div>
 <p class="hc-hint" id="hcHint">${hcHint(r,cs)}</p>
-<div class="hc-bar"><button class="hb" data-act="dk-skip">패스</button><button class="hb main" data-act="hc-add" data-rid="${r.id}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>후보 추가</button><button class="hb" data-act="dk-nexttopic">${DECK[DI+1]?'다음 작품':'작품 패스'}<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button></div></div>`;
+<div class="hc-bar${DR<t.roles.length-1?'':' two'}">${DR<t.roles.length-1?`<button class="hb" data-act="dk-skip" aria-label="이 배역은 건너뛰고 같은 작품의 다음 배역으로">다음 배역</button>`:''}<button class="hb main" data-act="hc-add" data-rid="${r.id}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>후보 추가</button><button class="hb" data-act="dk-nexttopic">${DECK[DI+1]?'다음 작품':'작품 넘기기'}<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button></div></div>`;
  hcUpdate();hcLoadQuote(t.id);hcTodoFocus();
  clearInterval(HC.timer);HC.timer=setInterval(()=>{const el=document.querySelector('.hc-rail');const t2=curTopic(),r2=curRole();if(!el||!t2||!r2||!DECKV){clearInterval(HC.timer);return}HC.ri++;el.outerHTML=hcRail(t2,r2)},3600)}
 function hcUpdate(){const arc=$('#hcArc'),t=curTopic(),r=curRole();if(!arc||!r)return;const cs=hcCands(r),n=cs.length;
@@ -115,7 +115,7 @@ ${ll.length?`<div class="mp-links"><b>원작과의 연결고리</b>${ll.map(x=>`
 const _hcRender2=renderDeck;
 renderDeck=function(){const box=$('#deck'),t=DECKV&&curTopic();if(box&&t&&DECK.length&&DR>=t.roles.length){cardLeave();return renderDoneC(box,t)}return _hcRender2()};
 
-if(/[?&]test=1/.test(location.search))window.__hcT=f=>f({DECK,setDI:v=>DI=v,setDR:v=>DR=v,renderDeck:()=>renderDeck(),vsLegacy:async()=>{VS_N=8;await vsTrySpecial(false);renderDuel()}});
+if(/[?&]test=1/.test(location.search))window.__hcT=f=>f({DECK,setDI:v=>DI=v,setDR:v=>DR=v,renderDeck:()=>renderDeck(),vsLegacy:async()=>{VS_N=8;await vsTrySpecial(false);renderDuel()},addCast:async(nm)=>{nextRole=()=>{};await loadNames([nm]);hcAddCast(curTopic(),curRole().id,999999,nm)}});
 
 /* 이어서 고르기: 리포트 끝에서 다음에 할 일을 이유와 함께 2~3개 추천해 계속 이어지게 */
 function hcRelItem(di,x,why,ch){const d=DECK[di],v=verLabel(d.cat),u=d.vposter||d.poster;return `<a class="rl" href="#" data-act="dk-goto" data-i="${di}"><span class="ph"${u?` style="background-image:url('${esc(u)}')"`:''}></span><span class="tx"><b>《${esc(d.title)}》${v?' '+esc(v):''} ${esc(String(ch).replace(/\s*\(.*\)$/,''))} 역</b><small>${why}</small></span><i>›</i></a>`}
@@ -163,4 +163,14 @@ document.addEventListener('click',async e=>{const b=e.target.closest('[data-act=
  if(!USER||!PROF){track('login_prompt',{t:t&&t.id,r:rid,m:{add:true}});if(sh)sh.remove();openLoginSheet();return}
  g.disabled=true;try{const cid=await rpc('add_candidate',{rid,nm,pitch:pitch||null});track('cand_add',{t:t&&t.id,r:rid,c:cid,m:{pitch:!!pitch,from:'bar'}});toast(`${nm} 후보를 올리고 한 표 넣었어요`);if(r&&r.id===rid&&!r.mine)r.mine=cid;
   if(sh){sh.classList.remove('on');setTimeout(()=>sh.remove(),250)}
-  const fresh=await rpc('vote_deck',{lim:16}).catch(()=>null);const ft=fresh&&t&&fresh.find(x=>x.id===t.id);if(ft)Object.assign(t,{seen:ft.seen,roles:ft.roles});nextRole()}catch(err){g.disabled=false;toast(errMsg(err))}});
+  const [fresh]=await Promise.all([rpc('vote_deck',{lim:16}).catch(()=>null),(typeof loadNames==='function'?loadNames([nm]).catch(()=>{}):null)]);
+  const ft=fresh&&t&&fresh.find(x=>x.id===t.id);if(ft)Object.assign(t,{seen:ft.seen,roles:ft.roles});
+  hcAddCast(t,rid,cid,nm)}catch(err){g.disabled=false;toast(errMsg(err))}});
+/* 새 후보를 카드 더미 맨 앞에 끼워 넣고, 날아 들어오는 카드에 CAST 도장을 찍은 뒤 다음 배역으로 */
+function hcAddCast(t,rid,cid,nm){const r=curRole();if(!r||r.id!==rid||!DECKV||!$('#hcArc')){nextRole();return}
+ r.cands=r.cands||[];let c=r.cands.find(x=>x.id===cid);if(!c){c={id:cid,name:nm,votes:1};}r.cands=[c,...r.cands.filter(x=>x.id!==cid)];r.mine=cid;
+ HC.key=t.id+'|'+r.id;HC.sel=0;HC.confirm=false;HC.voted=false;renderDeck();
+ const el=document.querySelector('#hcArc .card[data-hc="0"]');if(el){el.classList.add('new-in','is-new');el.addEventListener('animationend',ev=>{if(ev.animationName==='hcNewIn')el.classList.remove('new-in')})}
+ const h=$('#hcHint');if(h)h.textContent=`${dispName(nm)} 님이 후보로 들어왔어요`;
+ const key=HC.key;setTimeout(()=>{if(HC.key!==key)return;HC.voted=true;try{navigator.vibrate&&navigator.vibrate([12,40,24])}catch(e){}hcUpdate();const h2=$('#hcHint');if(h2)h2.textContent=`${dispName(nm)}에게 첫 표를 던졌어요`;
+  setTimeout(()=>{if(HC.key===key)nextRole()},1500)},700)}
