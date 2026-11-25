@@ -17,10 +17,19 @@ renderShelves=function(){const box=$('#home');if(!box)return;if(!(DECK&&DECK.len
  const byD=L.slice().sort((a,b)=>new Date(a.closes_at)-new Date(b.closes_at)),soon=byD.filter(t=>new Date(t.closes_at)-Date.now()<3*864e5).slice(0,6),rest=byD.filter(t=>!soon.includes(t));
  box.innerHTML=`<div class="c2w"><div class="c2t"><small>지금 열린 판 ${open.length}개</small><h1>어떤 작품을 <em>캐스팅</em>할까요</h1></div>
  <div class="c2chips"><button data-act="excat" data-c="" class="${EXCAT?'':'on'}">전체</button>${cats.map(c=>`<button data-act="excat" data-c="${esc(c.id)}" class="${EXCAT===c.id?'on':''}">${esc(c.name)}</button>`).join('')}</div>
+ ${!EXCAT?c2Buzz():''}
  ${soon.length?`<div class="c2h"><b>마감 임박</b></div><div class="c2hot">${soon.map(t=>c2Card(t,1)).join('')}</div>`:''}
  ${rest.length?`<div class="c2h"><b>모든 판</b></div><div class="c2g">${rest.map(t=>c2Card(t)).join('')}</div>`:''}
  ${!EXCAT&&closed.length?`<div class="c2h"><b>결과 발표</b></div><div class="c2hot sm">${closed.slice(0,10).map(t=>c2Card(t)).join('')}</div>`:''}
  <a class="c2add" href="#make"><b>+</b>보고 싶은 작품 제안하기</a></div>`};
+
+
+/* ---- 지금 화제작(넷플릭스 Top 10, Trakt, TVmaze) ---- */
+var C2BZ=null;
+function c2BzTag(x){return x.kr?`넷플릭스 한국 ${x.kr}위`:x.gl?`넷플릭스 전세계 ${x.gl}위`:x.tt?`Trakt 급상승 ${x.tt}위`:'스트리밍 화제작'}
+function c2Buzz(){if(C2BZ===null){C2BZ=[];sb.rpc('buzz_cards',{n:12}).then(({data})=>{C2BZ=(data||[]);if(HOMEV&&C2BZ.length)renderShelves()}).catch(()=>{})}
+ const L=(C2BZ||[]).slice().sort((a,b)=>(b.tid?1:0)-(a.tid?1:0)).slice(0,10);if(!L.length)return'';
+ return `<div class="c2h"><b>지금 화제작</b></div><div class="c2bz">${L.map(x=>{const p=x.poster?'https://image.tmdb.org/t/p/w185'+x.poster:'',inner=`<span class="ph"${p?` style="background-image:url('${esc(p)}')"`:''}>${p?'':`<i>${esc(x.title)}</i>`}</span><span class="tg">${esc(c2BzTag(x))}</span><b>${esc(x.title)}</b><small>${x.tid?'판 열림':'판 준비 중'}</small>`;return x.tid?`<a class="bz on" href="#${esc(x.tid)}">${inner}</a>`:`<span class="bz">${inner}</span>`}).join('')}</div>`}
 
 /* ---- 작품 상세: 배역 보드 ---- */
 var C2SEL=null;

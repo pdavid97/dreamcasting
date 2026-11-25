@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>드림캐스팅 판 승인</title>
+<meta name="robots" content="noindex">
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#0A0A0A;color:#eee;font:15px/1.45 -apple-system,'Noto Sans KR',sans-serif}
+.w{max-width:520px;margin:0 auto;padding:16px}
+h1{font-size:20px;margin:6px 0 4px}
+.sub{color:#999;font-size:13px;margin-bottom:14px}
+.card{background:#141414;border:1px solid #262626;border-radius:16px;padding:14px;margin-bottom:14px}
+.hd{display:flex;gap:12px}
+.hd img{width:64px;height:96px;object-fit:cover;border-radius:8px;background:#1A1A1A;flex:none}
+.t{font-weight:700;font-size:17px}
+.i{color:#aaa;font-size:13px}
+.sig{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.sig span{font-size:12px;background:#1A1A1A;border:1px solid #262626;border-radius:999px;padding:2px 8px;color:#D4FF3A}
+.role{margin-top:10px;padding-top:10px;border-top:1px solid #262626}
+.role b{font-size:14px}
+.role .o{color:#999;font-size:12px}
+.role .c{font-size:13px;color:#ddd;margin-top:3px}
+.act{display:flex;gap:8px;margin-top:12px;align-items:center}
+button,select{font:inherit;border-radius:12px;border:1px solid #262626;background:#1A1A1A;color:#eee;padding:10px 14px}
+button.ok{background:#D4FF3A;color:#0A0A0A;border-color:#D4FF3A;font-weight:700;flex:1}
+button.no{flex:none}
+.msg{color:#999;padding:30px 0;text-align:center}
+.done{opacity:.4;pointer-events:none}
+a{color:#D4FF3A}
+</style></head><body><div class="w">
+<h1>판 승인 대기열</h1>
+<div class="sub">자동으로 만든 판 초안이에요. 승인하면 바로 공개돼요.</div>
+<div id="list"><div class="msg">불러오는 중</div></div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script>
+{
+const SB_URL='https://dnzcvbidppzaogtmwamc.supabase.co',ANON='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRuemN2YmlkcHB6YW9ndG13YW1jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTUyODgwNzgsImV4cCI6MjExMDg2NDA3OH0.yiKbCh3iuH8_GFpx-ezzbauZNOkffOe5cuIGKUQGBIE';
+const sb=window.supabase.createClient(SB_URL,ANON);
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const CAT={us2k:'한국판',k2us:'할리우드판',k2cn:'중국판',wn:'웹소설 실사화'};
+function sig(a){const s=a&&a.signal||{},o=[];if(s.kr)o.push('넷플릭스 한국 '+s.kr+'위');if(s.gl)o.push('넷플릭스 전세계 '+s.gl+'위');if(s.tt)o.push('Trakt 급상승 '+s.tt+'위');if(a&&a.src==='pop')o.push('해외 인기작');return o.map(x=>'<span>'+esc(x)+'</span>').join('')}
+async function load(){
+  const {data:{session}}=await sb.auth.getSession();
+  if(!session){$('#list').innerHTML='<div class="msg">먼저 <a href="./">드림캐스팅</a>에 로그인해 주세요.</div>';return}
+  const {data,error}=await sb.rpc('auto_queue');
+  if(error){$('#list').innerHTML='<div class="msg">'+esc(error.message)+'</div>';return}
+  if(!data.length){$('#list').innerHTML='<div class="msg">대기 중인 판이 없어요.</div>';return}
+  $('#list').innerHTML=data.map(t=>`<div class="card" id="c_${esc(t.id)}">
+    <div class="hd">${t.poster?`<img src="${esc(t.poster)}" alt="">`:'<img alt="">'}<div>
+      <div class="t">${esc(t.title)}</div><div class="i">${esc(t.info)}, ${esc(CAT[t.cat]||t.cat)}</div><div class="sig">${sig(t.auto)}</div></div></div>
+    ${(t.roles||[]).map(r=>`<div class="role"><b>${esc(r.ch)}</b> <span class="o">원작 ${esc(r.orig)}</span><div class="c">${esc((r.cands||[]).join(', ')||'후보 없음')}</div></div>`).join('')}
+    <div class="act"><select data-days><option value="5">5일</option><option value="7" selected>7일</option><option value="14">14일</option></select>
+    <button class="ok" data-ok="${esc(t.id)}">승인하고 공개</button><button class="no" data-no="${esc(t.id)}">반려</button></div></div>`).join('');
+}
+document.addEventListener('click',async e=>{
+  const ok=e.target.closest('[data-ok]'),no=e.target.closest('[data-no]');if(!ok&&!no)return;
+  const id=(ok||no).dataset.ok||(ok||no).dataset.no,card=document.getElementById('c_'+id);
+  const days=+card.querySelector('[data-days]').value;
+  const {error}=ok?await sb.rpc('auto_approve',{tid:id,days}):await sb.rpc('auto_reject',{tid:id});
+  if(error){alert(error.message);return}
+  card.classList.add('done');card.querySelector('.act').innerHTML='<span class="i">'+(ok?'공개했어요':'반려했어요')+'</span>';
+});
+load();
+}
+</script>
+</body></html>

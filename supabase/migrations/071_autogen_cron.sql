@@ -1,0 +1,2 @@
+-- 071 판 초안 자동 생성: 매주 수요일 KST 13:31(넷플릭스 Top 10 갱신 뒤) 최대 6개를 승인 대기열에 올림
+select cron.schedule('dc-autogen-weekly', '31 4 * * 3', $$select net.http_post(url:='https://dnzcvbidppzaogtmwamc.supabase.co/functions/v1/autogen', headers:=jsonb_build_object('Content-Type','application/json','Authorization','Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRuemN2YmlkcHB6YW9ndG13YW1jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTUyODgwNzgsImV4cCI6MjExMDg2NDA3OH0.yiKbCh3iuH8_GFpx-ezzbauZNOkffOe5cuIGKUQGBIE'), body:='{"n":6}'::jsonb, timeout_milliseconds:=150000)$$);
