@@ -17,17 +17,16 @@ function onbFaces(){const seen=new Set(),out=[];const rank=['classic','buzz','ch
 function renderOnb(){const ov=$('#onb');if(!ov)return;const s=ONB.step,dots=`<div class="onb-dots">${[0,1,2].map(i=>`<i class="${i===s?'on':''}"></i>`).join('')}</div>`;
  if(s===0){const ps=[...new Set(DECK.map(d=>d.vposter||d.poster).filter(Boolean))].slice(0,9);
   ov.innerHTML=`<div class="onb-in onb-hook"><div class="onb-wall" aria-hidden="true">${ps.map((u,i)=>`<span style="background-image:url('${esc(u)}');--d:${i*70}ms"></span>`).join('')}</div>
-   <div class="onb-copy">${dots}<small>드림캐스팅 광장</small><h1>그 역, 누가 맡아야<br>할까요?</h1><p>웹소설 실사화와 명작 리메이크를 내 손으로 캐스팅해요. 매일 새 판이 열리고, 7일 뒤 결과가 발표돼요. 1위를 맞히면 포인트!</p>
+   <div class="onb-copy">${dots}<small>드림캐스팅 광장</small><h1>그 역,<br><em>누가</em> 맡아야<br>할까요?</h1><p>실사화와 리메이크, 내 손으로 캐스팅</p>
    <button class="b buy big" data-act="onb-next">캐스팅 시작하기</button><button class="lk" data-act="onb-skip">그냥 둘러볼게요</button></div></div>`;return}
  if(s===1){const fs=onbFaces();
-  ov.innerHTML=`<div class="onb-in onb-taste">${dots}<h2>좋아하는 배우를 골라 주세요</h2><p class="sub">3명이면 딱 좋아요. 이 배우가 후보인 작품부터 보여 드려요.</p>
+  ov.innerHTML=`<div class="onb-in onb-taste">${dots}<h2>좋아하는 배우를 골라 주세요</h2>
    <div class="onb-faces">${fs.map(n=>{const on=ONB.actors.includes(n);return `<button class="fc${on?' on':''}" data-act="onb-actor" data-n="${esc(n)}" aria-pressed="${on}"><span style="background-image:url('${esc(IMG['p:'+n])}')"></span><b>${dispHTML(n)}</b>${on?'<i>✓</i>':''}</button>`}).join('')||'<p class="sub">후보를 불러오는 중이에요</p>'}</div>
    <h3>어떤 판이 끌려요?</h3><div class="onb-cats">${ONB_CATS.map(([k,l,ic])=>`<button class="ct${ONB.cats.includes(k)?' on':''}" data-act="onb-cat" data-k="${k}"><span>${ic}</span>${l}</button>`).join('')}</div>
    <div class="onb-foot"><button class="b buy big" data-act="onb-next"${ONB.actors.length||ONB.cats.length?'':' disabled'}>${ONB.actors.length?`${ONB.actors.length}명 골랐어요, 다음`:'다음'}</button><button class="lk" data-act="onb-next">건너뛰기</button></div></div>`;
   if(!fs.length)setTimeout(()=>{if(ONB.step===1)renderOnb()},800);return}
- ov.innerHTML=`<div class="onb-in onb-go">${dots}<div class="onb-big" aria-hidden="true">🗳️</div><h2>첫 3표를 던져 보세요</h2>
-  <ol class="onb-how"><li><b>돌려서 고르고</b>배우 사진을 돌리다가 맨 위 사진을 한 번 더 탭</li><li><b>바로 민심 확인</b>한 표마다 지금 광장 1위가 누구인지 보여 드려요</li><li><b>7일 뒤 결과 발표</b>내 픽이 1위면 적중 포인트</li></ol>
-  <p class="sub">로그인은 3표를 다 고른 다음에 해도 돼요.</p><button class="b buy big" data-act="onb-done">시작!</button></div>`}
+ ov.innerHTML=`<div class="onb-in onb-go">${dots}<h2>첫 3표를 던져 보세요</h2>
+  <ol class="onb-how"><li><b>고르고</b>옆으로 넘겨 한 번 탭</li><li><b>확정</b>한 번 더 탭</li><li><b>적중</b>1위를 맞히면 포인트</li></ol><button class="b buy big" data-act="onb-done">시작!</button></div>`}
 document.addEventListener('click',e=>{const b=e.target.closest('[data-act^="onb-"]');if(!b)return;const a=b.dataset.act;
  if(a==='onb-next'){ONB.step=Math.min(2,ONB.step+1);renderOnb();return}
  if(a==='onb-skip'){closeOnb(false);return}

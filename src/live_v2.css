@@ -1,5 +1,5 @@
 /* v2: 피드(시안 B) + 캐스팅 보드 카드(시안 C). 이미지 중심, 둥근 카드, 얇은 선, 모바일 하단 탭 */
-:root{--bg:light-dark(#fafafa,#0e0e0e);--card:light-dark(#ffffff,#181818);--ink:light-dark(#141414,#f2f2f0);--mute:light-dark(#6b6b6b,#a3a3a3);--line:light-dark(#e3e3e3,#2c2c2c);--panel:light-dark(#f2f2f2,#202020);--acc:#0a7cff;--hot:#ffd400;--red:#ff2d55;--r:14px}
+:root{--bg:light-dark(#fafafa,#0e0e0e);--card:light-dark(#ffffff,#181818);--ink:light-dark(#141414,#f2f2f0);--mute:light-dark(#6b6b6b,#a3a3a3);--line:light-dark(#e3e3e3,#2c2c2c);--panel:light-dark(#f2f2f2,#202020);--acc:#0a7cff;--hot:#D4FF3A;--red:#ff2d55;--r:14px}
 body{background:var(--bg);color:var(--ink);font-family:'Noto Sans KR',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
 h1,h2,h3{letter-spacing:-.01em}
 /* 헤더 */

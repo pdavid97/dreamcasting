@@ -5,7 +5,7 @@
    COLOUR white ground, black ink, highlighter yellow; each category gets one field colour (red, blue, black)
    TYPE Black Han Sans titles + Noto Sans KR text + Inter figures
    LAYOUT category tabs and topic shelf on top; role boards and chart | sheets, feed, ranking; phone stacks in that order */
-:root{color-scheme:light dark;--bg:light-dark(#ffffff,#121212);--ink:light-dark(#111111,#f2f2f0);--mute:light-dark(#5a5a5a,#a8a8a8);--panel:light-dark(#f3f3f0,#1c1c1c);--line:light-dark(#dcdcd6,#343434);--up:light-dark(#d91f2a,#ff5a60);--dn:light-dark(#1d56d6,#6f9bff);--hi:#ffe100;--red:#e3121e;--s0:light-dark(#d91f2a,#ff5a60);--s1:light-dark(#1d56d6,#6f9bff);--s2:light-dark(#111111,#f2f2f0);--s3:light-dark(#00897b,#4dd0b8)}
+:root{color-scheme:light dark;--bg:light-dark(#ffffff,#121212);--ink:light-dark(#111111,#f2f2f0);--mute:light-dark(#5a5a5a,#a8a8a8);--panel:light-dark(#f3f3f0,#1c1c1c);--line:light-dark(#dcdcd6,#343434);--up:light-dark(#d91f2a,#ff5a60);--dn:light-dark(#1d56d6,#6f9bff);--hi:#D4FF3A;--red:#e3121e;--s0:light-dark(#d91f2a,#ff5a60);--s1:light-dark(#1d56d6,#6f9bff);--s2:light-dark(#111111,#f2f2f0);--s3:light-dark(#00897b,#4dd0b8)}
 :root[data-theme=light]{color-scheme:light}
 :root[data-theme=dark]{color-scheme:dark}
 *{box-sizing:border-box;min-width:0}

@@ -31,9 +31,9 @@
 .bio{white-space:pre-line;font-size:14px;line-height:1.6}
 .badges{display:flex;flex-wrap:wrap;gap:8px}
 .badge{border:2px dashed var(--mute);padding:6px 10px;font-weight:700;color:var(--mute)}
-.badge.on{border-style:solid;border-color:var(--ink);color:var(--ink);background:#ffe100}
+.badge.on{border-style:solid;border-color:var(--ink);color:var(--ink);background:#D4FF3A}
 .hist{list-style:none;padding:0;margin:0;font-size:14px;line-height:1.9}
-.hist li.hit{background:linear-gradient(90deg,#ffe10055,transparent)}
+.hist li.hit{background:linear-gradient(90deg,#D4FF3A55,transparent)}
 .usheets{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
 .us{border:2px solid var(--ink);padding:8px;display:flex;flex-direction:column;gap:4px;color:inherit;text-decoration:none}
 .us img{width:100%;aspect-ratio:2/3;object-fit:cover}
