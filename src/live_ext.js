@@ -28,7 +28,7 @@ function renderWork(){const box=$('#tWork');if(!box)return;const t=topic();if(!t
   ${(w.genres||[]).length?`<p class="sub">장르 ${esc(w.genres.join(', '))}</p>`:''}
   ${(w.makers||[]).length?`<p class="sub">연출, 극본 ${esc(w.makers.join(', '))}</p>`:''}
   ${(w.cast||[]).length?`<p class="sub">출연 ${w.cast.map(c=>actorLink(c.name)+(c.ch?` (${esc(c.ch)})`:'')).join(', ')}</p>`:''}
-  ${(w.watch||[]).length?`<div class="watch"><span class="sub">국내 시청처</span>${w.watch.map(p=>`<span class="wp">${p.logo?`<img src="${esc(p.logo)}" alt="">`:''}${esc(p.name)}</span>`).join('')}<small class="dl">시청 정보 제공 JustWatch</small></div>`:''}
+  ${(w.watch||[]).length?`<div class="watch"><span class="sub">국내 시청처 (JustWatch 제공)</span>${w.watch.map(p=>`<span class="wp">${p.logo?`<img src="${esc(p.logo)}" alt="">`:''}${esc(p.name)}</span>`).join('')}<small class="dl">시청 정보 제공 JustWatch</small></div>`:''}
  </div></div>`:''}
  <div class="wlinks">${w&&w.homepage?`<a class="b sm buy" href="${esc(w.homepage)}" target="_blank" rel="noopener">공식 사이트</a>`:''}${links.map(l=>`<a class="b sm" href="${esc(l.url)}" target="_blank" rel="noopener">${esc(l.label)}</a>`).join('')}${w?`<a class="b sm" href="${esc(w.tmdb)}" target="_blank" rel="noopener">TMDB</a>`:''}${w&&w.imdb?`<a class="b sm" href="${esc(w.imdb)}" target="_blank" rel="noopener">IMDb</a>`:''}</div>
  ${!w?`<p class="dl">TMDB에서 같은 제목의 작품을 찾지 못했어요. 공식 사이트나 원작 연재처 링크를 붙여 주세요.</p>`:''}

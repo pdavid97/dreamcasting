@@ -174,3 +174,26 @@ async function c2EnsureDeck(){if(!(DECK&&DECK.length))try{await loadDeck()}catch
 /* ---- P2 22: 광장에서 투표 중인 배역의 원작 배우를 머리에 표시 (포스터 속 인물 구분은 자동으로 할 수 없어 원작 얼굴로 대신) ---- */
 (function(){const f=renderDeckC;renderDeckC=function(box,t,r){f.apply(this,arguments);if(!r||!r.orig)return;const u=c2Ph(r.orig),hd=box.querySelector('.hc-hd > div');if(!hd||!u)return;
  hd.insertAdjacentHTML('beforeend',`<a class="hc-og" href="#a/${encodeURIComponent(r.orig)}"><i style="background-image:url('${esc(u)}')"></i><span>원작 <b>${esc(dispName(r.orig).replace(/\s*\(.*\)$/,''))}</b></span></a>`)}})();
+
+/* ---- P3 25: 내 팀 안에서 같은 소속사, 레이블, 그룹 출신 찾기 (Wikidata, person_affil) ---- */
+(function(){const f=renderDoneC;renderDoneC=async function(box,t){const r=await f.apply(this,arguments);try{
+ const S=t.roles.map(hcRoleStat).filter(Boolean),P=S.map(s=>({pid:s.mine.pid,nm:dispName(s.mine.name).replace(/\s*\(.*\)$/,'')})).filter(x=>x.pid);if(P.length<2)return r;
+ const {data}=await sb.from('person_affil').select('person_id,kind,name,qid').in('person_id',P.map(x=>x.pid));if(!data||!data.length)return r;
+ const G={};data.forEach(a=>{(G[a.qid]=G[a.qid]||{n:a.name,k:a.kind,p:new Set()}).p.add(a.person_id)});
+ const hits=Object.values(G).filter(g=>g.p.size>=2).sort((a,b)=>(a.k==='group'?0:1)-(b.k==='group'?0:1)),used=new Set(),lines=[];
+ for(const g of hits){const key=[...g.p].sort().join();if(used.has(key))continue;used.add(key);const nms=P.filter(x=>g.p.has(x.pid)).map(x=>x.nm);lines.push(`${nms.map(esc).join(', ')}, 같은 ${g.k==='group'?'그룹':'소속'} ${esc(g.n)} 출신`);if(lines.length>=2)break}
+ if(!lines.length)return r;const at=box.querySelector('.mp-links')||box.querySelector('.mp-type');const html=`<div class="mp-links c2tm"><b>우리 팀 연결고리</b>${lines.map(x=>`<p>${x}</p>`).join('')}</div>`;
+ if(at)at.insertAdjacentHTML('afterend',html)}catch(e){}return r}})();
+
+/* ---- P3 24: 포스터가 없는 웹소설, 웹툰 원작 판은 직접 만든 글자 카드로 (원작 그림은 쓰지 않음) ---- */
+const C2GP={};
+function c2GenPoster(t){if(!t)return '';if(C2GP[t.id])return C2GP[t.id];let h=0;for(const ch of String(t.id))h=(h*31+ch.charCodeAt(0))>>>0;
+ const hues=[[268,330],[200,250],[150,190],[20,350],[40,10]],[a,b]=hues[h%hues.length],title=String(t.title||''),w=[];let line='';
+ for(const x of title.split(/\s+/)){if((line+' '+x).trim().length>6&&line){w.push(line);line=x}else line=(line+' '+x).trim()}if(line)w.push(line);
+ const fs=w.length>3?46:56,y0=420-(w.length-1)*fs*.55,med=t.src_medium||'원작',au=String(t.info||'').split(',')[0].replace(/\s*(웹소설|웹툰)$/,'');
+ const e=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+ const svg=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 750"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="hsl(${a},45%,22%)"/><stop offset="1" stop-color="hsl(${b},40%,8%)"/></linearGradient><radialGradient id="r" cx=".75" cy=".2" r=".7"><stop offset="0" stop-color="hsl(${a},70%,55%)" stop-opacity=".45"/><stop offset="1" stop-opacity="0"/></radialGradient></defs><rect width="500" height="750" fill="url(#g)"/><rect width="500" height="750" fill="url(#r)"/><g fill="none" stroke="#D4FF3A" stroke-opacity=".5"><path d="M40 160h420M40 600h420"/></g><text x="40" y="130" font-family="sans-serif" font-size="22" font-weight="800" fill="#D4FF3A" letter-spacing="2">${e(med)} 원작</text><text x="250" y="470" text-anchor="middle" font-family="'Noto Sans KR',sans-serif" font-size="300" font-weight="900" fill="none" stroke="#fff" stroke-opacity=".18" stroke-width="3">${e(title.replace(/\s/g,'').slice(0,1))}</text><text x="40" y="650" font-family="sans-serif" font-size="22" font-weight="700" fill="#BDBDBD">${e(au)}</text><text x="40" y="690" font-family="sans-serif" font-size="18" font-weight="700" fill="#8A8A8A" letter-spacing="3">DREAM CASTING</text></svg>`;
+ return C2GP[t.id]='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg).replace(/'/g,'%27').replace(/\(/g,'%28').replace(/\)/g,'%29')}
+(function(){const f=shPoster;shPoster=function(t){return f(t)||c2GenPoster(t)}})();
+(function(){const f=topicHero;topicHero=function(){f();const th=document.querySelector('#topicView .th'),t=typeof topic==='function'&&topic();if(th&&t&&!tBack(t))th.style.setProperty('--hb',`url("${c2GenPoster(t)}")`)}})();
+(function(){const f=loadDeck;loadDeck=async function(){const r=await f.apply(this,arguments);try{(DECK||[]).forEach(d=>{if(!d.poster&&!d.vposter){const t=(TOPICS||[]).find(x=>x.id===d.id)||d;d.vposter=d.poster=c2GenPoster(t)}})}catch(e){}return r}})();

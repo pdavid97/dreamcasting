@@ -1990,7 +1990,7 @@ body[data-view=rank] .side::before{display:none!important;content:none!important
       <li>안목 포인트는 투표, 토론, 시트 게시, 받은 공감으로 쌓이고 충전이나 현금 교환은 없어요. 실제 캐스팅이 발표되면 그 배우를 처음 제안한 사람에게 500P, 투표한 사람에게 200P를 주고, 민심이 낮았던 의외의 캐스팅일수록 최대 3배까지 보너스가 붙어요.</li>
     </ul>
   </details>
-  <p class="foot">후보 목록은 토론을 위한 예시이며 실제 리메이크 계획이나 섭외와 관계없어요. 배우 사진과 작품 정보: TMDB. This product uses the TMDB API but is not endorsed or certified by TMDB.<span id="legalLinks"> <a href="terms.html">이용약관</a> | <a href="privacy.html"><b>개인정보처리방침</b></a></span></p>
+  <p class="foot">후보 목록은 토론을 위한 예시이며 실제 리메이크 계획이나 섭외와 관계없어요. 배우 사진과 작품 정보: TMDB. This product uses the TMDB API but is not endorsed or certified by TMDB. 시청처 정보: JustWatch. 뉴스 헤드라인: Google 뉴스, 각 기사 저작권은 해당 언론사에 있어요. 소속 정보: Wikidata.<span id="legalLinks"> <a href="terms.html">이용약관</a> | <a href="privacy.html"><b>개인정보처리방침</b></a></span></p>
 </main>
 
 <div class="sheetm" id="loginSheet" role="dialog" aria-modal="true" aria-labelledby="lsH"><div><h2 id="lsH">로그인하면 이 표가 바로 반영돼요</h2><p>고른 후보는 저장해 뒀어요. 구글 계정으로 3초면 끝나요.</p><button class="lg g big" data-act="google">구글로 계속하기</button><button class="lk" data-act="sheet-close">나중에</button></div></div>
@@ -2338,7 +2338,7 @@ function renderWork(){const box=$('#tWork');if(!box)return;const t=topic();if(!t
   ${(w.genres||[]).length?`<p class="sub">장르 ${esc(w.genres.join(', '))}</p>`:''}
   ${(w.makers||[]).length?`<p class="sub">연출, 극본 ${esc(w.makers.join(', '))}</p>`:''}
   ${(w.cast||[]).length?`<p class="sub">출연 ${w.cast.map(c=>actorLink(c.name)+(c.ch?` (${esc(c.ch)})`:'')).join(', ')}</p>`:''}
-  ${(w.watch||[]).length?`<div class="watch"><span class="sub">국내 시청처</span>${w.watch.map(p=>`<span class="wp">${p.logo?`<img src="${esc(p.logo)}" alt="">`:''}${esc(p.name)}</span>`).join('')}<small class="dl">시청 정보 제공 JustWatch</small></div>`:''}
+  ${(w.watch||[]).length?`<div class="watch"><span class="sub">국내 시청처 (JustWatch 제공)</span>${w.watch.map(p=>`<span class="wp">${p.logo?`<img src="${esc(p.logo)}" alt="">`:''}${esc(p.name)}</span>`).join('')}<small class="dl">시청 정보 제공 JustWatch</small></div>`:''}
  </div></div>`:''}
  <div class="wlinks">${w&&w.homepage?`<a class="b sm buy" href="${esc(w.homepage)}" target="_blank" rel="noopener">공식 사이트</a>`:''}${links.map(l=>`<a class="b sm" href="${esc(l.url)}" target="_blank" rel="noopener">${esc(l.label)}</a>`).join('')}${w?`<a class="b sm" href="${esc(w.tmdb)}" target="_blank" rel="noopener">TMDB</a>`:''}${w&&w.imdb?`<a class="b sm" href="${esc(w.imdb)}" target="_blank" rel="noopener">IMDb</a>`:''}</div>
  ${!w?`<p class="dl">TMDB에서 같은 제목의 작품을 찾지 못했어요. 공식 사이트나 원작 연재처 링크를 붙여 주세요.</p>`:''}
@@ -3115,7 +3115,7 @@ async function loadNews(names){const box=$('#igNews');if(!box)return;let works=[
   igCard('곧 만나는 신작',up.length?`<b>${esc(up[0].who)}</b>의 다음 작품, ${esc(up[0].date)} 공개 예정.`:'',up.length?`<div class="upc">${up.slice(0,8).map(u=>`<button class="up" data-act="wk-open" data-m="${esc(u.media)}" data-id="${u.id}">${u.poster?`<img src="${esc(u.poster)}" alt="" loading="lazy">`:'<span class="ph"></span>'}<b>${esc(u.title)}</b><small>${esc(u.who)}${u.ch?`, ${esc(u.ch)}`:''}</small><em>${esc(u.date)}</em></button>`).join('')}</div><p class="ig-cap">TMDB에 등록된 공개 예정일 기준이에요.</p>`:igEmpty('TMDB에 등록된 공개 예정작이 아직 없어요.')),
   igCard('팬미팅, 내한, 무대인사, 콘서트',ev.length?`최근 60일 기사 ${ev.length}건.`:'',ev.length?`<div class="nws">${ev.slice(0,6).map(art).join('')}</div><p class="ig-cap">기사 제목 기준이라 정확한 일정과 예매는 기사에서 확인해 주세요.</p>`:igEmpty('최근 60일 안에 행사 기사가 없어요.')),
   igCard('굿즈, 앨범, 팝업, 소장판',gd.length?`최근 60일 기사 ${gd.length}건.`:'',`${gd.length?`<div class="nws">${gd.slice(0,5).map(art).join('')}</div>`:igEmpty('최근 60일 안에 굿즈 소식이 없어요.')}<div class="shops">${names.slice(0,3).map(n=>`<span>${esc(n)}</span><a href="${goExt('yes24','shop','https://www.yes24.com/Product/Search?query='+encodeURIComponent(n))}" target="_blank" rel="noopener">예스24</a><a href="${goExt('aladin','shop','https://www.aladin.co.kr/search/wsearchresult.aspx?SearchTarget=All&SearchWord='+encodeURIComponent(n))}" target="_blank" rel="noopener">알라딘</a>`).join('')}</div>`),
-  igCard('내 AV룸 작품, 지금 어디서 볼까',pv.length?`AV룸 ${pv.length}편을 지금 볼 수 있어요.`:'',pv.length?`<div class="wps">${pv.map(p=>`<a class="wp" href="${p.link?goExt('tmdb','watch',p.link):'#'}" target="_blank" rel="noopener"><b>${esc(p.title)}</b><span>${[...p.flat.map(x=>[x,'구독']),...p.rent.map(x=>[x,'대여']),...p.buy.map(x=>[x,'구매'])].slice(0,5).map(([x,k])=>x.logo?`<img src="${esc(x.logo)}" alt="${esc(x.name)} ${k}" title="${esc(x.name)} ${k}">`:`<i>${esc(x.name)}</i>`).join('')}</span></a>`).join('')}</div><p class="ig-cap">시청처 정보는 JustWatch 제공(TMDB 경유), ${esc(F.region)} 기준이에요.</p>`:igEmpty(works.length?'AV룸 작품의 시청처 정보가 아직 없어요.':'AV룸에 작품을 담으면 지금 볼 수 있는 곳을 알려드려요.'))
+  igCard('내 AV룸 작품, 지금 어디서 볼까',pv.length?`AV룸 ${pv.length}편을 지금 볼 수 있어요. 시청처 정보 JustWatch 제공`:'',pv.length?`<div class="wps">${pv.map(p=>`<a class="wp" href="${p.link?goExt('tmdb','watch',p.link):'#'}" target="_blank" rel="noopener"><b>${esc(p.title)}</b><span>${[...p.flat.map(x=>[x,'구독']),...p.rent.map(x=>[x,'대여']),...p.buy.map(x=>[x,'구매'])].slice(0,5).map(([x,k])=>x.logo?`<img src="${esc(x.logo)}" alt="${esc(x.name)} ${k}" title="${esc(x.name)} ${k}">`:`<i>${esc(x.name)}</i>`).join('')}</span></a>`).join('')}</div><p class="ig-cap">시청처 정보는 JustWatch 제공(TMDB 경유), ${esc(F.region)} 기준이에요.</p>`:igEmpty(works.length?'AV룸 작품의 시청처 정보가 아직 없어요.':'AV룸에 작품을 담으면 지금 볼 수 있는 곳을 알려드려요.'))
  ].join('');igBind2(box)}
 function igBind2(root){root.querySelectorAll('.ig').forEach(c=>c.classList.add('in'));root.onclick=e=>{const card=e.target.closest('.ig');if(!card)return;const t=e.target.closest('[data-tip]');const tip=card.querySelector('.ig-tip');if(t&&tip){card.querySelectorAll('.tipon').forEach(x=>x.classList.remove('tipon'));t.classList.add('tipon');tip.textContent=t.dataset.tip}}}
 
@@ -3769,6 +3769,7 @@ function hcType(S0,links){if(S0.length<2)return null;/* 성향 평가는 2개 �
 // 나이 비교: 원작 배우의 작품 공개 당시 나이 대 내 배우의 지금 나이. 양수면 내 배우가 더 어림. 공개 연도를 모르면 비교하지 않음
 function ageGap(x){if(!x||!x.ob||!x.cb||!x.oy)return null;return (x.oy-x.ob)-(new Date().getFullYear()-x.cb)}
 function hcLinkLines(S,links){const out=[];for(const s of S){const x=links.find(y=>y.cid===s.mine.id);if(!x||!s.r.orig)continue;const nm=dispName(s.mine.name).replace(/\s*\(.*\)$/,''),on=String(s.r.orig);
+ const af=(x.aff||[])[0];if(af){out.push(`${esc(nm)}와 원작 ${esc(on)}, 같은 ${af.k==='group'?'그룹':'소속'} ${esc(af.n)} 출신`);continue}
  const ws=x.works||[];if(ws.length){const w=ws[0],same=w.t===curTopic()?.title;out.push(same?`${esc(nm)}, 원작 《${esc(w.t)}》에 ${esc(on)}와 함께 출연했어요`:`${esc(nm)}와 원작 ${esc(on)}, 《${esc(w.t)}》${w.y?`(${w.y})`:''}에서 함께 출연`)}
  else{const g=ageGap(x);if(g!=null){const a=new Date().getFullYear()-x.cb,oa=x.oy-x.ob;out.push(Math.abs(g)<=1?`${esc(nm)}, 지금 ${a}살로 원작 당시 ${esc(on)}(${oa}살)와 비슷해요`:`${esc(nm)}, 지금 ${a}살로 원작 당시 ${esc(on)}(${oa}살)보다 ${Math.abs(g)}살 ${g>0?'어려요':'많아요'}`)}}}
  return out.slice(0,4)}
@@ -3985,6 +3986,29 @@ async function c2EnsureDeck(){if(!(DECK&&DECK.length))try{await loadDeck()}catch
 /* ---- P2 22: 광장에서 투표 중인 배역의 원작 배우를 머리에 표시 (포스터 속 인물 구분은 자동으로 할 수 없어 원작 얼굴로 대신) ---- */
 (function(){const f=renderDeckC;renderDeckC=function(box,t,r){f.apply(this,arguments);if(!r||!r.orig)return;const u=c2Ph(r.orig),hd=box.querySelector('.hc-hd > div');if(!hd||!u)return;
  hd.insertAdjacentHTML('beforeend',`<a class="hc-og" href="#a/${encodeURIComponent(r.orig)}"><i style="background-image:url('${esc(u)}')"></i><span>원작 <b>${esc(dispName(r.orig).replace(/\s*\(.*\)$/,''))}</b></span></a>`)}})();
+
+/* ---- P3 25: 내 팀 안에서 같은 소속사, 레이블, 그룹 출신 찾기 (Wikidata, person_affil) ---- */
+(function(){const f=renderDoneC;renderDoneC=async function(box,t){const r=await f.apply(this,arguments);try{
+ const S=t.roles.map(hcRoleStat).filter(Boolean),P=S.map(s=>({pid:s.mine.pid,nm:dispName(s.mine.name).replace(/\s*\(.*\)$/,'')})).filter(x=>x.pid);if(P.length<2)return r;
+ const {data}=await sb.from('person_affil').select('person_id,kind,name,qid').in('person_id',P.map(x=>x.pid));if(!data||!data.length)return r;
+ const G={};data.forEach(a=>{(G[a.qid]=G[a.qid]||{n:a.name,k:a.kind,p:new Set()}).p.add(a.person_id)});
+ const hits=Object.values(G).filter(g=>g.p.size>=2).sort((a,b)=>(a.k==='group'?0:1)-(b.k==='group'?0:1)),used=new Set(),lines=[];
+ for(const g of hits){const key=[...g.p].sort().join();if(used.has(key))continue;used.add(key);const nms=P.filter(x=>g.p.has(x.pid)).map(x=>x.nm);lines.push(`${nms.map(esc).join(', ')}, 같은 ${g.k==='group'?'그룹':'소속'} ${esc(g.n)} 출신`);if(lines.length>=2)break}
+ if(!lines.length)return r;const at=box.querySelector('.mp-links')||box.querySelector('.mp-type');const html=`<div class="mp-links c2tm"><b>우리 팀 연결고리</b>${lines.map(x=>`<p>${x}</p>`).join('')}</div>`;
+ if(at)at.insertAdjacentHTML('afterend',html)}catch(e){}return r}})();
+
+/* ---- P3 24: 포스터가 없는 웹소설, 웹툰 원작 판은 직접 만든 글자 카드로 (원작 그림은 쓰지 않음) ---- */
+const C2GP={};
+function c2GenPoster(t){if(!t)return '';if(C2GP[t.id])return C2GP[t.id];let h=0;for(const ch of String(t.id))h=(h*31+ch.charCodeAt(0))>>>0;
+ const hues=[[268,330],[200,250],[150,190],[20,350],[40,10]],[a,b]=hues[h%hues.length],title=String(t.title||''),w=[];let line='';
+ for(const x of title.split(/\s+/)){if((line+' '+x).trim().length>6&&line){w.push(line);line=x}else line=(line+' '+x).trim()}if(line)w.push(line);
+ const fs=w.length>3?46:56,y0=420-(w.length-1)*fs*.55,med=t.src_medium||'원작',au=String(t.info||'').split(',')[0].replace(/\s*(웹소설|웹툰)$/,'');
+ const e=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+ const svg=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 750"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="hsl(${a},45%,22%)"/><stop offset="1" stop-color="hsl(${b},40%,8%)"/></linearGradient><radialGradient id="r" cx=".75" cy=".2" r=".7"><stop offset="0" stop-color="hsl(${a},70%,55%)" stop-opacity=".45"/><stop offset="1" stop-opacity="0"/></radialGradient></defs><rect width="500" height="750" fill="url(#g)"/><rect width="500" height="750" fill="url(#r)"/><g fill="none" stroke="#D4FF3A" stroke-opacity=".5"><path d="M40 160h420M40 600h420"/></g><text x="40" y="130" font-family="sans-serif" font-size="22" font-weight="800" fill="#D4FF3A" letter-spacing="2">${e(med)} 원작</text><text x="250" y="470" text-anchor="middle" font-family="'Noto Sans KR',sans-serif" font-size="300" font-weight="900" fill="none" stroke="#fff" stroke-opacity=".18" stroke-width="3">${e(title.replace(/\s/g,'').slice(0,1))}</text><text x="40" y="650" font-family="sans-serif" font-size="22" font-weight="700" fill="#BDBDBD">${e(au)}</text><text x="40" y="690" font-family="sans-serif" font-size="18" font-weight="700" fill="#8A8A8A" letter-spacing="3">DREAM CASTING</text></svg>`;
+ return C2GP[t.id]='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg).replace(/'/g,'%27').replace(/\(/g,'%28').replace(/\)/g,'%29')}
+(function(){const f=shPoster;shPoster=function(t){return f(t)||c2GenPoster(t)}})();
+(function(){const f=topicHero;topicHero=function(){f();const th=document.querySelector('#topicView .th'),t=typeof topic==='function'&&topic();if(th&&t&&!tBack(t))th.style.setProperty('--hb',`url("${c2GenPoster(t)}")`)}})();
+(function(){const f=loadDeck;loadDeck=async function(){const r=await f.apply(this,arguments);try{(DECK||[]).forEach(d=>{if(!d.poster&&!d.vposter){const t=(TOPICS||[]).find(x=>x.id===d.id)||d;d.vposter=d.poster=c2GenPoster(t)}})}catch(e){}return r}})();
 
 }
 </script>
