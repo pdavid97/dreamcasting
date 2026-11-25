@@ -133,11 +133,11 @@ const IG_ARCH=[['재벌, 후계자',/재벌|회장|본부장|후계자|대표|ce
 const goExt=(p,k,u)=>goURL('',p,k,u);
 function dday(t){const d=Math.ceil((new Date(t)-Date.now())/864e5);return d<=0?'오늘 마감':`D-${d}`}
 function fmtDate(t){if(!t)return '';const d=new Date(t);return `${d.getMonth()+1}.${d.getDate()}`}
-async function loadDeep(){const box=$('#igDeep');if(!box)return;let I=null;try{I=await rpc('my_insights',{})}catch(e){}
+async function loadDeep(){const box=$('#igDeep');if(!box)return;let I=null,S=null;try{[I,S]=await Promise.all([rpc('my_insights',{}),rpc('my_style',{}).catch(()=>null)])}catch(e){}
  if(!I){box.innerHTML='';return}
  const H=I.hidden||[];try{await loadNames(H.map(h=>h.name))}catch(e){}
  box.innerHTML=`<div class="sh ig-sh"><h2>나도 모르는 내 취향</h2><span class="sub">표, VS 한판, 응원, 인생작, 오래 본 카드까지 합쳐서</span></div>
- <div class="ig-grid ig-story">${[igHidden(H),igArch(I),igAge(I.age||[]),igCrowd(I.crowd||[]),igTwin(I.twin),igRaces(I.races||[])].join('')}</div>
+ <div class="ig-grid ig-story">${[igHidden(H),igArch(I),igStyle(S,I),igAge(I.age||[]),igVsCrowd(S),igCrowd(I.crowd||[]),igTwin(I.twin),igRaces(I.races||[])].join('')}</div>
  <div class="sh ig-sh"><h2>내 배우 소식</h2><span class="sub">숨은 최애 ${esc(H.slice(0,4).map(h=>h.name).join(', ')||'')} 기준</span></div>
  <div id="igNews" class="ig-grid ig-story"><p class="sub">신작, 행사, 굿즈 소식을 찾는 중이에요</p></div>`;
  igBind2(box);loadNews(H.slice(0,4).map(h=>h.name))}
@@ -217,3 +217,35 @@ async function openWeekStory(){if(!USER){openLoginSheet&&openLoginSheet();return
   if(k==='ws-share'){const txt=`드림캐스팅 이번 주 결산: ${w.n}표, 최애 ${w.fav?w.fav.name:'아직 없음'}, 적중 ${w.hits}판 ${location.origin+location.pathname}`;try{if(navigator.share)await navigator.share({text:txt});else{await navigator.clipboard.writeText(txt);toast('공유 문구를 복사했어요')}}catch(err){}track('week_share',{})}});
  draw();track('week_story',{})}
 document.addEventListener('click',e=>{const b=e.target.closest('[data-act="week-story"]');if(!b)return;e.preventDefault();e.stopPropagation();openWeekStory()},true);
+
+/* C2 나와 광장 비교, C3 내 캐스팅 성향 */
+function igPct(a,b){return b?Math.round(a/b*100):null}
+function igDual(lab,me,all,tip){return `<div data-tip="${esc(tip)}"><small>${esc(lab)}</small><span><i style="width:${me||0}%"></i></span><b>${me==null?'-':me+'%'}</b></div><div data-tip="광장 전체 기준"><small>광장 평균</small><span><i class="g" style="width:${all||0}%"></i></span><b>${all==null?'-':all+'%'}</b></div>`}
+function igVsCrowd(S){const V=(S&&S.votes)||[],A=(S&&S.all)||{};
+ if(V.length<3)return igCard('나와 광장, 얼마나 닮았나','',igEmpty('표를 3개 이상 던지면 광장 평균과 비교해 드려요.'));
+ const top=igPct(V.filter(v=>v.top).length,V.length),m5=V.filter(v=>v.tot>=5),minor=igPct(m5.filter(v=>v.n/v.tot<.2).length,m5.length),m3=V.filter(v=>v.tot>=3),solo=igPct(m3.filter(v=>v.n===1).length,m3.length);
+ const d=(top||0)-(A.top||0),line=d>=15?`내 픽의 <b>${top}%</b>가 지금 1위. 광장 평균보다 <b>${d}%p</b> 높은 민심 저격수.`:d<=-15?`내 픽의 <b>${top}%</b>만 지금 1위. 광장 평균보다 <b>${-d}%p</b> 낮은 소신파.`:`내 픽의 <b>${top}%</b>가 지금 1위. 광장 평균과 비슷한 결이에요.`;
+ const bc={};V.forEach(v=>{const k=v.cat||'etc';(bc[k]=bc[k]||[0,0]);bc[k][0]++;if(v.top)bc[k][1]++});
+ const cats=Object.entries(bc).filter(x=>x[1][0]>=2).sort((a,b)=>b[1][1]/b[1][0]-a[1][1]/a[1][0]).slice(0,6);
+ const cn=k=>((typeof CATS!=='undefined'&&CATS.find(c=>c.id===k))||{}).name||k;
+ return igCard('나와 광장, 얼마나 닮았나',line,`<div class="dual">${igDual('다수 픽',top,A.top,`내 표 ${V.length}개 중 지금 1위인 배우를 고른 비율`)}<p class="ig-cap">고른 배우가 지금 그 배역 1위인 비율</p></div>
+ <div class="dual">${igDual('소수 의견',minor,A.minor,'표가 5개 이상 모인 배역에서 득표율 20% 미만 배우를 고른 비율')}<p class="ig-cap">득표율 20% 미만 배우를 고른 비율 (표 5개 이상 배역)</p></div>
+ <div class="dual">${igDual('나만 고름',solo,A.solo,'표가 3개 이상 모인 배역에서 그 배우에게 표를 준 사람이 나 혼자인 비율')}<p class="ig-cap">그 배우에게 표를 준 사람이 나 혼자 (표 3개 이상 배역)</p></div>
+ ${cats.length?`<div class="arch">${cats.map(([k,[n,t]])=>`<span style="--s:1" data-tip="${esc(cn(k))} ${n}표 중 ${t}표가 지금 1위">${esc(cn(k))} <b>${Math.round(t/n*100)}%</b></span>`).join('')}</div><p class="ig-cap">판 종류별 다수 픽 비율</p>`:''}`)}
+function igStyle(S,I){const V=(S&&S.votes)||[],A=(I&&I.age)||[];
+ if(V.length<3)return igCard('내 캐스팅 성향 리포트','',igEmpty('표를 3개 이상 던지면 원작 충실형인지 의외형인지 알려 드려요.'));
+ const sg=s=>/^male/.test(s||'')?2:/^female/.test(s||'')?1:0;
+ const gv=V.filter(v=>sg(v.slot)&&(v.pg===1||v.pg===2)),gp=igPct(gv.filter(v=>v.pg===sg(v.slot)).length,gv.length);
+ const rv=V.filter(v=>v.preg&&v.ereg),rp=igPct(rv.filter(v=>v.preg===v.ereg).length,rv.length);
+ const ap=A.length?igPct(A.filter(a=>Math.abs(a.pick_age-a.orig_age)<=5).length,A.length):null;
+ const dims=[['나이',ap,A.length,'원작 배우가 그 역을 맡았을 때와 5살 안쪽'],['성별',gp,gv.length,'배역 성별 그대로'],['국적권',rp,rv.length,'작품이 만들어질 나라의 배우']].filter(x=>x[1]!=null);
+ const avg=dims.length?Math.round(dims.reduce((s,x)=>s+x[1],0)/dims.length):null;
+ const ty=avg==null?'':avg>=80?'원작 충실형':avg<=50?'의외형 캐스팅':'충실과 의외 사이';
+ const cnt=a=>{const m={};a.forEach(k=>{if(k)m[k]=(m[k]||0)+1});return Object.entries(m).sort((x,y)=>y[1]-x[1])};
+ const gs=cnt(V.flatMap(v=>Array.isArray(v.g)?v.g:[])).slice(0,4),ns=cnt(V.map(v=>v.net)).slice(0,4),ks=cnt(V.map(v=>v.kind));
+ const chips=(L,u)=>`<div class="arch">${L.map(([k,n])=>`<span style="--s:1" data-tip="${esc(k)} ${n}${u}">${esc(k)} <b>${n}</b></span>`).join('')}</div>`;
+ return igCard('내 캐스팅 성향 리포트',avg==null?'':`원작 일치도 <b>${avg}%</b>, <b>${ty}</b>.`,
+ `${dims.length?`<div class="sty">${dims.map(([l,p,n,t])=>`<div data-tip="${esc(t)}: ${n}개 중 ${p}%"><small>${l}</small><span><i style="width:${p}%"></i></span><b>${p}%</b></div>`).join('')}<p class="ig-cap">원작과 같은 결로 고른 비율. 나이는 원작 캐스팅 당시와 내 픽의 지금 나이로 비교</p></div>`:''}
+ ${gs.length?`<p class="ig-sub">자주 고른 장르</p>${chips(gs,'표')}`:''}
+ ${ns.length?`<p class="ig-sub">자주 고른 방송사, 플랫폼</p>${chips(ns,'표')}`:''}
+ ${ks.length>1?`<p class="ig-cap">${ks.map(([k,n])=>`${esc(k)} ${n}표`).join(', ')}</p>`:''}`)}

@@ -37,3 +37,47 @@ document.addEventListener('click',async e=>{const b=e.target.closest('[data-act]
  if(a==='dream-add'){if(needLogin())return;b.disabled=true;
   try{await rpc('add_candidate',{rid:+b.dataset.rid,nm:b.dataset.nm,pitch:null});track('dream_add',{r:+b.dataset.rid});toast('후보로 올리고 한 표 넣었어요');const card=b.closest('.dr');if(card){card.classList.add('done');b.textContent='후보 등록 완료'}}catch(err){b.disabled=false;toast(errMsg(err))}return}
 });
+
+/* 배우 페이지: 엔딩 크레딧(수상, 출연작), 자주 함께한 배우 */
+IC.laurel='<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M7 20c-3-2-4.5-5.5-4-9.5M17 20c3-2 4.5-5.5 4-9.5"/><path d="M4.2 14.5c1.3.2 2.4-.3 3-1.3M3.3 10.6c1.2.5 2.4.2 3.2-.7M4.3 6.8c1 .7 2.3.7 3.2 0M19.8 14.5c-1.3.2-2.4-.3-3-1.3M20.7 10.6c-1.2.5-2.4.2-3.2-.7M19.7 6.8c-1 .7-2.3.7-3.2 0"/><path d="M12 6.5l1.2 2.5 2.7.3-2 1.9.5 2.7-2.4-1.3-2.4 1.3.5-2.7-2-1.9 2.7-.3z"/></svg>';
+function crClean(ch){return String(ch||'').replace(/\s*\(voice\)|\s*\(uncredited\)/gi,'').trim()}
+function credRoll(name,awards,works,prof){
+ const aw=(awards||[]).filter(a=>a&&a.name),ws=(works||[]).filter(w=>w&&w.title);
+ if(!aw.length&&!ws.length)return '';
+ const yrs=ws.map(w=>+w.year).filter(y=>y>1900&&y<=NOW_Y),y0=yrs.length?Math.min(...yrs):null;
+ const disp=esc(dispName(ORIG[name]||name).replace(/\s*\(.*\)$/,''));
+ const awL=aw.map(a=>`<div class="cr-it aw"><em>${esc(a.year||'')}</em><b>${esc(a.name)}</b>${a.work?`<span>《${esc(a.work)}》</span>`:''}</div>`).join('');
+ const wsL=ws.slice().sort((a,b)=>(+b.year||9999)-(+a.year||9999)).map(w=>{const ch=crClean(w.ch);return `<div class="cr-it"><em>${esc(w.year||'예정')}</em><b>${esc(w.title)}</b>${ch?`<span>${esc(ch)} 역</span>`:`<span>${esc(w.type||'')}</span>`}</div>`}).join('');
+ const body=`<div class="cr-name"><small>starring</small><b>${disp}</b></div>
+  ${aw.length?`<div class="cr-sec"><i>${IC.laurel}</i><b>수상</b></div>${awL}`:''}
+  ${ws.length?`<div class="cr-sec"><b>출연</b></div>${wsL}`:''}
+  <div class="cr-end"><small>and many more to come</small></div>`;
+ return `<section class="cred" id="cred"><div class="cr-stat">
+  ${aw.length?`<span class="gold"><i>${IC.laurel}</i><b class="num">${aw.length}</b><small>수상</small></span>`:''}
+  <span><b class="num">${ws.length}</b><small>작품</small></span>
+  ${y0?`<span><b class="num">${y0}</b><small>첫 작품</small></span>`:''}</div>
+  <div class="cr-win" data-act="cr-toggle" role="region" aria-label="${disp} 수상과 출연 크레딧, 눌러서 멈춤"><div class="cr-roll"><div class="cr-pg">${body}</div><div class="cr-pg" aria-hidden="true">${body}</div></div></div>
+  <p class="cr-src">수상: Wikidata, 출연작: TMDB${prof&&prof.wikidata?`, <a href="${esc(prof.wikidata)}" target="_blank" rel="noopener">Wikidata에서 보기</a>`:''}</p>
+  ${prof&&prof.bio?`<details class="talk"><summary>소개</summary><p class="bio">${esc(prof.bio)}</p></details>`:''}</section>`}
+function bindCred(){const w=document.querySelector('#cred .cr-win');if(!w)return;const pg=w.querySelector('.cr-pg');if(!pg)return;
+ const h=pg.offsetHeight;if(h<=w.clientHeight+20){w.classList.add('still');return}
+ w.style.setProperty('--crd',Math.max(20,Math.round(h/26))+'s');w.classList.add('run')}
+document.addEventListener('click',e=>{const w=e.target.closest('[data-act="cr-toggle"]');if(!w||e.target.closest('a'))return;w.classList.toggle('hold')});
+
+async function loadCostars(pid,name){let L=[];try{L=await rpc('costars',{pid,lim:12})||[]}catch(e){return}
+ if(!PAGE||PAGE.pid!==pid)return;const box=$('#costar');if(!box||!L.length)return;
+ try{await loadNames(L.map(x=>x.name))}catch(e){}
+ if(!PAGE||PAGE.pid!==pid)return;
+ const disp=n=>esc(dispName(n).replace(/\s*\(.*\)$/,''));
+ box.innerHTML=`<div class="sh"><h2>${disp(name)} 님과 자주 함께한 배우</h2><span class="sub">같은 작품 주요 배역 기준</span></div>
+ <div class="co">${L.map(x=>{const u=IMG['p:'+x.name]||x.photo||'',w=(x.works||[]).slice(0,3);return `<a class="co-c" href="#a/${encodeURIComponent(x.name)}"><span class="co-ph"${u?` style="background-image:url('${esc(u)}')"`:''}>${u?'':esc(x.name[0])}</span><b>${disp(x.name)}</b><em>${x.n}편 함께</em><small>${w.map(v=>esc(v.t)).join(', ')}</small></a>`}).join('')}</div>`;
+ box.hidden=false}
+(function(){const f=bindFilmCarousel;bindFilmCarousel=function(){f.apply(this,arguments);bindCred();
+ const tr=$('#fcTrack');if(!tr||tr._auto)return;const cards=[...tr.querySelectorAll('.fc-c')];if(cards.length<3)return;
+ const side=()=>{const i=cards.findIndex(c=>c.classList.contains('on'));cards.forEach((c,k)=>{c.classList.toggle('lf',k<i);c.classList.toggle('rt',k>i)})};
+ tr.addEventListener('scroll',()=>requestAnimationFrame(side),{passive:true});side();
+ let idle=Date.now();const poke=()=>idle=Date.now();['pointerdown','wheel','touchstart','keydown','focusin'].forEach(ev=>tr.addEventListener(ev,poke,{passive:true}));
+ if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+ tr._auto=setInterval(()=>{if(!document.body.contains(tr)){clearInterval(tr._auto);return}
+  if(Date.now()-idle<7000||document.hidden)return;const r=tr.getBoundingClientRect();if(r.bottom<0||r.top>innerHeight)return;
+  const i=cards.findIndex(c=>c.classList.contains('on'));if(i>=cards.length-1)tr.scrollTo({left:0,behavior:'smooth'});else fcGo(1)},3200)}})();

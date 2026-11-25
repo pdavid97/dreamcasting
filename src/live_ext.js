@@ -78,12 +78,13 @@ async function renderActor(){const pid=PAGE.pid;
  <button class="b sm" data-act="back">광장으로</button>
  <div class="ahero">${photo?`<img class="aph" src="${esc(photo)}" alt="${esc(name)}">`:`<span class="aph ph0">${esc(name[0])}</span>`}
   <div><span class="sub">배우 팬 채널</span><h1>${esc(ORIG[name]||name)}</h1>${ORIG[name]?`<p class="sub" style="margin:-4px 0 6px">${esc(name)}</p>`:''}
-  <p class="sub">${prof&&prof.birthday?`${esc(prof.birthday)} 출생, ${ageTxt(name)}`:''}${prof&&prof.place?`, ${esc(prof.place)}`:''}</p>
   <div class="astats"><span><b class="num">${avgAll==null?'-':avgAll}</b><small>연기 점수</small></span><span><b class="num">${fmt(p.fans)}</b><small>팬</small></span><span><b class="num">${open.length}</b><small>물망 중</small></span><span><b class="num">${lead}</b><small>1위 배역</small></span><span><b class="num">${fmt(pg.sheet_mentions)}</b><small>시트 언급</small></span></div>
   <div class="row2"><button class="b ${fan?'':'buy'}" data-act="follow" data-pid="${p.id}">${fan?'팬 채널 나가기':'팬 채널 들어가기'}</button><button class="b" data-act="rally" data-pid="${p.id}">화력 요청 문구 복사</button></div>
   <p class="dl">팬이 되면 ${esc(name)} 님이 새 작품 후보에 오르거나 캐스팅이 확정될 때 알려 드려요. 투표는 배역마다 한 사람 한 표예요. 화력은 더 많은 팬이 투표하러 오게 만드는 데서 나와요.</p></div></div>
 
  ${fanZone(p.id,name)}
+
+ ${credRoll(name,awards,works,prof)}
 
  <section><div class="sh"><h2>지금 물망에 오른 작품</h2><span class="sub">1위까지 남은 표</span></div>
   <div class="races">${open.map(raceCard).join('')||`<p class="empty3">아직 투표가 열린 배역 후보가 아니에요. 작품 배역 보드에서 ${esc(name)} 님을 후보로 올려 보세요.</p>`}</div>
@@ -98,16 +99,14 @@ async function renderActor(){const pid=PAGE.pid;
   <div class="talkf"><input type="text" id="fanTx" maxlength="280" placeholder="${esc(name)} 님이 어울릴 배역, 응원 한마디"><button class="b sm buy" data-act="fanpost" data-pid="${p.id}">올리기</button></div>
   <ul class="cm">${(posts.data||[]).map(x=>`<li><small>${esc(x.nickname)}${x.is_fan?' <span class="pick">팬</span>':''}, ${new Date(x.created_at).toLocaleDateString('ko-KR')}</small>${esc(x.body)}<button class="lk" data-act="fanlike" data-id="${x.id}">공감 ${fmt(x.likes)}</button></li>`).join('')||'<li class="empty3">첫 응원을 남겨 주세요</li>'}</ul>
  </section>
- <section><div class="sh"><h2>수상</h2><span class="sub">Wikidata 기록</span></div>
-  ${awards.length?`<ul class="aw">${awards.slice(0,30).map(a=>`<li><b>${esc(a.year||'')}</b> ${esc(a.name)}${a.work?` <span class="sub">${esc(a.work)}</span>`:''}</li>`).join('')}</ul>`:`<p class="dl">${prof&&prof.awards_ok===false?'수상 기록을 불러오지 못했어요.':'Wikidata에 등록된 수상 기록이 아직 없어요.'}${prof&&prof.wikidata?` <a href="${esc(prof.wikidata)}" target="_blank" rel="noopener">Wikidata에서 보기</a>`:''}</p>`}
-  ${prof&&prof.bio?`<details class="talk"><summary>소개</summary><p class="bio">${esc(prof.bio)}</p></details>`:''}
- </section></div>
+</div>
 
  ${bestWorks(name)}
  <section><div class="sh"><h2>필모그래피</h2><span class="sub">넘겨 보고, 눌러서 자세히, 하트로 내 AV룸에, 왕관으로 내 인생작에</span></div>
   ${filmCarousel(works.slice(0,40),pid)}
   ${prof&&prof.tmdb?`<p class="dl"><a href="${esc(prof.tmdb)}" target="_blank" rel="noopener">TMDB에서 전체 필모 보기</a></p>`:''}
- </section></div>`)}
+ </section>
+ <section id="costar" hidden></section></div>`);loadCostars(pid,name)}
 
 /* 유저 페이지 */
 /* 업적: 팬 언어로, 어떻게 얻는지와 진행도를 함께 */

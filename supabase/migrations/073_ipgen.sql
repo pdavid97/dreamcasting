@@ -5,7 +5,7 @@ create table if not exists news_hint(id bigserial primary key, url text unique n
   kind text not null, ref text not null, ref_title text, chars text[] default '{}', actors text[] default '{}', topic_id text, created_at timestamptz default now());
 alter table news_hint enable row level security;
 alter table anime_char add column if not exists fav int;
--- (적용 대기: David 확인 후) 뉴스에서 만든 초안은 기사 주소를 topics.links에 넣어 go 함수로만 이동하게 함
+-- 트리거는 076에서 적용
 create or replace function public.topics_auto_links() returns trigger language plpgsql as $$
 begin
   if new.links is null and new.auto ? 'news' and new.auto->'news'->>'u' is not null then

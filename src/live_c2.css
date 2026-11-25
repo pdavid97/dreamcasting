@@ -216,3 +216,49 @@ body[data-view=rank] .side::before{display:none!important;content:none!important
 .c2line b{font-size:13px;color:#D4FF3A}
 .c2line em{font-style:normal;color:#888;margin-right:8px;font-variant-numeric:tabular-nums}
 .c2line small{color:#888}
+
+/* 배우 페이지: 엔딩 크레딧 */
+.cred{margin:18px 0}
+.cr-stat{display:flex;gap:10px;margin-bottom:10px}
+.cr-stat span{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:10px 6px;border-radius:14px;background:#111;color:#f3efe6;border:1px solid rgba(255,255,255,.08)}
+.cr-stat span.gold{background:linear-gradient(160deg,#2a2112,#111 70%);color:#e6c77a}
+.cr-stat i{display:block;height:22px}.cr-stat b{font-size:22px;line-height:1}.cr-stat small{font-size:11px;opacity:.7;letter-spacing:.04em}
+.cr-win{position:relative;height:340px;overflow:hidden;border-radius:16px;border:1px solid rgba(230,199,122,.18);background:#070707;color:#ece7dc;cursor:pointer;
+ -webkit-mask-image:linear-gradient(transparent,#000 16%,#000 84%,transparent);mask-image:linear-gradient(transparent,#000 16%,#000 84%,transparent)}
+.cr-win.still{height:auto;cursor:default}.cr-win.still .cr-pg+.cr-pg{display:none}
+.cr-win.run .cr-roll{animation:crUp var(--crd,40s) linear infinite}
+.cr-win.run.hold .cr-roll,.cr-win.run:hover .cr-roll{animation-play-state:paused}
+@keyframes crUp{from{transform:translateY(0)}to{transform:translateY(-50%)}}
+.cr-pg{padding:120px 18px 60px;text-align:center}
+.cr-name{margin-bottom:34px}.cr-name small{display:block;font:italic 13px/1 Georgia,serif;opacity:.6;letter-spacing:.2em;text-transform:uppercase}
+.cr-name b{display:block;margin-top:8px;font:400 30px/1.15 'Black Han Sans',sans-serif;letter-spacing:.02em;color:#fff}
+.cr-sec{display:flex;align-items:center;justify-content:center;gap:6px;margin:30px 0 14px;color:#e6c77a;font-size:12px;letter-spacing:.32em}
+.cr-sec::before,.cr-sec::after{content:"";width:28px;height:1px;background:currentColor;opacity:.5}
+.cr-sec i{display:inline-flex}
+.cr-it{display:grid;grid-template-columns:52px 1fr;column-gap:12px;text-align:left;max-width:330px;margin:0 auto 14px}
+.cr-it em{grid-row:span 2;font:600 12px/1.6 Georgia,serif;font-style:normal;opacity:.55;text-align:right}
+.cr-it b{font-size:15px;font-weight:600;line-height:1.35}
+.cr-it span{font:italic 12px/1.4 Georgia,serif;opacity:.65}
+.cr-it.aw b{color:#f2dc9e}.cr-it.aw em{color:#e6c77a;opacity:.85}
+.cr-end{margin-top:40px;font:italic 12px Georgia,serif;opacity:.45;letter-spacing:.12em}
+.cr-src{margin:6px 2px 0;font-size:11px;opacity:.55}.cr-src a{color:inherit}
+@media (prefers-reduced-motion:reduce){.cr-win.run{overflow-y:auto}.cr-win.run .cr-roll{animation:none}.cr-win.run .cr-pg+.cr-pg{display:none}}
+
+/* 필모그래피 회전 */
+.fc-track{perspective:900px}
+.fc-c.lf{transform:scale(.86) rotateY(24deg)}.fc-c.rt{transform:scale(.86) rotateY(-24deg)}
+.fc-c.on{transform:scale(1.06) rotateY(0)}
+
+/* 자주 함께한 배우 */
+#costar{margin:18px 0}
+.co{display:flex;gap:12px;overflow-x:auto;padding:4px 2px 10px;scroll-snap-type:x proximity;scrollbar-width:none}.co::-webkit-scrollbar{display:none}
+.co-c{flex:0 0 108px;scroll-snap-align:start;display:flex;flex-direction:column;align-items:center;gap:3px;text-align:center;color:inherit;text-decoration:none}
+.co-ph{width:84px;height:84px;border-radius:50%;background:#222 center 20%/cover;display:grid;place-items:center;color:#fff;font-weight:700;font-size:22px;box-shadow:0 0 0 2px var(--card,#fff),0 0 0 4px #e6c77a}
+.co-c b{font-size:14px;margin-top:4px}.co-c em{font-style:normal;font-size:12px;color:#b8892c;font-weight:600}
+.co-c small{font-size:11px;opacity:.65;line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+
+/* 내 캐스팅 성향 */
+.sty>div{display:grid;grid-template-columns:52px 1fr 40px;gap:8px;align-items:center;margin:6px 0;font-size:12px}
+.sty span{height:12px;border-radius:6px;background:var(--line);overflow:hidden}.sty i{display:block;height:100%;background:linear-gradient(90deg,var(--acc),var(--hot))}
+.ig-sub{margin:12px 0 4px;font-size:12px;font-weight:700;opacity:.8}
+.dual+.dual{margin-top:8px}
