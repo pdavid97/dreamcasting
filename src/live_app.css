@@ -894,3 +894,14 @@ html,body{overflow-x:clip}
 .td.more .po{display:flex;align-items:center;justify-content:center;background:#151515;border:1.5px dashed #4a5a14}
 .td.more .po svg{width:26px;height:26px;stroke:#D4FF3A;stroke-width:2.4;fill:none;stroke-linecap:round}
 .td.more small{color:#D4FF3A}
+.ct3.hid{display:none}
+.ct3h{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.ct3a{margin-left:auto;display:inline-flex;align-items:center;gap:6px}
+.ct3a .ctk{border:1px solid #333;background:none;color:#bbb;border-radius:12px;font-size:11px;font-weight:700;padding:4px 9px;cursor:pointer}
+.ct3a .tlike{display:inline-flex;align-items:center;gap:4px}
+.ct3a .tlike.off{opacity:.45}
+.ctmore{width:100%;margin-top:10px;min-height:44px;border-radius:14px;border:1px solid #3a3a3a;background:#141414;color:#D4FF3A}
+.ct3a .tlike{flex-direction:row!important;height:30px!important;min-height:0!important;width:auto!important;padding:0 10px!important;border-radius:15px!important;border:1px solid #3a3a3a;background:#141414;color:#ddd;font-size:12px}
+.ct3a .tlike svg{width:14px;height:14px}
+.ct3a .tlike b{color:inherit!important;font-size:12px}
+.ct3a .tlike.on{border-color:#ff5a8a;color:#ff5a8a;background:rgba(255,90,138,.12)}

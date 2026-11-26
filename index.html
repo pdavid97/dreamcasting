@@ -1832,6 +1832,17 @@ html,body{overflow-x:clip}
 .td.more .po{display:flex;align-items:center;justify-content:center;background:#151515;border:1.5px dashed #4a5a14}
 .td.more .po svg{width:26px;height:26px;stroke:#D4FF3A;stroke-width:2.4;fill:none;stroke-linecap:round}
 .td.more small{color:#D4FF3A}
+.ct3.hid{display:none}
+.ct3h{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.ct3a{margin-left:auto;display:inline-flex;align-items:center;gap:6px}
+.ct3a .ctk{border:1px solid #333;background:none;color:#bbb;border-radius:12px;font-size:11px;font-weight:700;padding:4px 9px;cursor:pointer}
+.ct3a .tlike{display:inline-flex;align-items:center;gap:4px}
+.ct3a .tlike.off{opacity:.45}
+.ctmore{width:100%;margin-top:10px;min-height:44px;border-radius:14px;border:1px solid #3a3a3a;background:#141414;color:#D4FF3A}
+.ct3a .tlike{flex-direction:row!important;height:30px!important;min-height:0!important;width:auto!important;padding:0 10px!important;border-radius:15px!important;border:1px solid #3a3a3a;background:#141414;color:#ddd;font-size:12px}
+.ct3a .tlike svg{width:14px;height:14px}
+.ct3a .tlike b{color:inherit!important;font-size:12px}
+.ct3a .tlike.on{border-color:#ff5a8a;color:#ff5a8a;background:rgba(255,90,138,.12)}
 
 /* ================= C 디자인 통일 ================= */
 :root{--lime:#D4FF3A}
@@ -3123,10 +3134,10 @@ function renderTalk(){const box=$('#talkBox');if(!box||!D)return;const t=topic()
  <div class="teams2">
   <article class="tcard mine"><div class="th2"><b>내 캐스팅 팀</b>${mySh?'<small class="tsrc">꾸민 팀 기준</small>':''}<span>${done===RS.length?'완성':`${RS.length-done}개 배역 남음`}</span></div>${teamRow(myTeam,true)}
    ${done===RS.length?(same?'<p class="tnote">광장 민심 팀과 똑같아요. 민심을 정확히 읽었네요.</p>':`<p class="tnote">광장 민심 팀과 ${myTeam.filter((x,i)=>x.name!==lead[i].name).length}자리가 달라요.</p>`):'<p class="tnote">남은 배역도 고르면 내 팀이 공감 순위에 올라가요.</p>'}</article>
-  <article class="tcard lteam"><div class="th2"><b>광장 민심 팀 TOP 3</b><span>배역별 득표로 만든 조합</span></div>${crowdTeams(RS).map((T,k)=>`<div class="ct3${k?'':' first'}"><div class="ct3h"><em>${k+1}위</em><span>득표 점수 ${T.score}%</span>${T.same?'<b>내 팀과 같아요</b>':''}</div>${teamRow(T.list)}</div>`).join('')||teamRow(lead)}</article>
+  <article class="tcard lteam"><div class="th2"><b>광장 민심 팀 순위</b><span>득표로 만든 조합, ♥ 공감</span></div>${(()=>{const CT=crowdTeams(RS);if(!CT.length)return teamRow(lead);const ck=T=>(TALK.combos||[]).find(c=>RS.every((r,i)=>c.picks&&c.picks[r.id]===T.list[i].name));const all=TALK.crowdAll;
+   return CT.map((T,k)=>{const c=ck(T),hid=k>=3&&!all;return `<div class="ct3${k?'':' first'}${hid?' hid':''}"><div class="ct3h"><em>${k+1}위</em><span>득표 점수 ${T.score}%</span>${T.same?'<b>내 팀과 같아요</b>':''}<span class="ct3a">${c?`<button class="ctk" data-act="talk-open" data-k="${c.ckey}" aria-expanded="${TALK.open===c.ckey}">토론 ${fmt(c.comments)}</button>`:''}<button class="tlike${c&&c.liked?' on':''}${c?'':' off'}" data-act="${c?'team-like':'team-like0'}" ${c?`data-k="${c.ckey}"`:''} aria-pressed="${!!(c&&c.liked)}" aria-label="이 팀에 공감">${IC.heart}<b>${fmt(c?(c.likes||0)+c.users:0)}</b></button></span></div>${teamRow(T.list)}${c&&TALK.open===c.ckey?`<div class="thread" id="thread">${threadHTML(c)}</div>`:''}</div>`}).join('')+(CT.length>3?`<button class="b ctmore" data-act="ct-more">${all?'접기':`나머지 ${CT.length-3}개 팀 더 보기`}</button>`:'')})()}</article>
  </div>
- <div class="sh" style="margin-top:16px"><h3>팀 공감 순위</h3><span class="sub">같은 팀을 고른 사람 + 공감한 사람</span></div>
- ${cs.length?`<ol class="combos">${cs.map((c,i)=>`<li class="${c.mine?'mine':''}${TALK.open===c.ckey?' open':''}"><div class="cbtn2"><span class="rk">${i+1}</span><button class="cbtn" data-act="talk-open" data-k="${c.ckey}" aria-expanded="${TALK.open===c.ckey}"><span class="cls">${comboLine(c.picks)}</span><span class="cn">같은 팀 ${fmt(c.users)}명${c.mine?', 내 팀':''}, 토론 ${fmt(c.comments)}</span></button><button class="tlike${c.liked?' on':''}" data-act="team-like" data-k="${c.ckey}" aria-pressed="${!!c.liked}" aria-label="이 팀에 공감">${IC.heart}<b>${fmt((c.likes||0)+c.users)}</b></button></div>${TALK.open===c.ckey?`<div class="thread" id="thread">${threadHTML(c)}</div>`:''}</li>`).join('')}</ol>`:'<p class="empty3">모든 배역을 고른 사람이 아직 없어요. 남은 배역도 투표하면 내 팀이 순위에 올라가요.</p>'}`}
+ ${(()=>{const CT=crowdTeams(RS);TALK._ctk=new Set((TALK.combos||[]).filter(c=>CT.some(T=>RS.every((r,i)=>c.picks&&c.picks[r.id]===T.list[i].name))).map(c=>c.ckey));return ''})()}${cs.filter(c=>!TALK._ctk.has(c.ckey)).length?`<div class="sh" style="margin-top:16px"><h3>유저가 꾸린 다른 팀</h3><span class="sub">민심 순위 밖, 같은 팀 + 공감</span></div><ol class="combos">${cs.filter(c=>!TALK._ctk.has(c.ckey)).map((c,i)=>`<li class="${c.mine?'mine':''}${TALK.open===c.ckey?' open':''}"><div class="cbtn2"><span class="rk">${i+1}</span><button class="cbtn" data-act="talk-open" data-k="${c.ckey}" aria-expanded="${TALK.open===c.ckey}"><span class="cls">${comboLine(c.picks)}</span><span class="cn">같은 팀 ${fmt(c.users)}명${c.mine?', 내 팀':''}, 토론 ${fmt(c.comments)}</span></button><button class="tlike${c.liked?' on':''}" data-act="team-like" data-k="${c.ckey}" aria-pressed="${!!c.liked}" aria-label="이 팀에 공감">${IC.heart}<b>${fmt((c.likes||0)+c.users)}</b></button></div>${TALK.open===c.ckey?`<div class="thread" id="thread">${threadHTML(c)}</div>`:''}</li>`).join('')}</ol>`:''}`}
 function threadHTML(c){if(!USER)return '<p class="sub">로그인하면 토론방을 볼 수 있어요.</p>';
  const all=TALK.thread,top=all.filter(x=>!x.parent_id).sort((a,b)=>b.rank_score-a.rank_score||(b.up-b.down)-(a.up-a.down)||new Date(b.created_at)-new Date(a.created_at));
  const kids=id=>all.filter(x=>x.parent_id===id).sort((a,b)=>new Date(a.created_at)-new Date(b.created_at));
@@ -3267,7 +3278,7 @@ async function taggedShot(nm,tk){const k=nm+'|'+tk;if(k in TAGS)return TAGS[k];T
 function crowdTeams(RS){const per=RS.map(r=>{const cs=(D.cands[r.id]||[]).filter(c=>c.votes>0),tot=cs.reduce((a,c)=>a+c.votes,0)||1;return cs.sort((a,b)=>b.votes-a.votes).slice(0,3).map(c=>({r,name:c.name,p:c.votes/tot}))});
  if(per.some(x=>!x.length))return [];let beams=[{list:[],sc:0}];
  for(const opts of per){const nb=[];for(const b of beams)for(const o of opts){if(b.list.some(x=>x.name===o.name))continue;nb.push({list:[...b.list,{r:o.r,name:o.name}],sc:b.sc+o.p})}beams=nb.sort((a,b)=>b.sc-a.sc).slice(0,12)}
- const my=crowdTeams.my||[];return beams.slice(0,3).map(b=>({list:b.list,score:Math.round(b.sc/RS.length*100),same:b.list.every((x,i)=>x.name===my[i])}))}
+ const my=crowdTeams.my||[];return beams.slice(0,10).map(b=>({list:b.list,score:Math.round(b.sc/RS.length*100),same:b.list.every((x,i)=>x.name===my[i])}))}
 
 /* ================= 내 캐스팅 리포트: 내 투표를 인포그래픽으로 (본인 페이지에서만) ================= */
 const LEADS=['male_lead','female_lead','lead'],SUBS=['male_sub','female_sub','support'];
@@ -4272,7 +4283,7 @@ ${ll.length?`<div class="mp-links"><b>원작과의 연결고리</b>${ll.map(x=>`
 const _hcRender2=renderDeck;
 renderDeck=function(){const box=$('#deck'),t=DECKV&&curTopic();if(box&&t&&DECK.length&&DR>=t.roles.length){cardLeave();return renderDoneC(box,t)}return _hcRender2()};
 
-if(/[?&]test=1/.test(location.search))window.__hcT=f=>f({DECK,tl:()=>{const t=topic();return [t&&t.id,WORK[t.id]&&Object.keys(WORK[t.id]).join(),JSON.stringify(tlWork(t)),String(typeof renderTLove)]},c2User:d=>c2User(d),rpc:(a,b)=>rpc(a,b),deep:(t,d)=>{DEEP[t]=d;renderDeepT()},setDI:v=>DI=v,setDR:v=>DR=v,renderDeck:()=>renderDeck(),vsLegacy:async()=>{VS_N=8;await vsTrySpecial(false);renderDuel()},setStreak:n=>{STREAK=n},addCast:async(nm)=>{nextRole=()=>{};await loadNames([nm]);hcAddCast(curTopic(),curRole().id,999999,nm)}});
+if(/[?&]test=1/.test(location.search))window.__hcT=f=>f({DECK,talk:()=>{D.seen=true;for(const k in D.cands)D.cands[k].forEach((c,i)=>{if(!c.votes)c.votes=Math.max(0,9-i*2)});setTTab("team");loadTalk(D.tid)},tl:()=>{const t=topic();return [t&&t.id,WORK[t.id]&&Object.keys(WORK[t.id]).join(),JSON.stringify(tlWork(t)),String(typeof renderTLove)]},c2User:d=>c2User(d),rpc:(a,b)=>rpc(a,b),deep:(t,d)=>{DEEP[t]=d;renderDeepT()},setDI:v=>DI=v,setDR:v=>DR=v,renderDeck:()=>renderDeck(),vsLegacy:async()=>{VS_N=8;await vsTrySpecial(false);renderDuel()},setStreak:n=>{STREAK=n},addCast:async(nm)=>{nextRole=()=>{};await loadNames([nm]);hcAddCast(curTopic(),curRole().id,999999,nm)}});
 
 const HC_RELHD='<b class="hd"><span>🔗 이어서 고르기</span><small>내 픽과 이어진 배역</small></b>';
 /* 이어서 고르기: 리포트 끝에서 다음에 할 일을 이유와 함께 2~3개 추천해 계속 이어지게 */
@@ -4815,6 +4826,10 @@ function tlFly(from,poster,life){const tabs=[...document.querySelectorAll('#tabb
 document.addEventListener('click',e=>{const b=e.target.closest('[data-act="team-gap"]');if(!b)return;e.preventDefault();e.stopImmediatePropagation();
  try{setTTab('vote')}catch(x){}
  setTimeout(()=>{const c=document.querySelector(`#topicView [data-act="rchip"][data-i="${b.dataset.i}"]`);if(c){c.click();const box=c.closest('.c2rs')||c;box.scrollIntoView({behavior:'smooth',block:'start'});c.classList.add('flash');setTimeout(()=>c.classList.remove('flash'),1400)}else{const el=document.querySelector(`#roles .role[data-rid="${b.dataset.rid}"]`);if(el)el.scrollIntoView({behavior:'smooth',block:'start'})}},60)},true);
+/* 민심 팀 순위 더 보기, 아직 아무도 고르지 않은 조합의 하트 */
+document.addEventListener('click',e=>{const b=e.target.closest('[data-act="ct-more"],[data-act="team-like0"]');if(!b)return;e.preventDefault();
+ if(b.dataset.act==='ct-more'){TALK.crowdAll=!TALK.crowdAll;renderTalk();return}
+ toast('이 조합으로 모든 배역을 고른 사람이 생기면 공감할 수 있어요')});
 
 }
 </script>
