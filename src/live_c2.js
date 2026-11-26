@@ -212,7 +212,7 @@ function c2GenPoster(t){if(!t)return '';if(C2GP[t.id])return C2GP[t.id];let h=0;
 /* ---- 역대 배역 대결(legacy): 같은 배역을 맡은 실사 배우끼리. 결과 뒤에 배역 연표 ---- */
 (function(){const _sides=vsSides;vsSides=function(){const d=DUEL;if(d&&d.kind==='legacy'){const A={key:'a',w:String(d.a.id),n:d.a.name,y:d.a.year,wk:d.a.work},B={key:'b',w:String(d.b.id),n:d.b.name,y:d.b.year,wk:d.b.work};return d.flip?[B,A]:[A,B]}return _sides()}})();
 vsTrySpecial=async function(first){if(first)return false;VS_N++;if(VS_N%3!==0)return false;
- const cyc=['legacy','orig','chem'],st=(VS_N/3)%3,order=[cyc[st]].concat(cyc.filter((_,i)=>i!==st));
+ const cyc=['chem'],st=0 /* 원작 배우가 후보로 나오는 원작 대 새 얼굴, 역대 대결은 내 픽에서 뺌 (11/25) */,order=[cyc[st]].concat(cyc.filter((_,i)=>i!==st));
  for(const k of order){const s=k==='legacy'?await rpc('vs_legacy',{skip:VS_SKIP}).catch(()=>null):await rpc('vs_special',{k,prefer:SEL||null,skip:VS_SKIP}).catch(()=>null);
   if(s&&s.kind){let names;if(s.kind==='legacy'){for(const x of [s.a,s.b])if(x.p&&!IMG['p:'+x.name])IMG['p:'+x.name]='https://image.tmdb.org/t/p/w500'+x.p;names=[s.a.name,s.b.name]}else names=s.kind==='chem'?[s.a.m.name,s.a.f.name,s.b.m.name,s.b.f.name]:[s.orig,s.c.name];
    await duelImgs(names);DUEL={...s,flip:Math.random()<.5,res:null,t0:performance.now()};track&&track('vs_special',{t:s.tid,r:s.rid||null,m:{k:s.kind}});return true}}
