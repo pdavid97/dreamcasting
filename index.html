@@ -2271,6 +2271,12 @@ svg.bdm.on.t-pr{filter:drop-shadow(0 0 12px rgba(143,227,255,.4)) drop-shadow(0 
 .bdg{filter:none!important;opacity:1!important}
 .bdg:not(.on) b{color:#8a8a8a}
 .bdg.on em{color:#D4FF3A}
+/* 팀 플립: 가운데가 갈라지는 플립 시계 방식 */
+.c2fl .fp.flc{visibility:visible;pointer-events:none;box-shadow:none;transform-origin:50% 50%;backface-visibility:hidden}
+.c2fl .fp.flt{clip-path:inset(0 0 50% 0)}
+.c2fl .fp.flb{clip-path:inset(50% 0 0 0)}
+.c2fl .fl-st::after{content:'';grid-area:1/1;align-self:center;height:2px;background:rgba(0,0,0,.65);z-index:6;pointer-events:none;box-shadow:0 1px 0 rgba(255,255,255,.06)}
+.c2fl .fp::before{display:none}
 
 </style>
 </head>
@@ -4791,12 +4797,15 @@ addEventListener('hashchange',()=>{if(TR)trEnd();trAuto()});setTimeout(trAuto,40
 
 /* 내 캐스팅 팀: 작품별 페이지를 플립차트처럼 위로 넘김 (11/25) */
 const FL={i:0,t:0,busy:0};
-function flTo(d,user){const box=$('#c2fl');if(!box||FL.busy)return;const ps=[...box.querySelectorAll('.fp')],n=ps.length;if(n<2)return;const a=ps[FL.i],ni=(FL.i+d+n)%n,b=ps[ni];FL.busy=1;
- b.classList.add('nx');const fwd=d>0;
- const an=fwd?a.animate([{transform:'perspective(900px) rotateX(0)',opacity:1},{transform:'perspective(900px) rotateX(-96deg)',opacity:.35}],{duration:620,easing:'cubic-bezier(.55,.05,.6,.95)'})
-  :b.animate([{transform:'perspective(900px) rotateX(-96deg)',opacity:.35},{transform:'perspective(900px) rotateX(0)',opacity:1}],{duration:620,easing:'cubic-bezier(.2,.6,.3,1)'});
- if(!fwd){b.classList.add('top')}
- an.onfinish=()=>{a.classList.remove('on');b.classList.remove('nx','top');b.classList.add('on');FL.i=ni;FL.busy=0;const pg=box.querySelector('.fl-pg b');if(pg)pg.textContent=ni+1};
+function flTo(d,user){const box=$('#c2fl');if(!box||FL.busy)return;const st=box.querySelector('.fl-st'),ps=[...box.querySelectorAll('.fp:not(.flc)')],n=ps.length;if(n<2)return;const a=ps[FL.i],ni=(FL.i+d+n)%n,b=ps[ni];FL.busy=1;
+ /* 플립 시계처럼 가운데가 갈라짐: 현재 카드 윗장이 아래로 넘어가고, 다음 카드 아랫장이 내려와 덮음 */
+ const mk=(src,half,z)=>{const c=src.cloneNode(true);c.classList.add('flc',half==='t'?'flt':'flb');c.classList.remove('on','nx');c.removeAttribute('data-i');c.style.zIndex=z;c.setAttribute('aria-hidden','true');st.appendChild(c);return c};
+ b.classList.add('nx');b.style.zIndex=1;
+ const aBot=mk(a,'b',2),aTop=mk(a,'t',3),bBot=mk(b,'b',4);bBot.style.transform='perspective(800px) rotateX(90deg)';a.style.visibility='hidden';
+ const T=300;
+ aTop.animate([{transform:'perspective(800px) rotateX(0deg)',filter:'brightness(1)'},{transform:'perspective(800px) rotateX(-90deg)',filter:'brightness(.45)'}],{duration:T,easing:'cubic-bezier(.55,0,.9,.6)',fill:'forwards'}).onfinish=()=>{aTop.remove();
+  bBot.animate([{transform:'perspective(800px) rotateX(90deg)',filter:'brightness(1.5)'},{transform:'perspective(800px) rotateX(-8deg)',offset:.82},{transform:'perspective(800px) rotateX(0deg)',filter:'brightness(1)'}],{duration:T+80,easing:'cubic-bezier(.2,.6,.4,1)',fill:'forwards'}).onfinish=()=>{
+   aBot.remove();bBot.remove();a.style.visibility='';a.classList.remove('on');b.classList.remove('nx');b.style.zIndex='';b.classList.add('on');FL.i=ni;FL.busy=0;const pg=box.querySelector('.fl-pg b');if(pg)pg.textContent=ni+1}};
  if(user)flAuto(9000)}
 function flAuto(delay){clearTimeout(FL.t);const go=()=>{if(!$('#c2fl'))return;if(document.visibilityState==='visible')flTo(1);FL.t=setTimeout(go,4200)};FL.t=setTimeout(go,delay||4200)}
 var c2TeamRot=function(){FL.i=0;FL.busy=0;const box=$('#c2fl');if(!box)return;flAuto();

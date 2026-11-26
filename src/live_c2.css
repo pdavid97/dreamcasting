@@ -425,3 +425,9 @@ svg.bdm.on.t-pr{filter:drop-shadow(0 0 12px rgba(143,227,255,.4)) drop-shadow(0 
 .bdg{filter:none!important;opacity:1!important}
 .bdg:not(.on) b{color:#8a8a8a}
 .bdg.on em{color:#D4FF3A}
+/* 팀 플립: 가운데가 갈라지는 플립 시계 방식 */
+.c2fl .fp.flc{visibility:visible;pointer-events:none;box-shadow:none;transform-origin:50% 50%;backface-visibility:hidden}
+.c2fl .fp.flt{clip-path:inset(0 0 50% 0)}
+.c2fl .fp.flb{clip-path:inset(50% 0 0 0)}
+.c2fl .fl-st::after{content:'';grid-area:1/1;align-self:center;height:2px;background:rgba(0,0,0,.65);z-index:6;pointer-events:none;box-shadow:0 1px 0 rgba(255,255,255,.06)}
+.c2fl .fp::before{display:none}
