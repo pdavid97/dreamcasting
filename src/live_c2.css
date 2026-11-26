@@ -431,3 +431,4 @@ svg.bdm.on.t-pr{filter:drop-shadow(0 0 12px rgba(143,227,255,.4)) drop-shadow(0 
 .c2fl .fp.flb{clip-path:inset(50% 0 0 0)}
 .c2fl .fl-st::after{content:'';grid-area:1/1;align-self:center;height:2px;background:rgba(0,0,0,.65);z-index:6;pointer-events:none;box-shadow:0 1px 0 rgba(255,255,255,.06)}
 .c2fl .fp::before{display:none}
+.c2fl .fl-st::after{display:none}
