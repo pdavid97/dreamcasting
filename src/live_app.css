@@ -887,3 +887,7 @@ body[data-view="deck"] .undobar{top:calc(8px + env(safe-area-inset-top));bottom:
 body[data-view="deck"] .undobar.on{transform:translate(-50%,0)}
 /* 모바일에서 가로로 몇 px 밀리는 현상 방지 (11/25 봇 점검: 작품, 배우, 랭킹 화면) */
 html,body{overflow-x:clip}
+/* 버튼 글씨 정렬 통일: 모든 박스형 버튼은 가로, 세로 가운데 (11/25) */
+.b{display:inline-flex;align-items:center;justify-content:center;text-align:center;line-height:1.25;text-decoration:none;gap:6px}
+.rres .b.buy{display:flex;min-height:52px}
+.acts .b,.dset .b,.acct-out .b{display:flex}
