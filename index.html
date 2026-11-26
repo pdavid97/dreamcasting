@@ -2278,6 +2278,9 @@ svg.bdm.on.t-pr{filter:drop-shadow(0 0 12px rgba(143,227,255,.4)) drop-shadow(0 
 .c2fl .fl-st::after{content:'';grid-area:1/1;align-self:center;height:2px;background:rgba(0,0,0,.65);z-index:6;pointer-events:none;box-shadow:0 1px 0 rgba(255,255,255,.06)}
 .c2fl .fp::before{display:none}
 .c2fl .fl-st::after{display:none}
+.aig{display:inline-flex;align-items:center;gap:6px;margin:2px 0 10px;padding:6px 12px;border-radius:16px;border:1px solid #3a3a3a;background:#141414;color:#fff;font-size:13px;font-weight:800;text-decoration:none}
+.aig svg{width:16px;height:16px;fill:none;stroke:#ff5a8a;stroke-width:2}
+.aig small{font-size:11px;font-weight:600;color:#999}
 
 </style>
 </head>
@@ -2758,7 +2761,7 @@ async function renderActor(){const pid=PAGE.pid;
  showPage(`<div class="pg actor">
  <button class="b sm" data-act="back">광장으로</button>
  <div class="ahero">${photo?`<img class="aph" src="${esc(photo)}" alt="${esc(name)}">`:`<span class="aph ph0">${esc(name[0])}</span>`}
-  <div><span class="sub">배우 팬 채널</span><h1>${esc(ORIG[name]||name)}</h1>${ORIG[name]?`<p class="sub" style="margin:-4px 0 6px">${esc(name)}</p>`:''}
+  <div><span class="sub">배우 팬 채널</span><h1>${esc(ORIG[name]||name)}</h1>${ORIG[name]?`<p class="sub" style="margin:-4px 0 6px">${esc(name)}</p>`:''}${p.ig&&/^[A-Za-z0-9._]{1,30}$/.test(p.ig)?`<a class="aig" href="${SB_URL}/functions/v1/go?p=instagram&k=actor_ig&u=${encodeURIComponent('https://www.instagram.com/'+p.ig+'/')}&s=${encodeURIComponent(SID)}&pg=actor" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/></svg>@${esc(p.ig)}<small>공식 인스타그램</small></a>`:''}
   <div class="astats"><span><b class="num">${avgAll==null?'-':avgAll}</b><small>연기 점수</small></span><span><b class="num">${fmt(p.fans)}</b><small>팬</small></span><span><b class="num">${open.length}</b><small>물망 중</small></span><span><b class="num">${lead}</b><small>1위 배역</small></span><span><b class="num">${fmt(pg.sheet_mentions)}</b><small>시트 언급</small></span></div>
   <div class="row2"><button class="b ${fan?'':'buy'}" data-act="follow" data-pid="${p.id}">${fan?'팬 채널 나가기':'팬 채널 들어가기'}</button><button class="b" data-act="rally" data-pid="${p.id}">화력 요청 문구 복사</button></div>
   <p class="dl">팬이 되면 ${esc(name)} 님이 새 작품 후보에 오르거나 캐스팅이 확정될 때 알려 드려요. 투표는 배역마다 한 사람 한 표예요. 화력은 더 많은 팬이 투표하러 오게 만드는 데서 나와요.</p></div></div>
