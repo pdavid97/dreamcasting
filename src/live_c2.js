@@ -463,3 +463,62 @@ function badgeArt(i,on,prog){const [fr,t,em]=BD_ART[i]||BD_ART[0],[c1,c2,c3]=BD_
 /* 나 탭 카드형 업적 */
 (function(){const old=document.createElement('style');old.textContent='';document.head.appendChild(old)})();
 function badgeTier(i){return BD_TIER[(BD_ART[i]||BD_ART[0])[1]][3]}
+
+/* ================= X에 물어보기 (11/26) =================
+   VS 대결을 사진 없이 스타일라이즈한 삽화로 만들어 유저가 X 투표로 올리고, 올린 게시물 주소를 붙이면 X 투표 결과를 가져와 광장 결과 옆에 보여줌.
+   삽화는 실존 배우 얼굴을 그리지 않음: 이름마다 모양이 달라지는 익명 실루엣과 무대 연출만 씀 */
+const XH=s=>{let h=0;for(const c of String(s))h=(h*31+c.charCodeAt(0))|0;return Math.abs(h)};
+function xFig(cx,flip,seed,col,pid){const v=seed%3,s=flip?-1:1,hx=cx,hy=300;
+ const hair=[`M${hx-74} ${hy-6}C${hx-80} ${hy-110} ${hx+80} ${hy-120} ${hx+76} ${hy-10}C${hx+60} ${hy-60} ${hx-40} ${hy-70} ${hx-74} ${hy-6}Z`,
+  `M${hx-80} ${hy+120}C${hx-110} ${hy-40} ${hx-70} ${hy-118} ${hx} ${hy-112}C${hx+70} ${hy-118} ${hx+110} ${hy-40} ${hx+80} ${hy+120}L${hx+52} ${hy+40}C${hx+40} ${hy-40} ${hx-40} ${hy-40} ${hx-52} ${hy+40}Z`,
+  `M${hx-88} ${hy+10}C${hx-120} ${hy-80} ${hx-50} ${hy-130} ${hx+4} ${hy-118}C${hx+80} ${hy-130} ${hx+128} ${hy-60} ${hx+86} ${hy+16}C${hx+70} ${hy-40} ${hx-50} ${hy-60} ${hx-88} ${hy+10}Z`][v];
+ const body=`M${hx-210} 675C${hx-200} ${hy+170} ${hx-120} ${hy+140} ${hx-40} ${hy+118}L${hx-30} ${hy+70}L${hx+30} ${hy+70}L${hx+40} ${hy+118}C${hx+120} ${hy+140} ${hx+200} ${hy+170} ${hx+210} 675Z`;
+ return `<g transform="translate(${cx} 0) scale(${s} 1) rotate(${s*-4} 0 ${hy}) translate(${-cx} 0)"><path d="${body}" fill="url(#${pid})"/><ellipse cx="${hx}" cy="${hy}" rx="72" ry="88" fill="url(#${pid})"/><path d="${hair}" fill="${col}" opacity=".92"/><path d="${body}" fill="none" stroke="${col}" stroke-width="3" opacity=".8"/><ellipse cx="${hx}" cy="${hy}" rx="72" ry="88" fill="none" stroke="${col}" stroke-width="3" opacity=".8"/></g>`}
+function xArt(d){const W=1200,H=675,F="-apple-system,'Apple SD Gothic Neo','Noto Sans KR',sans-serif",cl=n=>dispName(n).replace(/\s*\(.*\)$/,''),A=cl(d.a.name),B=cl(d.b.name),ch=String(d.ch).replace(/\s*\(.*\)$/,''),tl=String(d.title||'');
+ const fs=n=>Math.max(40,Math.min(76,Math.floor(440/Math.max(1,[...n].length))));
+ const stars=Array.from({length:26},(_,i)=>{const h=XH(A+B+i);return `<circle cx="${h%W}" cy="${(h>>7)%380}" r="${1+(h%3)}" fill="#fff" opacity="${.15+(h%5)/10}"/>`}).join('');
+ return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}"><defs>
+ <pattern id="xdA" width="9" height="9" patternUnits="userSpaceOnUse"><rect width="9" height="9" fill="#10160a"/><circle cx="4.5" cy="4.5" r="2.2" fill="#D4FF3A" opacity=".55"/></pattern>
+ <pattern id="xdB" width="9" height="9" patternUnits="userSpaceOnUse"><rect width="9" height="9" fill="#1a0b12"/><circle cx="4.5" cy="4.5" r="2.2" fill="#ff5a8a" opacity=".55"/></pattern>
+ <linearGradient id="xbg" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#121a06"/><stop offset=".5" stop-color="#0a0a0a"/><stop offset="1" stop-color="#1c0812"/></linearGradient>
+ <radialGradient id="xspA" cx=".25" cy="0" r=".9"><stop offset="0" stop-color="#D4FF3A" stop-opacity=".28"/><stop offset="1" stop-color="#D4FF3A" stop-opacity="0"/></radialGradient>
+ <radialGradient id="xspB" cx=".75" cy="0" r=".9"><stop offset="0" stop-color="#ff5a8a" stop-opacity=".28"/><stop offset="1" stop-color="#ff5a8a" stop-opacity="0"/></radialGradient>
+ <linearGradient id="xfade" x1="0" y1="0" x2="0" y2="1"><stop offset=".55" stop-color="#0a0a0a" stop-opacity="0"/><stop offset="1" stop-color="#0a0a0a" stop-opacity=".95"/></linearGradient></defs>
+ <rect width="${W}" height="${H}" fill="url(#xbg)"/>${stars}<rect width="${W}" height="${H}" fill="url(#xspA)"/><rect width="${W}" height="${H}" fill="url(#xspB)"/>
+ <path d="M300 0 L120 675 L480 675Z" fill="#D4FF3A" opacity=".06"/><path d="M900 0 L720 675 L1080 675Z" fill="#ff5a8a" opacity=".06"/>
+ ${xFig(300,false,XH(A),'#D4FF3A','xdA')}${xFig(900,true,XH(B),'#ff5a8a','xdB')}
+ <path d="M640 0 L560 675" stroke="#000" stroke-width="16"/><path d="M640 0 L560 675" stroke="#fff" stroke-opacity=".12" stroke-width="2"/>
+ <rect width="${W}" height="${H}" fill="url(#xfade)"/>
+ <text x="600" y="68" font-family="${F}" font-size="30" font-weight="700" fill="#bbb" text-anchor="middle">${esc(tl)} ${esc(verLabel(d.cat)||'')}</text>
+ <text x="600" y="122" font-family="${F}" font-size="46" font-weight="900" fill="#fff" text-anchor="middle">${esc(ch)} 역, 누가 어울려?</text>
+ <text x="600" y="430" font-family="Arial Black,Impact,${F}" font-size="170" font-weight="900" fill="none" stroke="#D4FF3A" stroke-width="5" text-anchor="middle" font-style="italic">VS</text>
+ <text x="60" y="600" font-family="${F}" font-size="${fs(A)}" font-weight="900" fill="#fff">${esc(A)}</text><rect x="60" y="616" width="120" height="8" rx="4" fill="#D4FF3A"/>
+ <text x="1140" y="600" font-family="${F}" font-size="${fs(B)}" font-weight="900" fill="#fff" text-anchor="end">${esc(B)}</text><rect x="1020" y="616" width="120" height="8" rx="4" fill="#ff5a8a"/>
+ <text x="600" y="652" font-family="${F}" font-size="20" font-weight="800" fill="#D4FF3A" text-anchor="middle" letter-spacing="4">DREAMCASTING</text></svg>`}
+function xSvgPng(svg){return new Promise((ok,no)=>{const img=new Image();img.onload=()=>{const c=document.createElement('canvas');c.width=1200;c.height=675;c.getContext('2d').drawImage(img,0,0);c.toBlob(b=>b?ok(b):no(new Error('png')),'image/png')};img.onerror=no;img.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg)})}
+function xText(d){const cl=n=>dispName(n).replace(/\s*\(.*\)$/,''),ch=String(d.ch).replace(/\s*\(.*\)$/,'');return `《${d.title}》 ${verLabel(d.cat)||''} ${ch} 역, 누가 어울려?\n\n투표로 골라 주세요\n#드림캐스팅 #가상캐스팅 #${String(d.title).replace(/\s+/g,'')}`}
+function xGo(u){return `${SB_URL}/functions/v1/go?p=xcom&k=x_ask&u=${encodeURIComponent(u)}&s=${encodeURIComponent(SID)}&pg=vs`}
+let XS=null;
+function xOpen(){const d=DUEL;if(!d||!d.a||!d.b)return;XS={d};const cl=n=>dispName(n).replace(/\s*\(.*\)$/,''),A=cl(d.a.name),B=cl(d.b.name),svg=xArt(d),txt=xText(d);
+ const link=`https://pdavid97.github.io/dreamcasting/#${d.tid}`;
+ let m=$('#xsheet');if(!m){m=document.createElement('div');m.id='xsheet';document.body.appendChild(m)}
+ m.innerHTML=`<div class="xs-bg" data-act="xclose"></div><div class="xs" role="dialog" aria-label="X에 물어보기"><button class="xs-x" data-act="xclose" aria-label="닫기">✕</button>
+ <b class="xs-t">X에 물어보기</b><div class="xs-art">${svg}</div>
+ <ol class="xs-step"><li><b>삽화 저장</b><span>사진 없이 만든 대결 삽화예요</span><button class="hb" data-act="xsave">이미지 저장</button></li>
+ <li><b>X에 글 쓰기</b><span>삽화를 첨부하고 투표 기능으로 선택지를 넣어 주세요</span><div class="xs-poll"><em>${esc(A)}</em><em>${esc(B)}</em><em>둘 다 별로</em></div><button class="hb main" data-act="xpost">X 열기</button></li>
+ <li><b>올린 게시물 주소 붙이기</b><span>투표 결과를 광장으로 가져와 광장 민심과 나란히 보여줘요</span><div class="xs-in"><input id="xurl" placeholder="https://x.com/아이디/status/숫자" inputmode="url"><button class="hb" data-act="xlink">연결</button></div><small id="xmsg"></small></li></ol></div>`;
+ m.classList.add('on');XS.svg=svg;XS.txt=txt+'\n'+link;try{track('x_ask_open',{t:d.tid,r:d.rid})}catch(e){}}
+document.addEventListener('click',async e=>{const b=e.target.closest('[data-act="xask"],[data-act="xclose"],[data-act="xsave"],[data-act="xpost"],[data-act="xlink"]');if(!b)return;e.preventDefault();const a=b.dataset.act;
+ if(a==='xask')return xOpen();if(a==='xclose'){const m=$('#xsheet');if(m)m.classList.remove('on');return}if(!XS)return;const d=XS.d;
+ if(a==='xsave'){try{const blob=await xSvgPng(XS.svg),f=new File([blob],`dreamcasting-vs-${d.rid}.png`,{type:'image/png'});
+   if(navigator.canShare&&navigator.canShare({files:[f]}))await navigator.share({files:[f],text:XS.txt});else{const u=URL.createObjectURL(blob),l=document.createElement('a');l.href=u;l.download=f.name;l.click();setTimeout(()=>URL.revokeObjectURL(u),2000)}
+   try{track('x_ask_save',{t:d.tid,r:d.rid})}catch(x){}}catch(err){if(err&&err.name!=='AbortError')toast('이미지를 만들지 못했어요')}return}
+ if(a==='xpost'){window.open(xGo('https://x.com/intent/post?text='+encodeURIComponent(XS.txt)),'_blank','noopener');return}
+ if(a==='xlink'){if(needLogin())return;const u=($('#xurl')||{}).value||'',msg=$('#xmsg');b.disabled=true;
+  try{const r=await rpc('x_poll_submit',{url:u,rid:d.rid,ca:d.a.candidate_id,cb:d.b.candidate_id});msg.textContent='연결했어요. 투표 결과를 가져오는 중이에요';
+   const j=await sb.functions.invoke('xpoll',{body:{id:r.id}}).then(x=>x.data).catch(()=>null);
+   msg.textContent=j&&j.status==='nokey'?'연결했어요. X 결과는 곧 자동으로 반영돼요':'연결했어요. 광장 결과 옆에 X 민심이 보여요';xSum(d,true)}catch(err){msg.textContent=errMsg(err)}finally{b.disabled=false}}});
+const XSUM={};
+async function xSum(d,force){const k=`${d.rid}:${d.a.candidate_id}:${d.b.candidate_id}`;if(!force&&k in XSUM)return xSumPaint(d,XSUM[k]);XSUM[k]=null;try{XSUM[k]=await rpc('x_poll_summary',{rid:d.rid,ca:d.a.candidate_id,cb:d.b.candidate_id})}catch(e){}xSumPaint(d,XSUM[k])}
+function xSumPaint(d,s){const el=$('#xsum');if(!el||DUEL!==d)return;if(!s||!(s.a+s.b)){el.innerHTML=s&&s.pending?'X 투표 결과를 기다리는 중':'';return}const t=s.a+s.b,pa=Math.round(s.a/t*100);el.innerHTML=`X 민심 <b>${pa}%</b> 대 <b>${100-pa}%</b> <small>(${fmt(t)}표, 게시물 ${s.polls}개)</small>`}
+(function(){const f=vsResHTML;vsResHTML=function(){const h=f.apply(this,arguments);if(!(DUEL&&DUEL.vsf&&DUEL.a&&DUEL.a.candidate_id))return h;setTimeout(()=>xSum(DUEL),0);return h+`<div class="xask"><button class="hb" data-act="xask"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4l16 16M20 4L4 20"/></svg>X에 물어보기</button><span id="xsum"></span></div>`}})();
