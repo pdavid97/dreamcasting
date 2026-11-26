@@ -413,3 +413,15 @@ body[data-view="page"] #trHelp{display:none}
 .tlfly{position:fixed;z-index:9500;width:72px;height:104px;border-radius:8px;background:#222 center/cover;border:3px solid #fff;box-shadow:0 12px 28px rgba(0,0,0,.6);pointer-events:none}
 .tlfly.life{border-color:#ffcf5a;box-shadow:0 0 0 4px rgba(255,207,90,.35),0 12px 28px rgba(0,0,0,.6)}
 #tabbar .tl-dot{position:relative}#tabbar .tl-dot::after{content:'';position:absolute;top:6px;right:calc(50% - 16px);width:8px;height:8px;border-radius:50%;background:#ff5a8a}
+/* 업적 메달 */
+svg.bdm,.c2bd svg.bdm,.badges2 .bi svg.bdm{width:100%;height:100%;fill:none;stroke:none;overflow:visible}
+svg.bdm.on{filter:drop-shadow(0 4px 10px rgba(0,0,0,.55))}
+svg.bdm.on.t-go{filter:drop-shadow(0 0 10px rgba(232,185,49,.35)) drop-shadow(0 4px 10px rgba(0,0,0,.5))}
+svg.bdm.on.t-pr{filter:drop-shadow(0 0 12px rgba(143,227,255,.4)) drop-shadow(0 4px 10px rgba(0,0,0,.5));animation:bdpr 4s ease-in-out infinite}
+@keyframes bdpr{50%{filter:drop-shadow(0 0 16px rgba(185,139,255,.55)) drop-shadow(0 4px 10px rgba(0,0,0,.5))}}
+.c2bd .bd{width:76px}
+.c2bd .bd i,.c2bd .bd.on i{width:64px;height:64px;clip-path:none;background:none;display:block}
+.badges2 .bi{display:block;width:56px;height:56px;margin-bottom:6px}
+.bdg{filter:none!important;opacity:1!important}
+.bdg:not(.on) b{color:#8a8a8a}
+.bdg.on em{color:#D4FF3A}

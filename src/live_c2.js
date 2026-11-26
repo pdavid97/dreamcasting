@@ -108,7 +108,7 @@ function c2User(d){const pg=document.querySelector('.pg.user');if(!pg)return;con
  const team=teams.length?`<div class="c2sh"><b>내 캐스팅 팀</b><small>${teams.length}개 작품</small></div><div class="c2fl" id="c2fl"><div class="fl-st">${teams.map((x,pi)=>{const n=x.cs.length,sh=x.cs.slice(0,4),cols=n===1?1:n===3?3:2;return `<div class="fp${pi?'':' on'}" data-i="${pi}"><a class="fh" href="#${esc(x.tid)}"><b>${esc(x.t)}</b><small>내 캐스팅 ${n}명 →</small></a><div class="fg" style="--c:${cols}">${sh.map((v,k)=>`<a class="ft" href="#a/${encodeURIComponent(v.name)}">${(()=>{const u=c2Ph(v.name);return `<span class="ph" data-n="${esc(v.name)}"${u?` style="background-image:url('${esc(u)}')"`:''}>${u?'':`<i class="ini">${esc(dispName(v.name).slice(0,1))}</i>`}</span>`})()}<span class="tx"><em>${esc(c2Short(v.ch))} 역</em><b>${esc(dispName(v.name).replace(/\s*\(.*\)$/,''))}</b></span>${k===3&&n>4?`<i class="more">+${n-4}</i>`:''}</a>`).join('')}</div></div>`}).join('')}</div>${teams.length>1?`<div class="fl-nav"><button data-act="flp" data-d="-1" aria-label="이전 작품">←</button><span class="fl-pg"><b>1</b> / ${teams.length}</span><button data-act="flp" data-d="1" aria-label="다음 작품">→</button></div>`:''}</div>`:'';
  /* 업적 */
  STATS_CUR=s;const bd=BADGES.map((b,i)=>{const v=Math.min(b[3](s)||0,b[4]);return {i,on:v>=b[4],l:b[1],v,max:b[4]}}),non=bd.filter(x=>x.on).length;
- const badges=`<div class="c2sh"><b>업적</b><small>${non}/${bd.length}</small></div><div class="c2bd">${bd.sort((a,b)=>b.on-a.on).map(x=>`<span class="bd${x.on?' on':''}" title="${esc(BADGES[x.i][2])}"><i>${c2Svg(C2B[x.i]||C2B[2])}</i><small>${esc(x.l)}</small></span>`).join('')}</div>`;
+ const badges=`<div class="c2sh"><b>업적</b><small>${non}/${bd.length}</small></div><div class="c2bd">${bd.sort((a,b)=>b.on-a.on).map(x=>`<span class="bd${x.on?' on':''}" title="${esc(BADGES[x.i][2])}"><i>${badgeArt(x.i,x.on,x.v/x.max)}</i><small>${esc(x.l)}</small></span>`).join('')}</div>`;
  const uh=pg.querySelector('.uhero');if(uh)uh.outerHTML=hero;
  const ix=pg.querySelector('.dindex');if(ix){ix.insertAdjacentHTML('beforebegin',taste+team+(d.me?'':'')+badges+'<div class="c2sh"><b>메뉴</b></div>');
   ix.querySelectorAll('button').forEach(b=>{const s0=b.querySelector('.di');if(s0)s0.innerHTML=c2Svg(C2I[b.dataset.k]||C2B[2])})}
@@ -430,3 +430,33 @@ document.addEventListener('click',e=>{const b=e.target.closest('[data-act="team-
 document.addEventListener('click',e=>{const b=e.target.closest('[data-act="ct-more"],[data-act="team-like0"]');if(!b)return;e.preventDefault();
  if(b.dataset.act==='ct-more'){TALK.crowdAll=!TALK.crowdAll;renderTalk();return}
  toast('이 조합으로 모든 배역을 고른 사람이 생기면 공감할 수 있어요')});
+
+/* ================= 업적 메달 (11/25): 업적마다 다른 틀과 상징, 난이도별 금속 ================= */
+const BD_ART=[
+ /* [틀, 등급, 상징 path(24 기준)] 틀: c 원, h 육각, s 방패, o 팔각, r 로제트, d 마름모 */
+ ['c','br','<path d="M5 11h14v9H5z"/><path d="M8 11V5h8v6"/><path d="M10 8h4"/><path d="M5 14h14"/>'],                       // 첫 한 표: 투표함
+ ['h','si','<path d="M4 8h16v3a2 2 0 0 0 0 4v3H4v-3a2 2 0 0 0 0-4z"/><path d="M14 8v10" stroke-dasharray="1.6 1.6"/>'],       // 광장 단골: 입장권
+ ['r','go','<path d="M12 3l2.2 6.8L21 12l-6.8 2.2L12 21l-2.2-6.8L3 12l6.8-2.2z"/>'],                                         // 촉이 왔다: 반짝임
+ ['o','pr','<circle cx="12" cy="10" r="6"/><path d="M7 20h10M8.5 16.5 7 20M15.5 16.5 17 20"/><path d="M9.5 8.5a3 3 0 0 1 2.5-1.5"/>'], // 예언가: 수정구
+ ['d','br','<path d="M6 9l3-4h6l3 4-6 10z"/><path d="M6 9h12M9 5l3 4 3-4M12 9v10"/>'],                                       // 원석 감별사: 원석
+ ['s','pr','<path d="M12 20v-8"/><path d="M12 12c0-4 3-6 7-6 0 4-3 6-7 6z"/><path d="M12 14c0-3-2-5-6-5 0 3 2 5 6 5z"/>'],    // 떡잎: 새싹
+ ['h','si','<path d="M4 10h16v9H4z"/><path d="M4 10l2-5 14 1-1 4"/><path d="M8 5.3 9.5 10M13 5.6l1.3 4.4"/>'],                // 감독: 슬레이트
+ ['r','go','<path d="M12 19s-6-3.7-7.6-7.3C3.2 8.9 4.9 6 7.8 6c1.7 0 3 1 4.2 2.4C13.2 7 14.5 6 16.2 6c2.9 0 4.6 2.9 3.4 5.7C18 15.3 12 19 12 19z"/>'], // 인기인: 하트
+ ['c','si','<path d="M4 6h10v7H8l-3 3v-3H4z"/><path d="M14 9h6v7h-1v3l-3-3h-4v-3"/>'],                                       // 토론러: 말풍선
+ ['s','go','<path d="M13 3 6 13h5l-1 8 7-10h-5z"/>'],                                                                         // VS 고인물: 번개
+ ['o','si','<circle cx="9.5" cy="12" r="5"/><circle cx="14.5" cy="12" r="5"/>'],                                              // 싱크로: 겹친 원
+ ['d','br','<path d="M7 21V4"/><path d="M7 5h11l-2.5 4L18 13H7"/>']];                                                         // 판 깔아주는 사람: 깃발
+const BD_TIER={br:['#F3C9A0','#B26A3A','#5C2F14','동'],si:['#F4F6FA','#A9B2C3','#4B5363','은'],go:['#FFF2B0','#E8B931','#7A5310','금'],pr:['#E9FFB0','#8FE3FF','#B98BFF','전설']};
+let BD_UID=0;
+function bdFrame(k){switch(k){case 'h':return 'M32 3 57 17.5v29L32 61 7 46.5v-29z';case 's':return 'M32 3 56 11v20c0 15-10 25-24 30C18 56 8 46 8 31V11z';case 'o':return 'M21 3h22l18 18v22L43 61H21L3 43V21z';case 'd':return 'M32 2 62 32 32 62 2 32z';case 'r':{let p='';for(let i=0;i<24;i++){const a=i*Math.PI/12,r=i%2?26:30;p+=(i?'L':'M')+(32+r*Math.sin(a)).toFixed(1)+' '+(32-r*Math.cos(a)).toFixed(1)}return p+'Z'}default:return 'M32 3a29 29 0 1 0 .01 0z'}}
+function badgeArt(i,on,prog){const [fr,t,em]=BD_ART[i]||BD_ART[0],[c1,c2,c3]=BD_TIER[t],u='bd'+(++BD_UID),P=bdFrame(fr),pr=Math.max(0,Math.min(1,prog||0));
+ const metal=t==='pr'?`<linearGradient id="${u}m" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${c1}"/><stop offset=".5" stop-color="${c2}"/><stop offset="1" stop-color="${c3}"/></linearGradient>`
+  :`<linearGradient id="${u}m" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${c1}"/><stop offset=".55" stop-color="${c2}"/><stop offset="1" stop-color="${c3}"/></linearGradient>`;
+ if(!on){const L=2*Math.PI*30;return `<svg class="bdm off" viewBox="0 0 64 64" aria-hidden="true"><path d="${P}" fill="#161616" stroke="#2e2e2e" stroke-width="1.5"/><path d="${P}" transform="translate(32 32) scale(.78) translate(-32 -32)" fill="none" stroke="#262626" stroke-width="1"/><g transform="translate(17.6 17.6) scale(1.2)" fill="none" stroke="#4a4a4a" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">${em}</g>${pr>0?`<circle cx="32" cy="32" r="30" fill="none" stroke="#D4FF3A" stroke-width="2" stroke-linecap="round" stroke-dasharray="${(L*pr).toFixed(1)} ${L.toFixed(1)}" transform="rotate(-90 32 32)" opacity=".85"/>`:''}</svg>`}
+ return `<svg class="bdm on t-${t}" viewBox="0 0 64 64" aria-hidden="true"><defs>${metal}<linearGradient id="${u}e" gradientUnits="userSpaceOnUse" x1="0" y1="2" x2="0" y2="22"><stop offset="0" stop-color="${c1}"/><stop offset=".6" stop-color="${c2}"/><stop offset="1" stop-color="${t==='pr'?c3:c2}"/></linearGradient><radialGradient id="${u}g" cx=".35" cy=".25" r=".8"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset=".45" stop-color="#fff" stop-opacity="0"/></radialGradient><linearGradient id="${u}i" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1b1b1b"/><stop offset="1" stop-color="#050505"/></linearGradient></defs>
+  <path d="${P}" fill="url(#${u}m)"/><path d="${P}" transform="translate(32 32) scale(.8) translate(-32 -32)" fill="url(#${u}i)" stroke="url(#${u}m)" stroke-width="1.2"/>
+  <g transform="translate(17.6 17.6) scale(1.2)" fill="none" stroke="url(#${u}e)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">${em}</g>
+  <path d="${P}" fill="url(#${u}g)"/></svg>`}
+/* 나 탭 카드형 업적 */
+(function(){const old=document.createElement('style');old.textContent='';document.head.appendChild(old)})();
+function badgeTier(i){return BD_TIER[(BD_ART[i]||BD_ART[0])[1]][3]}
