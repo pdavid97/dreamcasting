@@ -891,3 +891,6 @@ html,body{overflow-x:clip}
 .b{display:inline-flex;align-items:center;justify-content:center;text-align:center;line-height:1.25;text-decoration:none;gap:6px}
 .rres .b.buy{display:flex;min-height:52px}
 .acts .b,.dset .b,.acct-out .b{display:flex}
+.td.more .po{display:flex;align-items:center;justify-content:center;background:#151515;border:1.5px dashed #4a5a14}
+.td.more .po svg{width:26px;height:26px;stroke:#D4FF3A;stroke-width:2.4;fill:none;stroke-linecap:round}
+.td.more small{color:#D4FF3A}

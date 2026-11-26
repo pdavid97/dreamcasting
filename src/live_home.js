@@ -137,16 +137,19 @@ async function hcRelServer(t){const x=await rpc('duel_next',{skip:[],prefer:t.id
  if(!box.querySelector('.hd'))box.insertAdjacentHTML('afterbegin',HC_RELHD);box.querySelector('.hd').insertAdjacentHTML('afterend',hcRelItem(di,DECK[di],why,x.ch))}
 
 /* ===== 광장 상단 할 일 줄(11/25): 육각 타일 대신 포스터 원. 투표 중인 판만 마감 순, 테두리 링은 내 진행률, 다 끝낸 판은 뒤로, 발표는 맨 끝 "결과" 하나로 ===== */
+const TD={show:8,end:true,busy:false};
 function todoRow(){const out=[],pd=pend();
  const items=DECK.map((d,i)=>{const rs=d.roles||[],n=rs.length,m=rs.filter(r=>r.mine||pd.some(p=>p.rid===r.id)).length;return {d,i,n,m,done:n&&m>=n,left:new Date(d.closes_at)-Date.now()}});
  items.sort((a,b)=>(a.done-b.done)||(a.left-b.left));
- for(const x of items){const {d,i,n,m}=x,dd=Math.max(0,Math.ceil(x.left/864e5)),lab=x.left<864e5?'D-0':'D-'+dd,fr=n?m/n:0,u=d.vposter||d.poster||'';
+ let TDk=0;for(const x of items){if(++TDk>TD.show&&x.i!==DI)continue;const {d,i,n,m}=x,dd=Math.max(0,Math.ceil(x.left/864e5)),lab=x.left<864e5?'D-0':'D-'+dd,fr=n?m/n:0,u=d.vposter||d.poster||'';
   out.push(`<button class="td${i===DI?' cur':''}${x.done?' done':''}${x.left<864e5?' hot':''}" data-act="dk-goto" data-i="${i}" aria-label="${esc(d.title)}, ${lab}, 배역 ${n}개 중 ${m}개 투표"${i===DI?' aria-current="true"':''}>
    <span class="ring" style="--p:${Math.round(fr*360)}deg"><span class="po"${u?` style="background-image:url('${esc(u)}')"`:''}>${u?'':esc(String(d.title).slice(0,4))}</span>${x.done?'<i class="ck" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg></i>':''}</span>
    <b>${esc(d.title)}</b><small>${x.done?'완료':lab}</small></button>`)}
  const rs=(typeof RB!=='undefined'&&RB.results||[]).filter(r=>Date.now()-new Date(r.at)<2*864e5);
  if(rs.length){const seen=(()=>{try{return JSON.parse(localStorage.getItem('dcResSeen')||'[]')}catch(e){return[]}})(),f=rs.find(r=>!seen.includes(r.tid+':'+r.season))||rs[0];
   out.push(`<button class="td res" data-act="rres" data-t="${esc(f.tid)}" data-s="${f.season}" aria-label="결과 발표 ${rs.length}개 보기"><span class="ring"><span class="po"${f.poster?` style="background-image:url('${esc(f.poster)}')"`:''}></span><i class="tr" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 4h8v5a4 4 0 0 1-8 0zM6 5H4a3 3 0 0 0 4 4M18 5h2a3 3 0 0 1-4 4M12 13v4M8 20h8"/></svg></i></span><b>결과 발표</b><small>${rs.length}개</small></button>`)}
+ if(TD.show>items.length&&typeof TOPICS!=='undefined'){const have=new Set(DECK.map(d=>d.id)),ex=TOPICS.filter(t=>!have.has(t.id)&&isOpen(t)).slice(0,TD.show-items.length);for(const t of ex){const u=typeof shPoster==='function'?shPoster(t):'',dd=Math.max(0,Math.ceil((new Date(t.closes_at)-Date.now())/864e5));out.push(`<a class="td ext" data-x="${esc(t.id)}" href="#${esc(t.id)}" aria-label="${esc(t.title)}"><span class="ring"><span class="po"${u?` style="background-image:url('${esc(u)}')"`:''}>${u?'':esc(String(t.title).slice(0,4))}</span></span><b>${esc(t.title)}</b><small>D-${dd}</small></a>`)}TD.extraLeft=TOPICS.filter(t=>!have.has(t.id)&&isOpen(t)).length-ex.length}
+ const hid=items.length-Math.min(items.length,TD.show)+(TD.show>=items.length?(TD.extraLeft||0):0);if(hid>0||!TD.end||TD.extraLeft==null)out.push(`<button class="td more" data-act="td-more" aria-label="판 더 보기"><span class="ring"><span class="po"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></span></span><b>더보기</b><small>${hid>0?hid+'개 더':'새 판'}</small></button>`);
  return `<nav class="tdrow" id="tdRow" aria-label="투표 중인 판">${out.join('')}</nav>`}
 function hcTodoFocus(){const row=$('#tdRow'),c=row&&row.querySelector('.td.cur');if(!row||!c)return;const x=c.offsetLeft-row.clientWidth/2+c.offsetWidth/2;row.scrollLeft=Math.max(0,x)}
 /* 후보 추가 시트: 이름과 한 줄 이유. 등록하면 바로 내 표가 들어감 */
@@ -219,3 +222,14 @@ async function hcRelRoles(t){if(!USER)return;const L=await rpc('rel_roles',{tid:
   if(di>=0)add.push(hcRelItem(di,DECK[di],why,x.ch));else{const tt=(typeof TOPICS!=='undefined'?TOPICS:[]).find(q=>q.id===x.topic_id),pu=tt&&typeof shPoster==='function'?shPoster(tt):'';add.push(`<a class="rl" href="#${esc(x.topic_id)}"><span class="ph"${pu?` style="background-image:url('${esc(pu)}')"`:''}></span><span class="tx"><b>《${esc(x.title)}》 ${esc(String(x.ch).replace(/\s*\(.*\)$/,''))} 역</b><small>${why}</small></span><i>›</i></a>`)}if(add.length>=2)break}
  if(!add.length)return;HC.relUsed=used;if(!box.querySelector('.hd'))box.insertAdjacentHTML('afterbegin',HC_RELHD);box.querySelector('.hd').insertAdjacentHTML('afterend',add.join(''));
  const rs=[...box.querySelectorAll('.rl')];rs.slice(4).forEach(e=>e.remove())}
+
+/* 광장 상단 원형: 8개만 먼저, 맨 오른쪽 더보기를 누르면 8개씩 원이 더 붙음. 덱을 다 보면 서버에서 판을 더 받아 옴 (11/25) */
+document.addEventListener('click',async e=>{const b=e.target.closest('[data-act="td-more"]');if(!b||TD.busy)return;e.preventDefault();TD.busy=true;
+ const row=$('#tdRow'),before=new Set([...(row?row.querySelectorAll('.td[data-i],.td[data-x]'):[])].map(x=>x.dataset.i||x.dataset.x)),sl=row?row.scrollLeft:0;
+ try{if(TD.show>=DECK.length&&!TD.end){const L=await rpc('vote_deck',{lim:60}).catch(()=>null)||[],have=new Set(DECK.map(d=>d.id)),add=L.filter(d=>!have.has(d.id));if(add.length)DECK=DECK.concat(add);else TD.end=true}
+  TD.show+=8;if(TD.show>=DECK.length&&TD.end)TD.show=DECK.length;
+  const nw=document.createElement('div');nw.innerHTML=todoRow();if(row)row.replaceWith(nw.firstElementChild);const r2=$('#tdRow');if(r2){r2.scrollLeft=sl;let k=0;
+   r2.querySelectorAll('.td[data-i],.td[data-x]').forEach(x=>{if(!before.has(x.dataset.i||x.dataset.x)){x.animate([{transform:'scale(.3)',opacity:0},{transform:'scale(1.08)',opacity:1,offset:.7},{transform:'scale(1)',opacity:1}],{duration:420,delay:60*k++,easing:'cubic-bezier(.2,.7,.3,1)',fill:'backwards'})}});
+   const first=[...r2.querySelectorAll('.td[data-i],.td[data-x]')].find(x=>!before.has(x.dataset.i||x.dataset.x));if(first)setTimeout(()=>r2.scrollTo({left:first.offsetLeft-20,behavior:'smooth'}),120);
+   if(!first)toast('지금 준비된 판은 여기까지예요. 새 판이 열리면 알려 드릴게요')}}
+ finally{TD.busy=false}});

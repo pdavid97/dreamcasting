@@ -422,3 +422,7 @@ function tlFly(from,poster,life){const tabs=[...document.querySelectorAll('#tabb
  Object.assign(img.style,{left:(a.left+a.width/2-36)+'px',top:(a.top-110)+'px'});document.body.appendChild(img);
  const dx=b.left+b.width/2-(a.left+a.width/2),dy=b.top-(a.top-110)-20;
  img.animate([{transform:'scale(.4) rotate(-8deg)',opacity:0},{transform:'scale(1.05) rotate(3deg)',opacity:1,offset:.25},{transform:'scale(1) rotate(0)',opacity:1,offset:.45},{transform:`translate(${dx}px,${dy}px) scale(.18) rotate(-10deg)`,opacity:.6}],{duration:1300,easing:'cubic-bezier(.3,.1,.3,1)'}).onfinish=()=>{img.remove();me.animate([{transform:'scale(1)'},{transform:'scale(1.3)'},{transform:'scale(1)'}],{duration:380});me.classList.add('tl-dot');setTimeout(()=>me.classList.remove('tl-dot'),2400)}}
+/* 팀 탭의 빈 자리(고르기)를 누르면 투표 탭으로 옮겨 그 배역을 바로 고르게 (11/25) */
+document.addEventListener('click',e=>{const b=e.target.closest('[data-act="team-gap"]');if(!b)return;e.preventDefault();e.stopImmediatePropagation();
+ try{setTTab('vote')}catch(x){}
+ setTimeout(()=>{const c=document.querySelector(`#topicView [data-act="rchip"][data-i="${b.dataset.i}"]`);if(c){c.click();const box=c.closest('.c2rs')||c;box.scrollIntoView({behavior:'smooth',block:'start'});c.classList.add('flash');setTimeout(()=>c.classList.remove('flash'),1400)}else{const el=document.querySelector(`#roles .role[data-rid="${b.dataset.rid}"]`);if(el)el.scrollIntoView({behavior:'smooth',block:'start'})}},60)},true);
