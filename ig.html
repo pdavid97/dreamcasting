@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>드림캐스팅 인스타그램 카드</title>
+<meta name="robots" content="noindex">
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#0A0A0A;color:#eee;font:15px/1.45 -apple-system,'Apple SD Gothic Neo','Noto Sans KR',sans-serif}
+.w{max-width:560px;margin:0 auto;padding:16px}
+h1{font-size:20px;margin:6px 0 4px}
+.sub{color:#999;font-size:13px;margin-bottom:14px}
+.bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
+select,button,label{font:inherit;border-radius:12px;border:1px solid #262626;background:#1A1A1A;color:#eee;padding:10px 12px}
+label{display:inline-flex;gap:6px;align-items:center;cursor:pointer}
+button.ok{background:#D4FF3A;color:#0A0A0A;border-color:#D4FF3A;font-weight:800}
+#slides{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+#slides svg{width:100%;height:auto;border-radius:10px;border:1px solid #222;display:block}
+textarea{width:100%;min-height:170px;margin-top:12px;background:#141414;color:#eee;border:1px solid #262626;border-radius:12px;padding:12px;font-size:13px;line-height:1.5;font-family:inherit}
+.msg{color:#999;padding:30px 0;text-align:center}
+.note{color:#888;font-size:12px;margin-top:8px}
+</style></head><body><div class="w">
+<h1>주간 민심 캐스팅 카드</h1>
+<div class="sub">사진 없이 이름과 숫자로 만드는 인스타그램 캐러셀(1080x1350). 배우 얼굴은 공식 계정 게시물 공유로만 써요.</div>
+<div class="bar"><select id="tp"></select><label><input type="checkbox" id="real" checked>실제 유저 표만</label><button class="ok" id="dl">PNG 모두 받기</button><button id="cp">캡션 복사</button></div>
+<div id="slides"><div class="msg">불러오는 중</div></div>
+<textarea id="cap" readonly></textarea>
+<p class="note">태그는 Wikidata에 등록된 공식 계정만 붙여요. 올리기 전에 계정이 본인 공식 계정인지 한 번 확인해 주세요.</p>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script>
+{
+const SB_URL='https://dnzcvbidppzaogtmwamc.supabase.co',ANON='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRuemN2YmlkcHB6YW9ndG13YW1jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTUyODgwNzgsImV4cCI6MjExMDg2NDA3OH0.yiKbCh3iuH8_GFpx-ezzbauZNOkffOe5cuIGKUQGBIE';
+const sb=window.supabase.createClient(SB_URL,ANON);
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const CAT={us2k:'한국판',k2us:'할리우드판',k2cn:'중국판',k2jp:'일본판',wn:'웹소설 실사화',ip2live:'실사화',bio:'실화 캐스팅'};
+const W=1080,H=1350,LIME='#D4FF3A',F="-apple-system,'Apple SD Gothic Neo','Noto Sans KR',sans-serif";
+let DATA=[],CUR=null;
+const clean=s=>String(s||'').replace(/\s*\(.*\)$/,'');
+const fit=(s,max,base)=>Math.max(44,Math.min(base,Math.floor(max/Math.max(1,[...s].length))));
+function frame(inner,i,n){return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}"><rect width="${W}" height="${H}" fill="#0A0A0A"/><rect x="40" y="40" width="${W-80}" height="${H-80}" rx="36" fill="none" stroke="#1f1f1f" stroke-width="3"/><text x="90" y="130" font-family="${F}" font-size="30" font-weight="800" fill="${LIME}" letter-spacing="6">DREAMCASTING</text><text x="${W-90}" y="130" font-family="${F}" font-size="28" fill="#777" text-anchor="end">${i} / ${n}</text>${inner}<text x="90" y="${H-90}" font-family="${F}" font-size="28" fill="#666">드림캐스팅 광장, 가상 캐스팅 투표</text></svg>`}
+function cover(t,n){const tl=clean(t.title),fs=fit(tl,860,150);return frame(`<text x="90" y="330" font-family="${F}" font-size="44" font-weight="700" fill="#bbb">이번 주 민심 캐스팅</text><text x="90" y="${330+fs+40}" font-family="${F}" font-size="${fs}" font-weight="900" fill="#fff">${esc(tl)}</text><rect x="90" y="${380+fs+60}" width="${Math.min(700,90+[...(CAT[t.cat]||'')].length*46)}" height="80" rx="40" fill="${LIME}"/><text x="130" y="${380+fs+113}" font-family="${F}" font-size="40" font-weight="900" fill="#0A0A0A">${esc(CAT[t.cat]||'가상 캐스팅')}</text><text x="90" y="${H-330}" font-family="${F}" font-size="56" font-weight="800" fill="#fff">${t.voters}명이 골랐어요</text><text x="90" y="${H-250}" font-family="${F}" font-size="40" fill="${LIME}">넘겨서 결과 보기 →</text>`,1,n)}
+function role(r,i,n){const top=r.top||[],tot=r.tot||1,w=top[0],ch=clean(r.ch),fs=fit(ch,860,120);
+ const bars=top.map((x,k)=>{const p=Math.round(x.n/tot*100),y=820+k*130,bw=Math.max(14,Math.round(900*x.n/tot));return `<text x="90" y="${y}" font-family="${F}" font-size="40" font-weight="${k?600:800}" fill="${k?'#ccc':'#fff'}">${k+1}. ${esc(clean(x.name))}</text><text x="${W-90}" y="${y}" font-family="${F}" font-size="40" font-weight="900" fill="${k?'#ccc':LIME}" text-anchor="end">${p}%</text><rect x="90" y="${y+22}" width="900" height="18" rx="9" fill="#1d1d1d"/><rect x="90" y="${y+22}" width="${bw}" height="18" rx="9" fill="${k?'#555':LIME}"/>`}).join('');
+ const wn=w?clean(w.name):'아직 표가 없어요',wf=fit(wn,880,130);
+ return frame(`<text x="90" y="260" font-family="${F}" font-size="40" font-weight="700" fill="#999">배역</text><text x="90" y="${270+fs}" font-family="${F}" font-size="${fs}" font-weight="900" fill="#fff">${esc(ch)}</text>${r.orig?`<text x="90" y="${330+fs}" font-family="${F}" font-size="36" fill="#888">원작 ${esc(clean(r.orig))}</text>`:''}<text x="90" y="560" font-family="${F}" font-size="38" font-weight="800" fill="${LIME}">광장 1위</text><text x="90" y="${590+wf}" font-family="${F}" font-size="${wf}" font-weight="900" fill="#fff">${esc(wn)}</text>${bars}<text x="90" y="${H-150}" font-family="${F}" font-size="30" fill="#777">이 배역 ${tot}표 기준</text>`,i,n)}
+function cta(i,n){return frame(`<text x="90" y="560" font-family="${F}" font-size="120" font-weight="900" fill="#fff">당신의 픽은?</text><text x="90" y="680" font-family="${F}" font-size="48" fill="#ccc">마감 전에 광장에서 바꿀 수 있어요</text><rect x="90" y="780" width="900" height="130" rx="65" fill="${LIME}"/><text x="${W/2}" y="866" font-family="${F}" font-size="52" font-weight="900" fill="#0A0A0A" text-anchor="middle">프로필 링크에서 투표하기</text><text x="90" y="1040" font-family="${F}" font-size="34" fill="#777">결과는 실제 캐스팅과 무관한 팬 투표예요</text>`,i,n)}
+function build(){const t=DATA.find(x=>x.id===$('#tp').value);CUR=t;if(!t){$('#slides').innerHTML='<div class="msg">판이 없어요</div>';return}
+ const rs=(t.roles||[]).filter(r=>(r.top||[]).length),n=rs.length+2;const S=[cover(t,n),...rs.map((r,k)=>role(r,k+2,n)),cta(n,n)];
+ $('#slides').innerHTML=S.join('');
+ const tags=new Set();rs.forEach(r=>{if(r.orig_ig)tags.add('@'+r.orig_ig);(r.top||[]).slice(0,1).forEach(x=>{if(x.ig)tags.add('@'+x.ig)})});
+ $('#cap').value=`이번 주 민심 캐스팅: 《${clean(t.title)}》 ${CAT[t.cat]||''}\n\n`+rs.map(r=>`${clean(r.ch)} 역: ${clean((r.top||[])[0]?.name||'')} (${Math.round(((r.top||[])[0]?.n||0)/(r.tot||1)*100)}%)`).join('\n')+`\n\n${t.voters}명이 골랐어요. 당신의 픽은? 프로필 링크에서 투표해 주세요.\n결과는 실제 캐스팅과 무관한 팬 투표예요.\n\n${[...tags].join(' ')}\n#드림캐스팅 #가상캐스팅 #${clean(t.title).replace(/\s+/g,'')}`}
+async function load(){const {data,error}=await sb.rpc('ig_weekly',{real_only:$('#real').checked});if(error){$('#slides').innerHTML=`<div class="msg">${esc(error.message)}<br>드림캐스팅 광장에서 운영자 계정으로 로그인한 뒤 열어 주세요.</div>`;return}
+ DATA=data||[];const keep=$('#tp').value;$('#tp').innerHTML=DATA.map(t=>`<option value="${esc(t.id)}">${esc(clean(t.title))} ${esc(CAT[t.cat]||'')} (${t.voters}명)</option>`).join('');if(keep&&DATA.some(t=>t.id===keep))$('#tp').value=keep;build()}
+function png(svg,name){return new Promise(ok=>{const img=new Image();img.onload=()=>{const c=document.createElement('canvas');c.width=W;c.height=H;c.getContext('2d').drawImage(img,0,0);c.toBlob(b=>{const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=name;a.click();setTimeout(ok,300)},'image/png')};img.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg.outerHTML)})}
+$('#tp').addEventListener('change',build);$('#real').addEventListener('change',load);
+$('#dl').addEventListener('click',async()=>{const ss=[...document.querySelectorAll('#slides svg')];for(let i=0;i<ss.length;i++)await png(ss[i],`dreamcasting-${CUR?CUR.id:'card'}-${i+1}.png`)});
+$('#cp').addEventListener('click',async()=>{try{await navigator.clipboard.writeText($('#cap').value);$('#cp').textContent='복사했어요'}catch(e){$('#cap').select()}setTimeout(()=>$('#cp').textContent='캡션 복사',1500)});
+load();
+}
+</script></body></html>
