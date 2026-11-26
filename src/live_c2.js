@@ -412,6 +412,13 @@ document.addEventListener('click',async e=>{const b=e.target.closest('[data-act=
   const c=LOVE[k]=LOVE[k]||{};if(isLife){c.life=Math.max(0,(c.life||0)+(on?1:-1))}else{c.fav=Math.max(0,(c.fav||0)+(on?1:-1))}
   try{track(isLife?'life_pick':'collect',{m:{k,on,via:'topic'}})}catch(x){}
   toast(isLife?(on?`${w.title}, 내 인생작으로 시네마 서재 맨 앞에 걸었어요`:'인생작에서 뺐어요'):(on?`${w.title}, 내 시네마 서재에 담았어요`:'시네마 서재에서 뺐어요'));
-  renderTLove();const nb=document.querySelector(`#topicView .tlove [data-k="${b.dataset.k}"]`);if(on&&nb){nb.classList.add('pop');try{burst(nb)}catch(x){}}}catch(err){toast(errMsg(err))}finally{b.disabled=false}});
+  renderTLove();const nb=document.querySelector(`#topicView .tlove [data-k="${b.dataset.k}"]`);if(on&&nb){nb.classList.add('pop');try{burst(nb)}catch(x){}tlFly(nb,w.p,isLife)}}catch(err){toast(errMsg(err))}finally{b.disabled=false}});
 /* 배우 나이는 어디에도 보여주지 않으므로 나이 조회 요청도 보내지 않음 (11/25 봇 점검) */
 loadAges=function(){};
+
+/* 좋아요, 인생작을 누르면 포스터가 나 탭(시네마 서재)으로 날아가 걸림 */
+function tlFly(from,poster,life){const tabs=[...document.querySelectorAll('#tabbar a,#tabbar button')],me=tabs[tabs.length-1];if(!me||!poster)return;
+ const a=from.getBoundingClientRect(),b=me.getBoundingClientRect(),img=document.createElement('div');img.className='tlfly'+(life?' life':'');img.style.backgroundImage=`url('${poster}')`;
+ Object.assign(img.style,{left:(a.left+a.width/2-36)+'px',top:(a.top-110)+'px'});document.body.appendChild(img);
+ const dx=b.left+b.width/2-(a.left+a.width/2),dy=b.top-(a.top-110)-20;
+ img.animate([{transform:'scale(.4) rotate(-8deg)',opacity:0},{transform:'scale(1.05) rotate(3deg)',opacity:1,offset:.25},{transform:'scale(1) rotate(0)',opacity:1,offset:.45},{transform:`translate(${dx}px,${dy}px) scale(.18) rotate(-10deg)`,opacity:.6}],{duration:1300,easing:'cubic-bezier(.3,.1,.3,1)'}).onfinish=()=>{img.remove();me.animate([{transform:'scale(1)'},{transform:'scale(1.3)'},{transform:'scale(1)'}],{duration:380});me.classList.add('tl-dot');setTimeout(()=>me.classList.remove('tl-dot'),2400)}}

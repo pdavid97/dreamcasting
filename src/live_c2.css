@@ -410,3 +410,6 @@ body[data-view="page"] #trHelp{display:none}
 @keyframes tlp{40%{transform:scale(1.15)}}
 .fr-life{position:absolute;z-index:3;top:-8px;left:50%;transform:translateX(-50%);font-size:10px;font-weight:900;color:#1a1200;background:#ffcf5a;padding:2px 8px;border-radius:9px;white-space:nowrap;box-shadow:0 2px 6px rgba(0,0,0,.4)}
 #trHelp{top:3px;width:22px;height:22px;font-size:11px;right:max(3px,calc(50vw - var(--appw,480px)/2 + 3px));opacity:.8}
+.tlfly{position:fixed;z-index:9500;width:72px;height:104px;border-radius:8px;background:#222 center/cover;border:3px solid #fff;box-shadow:0 12px 28px rgba(0,0,0,.6);pointer-events:none}
+.tlfly.life{border-color:#ffcf5a;box-shadow:0 0 0 4px rgba(255,207,90,.35),0 12px 28px rgba(0,0,0,.6)}
+#tabbar .tl-dot{position:relative}#tabbar .tl-dot::after{content:'';position:absolute;top:6px;right:calc(50% - 16px);width:8px;height:8px;border-radius:50%;background:#ff5a8a}
