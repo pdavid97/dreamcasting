@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>드림캐스팅 판 승인</title>
+<title>드림캐스팅 운영 승인</title>
 <meta name="robots" content="noindex">
 <style>
 *{box-sizing:border-box}
@@ -26,10 +26,33 @@ button.no{flex:none}
 .msg{color:#999;padding:30px 0;text-align:center}
 .done{opacity:.4;pointer-events:none}
 a{color:#D4FF3A}
+label{display:block;font-size:12px;color:#999;margin-top:10px}
+input,textarea{width:100%;font:inherit;color:#eee;background:#0f0f0f;border:1px solid #262626;border-radius:10px;padding:9px 10px;margin-top:4px}
+.row2{display:flex;gap:8px;align-items:flex-end}.row2>*{flex:1}.row2 button{flex:none}
+label.chk{display:flex;gap:8px;align-items:center;font-size:14px;color:#ddd}label.chk input{width:auto;margin:0}
+.st{display:inline-block;font-size:11px;font-weight:800;border-radius:6px;padding:2px 6px;margin-right:6px;background:#262626}
+.st.open{background:#D4FF3A;color:#0A0A0A}.st.draft{background:#e6c77a;color:#0A0A0A}
+.hit{margin-top:8px;padding:8px 10px;border:1px solid #D4FF3A;border-radius:10px;font-size:13px}
+.act.wrap{flex-wrap:wrap}.act.wrap button{flex:1 1 auto}
+#evIdeas div{padding:6px 0;border-bottom:1px solid #1f1f1f}
 </style></head><body><div class="w">
 <h1>판 승인 대기열</h1>
 <div class="sub">자동으로 만든 판 초안이에요. 승인하면 바로 공개돼요.</div>
 <div id="list"><div class="msg">불러오는 중</div></div>
+<h1 style="margin-top:26px">사건 예측</h1>
+<div class="sub">뉴스로 결과가 나는 예, 아니오 예측이에요. 기사 제목에 키워드가 잡히면 근거 후보로 보여요. 확정은 직접 해 주세요. 정산일까지 확정된 근거가 없으면 아니오로 정산돼요.</div>
+<div class="card" id="evForm">
+  <div class="row2"><input id="evWork" placeholder="작품명(예: 빵충 사육 준수 사항)"><button data-evtpl>판권 질문 틀</button></div>
+  <label>질문<textarea id="evQ" rows="2" placeholder="『작품명』, 2026년 안에 영상화 판권 계약 보도가 나올까?"></textarea></label>
+  <label>꼭 들어갈 단어(쉼표로)<input id="evKw" placeholder="빵충"></label>
+  <label>이 중 하나 이상(쉼표로)<input id="evAny" placeholder="판권, 영상화, 드라마화"></label>
+  <label>뉴스 검색어(하루 1번 수집)<input id="evNq" placeholder='"작품명" (판권 OR 영상화)'></label>
+  <div class="row2"><label>예측 마감<input id="evClose" type="date"></label><label>정산일<input id="evRes" type="date"></label></div>
+  <label class="chk"><input id="evPub" type="checkbox"> 바로 공개</label>
+  <div class="act"><button class="ok" data-evmake>만들기</button></div>
+</div>
+<div id="evList"><div class="msg">불러오는 중</div></div>
+<details class="card"><summary>최근 영상화, 캐스팅 기사</summary><div id="evIdeas" class="i"></div></details>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <script>
@@ -63,6 +86,40 @@ document.addEventListener('click',async e=>{
   card.classList.add('done');card.querySelector('.act').innerHTML='<span class="i">'+(ok?'공개했어요':'반려했어요')+'</span>';
 });
 load();
+
+const kst=(d)=>new Date(d).toLocaleString('ko-KR',{timeZone:'Asia/Seoul',month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'});
+const goU=(u)=>SB_URL+'/functions/v1/go?t=pm&k=news&u='+encodeURIComponent(u)+'&pg=admin';
+const ST={draft:'초안',open:'진행 중',settled:'정산 완료',void:'취소'};
+async function evLoad(){
+  const {data,error}=await sb.rpc('pm_ev_list');
+  if(error){$('#evList').innerHTML='<div class="msg">'+esc(error.message)+'</div>';return}
+  const L=data.markets||[];
+  $('#evList').innerHTML=L.length?L.map(m=>{const tot=(+m.sa)+(+m.sb),pa=tot?Math.round(m.sa/tot*100):null;
+    const acts=m.status==='draft'?`<button class="ok" data-ev="open" data-id="${m.id}">공개</button><button data-ev="drop" data-id="${m.id}">삭제</button>`
+      :m.status==='open'?`<button class="ok" data-ev="yes" data-id="${m.id}">예로 확정</button><button data-ev="no" data-id="${m.id}">아니오로 확정</button>${m.hit?`<button data-ev="nohit" data-id="${m.id}">근거 아님</button>`:''}<button data-ev="drop" data-id="${m.id}">취소, 환불</button>`:'';
+    return `<div class="card" id="ev_${m.id}"><div><span class="st ${m.status}">${ST[m.status]||m.status}</span><b>${esc(m.q)}</b></div>
+    <div class="i" style="margin-top:6px">예측 마감 ${kst(m.closes_at)}, 정산일 ${kst(m.resolve_at)}, 예측 ${m.n}명${pa!=null?`, 예 ${pa}%`:''}${m.win?`, 결과 ${m.win==='a'?'예':'아니오'}`:''}</div>
+    <div class="i">단어: ${esc((m.ref.kw||[]).join(', '))}${(m.ref.any||[]).length?' + ('+esc(m.ref.any.join(', '))+' 중 하나)':''}${m.ref.nq?'<br>검색어: '+esc(m.ref.nq):''}</div>
+    ${m.hit&&m.hit.u?`<div class="hit">근거 후보: <a href="${esc(goU(m.hit.u))}" target="_blank" rel="noopener">${esc(m.hit.t)}</a>${m.hit.s?' ('+esc(m.hit.s)+')':''}</div>`:''}
+    ${acts?`<div class="act wrap">${acts}</div>`:''}</div>`}).join(''):'<div class="msg">사건 예측이 없어요.</div>';
+  $('#evIdeas').innerHTML=(data.ideas||[]).map(x=>`<div><a href="${esc(goU(x.u))}" target="_blank" rel="noopener">${esc(x.t)}</a></div>`).join('')||'최근 기사가 없어요.';
+}
+(function(){const d=new Date();const f=x=>x.toISOString().slice(0,10);const c=new Date(d.getTime()+7*864e5),r=new Date(d.getTime()+30*864e5);$('#evClose').value=f(c);$('#evRes').value=f(r)})();
+const words=v=>v.split(',').map(x=>x.trim()).filter(Boolean);
+document.addEventListener('click',async e=>{
+  if(e.target.closest('[data-evtpl]')){const w=$('#evWork').value.trim();if(!w){alert('작품명을 적어 주세요');return}const y=new Date().getFullYear();
+    $('#evQ').value=`『${w}』, ${y}년 안에 영상화 판권 계약 보도가 나올까?`;$('#evKw').value=w.split(/\s+/)[0];$('#evAny').value='판권, 영상화, 드라마화, 영화화, 제작 확정';$('#evNq').value=`"${w}" (판권 OR 영상화 OR 드라마화 OR 영화화)`;
+    $('#evRes').value=`${y}-12-31`;const c=new Date(`${y}-12-24`);if(c>new Date())$('#evClose').value=`${y}-12-24`;return}
+  if(e.target.closest('[data-evmake]')){
+    const {error}=await sb.rpc('pm_ev_create',{q:$('#evQ').value,kw:words($('#evKw').value),anyw:words($('#evAny').value),nq:$('#evNq').value,
+      close_at:$('#evClose').value+'T23:59:00+09:00',resolve_at:$('#evRes').value+'T23:59:00+09:00',publish:$('#evPub').checked});
+    if(error){alert(error.message);return}$('#evQ').value='';evLoad();return}
+  const b=e.target.closest('[data-ev]');if(!b)return;const act=b.dataset.ev,id=+b.dataset.id;
+  const ask={yes:'예로 확정하고 바로 정산할까요?',no:'아니오로 확정하고 바로 정산할까요?',drop:'이 예측을 취소하고 건 포인트를 모두 돌려줄까요?'}[act];
+  if(ask&&!confirm(ask))return;
+  const {error}=await sb.rpc('pm_ev_set',{mid:id,act});if(error){alert(error.message);return}evLoad();
+});
+sb.auth.getSession().then(({data:{session}})=>{if(session)evLoad();else $('#evList').innerHTML=''});
 }
 </script>
 </body></html>

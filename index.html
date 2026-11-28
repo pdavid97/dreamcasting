@@ -2305,6 +2305,15 @@ svg.bdm.on.t-pr{filter:drop-shadow(0 0 12px rgba(143,227,255,.4)) drop-shadow(0 
 #duel .xhd svg{width:12px;height:12px;stroke:#D4FF3A;stroke-width:3;fill:none}
 #duel .vsf-hd{padding-right:78px;min-width:0}
 #duel .vsf-hd b{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+/* 예측 v2(11/28): 예, 아니오와 오름, 내림 타일, VS 결과의 민심 대결 안내 */
+.vsf .fight .ph.pm-yn{display:flex;align-items:flex-end;padding-bottom:16%;background:radial-gradient(90% 80% at 25% 45%,#253010,#0e0e0e 70%)}
+.vsf .fight .ph.pm-yn.n{justify-content:flex-end;background:radial-gradient(90% 80% at 75% 45%,#2e1714,#0e0e0e 70%)}
+.vsf .fight .ph.pm-yn svg{width:96px;height:96px;margin:0 9%;fill:none;stroke:#D4FF3A;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;opacity:.9}
+.vsf .fight .ph.pm-yn.n svg{stroke:#ff8a7a}
+#duel .vsf.pm .vsf-hd b{display:block;white-space:normal;overflow:visible;text-overflow:clip;word-break:keep-all;line-height:1.3}
+.pmhint:empty{display:none}
+.pmhint{margin:8px 0 2px}
+.pmhint .hb{width:100%;height:auto;min-height:42px;padding:8px 12px;font-size:13px;display:flex;align-items:center;justify-content:center;gap:6px;text-align:center;white-space:normal}
 
 </style>
 </head>
@@ -4691,21 +4700,22 @@ function vsResHTML(a,b,pa,n,mine){if(pa==null)return `<div class="vsres wait"><p
 /* ===== VS 탭 나누기(11/25): 내 픽(내 취향) / 민심 픽(광장이 누구를 더 고를지 안목 포인트로 예측) =====
    민심 픽 정답은 그 판 마감 때 광장 실제 득표. 정산할 때 내 표는 빼고 셈. 배역 표가 20표 미만이면 돌려받음
    포인트는 충전, 현금, 상품권 교환이 없음 */
-let VSMODE='mine';const PM={list:null,i:0,side:null,stake:30,done:null,mine:null,busy:false};
+let VSMODE='mine';const PM={want:null,list:null,i:0,side:null,stake:30,done:null,mine:null,busy:false};
 function vsTabsHTML(){return `<div class="vstabs" role="tablist"><button role="tab" aria-selected="${VSMODE==='mine'}" class="${VSMODE==='mine'?'on':''}" data-act="vsmode" data-m="mine"><b>내 픽</b><small>내 취향대로</small></button><button role="tab" aria-selected="${VSMODE==='pm'}" class="${VSMODE==='pm'?'on':''}" data-act="vsmode" data-m="pm"><b>민심 픽</b><small>광장의 선택 맞히기</small></button></div>`}
 (function(){const f=renderDuel;renderDuel=function(){const box=$('#duel');if(VSMODE==='pm'&&box){pmRender(box);return}const r=f.apply(this,arguments);if(box&&box.firstElementChild&&!box.querySelector('.vstabs'))box.insertAdjacentHTML('afterbegin',vsTabsHTML());return r}})();
-async function pmLoad(force){if(PM.list&&!force)return;try{PM.list=await rpc('pm_feed',{lim:30})||[]}catch(e){PM.list=[]}PM.i=0;
- try{await loadNames(PM.list.slice(0,8).filter(m=>m.kind==='role'||m.kind==='pv').flatMap(m=>[m.a.name,m.b.name]))}catch(e){}
+async function pmLoad(force){if(PM.list&&!force)return;try{PM.list=await rpc('pm_feed',{lim:30})||[]}catch(e){PM.list=[]}PM.i=0;if(PM.want){const j=PM.list.findIndex(x=>+x.id===+PM.want);if(j>0)PM.list.unshift(PM.list.splice(j,1)[0]);PM.want=null}
+ try{await loadNames(PM.list.slice(0,8).filter(m=>m.kind==='role'||m.kind==='pv'||m.kind==='vs').flatMap(m=>[m.a.name,m.b.name]))}catch(e){}
  if(USER&&PROF){try{PM.mine=await rpc('pm_mine',{})}catch(e){}}}
 function pmOdds(m,side,stake){const sa=+m.sa||0,sb=+m.sb||0,pool=sa+sb+stake,mine=(side==='a'?sa:sb)+stake;return Math.min(5,Math.max(1.2,pool/mine))}
+function pmEnd(t){const d=new Date(t);return `${d.getMonth()+1}월 ${d.getDate()}일`}
 function pmLeft(t){const ms=new Date(t)-Date.now(),d=Math.floor(ms/864e5),h=Math.floor(ms%864e5/36e5);return d>0?`D-${d}`:h>0?`${h}시간 남음`:'곧 마감'}
-const PMK={role:{tag:'광장 투표',res:'판이 마감되면 광장 실제 득표로 정산'},nf_kr:{tag:'넷플릭스 한국 순위',res:'다음 주 넷플릭스 공식 순위가 나오면 정산'},pv:{tag:'위키백과 조회수',res:'7일 조회수가 모이면 정산'},box:{tag:'극장 관객 수',res:'그날 박스오피스 집계가 나오면 정산'}};
+const PMK={role:{tag:'광장 투표',res:'판이 마감되면 광장 실제 득표로 정산'},nf_kr:{tag:'넷플릭스 한국 순위',res:'다음 주 넷플릭스 공식 순위가 나오면 정산'},pv:{tag:'위키백과 조회수',res:'7일 조회수가 모이면 정산'},box:{tag:'극장 관객 수',res:'그날 박스오피스 집계가 나오면 정산'},vs:{tag:'VS 한판',res:'기간 동안 VS 한판 결과로 정산'},pvb:{tag:'위키백과 조회수',res:'7일 조회수가 모이면 지난 7일과 비교해 정산'},ev:{tag:'사건 예측',res:'관련 보도를 확인해 정산, 정산일까지 보도가 없으면 아니오로 정산'}};
 /* 확률 변화 그래프: 예측이 걸릴 때마다 기록한 A쪽 포인트 비율 */
 function pmChart(m){const h=(m.hist||[]).slice();const now=Date.now()/1000,cur=(+m.sa+ +m.sb)?(+m.sa/(+m.sa+ +m.sb)):.5;
  if(!h.length)h.push([now-3600,.5]);h.push([now,cur]);const t0=h[0][0],t1=Math.max(h[h.length-1][0],t0+1),W=300,H=64;
  const pt=h.map(([t,p])=>[((t-t0)/(t1-t0))*W,H-4-(+p)*(H-8)]),path=pt.map((q,i)=>(i?'L':'M')+q[0].toFixed(1)+' '+q[1].toFixed(1)).join(' ');
  return `<svg class="pm-ch" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" aria-hidden="true"><line x1="0" x2="${W}" y1="${H/2}" y2="${H/2}" class="mid"/><path d="${path}" class="ln"/><circle cx="${pt[pt.length-1][0]}" cy="${pt[pt.length-1][1]}" r="3.5" class="dot"/></svg>`}
-function pmFace(m,k,W,H){const c=m[k];if(m.kind==='nf_kr'||m.kind==='box'){return c.img?`<span class="ph pm-po" style="background-image:url('${esc(c.img)}')"></span>`:`<span class="ph pm-tx"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5h18v14H3zM7 5v14M17 5v14M3 9h4M3 15h4M17 9h4M17 15h4"/></svg></span>`}return vsfPh(c.name,W,H)}
+function pmFace(m,k,W,H){const c=m[k];if(m.kind==='ev'||m.kind==='pvb'){const up=k==='a';return `<span class="ph pm-yn ${up?'y':'n'}"><svg viewBox="0 0 24 24" aria-hidden="true">${m.kind==='pvb'?(up?'<path d="M12 19V5M6 11l6-6 6 6"/>':'<path d="M12 5v14M6 13l6 6 6-6"/>'):(up?'<path d="M5 12.5l4.5 4.5L19 7"/>':'<path d="M6 6l12 12M18 6L6 18"/>')}</svg></span>`}if(m.kind==='nf_kr'||m.kind==='box'){return c.img?`<span class="ph pm-po" style="background-image:url('${esc(c.img)}')"></span>`:`<span class="ph pm-tx"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5h18v14H3zM7 5v14M17 5v14M3 9h4M3 15h4M17 9h4M17 15h4"/></svg></span>`}return vsfPh(c.name,W,H)}
 async function pmRender(box){box.innerHTML=vsTabsHTML()+'<div class="pm pm-load"><p>민심 대결을 불러오는 중</p></div>';await pmLoad();if(VSMODE!=='pm')return;
  const m=PM.done||PM.list[PM.i],W=box.clientWidth||360,H=Math.max(240,Math.min(innerHeight-600,520)),pts=PROF?PROF.points||0:null;
  const st=PM.mine&&PM.mine.done?`<span class="pm-hit">적중 ${PM.mine.hit}/${PM.mine.done}</span>`:'';
@@ -4713,9 +4723,9 @@ async function pmRender(box){box.innerHTML=vsTabsHTML()+'<div class="pm pm-load"
  if(m.kind==='pv'&&!(IMG['p:'+m.a.name]&&IMG['p:'+m.b.name])){try{await loadNames([m.a.name,m.b.name])}catch(e){}}
  const K=PMK[m.kind]||PMK.role,sa=+m.sa||0,sb=+m.sb||0,tot=sa+sb,pa=tot?Math.round(sa/tot*100):50,done=PM.done===m,sel=done?m.my:PM.side;
  const nmf=k=>esc(dispName(m[k].name).replace(/\s*\(.*\)$/,'')),rk=m.kind==='nf_kr'&&m.now?k=>`<span class="pm-rk">이번 주 ${m.now[k==='a'?0:1]}위</span>`:()=>'';
- const half=(k)=>`<button class="${k==='a'?'l':'r'} ${sel?(sel===k?'win':'lose'):'idle'}" data-act="pmside" data-k="${k}" aria-pressed="${sel===k}">${pmFace(m,k,W,H)}<span class="hl"></span><span class="nm">${m.kind==='role'||m.kind==='pv'?vsfNm(m[k].name):`<b>${esc(m[k].name)}</b>`}${rk(k)}</span>${sel===k?`<span class="pm-tag">${done?'예측 완료':'이쪽 예측'}</span>`:''}</button>`;
+ const half=(k)=>`<button class="${k==='a'?'l':'r'} ${sel?(sel===k?'win':'lose'):'idle'}" data-act="pmside" data-k="${k}" aria-pressed="${sel===k}">${pmFace(m,k,W,H)}<span class="hl"></span><span class="nm">${m.kind==='role'||m.kind==='pv'||m.kind==='vs'?vsfNm(m[k].name):`<b>${esc(m[k].name)}</b>`}${rk(k)}</span>${sel===k?`<span class="pm-tag">${done?'예측 완료':'이쪽 예측'}</span>`:''}</button>`;
  const odds=sel&&!done?pmOdds(m,sel,PM.stake):null;
- const hd=m.kind==='role'?`<a href="#${esc(m.topic_id)}">${esc(m.title)}${verLabel(m.cat)?' '+esc(verLabel(m.cat)):''}</a><b>${esc(String(m.ch).replace(/\s*\(.*\)$/,''))} 역, 광장은 누구를 더 고를까?</b>`:`<b>${esc(m.q)}</b>`;
+ const hd=m.kind==='role'||m.kind==='vs'?`<a href="#${esc(m.topic_id)}">${esc(m.title)}${verLabel(m.cat)?' '+esc(verLabel(m.cat)):''}</a><b>${esc(String(m.ch).replace(/\s*\(.*\)$/,''))} 역, ${m.kind==='vs'?'VS 한판에서 누가 더 뽑힐까?':'광장은 누구를 더 고를까?'}</b>`:`<b>${esc(m.q)}</b>`;
  box.innerHTML=vsTabsHTML()+`<div class="vsf pm"><div class="vsf-hd"><span class="pm-kind">${esc(K.tag)}</span>${hd}</div>
 <div class="fight" style="height:${H}px">${half('a')}${half('b')}<span class="vsb">VS</span><span class="wl"></span></div>
 <div class="pm-mkt"><div class="pm-mh"><b>예측 확률</b><small>예측한 사람들이 건 포인트 비율이에요. 득표율이 아니에요</small></div>
@@ -4725,7 +4735,7 @@ ${done?`<div class="pm-ok"><b>${nmf(m.my)} 쪽에 ${m.stake}포인트 예측 완
  `<div class="pm-stake"><span>얼마나 확신해요?</span>${[10,30,50].map(v=>`<button class="${PM.stake===v?'on':''}" data-act="pmstake" data-v="${v}"${pts!=null&&pts<v?' disabled':''}>${v}</button>`).join('')}<em>${pts!=null?`내 포인트 ${pts}`:'로그인 후 예측'}</em></div>
  ${odds?`<p class="pm-odds">맞히면 <b>+${Math.round(PM.stake*odds)}</b> 포인트 (${odds.toFixed(1)}배)</p>`:'<p class="pm-odds">이길 것 같은 쪽을 누르세요</p>'}`}
 <div class="hc-bar vsf-bar">${done?`<button class="hb main" data-act="pmnext">다음 예측<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>`:`<button class="hb" data-act="pmnext">다른 대결</button><button class="hb main" data-act="pmgo"${sel?'':' disabled'}>${sel?`${PM.stake}포인트 예측하기`:'한쪽을 먼저 골라요'}</button>`}</div>
-<p class="pm-rule">${m.kind==='role'?'정산 때 내 표는 빼고 계산해요. 배역 표가 10표 미만이거나 동점이면 포인트를 돌려드려요. ':'동점이면 포인트를 돌려드려요. '}안목 포인트는 현금이나 상품으로 바꿀 수 없어요. ${st}</p></div>`}
+<p class="pm-rule">${m.kind==='role'?'정산 때 내 표는 빼고 계산해요. 배역 표가 10표 미만이거나 동점이면 포인트를 돌려드려요. ':m.kind==='vs'?`${pmEnd(m.resolve_at)}까지 VS 한판에서 이 대결의 선택으로 정산해요. 내 VS 선택은 빼고, 5표 미만이거나 동점이면 포인트를 돌려드려요. `:m.kind==='ev'?`${pmEnd(m.resolve_at)}까지 관련 보도가 확인되면 예, 없으면 아니오로 정산해요. `:'동점이면 포인트를 돌려드려요. '}안목 포인트는 현금이나 상품으로 바꿀 수 없어요. ${st}</p></div>`}
 document.addEventListener('click',async e=>{const b=e.target.closest('[data-act^="pm"],[data-act="vsmode"]');if(!b)return;const a=b.dataset.act;
  if(a==='vsmode'){e.preventDefault();const m=b.dataset.m;if(VSMODE===m)return;VSMODE=m;track&&track('vs_mode',{m:{mode:m}});if(m==='pm'){PM.done=null;PM.side=null}renderDuel();return}
  if(VSMODE!=='pm')return;e.preventDefault();const box=$('#duel');
@@ -4844,7 +4854,7 @@ document.addEventListener('click',e=>{const b=e.target.closest('[data-act="flp"]
 /* ---------- 작품 화면 상단: 바로 좋아요(시네마 서재에 담기)와 인생작 (11/25) ---------- */
 let MYLIFE=new Set(),MYLIFE_AT=0;const LOVE={};
 async function loadMyLife(){if(!USER){MYLIFE=new Set();return}if(Date.now()-MYLIFE_AT<60000)return;MYLIFE_AT=Date.now();try{MYLIFE=new Set(await rpc('my_life_ids',{})||[])}catch(e){}}
-function tlWork(t){if(!(t.id in WORK)&&typeof loadWork==='function')loadWork(t);const w=(WORK&&WORK[t.id])||t.work;if(!w||!w.tmdb_id)return null;return {m:w.kind==='영화'?'movie':'tv',id:+w.tmdb_id,title:w.title||t.title,y:w.year||'',p:w.poster&&/^https:\/\/image\.tmdb\.org\/t\/p\//.test(w.poster)?w.poster:''}}
+const TLREQ=new Set();function tlWork(t){if(!(t.id in WORK)&&!TLREQ.has(t.id)&&typeof loadWork==='function'){TLREQ.add(t.id);loadWork(t)}const w=(WORK&&WORK[t.id])||t.work;if(!w||!w.tmdb_id)return null;return {m:w.kind==='영화'?'movie':'tv',id:+w.tmdb_id,title:w.title||t.title,y:w.year||'',p:w.poster&&/^https:\/\/image\.tmdb\.org\/t\/p\//.test(w.poster)?w.poster:''}}
 function renderTLove(){const th=document.querySelector('#topicView .th'),t=typeof topic==='function'&&topic();if(!th||!t)return;let bar=th.querySelector('.tlove');const w=tlWork(t);
  if(!w){if(bar)bar.remove();return}
  const k=w.m+':'+w.id,fav=MYCOL.has(k),life=MYLIFE.has(k),c=LOVE[k]||{};
@@ -4970,6 +4980,14 @@ function xSumPaint(d,s){const el=$('#xsum');if(!el||DUEL!==d)return;if(!s||!(s.a
 (function(){const f=vsResHTML;vsResHTML=function(){const h=f.apply(this,arguments);if(!(DUEL&&DUEL.vsf&&DUEL.a&&DUEL.a.candidate_id))return h;setTimeout(()=>xSum(DUEL),0);return h+`<div class="xask"><button class="hb" data-act="xask"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4l16 16M20 4L4 20"/></svg>X에 물어보기</button><span id="xsum"></span></div>`}})();
 /* 고르기 전에도 보이게: VS 제목 줄 오른쪽에 X 버튼 */
 (function(){const f=renderDuel;renderDuel=function(){const r=f.apply(this,arguments);try{const hd=document.querySelector('#duel .vsf-hd');if(hd&&DUEL&&DUEL.vsf&&DUEL.a&&DUEL.a.candidate_id&&!hd.querySelector('.xhd'))hd.insertAdjacentHTML('beforeend','<button class="xhd" data-act="xask" aria-label="이 대결을 X에 물어보기"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4l16 16M20 4L4 20"/></svg>X 공유</button>')}catch(e){}return r}})();
+
+/* VS 결과 화면: 이 조합이 민심 대결(예측)에 걸려 있으면 바로 예측하러 가기 */
+const PMVS={};
+(function(){const f=vsResHTML;vsResHTML=function(){const h=f.apply(this,arguments);const d=DUEL;if(!(d&&d.vsf&&d.pk))return h;
+ setTimeout(async()=>{if(!(d.pk in PMVS)){PMVS[d.pk]=null;try{PMVS[d.pk]=await rpc('pm_vs_open',{pk:d.pk})}catch(e){}}const id=PMVS[d.pk],el=$('#pmhint');if(!el||DUEL!==d||!id)return;
+  el.innerHTML=`<button class="hb" data-act="pmjump" data-id="${+id}"><span class="pm-kind">민심 대결</span>이 대결, 일주일 뒤 누가 이길까? 예측하기</button>`},0);
+ return h+'<div class="pmhint" id="pmhint"></div>'}})();
+document.addEventListener('click',e=>{const b=e.target.closest('[data-act="pmjump"]');if(!b)return;e.preventDefault();PM.want=+b.dataset.id;PM.list=null;PM.done=null;PM.side=null;VSMODE='pm';track&&track('pm_jump',{m:{id:PM.want}});renderDuel();try{$('#duel').scrollIntoView({block:'start'})}catch(x){}});
 
 }
 </script>

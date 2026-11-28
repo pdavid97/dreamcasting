@@ -459,3 +459,12 @@ svg.bdm.on.t-pr{filter:drop-shadow(0 0 12px rgba(143,227,255,.4)) drop-shadow(0 
 #duel .xhd svg{width:12px;height:12px;stroke:#D4FF3A;stroke-width:3;fill:none}
 #duel .vsf-hd{padding-right:78px;min-width:0}
 #duel .vsf-hd b{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+/* 예측 v2(11/28): 예, 아니오와 오름, 내림 타일, VS 결과의 민심 대결 안내 */
+.vsf .fight .ph.pm-yn{display:flex;align-items:flex-end;padding-bottom:16%;background:radial-gradient(90% 80% at 25% 45%,#253010,#0e0e0e 70%)}
+.vsf .fight .ph.pm-yn.n{justify-content:flex-end;background:radial-gradient(90% 80% at 75% 45%,#2e1714,#0e0e0e 70%)}
+.vsf .fight .ph.pm-yn svg{width:96px;height:96px;margin:0 9%;fill:none;stroke:#D4FF3A;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;opacity:.9}
+.vsf .fight .ph.pm-yn.n svg{stroke:#ff8a7a}
+#duel .vsf.pm .vsf-hd b{display:block;white-space:normal;overflow:visible;text-overflow:clip;word-break:keep-all;line-height:1.3}
+.pmhint:empty{display:none}
+.pmhint{margin:8px 0 2px}
+.pmhint .hb{width:100%;height:auto;min-height:42px;padding:8px 12px;font-size:13px;display:flex;align-items:center;justify-content:center;gap:6px;text-align:center;white-space:normal}

@@ -183,7 +183,19 @@ async function run(req: Request) {
     for (const it of (await news(q)) || []) if (it.u) ideas.push({ title: it.t, url: it.u.slice(0, 1000), source: it.s || null, published: it.d ? new Date(it.d).toISOString() : null });
     await sleep(300);
   }
-  if (ideas.length) await rest("buzz_ideas?on_conflict=url", { method: "POST", headers: { Prefer: "resolution=ignore-duplicates" }, body: JSON.stringify(ideas.slice(0, 200)) });
+  for (const q of ["영상화 판권", "드라마 판권 계약", "영화화 확정"]) {
+    for (const it of (await news(q)) || []) if (it.u) ideas.push({ title: it.t, url: it.u.slice(0, 1000), source: it.s || null, published: it.d ? new Date(it.d).toISOString() : null });
+    await sleep(300);
+  }
+  if (ideas.length) await rest("buzz_ideas?on_conflict=url", { method: "POST", headers: { Prefer: "resolution=ignore-duplicates" }, body: JSON.stringify(ideas.slice(0, 260)) });
+  // 사건 예측(pm_market kind ev)마다 운영자가 정한 검색어로 기사 제목을 모아 근거 후보로 둠(status ev, 새 주제 목록에는 안 나옴)
+  const evq = await (await fetch(`${SB}/rest/v1/rpc/pm_ev_queries`, { method: "POST", headers: H, body: "{}" })).json().catch(() => []);
+  const evRows: Record<string, unknown>[] = [];
+  for (const e of (Array.isArray(evq) ? evq : []).slice(0, 20)) {
+    for (const it of (await news(String(e.nq))) || []) if (it.u) evRows.push({ title: it.t, url: it.u.slice(0, 1000), source: it.s || null, published: it.d ? new Date(it.d).toISOString() : null, status: "ev" });
+    await sleep(300);
+  }
+  if (evRows.length) await rest("buzz_ideas?on_conflict=url", { method: "POST", headers: { Prefer: "resolution=ignore-duplicates" }, body: JSON.stringify(evRows.slice(0, 400)) });
   await rest("app_config?on_conflict=k", { method: "POST", headers: { Prefer: "resolution=merge-duplicates" }, body: JSON.stringify([{ k: "buzz_run", v: { last: new Date().toISOString() } }]) });
   return new Response(JSON.stringify({ phase, topics: done, ideas: ideas.length, top: rows.sort((x, y) => y.r.n - x.r.n).slice(0, 5).map((x) => [x.t.title, x.r.n]) }), { headers: { "Content-Type": "application/json" } });
 }
